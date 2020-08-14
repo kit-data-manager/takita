@@ -117,28 +117,17 @@ public class SearchIndexService implements ISearchIndexService {
     indexOp.putMapping(indexOp.createMapping(TextCard.class));
   
     List<Manuscript> allManuscripts = accessService.getAllManuscripts();
-    logger.info("Indexing Manuscripts.");
     
-    //Index the manuscripts
-    for (Manuscript manuscript : allManuscripts) {
-      elasticsearchRestTemplate.execute(client
-          -> client.indexAsync(new IndexRequest(INDEX_NAME).source(manuscript).timeout("10000"),
-          RequestOptions.DEFAULT, new ActionListener<IndexResponse>() {
-            @Override
-            public void onResponse(IndexResponse indexResponse) {
-              indexOp.refresh();
-              Duration duration = Duration.between(startBuild, LocalDateTime.now());
-              logger.info("Finished index build in {} minutes and {} seconds",
-                  duration.toMinutes(),
-                  duration.getSeconds() % 60);
-            }
-      
-            @Override
-            public void onFailure(Exception e) {
-              logger.error(e.getMessage());
-            }
-          }));
+    logger.info("Indexing Manuscripts.");
+    for (Manuscript m : allManuscripts) {
+      manuscriptRepository.save(m);
     }
+    indexOp.refresh();
+    
+    Duration duration = Duration.between(startBuild, LocalDateTime.now());
+    logger.info("Finished index build in {} minutes and {} seconds",
+    duration.toMinutes(),
+    duration.getSeconds() % 60);
   }
   
   private void deleteIndex() {
