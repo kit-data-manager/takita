@@ -6,7 +6,7 @@ function searchTerm() {
         searchTerm = $('#searchTermEmpty').val();
     }
 
-    if (searchTerm != null && searchTerm !== "") {
+    if (searchTerm != null) {
         $ .ajax({
             type: 'POST',
             url: '/search',
