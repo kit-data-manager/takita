@@ -28,7 +28,10 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import org.apache.lucene.search.join.ScoreMode;
+import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.index.IndexRequest;
+import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.indices.CreateIndexRequest;
@@ -116,14 +119,26 @@ public class SearchIndexService implements ISearchIndexService {
     List<Manuscript> allManuscripts = accessService.getAllManuscripts();
     logger.info("Indexing Manuscripts.");
     
+    //Index the manuscripts
     for (Manuscript manuscript : allManuscripts) {
-      manuscriptRepository.save(manuscript);
+      elasticsearchRestTemplate.execute(client
+          -> client.indexAsync(new IndexRequest(INDEX_NAME).source(manuscript).timeout("10000"),
+          RequestOptions.DEFAULT, new ActionListener<IndexResponse>() {
+            @Override
+            public void onResponse(IndexResponse indexResponse) {
+              indexOp.refresh();
+              Duration duration = Duration.between(startBuild, LocalDateTime.now());
+              logger.info("Finished index build in {} minutes and {} seconds",
+                  duration.toMinutes(),
+                  duration.getSeconds() % 60);
+            }
+      
+            @Override
+            public void onFailure(Exception e) {
+              logger.error(e.getMessage());
+            }
+          }));
     }
-    indexOp.refresh();
-    
-    Duration duration = Duration.between(startBuild, LocalDateTime.now());
-    logger.info("Finished index build in {} minutes and {} seconds", duration.toMinutes(),
-        duration.getSeconds() % 60);
   }
   
   private void deleteIndex() {
