@@ -56,3 +56,14 @@ function changePage() {
 function goToFirstPage() {
     callPage(1);
 }
+
+function setResultsPerPage() {
+    $.ajax({
+        type: 'GET',
+        url: '/tableview/results_per_page' + $('#resultsPerPage').val(),
+        dataType: 'text',
+        success: function () {
+            updateData();
+        }
+    })
+}

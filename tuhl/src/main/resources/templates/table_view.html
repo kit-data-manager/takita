@@ -80,7 +80,6 @@
                 <button type="submit"
                         class="btn btn-info"
                         th:text="#{buttons.ok}"> </button>
-
                 <button type="button"
                         class="btn btn-secondary"
                         onclick="goToNextPage()" th:text="#{buttons.next}"> </button>
@@ -93,6 +92,17 @@
                 class="btn-sm btn-secondary"
                 th:text="${numberOfPages}"
                 onclick="goToLastPage()"> </button>
+    </div>
+
+    <div class="col-auto">
+        <label th:text="#{input_label.resultsPerPage}"></label>
+        <input type="number"
+               id="resultsPerPage">
+        <button type="button"
+                class="btn btn-secondary"
+                th:text="#{buttons.ok}"
+                onclick="setResultsPerPage()">
+        </button>
     </div>
 </div>
 </form>
