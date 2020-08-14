@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>tableView</title>
+</head>
+<body id="body" th:fragment="tableView">
+<div class="form-row align-items-center m-2">
+    <div class="col-auto">
+        <div class="form-check form-check-inline">
+            <input type="checkbox"
+                   class="form-check-input"
+                   id="thumbnails"
+                   name="thumbnails"
+                   onclick="onChangeCheckbox(this)">
+            <label for="thumbnails"
+                   class="form-check-label" th:text="#{input_label.always_show_thumbs}"></label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input type="checkbox"
+                   id="save-config"
+                   class="form-check-input"
+                   name="safe-config"
+                   th:checked="${user.isSaveTable()}">
+            <label for="save-config"
+                   class="form-check-label" th:text="#{input_label.save_config}"></label>
+        </div>
+    </div>
+    <div class="col-auto dropdown">
+        <button class="btn-sm btn-secondary dropdown-toggle"
+                type="button"
+                id="dropdownMenu"
+                data-toggle="dropdown" th:text="#{buttons.choose_cols}"></button>
+        <div class="dropdown-menu" id="boxes"></div>
+    </div>
+
+    <div class="col-auto">
+        <button type="button"
+                class="btn-sm btn-secondary"
+                id="reset"
+                onclick="resetColumns()" th:text="#{buttons.reset_cols}"></button>
+    </div>
+
+    <div class="col-auto ml-auto">
+        <button type="button"
+                class="btn-sm btn-info"
+                onclick="backToDashboard()" th:text="#{buttons.to_dashboard}"></button>
+    </div>
+</div>
+
+<div id="searchresults"></div>
+<form onsubmit="getValue(event)">
+<div class="form-row m-2 align-content-center justify-content-center">
+    <div class="col-auto align-self-center">
+        <button type="button"
+                class="btn-sm btn-secondary"
+                onclick="goToFirstPage()"
+                th:text="#{buttons.first}"> </button>
+    </div>
+
+    <div class="col-3">
+        <div class="input-group">
+
+            <div class="input-group-prepend">
+                <button type="button"
+                        class="btn btn-secondary"
+                        onclick="goToPrevPage()" th:text="#{buttons.prev}"> </button>
+            </div>
+
+            <input class="form-control"
+                   type="number"
+                   th:value="${currentPage}"
+                   id="pageNumberInput"
+                   min="1"
+                   th:max="${numberOfPages}"
+                   onkeyup="if(this.value > this.max) {this.value = this.max}"
+                   required>
+            <div class="input-group-append">
+                <button type="submit"
+                        class="btn btn-info"
+                        th:text="#{buttons.ok}"> </button>
+
+                <button type="button"
+                        class="btn btn-secondary"
+                        onclick="goToNextPage()" th:text="#{buttons.next}"> </button>
+            </div>
+
+        </div>
+    </div>
+    <div class="col-auto align-self-center">
+        <button type="button"
+                class="btn-sm btn-secondary"
+                th:text="${numberOfPages}"
+                onclick="goToLastPage()"> </button>
+    </div>
+</div>
+</form>
+
+<script src="js/table_view.js"></script>
+<script th:inline="javascript">
+
+    function getValue(event){
+        event.preventDefault();
+        let input = $('#pageNumberInput').val();
+        console.log(input);
+        if(input > 1){
+            callPage(input);
+        }
+    }
+
+    $('#save-config').change(function () {
+        $.ajax({
+            type: 'GET',
+            url: "assistance/saveTableConfigSetting",
+            dataType: 'text',
+        });
+    })
+
+    /*<![CDATA[*/
+    document.getElementById("pageNumberInput").value = [[${user.getCurrentPage()}]];
+    /*]]>*/
+
+    // loads data for table with thymeleaf
+    function loadData() {
+        /*<![CDATA[*/
+        let data = [];
+        let counter = 0;
+        let manuscriptData;
+        let thumbnails;
+        let counter2;
+        /*[# th:each="man :${results}"]*/
+        thumbnails = [];
+        counter2 = 0;
+        /*[# th:each="pg :${man.getPages()}"]*/
+        thumbnails[counter2] = {thumb: [[${pg.getThumbResourceUrl()}]], id:[[${pg.getId()}]]};
+        counter2++;
+        /*[/]*/
+        manuscriptData = {
+            id:[[${man.getId()}]],
+            title:[[${man.getTitle()}]],
+            publisher:[[${man.getPublisher()}]],
+            publicationYear:[[${man.getPublicationYear()}]],
+            lastModified:[[${man.getLastModified()}]],
+            noPages:[[${man.getPages().size()}]],
+            hasAlgorithmAnnotations:[[${man.hasAlgorithmAnnotations()}]],
+            created:[[${man.getCreated()}]],
+            thumbnails: thumbnails
+        };
+        data[counter] = manuscriptData;
+        counter++;
+        /*[/]*/
+        /*]]>*/
+        return data;
+    }
+
+    /*<![CDATA[*/
+    //define columns
+        window.cols = [
+            {
+                title: [[#{col_name.id}]],
+                field: "id", frozen: true, headerSortStartingDir: toggleSort("id"), cellDblClick: function (e, cell) {
+                    // opens editor on first Page of Manuscript
+                    callEditor(cell.getValue());
+                }
+            },
+            {
+                title: [[#{col_name.title}]],
+                field: "title",
+                headerMenu: headerMenu(),
+                headerSortStartingDir: toggleSort("title"),
+                visible: true,
+            },
+            {
+                title: [[#{col_name.publisher}]],
+                field: "publisher",
+                headerMenu: headerMenu(),
+                headerSortStartingDir: toggleSort("publisher"),
+                visible: true,
+            },
+            {
+                title: [[#{col_name.publicationYear}]],
+                field: "publicationYear",
+                headerMenu: headerMenu(),
+                headerSortStartingDir: toggleSort("publicationYear"),
+                visible: true,
+            },
+            {
+                title: [[#{col_name.lastModified}]],
+                field: "lastModified",
+                headerMenu: headerMenu(),
+                headerSortStartingDir: toggleSort("lastModified"),
+                visible: true,
+            },
+            {
+                title: [[#{col_name.noPages}]],
+                field: "noPages",
+                headerMenu: headerMenu(),
+                headerSortStartingDir: toggleSort("noPages"),
+                visible: true,
+            },
+            {
+                title: [[#{col_name.hasAlgoAnnos}]],
+                field: "hasAlgorithmAnnotations",
+                headerMenu: headerMenu(),
+                headerSortStartingDir: toggleSort("hasAlgorithmAnnotations"),
+                visible: true,
+            },
+            {
+                title: [[#{col_name.created}]],
+                field: "created",
+                headerMenu: headerMenu(),
+                headerSortStartingDir: toggleSort("created"),
+                visible: true,
+            },
+        ];
+
+    /*]]>*/
+
+    //defines header menu with hide function
+    function headerMenu() {
+        /*<![CDATA[*/
+        return [
+            {
+                label: "<i class='fas fa-eye-slash'> </i>" + [[#{menu.hideCol}]],
+                action: function (e, column) {
+                    column.hide();
+                    document.getElementById('check_' + column.getField()).checked = false;
+                }
+            }
+        ];
+        /*]]>*/
+    }
+
+    //--- change page calls ---
+
+    //go to last page call
+    function goToLastPage() {
+        /*<![CDATA[*/
+        let lastPage = [[${numberOfPages}]];
+        /*]]>*/
+        callPage(lastPage);
+    }
+
+    //go to previous page call
+    function goToPrevPage() {
+        /*<![CDATA[*/
+        let currentPage = [[${currentPage}]];
+        /*]]>*/
+        currentPage--;
+        callPage(currentPage);
+    }
+
+    //go to next page call
+    function goToNextPage() {
+        /*<![CDATA[*/
+        let currentPage = [[${currentPage}]];
+        /*]]>*/
+        currentPage++;
+        callPage(currentPage);
+    }
+
+    function callPage(currentPage){
+        $.ajax({
+            type: 'GET',
+            url: '/tableview/page/' + currentPage,
+            dataType: 'text',
+
+            success: function (responseData) {
+                updateData();
+                $('#dashboard').load('/tableview/flag');
+            }
+        })
+    }
+
+    function toggleSort(field) {
+        /*<![CDATA[*/
+        let sort =  [[${order}]];
+        if (field === [[${sortField}]]) {
+            if (sort === 'asc') {
+                sort = 'desc';
+            } else {
+                sort = 'asc';
+            }
+        } else {
+            sort = 'asc';
+        }
+        /*]]>*/
+        return sort
+    }
+
+    function updateData(){
+        window.table.replaceData(loadData()).then(function(){
+            setHeaderMenues();
+        setThumbCheckbox();
+        checkThumb();
+        createDropdown();}
+        ).catch(function(error){
+            colsole.log(error);
+            //handle error loading data
+        });
+
+    }
+    // creates Table
+    /*<![CDATA[*/
+    window.table = new Tabulator("#searchresults", {
+        persistenceReaderFunc:function(id, type){
+
+            if(document.getElementById('save-config').checked || [[${flag}]]){
+
+                let data = [[${user.getColumns()}]];
+
+
+                return data ? JSON.parse(data) : false;
+            }
+            return false;
+        },
+        persistenceID:"example1",
+        persistenceWriterFunc: function(id, type, data){
+
+            $.ajax({
+                type: 'POST',
+                url: 'assistance/saveTableConfig',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                dataType: 'text',
+                data: JSON.stringify(data),
+            });
+
+        },
+        persistence:{
+            sort: true, //persist column sorting
+            columns: true, //persist columns
+        },
+        data: loadData(),
+        layout:"fitDataTable",
+        layoutColumnsOnNewData:true,
+        height: "80%",
+        movableColumns: true, //enable user movable columns
+        dataSorting: function (sorters) {
+            // calls sort function in server to load new sorted results
+            if (sorters.length > 0) {
+                //TODO: put as ajax request FIX IT!
+
+                
+                $.ajax({
+                    type: 'GET',
+                    url: "/tableview/sort/" + sorters[0]['field'] + "/" + sorters[0]['dir'],
+                    dataType: 'text',
+
+                    success: function (responseData) {
+                        $('#dashboard').load('/tableview/flag');
+                    }
+                })
+            }
+        },
+        rowDblClick: function (e, row) {
+            //shows and hides thumbnails for each row
+            const id = row.getData().id;
+            $(".subTable" + id + "").toggle();
+        },
+        columns: window.cols,
+        rowFormatter: function (row) {
+            //create subtable with thumbnails
+            let holderEl = document.createElement("div");
+            let tableEl = document.createElement("div");
+            holderEl.setAttribute('class', 'subTable');
+            const id = row.getData().id;
+            tableEl.setAttribute('class', "subTable" + id + "");
+            tableEl.setAttribute('id', id);
+            holderEl.appendChild(tableEl);
+            row.getElement().appendChild(holderEl);
+            let subTable = new Tabulator(tableEl, {
+                layout: "fitColumns",
+                //TODO: fill in right thumbnails (maybe here)
+                data: row.getData().thumbnails,
+                columns: [{title:"id", field:"id", headerSort:false, visible: false},
+                    {title: [[#{col_name.thumbnails}]], field: "thumb", headerSort: false, formatter:"image"}],
+                rowDblClick: function (e, row) {
+                    //opens editor on page
+                    const id = row.getData().id;
+                    location.href = "editor/" + id;
+
+                },
+            });
+        }
+    });
+    /*]]>*/
+    // call functions after table has been created
+    setHeaderMenues();
+    createDropdown();
+    setThumbCheckbox();
+    checkThumb();
+
+
+    function setThumbCheckbox(){
+    /*<![CDATA[*/
+        if(document.getElementById("save-config").checked){
+            document.getElementById("thumbnails").checked = [[${user.isCheckThumbs()}]];
+            document.getElementById("pageNumberInput").value = [[${user.getCurrentPage()}]];
+        } else {
+            document.getElementById("pageNumberInput").value = [[${currentPage}]];
+        }
+        /*]]>*/
+    }
+
+function setHeaderMenues(){
+    window.table.getColumns()[1].getDefinition().headerMenu = headerMenu();
+    window.table.getColumns()[2].getDefinition().headerMenu = headerMenu();
+    window.table.getColumns()[3].getDefinition().headerMenu = headerMenu();
+    window.table.getColumns()[4].getDefinition().headerMenu = headerMenu();
+    window.table.getColumns()[5].getDefinition().headerMenu = headerMenu();
+    window.table.getColumns()[6].getDefinition().headerMenu = headerMenu();
+    window.table.getColumns()[7].getDefinition().headerMenu = headerMenu();
+
+}
+
+function callEditor(manId){
+    $.ajax({
+        type: 'GET',
+        url: '/tableview/getFirstPage/' + manId,
+        dataType: 'text',
+
+        success: function (responseData) {
+            if(responseData === "error"){
+                /*<![CDATA[*/
+                location.href = "/error/" + [[${errorMessage}]];
+                /*]]>*/
+            }
+            location.href = "editor/" + responseData;
+
+        }
+    })
+}
+
+
+    // create show columns dropdown menu
+    function createDropdown() {
+        /*<![CDATA[*/
+        let container = document.getElementById("boxes");
+        let cont;
+        let checkbox;
+        let label;
+        let tbl = [];
+        for (let i = 0; i < table.getColumns().length - 1; i++) {
+            tbl[i] = table.getColumns()[i + 1];
+        }
+        tbl.forEach(function (col) {
+            cont = document.createElement("div");
+            cont.className = "form-check ml-1"
+            checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.className = "form-check-input";
+            checkbox.id = "check_" + col.getField();
+
+            label = document.createElement("label");
+            label.htmlFor = "check_" + col.getField();
+            label.className = "form-check-label";
+            label.appendChild(document.createTextNode(col.getDefinition().title));
+
+            cont.appendChild(checkbox);
+            cont.appendChild(label);
+            if(col.isVisible()){
+                checkbox.checked = true;
+            }
+            container.appendChild(cont);
+        });
+        let divider = document.createElement("div");
+        divider.className = "dropdown-divider";
+        container.append(divider);
+        let applyBtn = document.createElement("button");
+        applyBtn.className = "btn btn-primary btn-sm ml-1";
+        applyBtn.type = "submit";
+        applyBtn.innerHTML = [[#{buttons.apply}]];
+        applyBtn.addEventListener("click", function (e) {
+            tbl.forEach(function (col) {
+                if (document.getElementById("check_" + col.getField()).checked) {
+                    table.getColumn(col.getField()).show();
+                } else {
+                    table.getColumn(col.getField()).hide();
+                }
+            });
+            e.preventDefault();
+        });
+        container.append(applyBtn);
+        /*]]>*/
+    }
+</script>
+
+</body>
+</html>

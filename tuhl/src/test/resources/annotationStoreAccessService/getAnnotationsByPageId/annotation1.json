@@ -1,0 +1,50 @@
+{
+  "@context" : "http://www.w3.org/ns/anno.jsonld",
+  "id" : "http://sampleannoserver.edu/wap/a04/deinterpretatione/fa1aca6a-00ab-41d0-9ef6-35bf4045c02a",
+  "type" : "Annotation",
+  "created" : "2018-09-21T08:51:05.962Z",
+  "creator" : [ {
+    "type" : "Person",
+    "name" : "M. K."
+  }, {
+    "type" : "Software",
+    "name" : "Akita"
+  } ],
+  "modified" : "2020-04-07T11:13:08Z",
+  "body" : [ {
+    "type" : "TextualBody",
+    "format" : "text/plain",
+    "dc:subject" : "TextRegion",
+    "creator" : [ {
+      "type" : "Software",
+      "name" : "Akita"
+    }, {
+      "type" : "Person",
+      "name" : "M. K."
+    } ],
+    "value" : "μὴ εἶναι",
+    "purpose" : "tagging"
+  }, {
+    "type" : "TextualBody",
+    "dc:subject" : "TextRegion",
+    "creator" : [ {
+      "type" : "Software",
+      "name" : "Akita"
+    }, {
+      "type" : "Person",
+      "name" : "M. K."
+    } ],
+    "value" : "ἢ οὐκ ἔστι",
+    "purpose" : "tadirah:transcription"
+  } ],
+  "target" : {
+    "type" : "SpecificResource",
+    "selector" : {
+      "type" : "SvgSelector",
+      "value" : "<svg><polygon points=\"1016,3240 1016,3279 1231,3305 1229,3257\"/></svg>"
+    },
+    "source" : "http://samplerepo.edu/api/v1/dataresources/f2e20635-8898-4983-9a86-c6e3d8006016/data/033r.master.jpg"
+  },
+  "motivation" : "describing",
+  "via" : "http://sampleannoserver.edu/wap/w3c/aea27124-b3be-417a-a3f3-ce9803f9afb4/041cde9f-5488-40f7-a386-91d0e1b4b4e9"
+}

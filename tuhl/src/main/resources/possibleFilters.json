@@ -1,0 +1,22 @@
+[
+  {
+    "field": "id",
+    "type": "MATCH"
+  },
+  {
+    "field": "title",
+    "type": "MATCH"
+  },
+  {
+    "field": "publisher",
+    "type": "MATCH"
+  },
+  {
+  "field": "publicationYear",
+  "type": "RANGE"
+  },
+  {
+    "field": "noPages",
+    "type": "RANGE"
+  }
+]

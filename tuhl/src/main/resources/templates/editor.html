@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{label.editor}"> </title>
+    <!-- Bootstrap core JavaScript -->
+    <!-- CSS only -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous"
+          th:href="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css}">
+
+    <!-- JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"
+            th:src="@{https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js}"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+            integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"
+            th:src="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js}"></script>
+</head>
+<body class="container-fluid p-0">
+<div id="editor" th:fragment="editor">
+    <div class="row mx-auto pr-3 bg-light">
+        <div class="col-auto align-self-center">
+            <button class="btn btn-primary" onclick="goHome()" th:text="#{buttons.back}"> </button>
+        </div>
+        <div class="col-auto">
+            <div class="row">
+                <div class="col-auto">
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <td th:text="#{col_name.id}"> </td>
+                            <td th:text="${currentManuscript.id}"> </td>
+                        </tr>
+                        <tr>
+                            <td th:text="#{col_name.title}"> </td>
+                            <td th:text="${currentManuscript.title}"> </td>
+                        </tr>
+                        <tr>
+                            <td th:text="#{col_name.publisher}"> </td>
+                            <td th:text="${currentManuscript.publisher}"> </td>
+                        </tr>
+                        <tr>
+                            <td th:text="#{col_name.publicationYear}"> </td>
+                            <td th:text="${currentManuscript.publicationYear}"> </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-auto">
+                    <table class="table">
+                        <tbody>
+                        <tr>
+                            <td th:text="#{col_name.created}"> </td>
+                            <td th:text="${currentManuscript.id}"> </td>
+                        </tr>
+                        <tr>
+                            <td th:text="#{col_name.lastModified}"> </td>
+                            <td th:text="${currentManuscript.lastModified}"> </td>
+                        </tr>
+                        <tr>
+                            <td th:text="#{col_name.noPages}"> </td>
+                            <td th:text="${currentManuscript.noPages}"> </td>
+                        </tr>
+                        <tr>
+                            <td th:text="#{col_name.hasAlgoAnnos}"> </td>
+                            <td th:text="${currentManuscript.hasAlgorithmAnnotations()}"> </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-4 p-6 my-1 align-self-center"
+             th:insert="header.html :: header"></div>
+    </div>
+
+    <div class="row mx-auto">
+        <div class="col-7 p-0 container-fluid px-5 pt-3">
+            <div class="row scrollable mx-5">
+                <img th:if="${currentPage.resourceType == (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).IMAGE)}"
+                     th:src="${currentPage.getResourceUrl()}" class="img-fluid">
+                <label class="text-center"
+                       th:if="${currentPage.resourceType != (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).IMAGE)}"
+                       th:text="#{info.no_text_support}">
+                </label>
+            </div>
+        </div>
+        <div class="col-5 p-0 container-fluid scrollable px-5 pt-3" style="height: 100vh">
+            <div th:if="${currentAnnotation != null}">
+                <div th:each="tag : ${currentAnnotation.tags}">
+                    <span class="badge m-1" th:text="${tag.value}"> </span>
+                </div>
+                <div th:each="textCard : ${currentAnnotation.getTextCards()}">
+                    <div class="card mb-3">
+                        <div class="card-header px-3 py-1">
+                            <div class="row justify-content-between">
+                                <div class="col-auto align-self-center">
+                                    <p class="m-0"
+                                       th:text="${textCard.purpose}"> </p>
+                                </div>
+                                <div class="col-auto align-self-center">
+                                    <p class="m-0 text-right" th:text="${textCard.creators[0]}"> </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-title"
+                                th:if="${textCard.title != null && !textCard.title.isEmpty()}"
+                                th:text="${textCard.title}">
+                            </h6>
+                            <p class="card-text" th:text="${textCard.value}"> </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${currentAnnotation == null}">
+                <label class="text-center" th:text="#{info.no_annos_selected}"> </label>
+            </div>
+        </div>
+    </div>
+    <div class="row m-5">
+        <div class="col-auto">
+            <button class="btn btn-primary"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#outline"
+                    aria-expanded="false"
+                    aria-controls="outline"
+                    th:text="#{buttons.annotations}">
+            </button>
+        </div>
+        <div class="col-auto">
+            <button class="btn btn-primary"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#pages"
+                    aria-expanded="false"
+                    aria-controls="pages"
+                    th:text="#{buttons.pages}">
+            </button>
+        </div>
+        <div class="collapse col-auto" id="outline">
+            <div class="card card-body">
+                <table class="table">
+                    <tbody>
+                    <tr th:each="anno : ${currentPage.getAnnotations()}">
+                        <td th:text="${anno.getId()}"
+                            th:data-field="${anno.getId()}"
+                            onclick="selectAnnotation(this.getAttribute('data-field'))">
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="collapse col-auto" id="pages">
+            <div class="card card-body no-wrap">
+                <div class="row">
+                    <div class="mx-1 col-auto" th:each="page : ${currentManuscript.pages}">
+                        <div class="row">
+                            <div class="col">
+                                <img th:src="${page.thumbResourceUrl}"
+                                     class="img-thumbnail"
+                                     th:if="${page.id != currentPage.id}"
+                                     th:data-field="${page.id}"
+                                     onclick="page(this.getAttribute('data-field'))">
+                                <img th:src="${page.thumbResourceUrl}"
+                                     class="img-thumbnail bg-primary"
+                                     th:if="${page.id == currentPage.id}">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <label class="col-auto text-center" th:text="${page.pageNumber}">
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+<script>
+    function selectAnnotation(annoId) {
+        $.ajax({
+            type: 'POST',
+            url: '/editor/select',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            dataType: 'text',
+            data: annoId,
+            success: function (responseData) {
+                $('#editor').replaceWith(responseData);
+            }
+        });
+    }
+
+    function goHome() {
+        location.href="/"
+    }
+
+    function page(pageId) {
+        location.href="/editor/" + pageId;
+    }
+</script>
+
+</html>
+<style>
+    .scrollable {
+        overflow-y: scroll;
+    }
+
+    .no-wrap > .row {
+        overflow-x: auto;
+        white-space: nowrap;
+        flex-wrap: nowrap;
+    }
+    .no-wrap > .row > .col-auto{
+        display: inline-block;
+        float: none;
+    }
+</style>

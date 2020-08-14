@@ -1,0 +1,639 @@
+@startuml
+  namespace edu.kit.scc.dem.tuhl {
+    class edu.kit.scc.dem.tuhl.TuhlApplication {
+        {static} + main()
+    }
+    namespace model {
+          class edu.kit.scc.dem.tuhl.model.Annotation {
+              - canonical : String
+              - created : Date
+              - creator : String
+              - id : String
+              - modified : Date
+              - motivation : String
+              - pageId : String
+              - svgCode : String
+              - tags : List<String>
+              - textCardIds : List<String>
+              - via : String
+              + addTag()
+              + addTextCardId()
+              + getCanonical()
+              + getColor()
+              + getCreated()
+              + getCreator()
+              + getId()
+              + getModified()
+              + getMotivation()
+              + getPageId()
+              + getSvgCode()
+              + getTags()
+              + getTextCardIds()
+              + getVia()
+              + setCanonical()
+              + setColor()
+              + setCreated()
+              + setCreator()
+              + setId()
+              + setModified()
+              + setMotivation()
+              + setPageId()
+              + setSvgCode()
+              + setTags()
+              + setTextCardIds()
+              + setVia()
+          }
+
+          enum Color {
+            ADVERT_REGION
+            CHART_REGION
+            CHEM_REGION
+            CUSTOM_REGION
+            DEFAULT
+            GRAPHIC_REGION
+            IMAGE_REGION
+            LINE_DRAWING_REGION
+            MATHS_REGION
+            MUSIC_REGION
+            NOISE_REGION
+            SEPARATOR_REGION
+            TABLE_REGION
+            TEXT_REGION
+            UNKNOWN_REGION
+            color
+          }
+
+          class edu.kit.scc.dem.tuhl.model.Manuscript {
+              - id : String
+              - lastModified : Date
+              - pageIds : List<String>
+              - publicationYear : int
+              - publisher : String
+              - title : String
+              + getId()
+              + getLastModified()
+              + getPageIds()
+              + getPublicationYear()
+              + getPublisher()
+              + getTitle()
+              + setId()
+              + setLastModified()
+              + setPageIds()
+              + setPublicationYear()
+              + setPublisher()
+              + setTitle()
+          }
+
+          class edu.kit.scc.dem.tuhl.model.body.TextCard {
+              - annotationId : String
+              - created : String
+              - creator : String
+              - id : String
+              - modified : String
+              - purpose : String
+              - title : String
+              - value : String
+              + getAnnotationId()
+              + getCreated()
+              + getCreator()
+              + getId()
+              + getModified()
+              + getPurpose()
+              + getTitle()
+              + getValue()
+              + setAnnotationId()
+              + setCreated()
+              + setCreator()
+              + setId()
+              + setModified()
+              + setPurpose()
+              + setTitle()
+              + setValue()
+          }
+
+          namespace filter {
+                  interface edu.kit.scc.dem.tuhl.model.filter.Filter {
+                      {static} + TYPE : FilterType
+                      {abstract} + getField()
+                      {abstract} + getQuery()
+                      {abstract} + getValues()
+                      {abstract} + setValue()
+                  }
+
+                  class edu.kit.scc.dem.tuhl.model.filter.FilterSelection {
+                      - filters : List<Filter>
+                      + getFilters()
+                  }
+
+                  enum FilterType {
+                    MATCH
+                    RANGE
+                    TAG
+                    UNDEFINED
+                  }
+
+                  class edu.kit.scc.dem.tuhl.model.filter.MatchFilter {
+                      {static} + TYPE : FilterType
+                      + MatchFilter()
+                      + getField()
+                      + getQuery()
+                      + getValues()
+                      + setValue()
+                  }
+
+                  class edu.kit.scc.dem.tuhl.model.filter.RangeFilter {
+                      {static} + TYPE : FilterType
+                      + RangeFilter()
+                      + getField()
+                      + getQuery()
+                      + getValues()
+                      + setValue()
+                  }
+
+                  class edu.kit.scc.dem.tuhl.model.filter.TagFilter {
+                      {static} + TYPE : FilterType
+                      + TagFilter()
+                      + getField()
+                      + getQuery()
+                      + getValues()
+                      + setValue()
+                  }
+                }
+
+                namespace page {
+                        class edu.kit.scc.dem.tuhl.model.page.ImagePage {
+                            - annotationIds : List<String>
+                            - content : Image
+                            + addAnnotation()
+                            + getAnnotationIds()
+                            + getContent()
+                            + setAnnotationIds()
+                            + setContent()
+                        }
+
+                        abstract class edu.kit.scc.dem.tuhl.model.page.Page {
+                            - id : String
+                            - manuscriptId : String
+                            - thumbnail : Image
+                            + getId()
+                            + getManuscriptId()
+                            + getThumbnail()
+                            + setId()
+                            + setManuscriptId()
+                            + setThumbnail()
+                        }
+
+                        class edu.kit.scc.dem.tuhl.model.page.TextPage {
+                            - content : String
+                            + getContent()
+                            + setContent()
+                        }
+                      }
+        }
+
+        namespace mainpage {
+              class edu.kit.scc.dem.tuhl.mainpage.MainPageController {
+                  + init()
+              }
+
+              namespace dashboard {
+                      class edu.kit.scc.dem.tuhl.mainpage.dashboard.DashboardController {
+                          + showDashboard()
+                      }
+
+                      class edu.kit.scc.dem.tuhl.mainpage.dashboard.DashboardService {
+                          - availableContentViews : String[]
+                          - currentContentView : String
+                          + getAvailableContentViews()
+                          + getCurrentContentView()
+                          + setCurrentContentView()
+                      }
+
+                      interface edu.kit.scc.dem.tuhl.mainpage.dashboard.IDashboardService {
+                          {abstract} + getAvailableContentViews()
+                          {abstract} + getCurrentContentView()
+                          {abstract} + setCurrentContentView()
+                      }
+
+                      namespace contentview {
+                                interface edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.IContentViewService {
+                                    {abstract} + getType()
+                                }
+
+                                class edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.TableViewController {
+                                    + addAttribute()
+                                    + deleteAttribute()
+                                    + nextPage()
+                                    + showContentView()
+                                    + showThumbnails()
+                                }
+
+                                class edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.TableViewService {
+                                    - currentAttributes : List<String>
+                                    - type : String
+                                    + TableViewService()
+                                    + addAttribute()
+                                    + deleteAttribute()
+                                    + getCurrentAttributes()
+                                    + getThumbnails()
+                                    + getType()
+                                }
+                              }
+                    }
+
+                    namespace search {
+                            class edu.kit.scc.dem.tuhl.mainpage.search.FilterController {
+                                + FilterController()
+                                + addFilters()
+                                + applyFilters()
+                                + clearFilters()
+                                + removeFilter()
+                            }
+
+                            class edu.kit.scc.dem.tuhl.mainpage.search.FilterService {
+                                - currentFilters : List<Filter>
+                                - possibleFilters : List<Filter>
+                                + addToCurrentFilters()
+                                + getCurrentFilters()
+                                + getPossibleFilters()
+                                + removeFromCurrentFilters()
+                                + setCurrentFilters()
+                            }
+
+                            interface edu.kit.scc.dem.tuhl.mainpage.search.IFilterService {
+                                {abstract} + addToCurrentFilters()
+                                {abstract} + getCurrentFilters()
+                                {abstract} + getPossibleFilters()
+                                {abstract} + removeFromCurrentFilters()
+                                {abstract} + setCurrentFilters()
+                            }
+
+                            interface edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService {
+                                {abstract} + addAnnotation()
+                                {abstract} + addTextCard()
+                                {abstract} + buildIndex()
+                                {abstract} + deleteAnnotationById()
+                                {abstract} + deleteTextCardById()
+                                {abstract} + getAnnotationById()
+                                {abstract} + getManuscriptById()
+                                {abstract} + getPageById()
+                                {abstract} + getRawAnnotationJson()
+                                {abstract} + getRawManuscriptJson()
+                                {abstract} + getRawManuscriptXml()
+                                {abstract} + getRawPageJson()
+                                {abstract} + getTextCardById()
+                                {abstract} + updateAnnotation()
+                                {abstract} + updateIndex()
+                                {abstract} + updateTextCard()
+                            }
+
+                            interface edu.kit.scc.dem.tuhl.mainpage.search.ISearchService {
+                                {abstract} + getPageSize()
+                                {abstract} + getResults()
+                                {abstract} + search()
+                                {abstract} + search()
+                                {abstract} + setPageSize()
+                            }
+
+                            interface edu.kit.scc.dem.tuhl.mainpage.search.ManuscriptRepository {
+                            }
+
+                            class edu.kit.scc.dem.tuhl.mainpage.search.SearchController {
+                                + SearchController()
+                                + search()
+                            }
+
+                            class edu.kit.scc.dem.tuhl.mainpage.search.SearchIndexService {
+                                + SearchIndexService()
+                                + addAnnotation()
+                                + addTextCard()
+                                + buildIndex()
+                                + deleteAnnotationById()
+                                + deleteTextCardById()
+                                + getAnnotationById()
+                                + getManuscriptById()
+                                + getPageById()
+                                + getRawAnnotationJson()
+                                + getRawManuscriptJson()
+                                + getRawManuscriptXml()
+                                + getRawPageJson()
+                                + getTextCardById()
+                                + updateAnnotation()
+                                + updateIndex()
+                                + updateTextCard()
+                            }
+
+                            class edu.kit.scc.dem.tuhl.mainpage.search.SearchService {
+                                + SearchService()
+                                + getPageSize()
+                                + getResults()
+                                + search()
+                                + search()
+                                + setPageSize()
+                            }
+                          }
+            }
+
+            namespace assisstance {
+                  class edu.kit.scc.dem.tuhl.assistance.AssistanceController {
+                      + AssistanceController()
+                      + help()
+                      + setPseudonym()
+                      + setSetting()
+                  }
+
+                  class edu.kit.scc.dem.tuhl.assistance.AssistanceService {
+                      + AssistanceService()
+                      + getHelp()
+                      + getUserByPseudonym()
+                      + getCurrentPseudonym()
+                  }
+
+                  interface edu.kit.scc.dem.tuhl.assistance.IAssistanceService {
+                      {abstract} + getHelp()
+                      {abstract} + getUserByPseudonym()
+                      {abstract} + getCurrentPseudonym()
+                  }
+
+                  interface edu.kit.scc.dem.tuhl.assistance.IUser {
+                      {abstract} + addSetting()
+                      {abstract} + removeSetting()
+                      {abstract} + getName()
+                  }
+
+                  enum Setting {
+                    FILTER
+                    TABLE_VIEW
+                    THUMBNAILS
+                    values
+                  }
+
+                  class edu.kit.scc.dem.tuhl.assistance.User {
+                      - name : String
+                      - settings : List<Setting>
+                      + User()
+                      + addSetting()
+                      + removeSetting()
+                      + getName()
+                      # User()
+                  }
+
+                  interface edu.kit.scc.dem.tuhl.assistance.UserRepository {
+                  }
+                }
+
+            namespace dataaccess {
+                  class edu.kit.scc.dem.tuhl.dataaccess.AccessService {
+                      + AccessService()
+                      + addAnnotation()
+                      + deleteAnnotation()
+                      + getAllManuscripts()
+                      + getAllManuscriptsModifiedAfter()
+                      + getRawAnnotationJson()
+                      + getRawManuscriptJson()
+                      + getRawManuscriptXml()
+                      + getRawPageJson()
+                      + updateAnnotation()
+                  }
+
+                  class edu.kit.scc.dem.tuhl.dataaccess.AnnotationStoreAccessService {
+                      + addAnnotation()
+                      + deleteAnnotation()
+                      + getAllAnnotations()
+                      + getAnnotationById()
+                      + getAnnotationsModifiedAfter()
+                      + updateAnnotation()
+                  }
+
+                  interface edu.kit.scc.dem.tuhl.dataaccess.IAccessService {
+                      {abstract} + addAnnotation()
+                      {abstract} + deleteAnnotation()
+                      {abstract} + getAllManuscripts()
+                      {abstract} + getAllManuscriptsModifiedAfter()
+                      {abstract} + getRawAnnotationJson()
+                      {abstract} + getRawManuscriptJson()
+                      {abstract} + getRawManuscriptXml()
+                      {abstract} + getRawPageJson()
+                      {abstract} + updateAnnotation()
+                  }
+
+                  interface edu.kit.scc.dem.tuhl.dataaccess.IAnnotationStoreAccessService {
+                      {abstract} + addAnnotation()
+                      {abstract} + deleteAnnotation()
+                      {abstract} + getAllAnnotations()
+                      {abstract} + getAnnotationById()
+                      {abstract} + getAnnotationsModifiedAfter()
+                      {abstract} + updateAnnotation()
+                  }
+
+                  interface edu.kit.scc.dem.tuhl.dataaccess.IRepositoryAccessService {
+                      {abstract} + getAllManuscripts()
+                      {abstract} + getAllPagesForManuscriptId()
+                      {abstract} + getManuscriptById()
+                      {abstract} + getManuscriptsModifiedAfter()
+                      {abstract} + getPageById()
+                      {abstract} + getPageImageByPageId()
+                      {abstract} + getXmlByManuscriptId()
+                  }
+
+                  class edu.kit.scc.dem.tuhl.dataaccess.RepositoryAccessService {
+                      + getAllManuscripts()
+                      + getAllPagesForManuscriptId()
+                      + getManuscriptById()
+                      + getManuscriptsModifiedAfter()
+                      + getPageById()
+                      + getPageImageByPageId()
+                      + getXmlByManuscriptId()
+                  }
+                }
+
+                namespace editor {
+                      class edu.kit.scc.dem.tuhl.editor.AnnotationService {
+                          + annotationVisibility()
+                          + createAnnotation()
+                          + deleteAnnotation()
+                          + getAnnotations()
+                          + getCurrentPage()
+                          + modifyAnnotation()
+                          + modifyAnnotation()
+                          + modifyAnnotation()
+                          + modifyMotivation()
+                          + validateAnnotation()
+                      }
+
+                      class edu.kit.scc.dem.tuhl.editor.EditorController {
+                          + EditorController()
+                          + addAnnotation()
+                          + addTag()
+                          + addTagToVocabulary()
+                          + addTextCard()
+                          + algorithmLayer()
+                          + changeDisplayedMetadata()
+                          + changePurpose()
+                          + changeVisibility()
+                          + deleteAnnotation()
+                          + deleteTag()
+                          + getAllMetadata()
+                          + getAllTags()
+                          + getRawMetadata()
+                          + selectPage()
+                          + updateAnnotation()
+                          + updateMotivation()
+                          + updateTextCard()
+                          + validateAnnotation()
+                      }
+
+                      class edu.kit.scc.dem.tuhl.editor.EditorService {
+                          - annotationsOnPage : Annotation[]
+                          - pagesInSlider : Page[]
+                          + addAnnotation()
+                          + addTag()
+                          + addTagToVocabulary()
+                          + addTextCard()
+                          + algorithmLayer()
+                          + changePage()
+                          + changeVisibility()
+                          + deleteAnnotation()
+                          + deleteTag()
+                          + displayMetadata()
+                          + displayRawMetadata()
+                          + getAllTags()
+                          + init()
+                          + updateColor()
+                          + updateMotivation()
+                          + updatePurpose()
+                          + updateSvg()
+                          + updateTextCard()
+                          + validateAnnotation()
+                      }
+
+                      interface edu.kit.scc.dem.tuhl.editor.IAnnotationService {
+                          {abstract} + annotationVisibility()
+                          {abstract} + createAnnotation()
+                          {abstract} + deleteAnnotation()
+                          {abstract} + getAnnotations()
+                          {abstract} + getCurrentPage()
+                          {abstract} + modifyAnnotation()
+                          {abstract} + modifyAnnotation()
+                          {abstract} + modifyAnnotation()
+                          {abstract} + modifyMotivation()
+                          {abstract} + validateAnnotation()
+                      }
+
+                      interface edu.kit.scc.dem.tuhl.editor.IEditorService {
+                          {abstract} + addAnnotation()
+                          {abstract} + addTag()
+                          {abstract} + addTagToVocabulary()
+                          {abstract} + addTextCard()
+                          {abstract} + algorithmLayer()
+                          {abstract} + changePage()
+                          {abstract} + changeVisibility()
+                          {abstract} + deleteAnnotation()
+                          {abstract} + deleteTag()
+                          {abstract} + displayMetadata()
+                          {abstract} + displayRawMetadata()
+                          {abstract} + getAllTags()
+                          {abstract} + init()
+                          {abstract} + updateColor()
+                          {abstract} + updateMotivation()
+                          {abstract} + updatePurpose()
+                          {abstract} + updateSvg()
+                          {abstract} + updateTextCard()
+                          {abstract} + validateAnnotation()
+                      }
+
+                      interface edu.kit.scc.dem.tuhl.editor.ITagService {
+                          {abstract} + addTag()
+                          {abstract} + addTagToVocabulary()
+                          {abstract} + deleteTag()
+                          {abstract} + getTagVocabulary()
+                          {abstract} + getTags()
+                      }
+
+                      interface edu.kit.scc.dem.tuhl.editor.ITextCardService {
+                          {abstract} + createTextCard()
+                          {abstract} + deleteTextCard()
+                          {abstract} + getTextCards()
+                          {abstract} + modifyPurpose()
+                          {abstract} + modifyTextCard()
+                      }
+
+                      class edu.kit.scc.dem.tuhl.editor.TagService {
+                          + addTag()
+                          + addTagToVocabulary()
+                          + deleteTag()
+                          + getTagVocabulary()
+                          + getTags()
+                      }
+
+                      class edu.kit.scc.dem.tuhl.editor.TextCardService {
+                          + createTextCard()
+                          + deleteTextCard()
+                          + getTextCards()
+                          + modifyPurpose()
+                          + modifyTextCard()
+                      }
+                    }
+  }
+  
+
+  edu.kit.scc.dem.tuhl.TuhlApplication o-up- edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService : searchIndexService
+
+  edu.kit.scc.dem.tuhl.model.Annotation o-- edu.kit.scc.dem.tuhl.model.Color : color
+
+    edu.kit.scc.dem.tuhl.model.filter.MatchFilter ..|> edu.kit.scc.dem.tuhl.model.filter.Filter
+    edu.kit.scc.dem.tuhl.model.filter.RangeFilter ..|> edu.kit.scc.dem.tuhl.model.filter.Filter
+    edu.kit.scc.dem.tuhl.model.filter.TagFilter ..|> edu.kit.scc.dem.tuhl.model.filter.Filter
+
+  edu.kit.scc.dem.tuhl.model.page.ImagePage -up-|> edu.kit.scc.dem.tuhl.model.page.Page
+    edu.kit.scc.dem.tuhl.model.page.TextPage -up-|> edu.kit.scc.dem.tuhl.model.page.Page
+
+edu.kit.scc.dem.tuhl.mainpage.MainPageController o-- edu.kit.scc.dem.tuhl.mainpage.dashboard.IDashboardService : dashboardService
+  edu.kit.scc.dem.tuhl.mainpage.MainPageController o-- edu.kit.scc.dem.tuhl.mainpage.search.IFilterService : filterService
+
+edu.kit.scc.dem.tuhl.mainpage.dashboard.DashboardController o-up- edu.kit.scc.dem.tuhl.mainpage.dashboard.IDashboardService : dashboardService
+  edu.kit.scc.dem.tuhl.mainpage.dashboard.DashboardService ..|> edu.kit.scc.dem.tuhl.mainpage.dashboard.IDashboardService
+
+  edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.TableViewController o-- edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.TableViewService : tableViewService
+    edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.TableViewService ..|> edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.IContentViewService
+    edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.TableViewService o-up- edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService : searchIndexService
+    edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.TableViewService o-left- edu.kit.scc.dem.tuhl.mainpage.search.ISearchService : searchService
+
+    edu.kit.scc.dem.tuhl.mainpage.search.FilterController o-left- edu.kit.scc.dem.tuhl.mainpage.search.IFilterService : filterService
+      edu.kit.scc.dem.tuhl.mainpage.search.FilterService ..|> edu.kit.scc.dem.tuhl.mainpage.search.IFilterService
+      edu.kit.scc.dem.tuhl.mainpage.search.SearchController o-up- edu.kit.scc.dem.tuhl.mainpage.search.ISearchService : searchService
+      edu.kit.scc.dem.tuhl.mainpage.search.SearchIndexService ..|> edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService
+      edu.kit.scc.dem.tuhl.mainpage.search.SearchIndexService o-up- edu.kit.scc.dem.tuhl.dataaccess.IAccessService : accessService
+      edu.kit.scc.dem.tuhl.mainpage.search.SearchService ..|> edu.kit.scc.dem.tuhl.mainpage.search.ISearchService
+      edu.kit.scc.dem.tuhl.mainpage.search.SearchService o-- edu.kit.scc.dem.tuhl.mainpage.search.IFilterService : filterService
+
+      edu.kit.scc.dem.tuhl.assistance.AssistanceController o-- edu.kit.scc.dem.tuhl.assistance.IAssistanceService : assistanceService
+        edu.kit.scc.dem.tuhl.assistance.AssistanceService ..|> edu.kit.scc.dem.tuhl.assistance.IAssistanceService
+        edu.kit.scc.dem.tuhl.assistance.AssistanceService o-- edu.kit.scc.dem.tuhl.assistance.IUser : currentUser
+        edu.kit.scc.dem.tuhl.assistance.AssistanceService o-- edu.kit.scc.dem.tuhl.assistance.UserRepository : repo
+        edu.kit.scc.dem.tuhl.assistance.User ..|> edu.kit.scc.dem.tuhl.assistance.IUser
+
+        edu.kit.scc.dem.tuhl.dataaccess.AccessService ..|> edu.kit.scc.dem.tuhl.dataaccess.IAccessService
+          edu.kit.scc.dem.tuhl.dataaccess.AccessService o-- edu.kit.scc.dem.tuhl.dataaccess.IAnnotationStoreAccessService : annotationStoreAccessService
+          edu.kit.scc.dem.tuhl.dataaccess.AccessService o-- edu.kit.scc.dem.tuhl.dataaccess.IRepositoryAccessService : repositoryAccessService
+          edu.kit.scc.dem.tuhl.dataaccess.AnnotationStoreAccessService .left.|> edu.kit.scc.dem.tuhl.dataaccess.IAnnotationStoreAccessService
+          edu.kit.scc.dem.tuhl.dataaccess.RepositoryAccessService ..|> edu.kit.scc.dem.tuhl.dataaccess.IRepositoryAccessService
+
+edu.kit.scc.dem.tuhl.editor.AnnotationService ..|> edu.kit.scc.dem.tuhl.editor.IAnnotationService
+  edu.kit.scc.dem.tuhl.editor.AnnotationService o-up- edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService : accessService
+  edu.kit.scc.dem.tuhl.editor.EditorController o-left- edu.kit.scc.dem.tuhl.editor.IEditorService : editorService
+  edu.kit.scc.dem.tuhl.editor.EditorService .up.|> edu.kit.scc.dem.tuhl.editor.IEditorService
+  edu.kit.scc.dem.tuhl.editor.EditorService o-up- edu.kit.scc.dem.tuhl.editor.IAnnotationService : annotationService
+  edu.kit.scc.dem.tuhl.editor.EditorService o-down- edu.kit.scc.dem.tuhl.model.Annotation : currentAnnotation
+  edu.kit.scc.dem.tuhl.editor.EditorService o-down- edu.kit.scc.dem.tuhl.model.Manuscript : currentManuscript
+  edu.kit.scc.dem.tuhl.editor.EditorService o-down- edu.kit.scc.dem.tuhl.model.page.Page : currentPage
+  edu.kit.scc.dem.tuhl.editor.EditorService o-down- edu.kit.scc.dem.tuhl.model.body.TextCard : currentTextCard
+  edu.kit.scc.dem.tuhl.editor.EditorService o-up- edu.kit.scc.dem.tuhl.editor.ITagService : tagService
+  edu.kit.scc.dem.tuhl.editor.EditorService o-left- edu.kit.scc.dem.tuhl.editor.ITextCardService : textCardService
+  edu.kit.scc.dem.tuhl.editor.TagService ..|> edu.kit.scc.dem.tuhl.editor.ITagService
+  edu.kit.scc.dem.tuhl.editor.TagService o-down- edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService : accessService
+  edu.kit.scc.dem.tuhl.editor.TextCardService .down.|> edu.kit.scc.dem.tuhl.editor.ITextCardService
+  edu.kit.scc.dem.tuhl.editor.TextCardService o-up- edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService : accessService
+  edu.kit.scc.dem.tuhl.editor.TextCardService o-- edu.kit.scc.dem.tuhl.assistance.IAssistanceService : assistanceService
+  edu.kit.scc.dem.tuhl.editor.AnnotationService o-- edu.kit.scc.dem.tuhl.assistance.IAssistanceService : assisstanceService
+@enduml

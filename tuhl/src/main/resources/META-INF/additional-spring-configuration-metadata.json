@@ -1,0 +1,28 @@
+{
+  "properties": [
+    {
+      "name": "annotationStore.url",
+      "type": "java.lang.String",
+      "description": "The url of the annotation container in the annotation store."
+    },
+    {
+      "name": "repository.staticPath",
+      "type": "java.lang.String",
+      "description": "The path to the manuscript repository."
+    },
+    {
+      "name": "repository.baseUrl",
+      "type": "java.lang.String",
+      "description": "The base URL of the manuscript repository server."
+    },
+    {
+      "name": "elasticsearch.port",
+      "type": "java.lang.String",
+      "description": "Port of the elasticsearch server."
+    },
+    {
+      "name": "elasticsearch.ip",
+      "type": "java.lang.String",
+      "description": "IP of the elasticsearch server."
+    }
+  ] }

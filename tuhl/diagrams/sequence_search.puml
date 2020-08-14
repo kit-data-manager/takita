@@ -1,0 +1,22 @@
+@startuml
+participant Browser as b
+participant "Dispatcher\nServlet" as ds
+
+b -> ds: http post request
+activate ds
+
+ds -> ":SearchController" as sc: search(searchTerm, model)
+activate sc
+
+sc -> ":ISearchService" as ss: search(pageNumber, searchTerm)
+activate ss
+
+ss --> sc: searchResults for pageNumber
+deactivate ss
+
+sc --> ds: html-file name
+deactivate sc
+
+ds --> b: http response
+deactivate ds
+@enduml

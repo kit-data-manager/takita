@@ -1,0 +1,45 @@
+@startuml
+namespace edu.kit.scc.dem.tuhl {
+
+
+    namespace model {
+
+
+          namespace page {
+
+                }
+
+                namespace filter {
+
+                      }
+        }
+
+        namespace mainpage {
+
+
+              namespace search {
+
+                    }
+
+                    namespace dashboard {
+
+
+                            namespace contentview {
+
+                                    }
+                          }
+            }
+
+            namespace editor {
+
+                }
+
+                namespace dataaccess {
+
+                    }
+
+                   namespace assisstance {
+
+                       }
+  }
+@enduml

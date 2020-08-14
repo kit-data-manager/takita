@@ -1,0 +1,168 @@
+{
+  "@context" : "http://www.w3.org/ns/anno.jsonld",
+  "id" : "http://sampleannoserver.edu/wap/a04/deinterpretatione/05c281d1-5184-4b74-a9dd-5fbac538f75c",
+  "type" : "Annotation",
+  "created" : "2018-02-09T16:47:37Z",
+  "creator" : "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
+  "modified" : "2019-05-08T10:59:36Z",
+  "generator" : {
+    "id" : "urn:uuid:a7f09d0b-f296-3239-8296-0bea59f03edc",
+    "type" : [ "https://github.com/anno4j/ns#Agent", "http://www.w3.org/ns/prov/SoftwareAgent", "Software", "https://github.com/anno4j/ns#Resource" ],
+    "name" : "PageXML Parsing"
+  },
+  "body" : [ {
+    "id" : "urn:anno4j:8f44b032-c852-4322-8371-bbd2ffbfcea2",
+    "type" : [ "https://github.com/anno4j/ns#ExternalWebResource", "https://github.com/anno4j/ns#Resource", "TextualBody", "https://github.com/anno4j/ns#CreationProvenance", "oa:EmbeddedContent" ],
+    "format" : "xsd:string",
+    "dc:identifier" : "r8",
+    "dc:subject" : "TextRegion",
+    "dc:title" : "Area",
+    "creator" : "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
+    "http://qudt.org/vocab/unit" : "sq.cm",
+    "value" : "3.6272328"
+  }, {
+    "id" : "urn:anno4j:81383a30-bcfe-4c91-9aa5-5d2ad504c9e1",
+    "type" : [ "oa:EmbeddedContent", "TextualBody", "https://github.com/anno4j/ns#Resource", "https://github.com/anno4j/ns#CreationProvenance", "https://github.com/anno4j/ns#ExternalWebResource" ],
+    "format" : "xsd:string",
+    "dc:identifier" : "r8",
+    "dc:subject" : "TextRegion",
+    "dc:title" : "NumberVerticalLines",
+    "creator" : "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
+    "value" : "2"
+  }, {
+    "id" : "urn:anno4j:eb5bf1ff-2cca-4f05-a3d7-c06f97a11500",
+    "type" : [ "https://github.com/anno4j/ns#Resource", "oa:EmbeddedContent", "https://github.com/anno4j/ns#ExternalWebResource", "https://github.com/anno4j/ns#CreationProvenance", "TextualBody" ],
+    "format" : "xsd:string",
+    "dc:identifier" : "r8",
+    "dc:subject" : "TextRegion",
+    "dc:title" : "RelativeVPOS",
+    "creator" : "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
+    "http://qudt.org/vocab/unit" : "pct",
+    "value" : "28.365759"
+  }, {
+    "id" : "urn:anno4j:7161d742-baa5-4748-b28a-3dfb6477ab6e",
+    "type" : [ "oa:EmbeddedContent", "TextualBody", "https://github.com/anno4j/ns#ExternalWebResource", "https://github.com/anno4j/ns#Resource", "https://github.com/anno4j/ns#CreationProvenance" ],
+    "format" : "xsd:string",
+    "dc:identifier" : "r8",
+    "dc:subject" : "TextRegion",
+    "dc:title" : "NumberFeatureStackArray",
+    "creator" : "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
+    "value" : "134"
+  }, {
+    "id" : "urn:anno4j:9829d36c-2df1-49bc-b36b-63c72532848d",
+    "type" : [ "TextualBody", "https://github.com/anno4j/ns#ExternalWebResource", "https://github.com/anno4j/ns#CreationProvenance", "oa:EmbeddedContent", "https://github.com/anno4j/ns#Resource" ],
+    "format" : "xsd:string",
+    "dc:identifier" : "r8",
+    "dc:subject" : "TextRegion",
+    "dc:title" : "RelativeHPOS",
+    "creator" : "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
+    "http://qudt.org/vocab/unit" : "pct",
+    "value" : "79.629074"
+  }, {
+    "id" : "urn:anno4j:b6f57ac3-0865-4215-9eab-93abc8b927ca",
+    "type" : [ "oa:EmbeddedContent", "https://github.com/anno4j/ns#ExternalWebResource", "TextualBody", "https://github.com/anno4j/ns#Resource", "https://github.com/anno4j/ns#CreationProvenance" ],
+    "format" : "xsd:string",
+    "dc:identifier" : "r8",
+    "dc:subject" : "TextRegion",
+    "dc:title" : "Height",
+    "creator" : "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
+    "http://qudt.org/vocab/unit" : "cm",
+    "value" : "1.8626667"
+  }, {
+    "id" : "urn:anno4j:8a4056df-7157-4529-865e-e030b47a6115",
+    "type" : [ "oa:EmbeddedContent", "https://github.com/anno4j/ns#Resource", "TextualBody", "https://github.com/anno4j/ns#CreationProvenance", "https://github.com/anno4j/ns#ExternalWebResource" ],
+    "format" : "xsd:string",
+    "dc:identifier" : "r8",
+    "dc:subject" : "TextRegion",
+    "dc:title" : "RelativeHeight",
+    "creator" : "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
+    "http://qudt.org/vocab/unit" : "pct",
+    "value" : "6.271827"
+  }, {
+    "id" : "urn:anno4j:ba92a636-915d-429e-951e-fec3d4a8b6fc",
+    "type" : [ "https://github.com/anno4j/ns#Resource", "https://github.com/anno4j/ns#CreationProvenance", "oa:EmbeddedContent", "TextualBody", "https://github.com/anno4j/ns#ExternalWebResource" ],
+    "format" : "xsd:string",
+    "dc:identifier" : "r8",
+    "dc:subject" : "TextRegion",
+    "dc:title" : "MeanDistanceVerticalLines",
+    "creator" : "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
+    "http://qudt.org/vocab/unit" : "cm",
+    "value" : "0.9736666083335876"
+  }, {
+    "id" : "urn:anno4j:6829affc-faf3-4cd6-90b8-90ca205261fd",
+    "type" : [ "TextualBody", "https://github.com/anno4j/ns#Resource", "https://github.com/anno4j/ns#CreationProvenance", "oa:EmbeddedContent", "https://github.com/anno4j/ns#ExternalWebResource" ],
+    "format" : "xsd:string",
+    "dc:identifier" : "r8",
+    "dc:subject" : "TextRegion",
+    "dc:title" : "HPOS",
+    "creator" : "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
+    "http://qudt.org/vocab/unit" : "cm",
+    "value" : "16.721666"
+  }, {
+    "id" : "urn:anno4j:65624166-02dd-459a-9159-06ea03d2d502",
+    "type" : [ "https://github.com/anno4j/ns#Resource", "TextualBody", "https://github.com/anno4j/ns#ExternalWebResource", "https://github.com/anno4j/ns#CreationProvenance", "oa:EmbeddedContent" ],
+    "format" : "xsd:string",
+    "dc:identifier" : "r8",
+    "dc:subject" : "TextRegion",
+    "dc:title" : "VPOS",
+    "creator" : "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
+    "http://qudt.org/vocab/unit" : "cm",
+    "value" : "8.424333"
+  }, {
+    "id" : "urn:anno4j:1f682936-217f-4baf-9b74-7985d491e567",
+    "type" : [ "https://github.com/anno4j/ns#ExternalWebResource", "oa:EmbeddedContent", "TextualBody", "https://github.com/anno4j/ns#CreationProvenance", "https://github.com/anno4j/ns#Resource" ],
+    "format" : "xsd:string",
+    "dc:identifier" : "r8",
+    "dc:subject" : "TextRegion",
+    "dc:title" : "RelativeWidth",
+    "creator" : "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
+    "http://qudt.org/vocab/unit" : "pct",
+    "value" : "9.273258"
+  }, {
+    "id" : "urn:anno4j:0c9f6f9e-ea6a-49e6-bc86-38bed54d8ba2",
+    "type" : [ "https://github.com/anno4j/ns#Resource", "https://github.com/anno4j/ns#ExternalWebResource", "TextualBody", "oa:EmbeddedContent", "https://github.com/anno4j/ns#CreationProvenance" ],
+    "format" : "xsd:string",
+    "dc:identifier" : "r8",
+    "dc:subject" : "TextRegion",
+    "dc:title" : "Width",
+    "creator" : "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
+    "http://qudt.org/vocab/unit" : "cm",
+    "value" : "1.9473332"
+  }, {
+    "id" : "urn:anno4j:db82b425-b714-4cb7-ae65-58038a7194da",
+    "type" : [ "https://github.com/anno4j/ns#Resource", "oa:EmbeddedContent", "https://github.com/anno4j/ns#ExternalWebResource", "https://github.com/anno4j/ns#CreationProvenance", "TextualBody" ],
+    "format" : "xsd:string",
+    "dc:identifier" : "r8",
+    "dc:subject" : "TextRegion",
+    "dc:title" : "MeanDistanceHorizontalLines",
+    "creator" : "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
+    "http://qudt.org/vocab/unit" : "cm",
+    "value" : "1.9473332166671753"
+  }, {
+    "id" : "urn:anno4j:54931154-c16b-4488-85dd-b1c377b9189e",
+    "type" : [ "oa:EmbeddedContent", "https://github.com/anno4j/ns#CreationProvenance", "https://github.com/anno4j/ns#Resource", "TextualBody", "https://github.com/anno4j/ns#ExternalWebResource" ],
+    "format" : "xsd:string",
+    "dc:identifier" : "r8",
+    "dc:subject" : "TextRegion",
+    "dc:title" : "NumberHorizontalLines",
+    "creator" : {
+      "id" : "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
+      "type" : "Software",
+      "name" : "SWATI Workflow-Version 1.4"
+    },
+    "value" : "1"
+  } ],
+  "target" : {
+    "id" : "urn:anno4j:91498d2d-f51e-4850-942a-88a1ff2443af",
+    "type" : [ "SpecificResource", "https://github.com/anno4j/ns#Resource", "https://github.com/anno4j/ns#ExternalWebResource", "https://github.com/anno4j/ns#CreationProvenance" ],
+    "selector" : {
+      "id" : "urn:anno4j:b78e6ba2-d6c8-49f9-939e-d2d752ff289b",
+      "type" : "SvgSelector",
+      "dcterms:conformsTo" : "http://www.w3.org/TR/SVG/",
+      "value" : "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"2633\" y=\"1327\" width=\"307\" height=\"293\"/></svg>"
+    },
+    "source" : "http://samplerepo.edu/api/v1/dataresources/841486d3-e062-44a4-bb5c-218e421f80ea/data/043r.master.jpg"
+  },
+  "motivation" : "describing",
+  "via" : "http://sampleannoserver.edu/wap/w3c/aea27124-b3be-417a-a3f3-ce9803f9afb4/00173d68-d58b-4c14-9e44-251d658a246d"
+}

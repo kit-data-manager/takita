@@ -1,0 +1,61 @@
+@startuml
+left to right direction
+  namespace edu.kit.scc.dem.tuhl {
+    namespace mainpage {
+      namespace dashboard {
+        class edu.kit.scc.dem.tuhl.mainpage.dashboard.DashboardController {
+            + showDashboard()
+        }
+
+        class edu.kit.scc.dem.tuhl.mainpage.dashboard.DashboardService {
+            - availableContentViews : String[]
+            - currentContentView : String
+            + getAvailableContentViews()
+            + getCurrentContentView()
+            + setCurrentContentView()
+        }
+
+        interface edu.kit.scc.dem.tuhl.mainpage.dashboard.IDashboardService {
+            {abstract} + getAvailableContentViews()
+            {abstract} + getCurrentContentView()
+            {abstract} + setCurrentContentView()
+        }
+
+        namespace contentview {
+                  interface edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.IContentViewService {
+                      {abstract} + getType()
+                  }
+
+                  class edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.TableViewController {
+                      + addAttribute()
+                      + deleteAttribute()
+                      + nextPage()
+                      + showContentView()
+                      + showThumbnails()
+                  }
+
+                  class edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.TableViewService {
+                      - currentAttributes : List<String>
+                      - type : String
+                      + TableViewService()
+                      + addAttribute()
+                      + deleteAttribute()
+                      + getCurrentAttributes()
+                      + getThumbnails()
+                      + getType()
+                  }
+                }
+      }
+    }
+  }
+
+
+  edu.kit.scc.dem.tuhl.mainpage.dashboard.DashboardController o-- edu.kit.scc.dem.tuhl.mainpage.dashboard.IDashboardService : dashboardService
+  edu.kit.scc.dem.tuhl.mainpage.dashboard.DashboardService ..|> edu.kit.scc.dem.tuhl.mainpage.dashboard.IDashboardService
+
+  edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.TableViewController o-- edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.TableViewService : tableViewService
+    edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.TableViewService ..|> edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.IContentViewService
+    edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.TableViewService o-- edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService : searchIndexService
+    edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.TableViewService o-- edu.kit.scc.dem.tuhl.mainpage.search.ISearchService : searchService
+
+@enduml

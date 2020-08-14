@@ -1,0 +1,22 @@
+@startuml
+"Browser" -> "Dispatcher Servlet": http post Request
+activate "Dispatcher Servlet"
+"Dispatcher Servlet" -> ":EditorController": addTextCard(text, purpose, model)
+activate ":EditorController"
+":EditorController" -> ":IEditorService": addTextCard(text, purpose)
+activate ":IEditorService"
+":IEditorService" -> ":ITextCardService": addTextCard(text, purpose)
+activate ":ITextCardService"
+":ITextCardService" -> ":ISearchIndexService": addTextCard(textCard)
+activate ":ISearchIndexService"
+":ISearchIndexService" --> ":ITextCardService": return
+deactivate ":ISearchIndexService"
+":ITextCardService" --> ":IEditorService": return
+deactivate ":ITextCardService"
+":IEditorService" --> ":EditorController": return
+deactivate ":IEditorService"
+":EditorController"-->"Dispatcher Servlet": html-file name
+deactivate ":EditorController"
+"Dispatcher Servlet" --> "Browser": http Response
+deactivate "Dispatcher Servlet"
+@enduml

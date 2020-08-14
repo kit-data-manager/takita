@@ -1,0 +1,55 @@
+{
+  "@context": "http://www.w3.org/ns/anno.jsonld",
+  "id": "http://sampleannoserver.edu/wap/a04/deinterpretatione/51e65450-1059-462f-91aa-cea2bb5de298",
+  "type": "Annotation",
+  "created": "2018-02-06T11:06:01Z",
+  "creator": "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
+  "modified": "2019-05-08T10:59:38Z",
+  "generator": {
+    "id": "urn:uuid:010a621c-bdfd-3798-bbff-21b30b6d20d3",
+    "type": [
+      "https://github.com/anno4j/ns#Agent",
+      "http://www.w3.org/ns/prov/SoftwareAgent",
+      "Software",
+      "https://github.com/anno4j/ns#Resource"
+    ],
+    "name": "PageXML Parsing"
+  },
+  "body": [
+    {
+      "id": "urn:anno4j:7b560b0b-6adf-40b7-b4f8-2d5747f4d631",
+      "type": [
+        "TextualBody",
+        "https://github.com/anno4j/ns#ExternalWebResource",
+        "https://github.com/anno4j/ns#Resource",
+        "oa:EmbeddedContent",
+        "https://github.com/anno4j/ns#CreationProvenance"
+      ],
+      "format": "xsd:string",
+      "dc:identifier": "r13",
+      "dc:subject": "TextRegion",
+      "dc:title": "VPOS",
+      "creator": "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
+      "http://qudt.org/vocab/unit": "cm",
+      "value": "20.997332"
+    }
+  ],
+  "target": {
+    "id": "urn:anno4j:62879388-316b-41b0-ae60-35f5bdfc22d9",
+    "type": [
+      "SpecificResource",
+      "https://github.com/anno4j/ns#Resource",
+      "https://github.com/anno4j/ns#ExternalWebResource",
+      "https://github.com/anno4j/ns#CreationProvenance"
+    ],
+    "selector": {
+      "id": "urn:anno4j:b9b4be8d-9e98-4b6e-a274-9dfc18930f8b",
+      "type": "SvgSelector",
+      "dcterms:conformsTo": "http://www.w3.org/TR/SVG/",
+      "value": "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"0\" y=\"3307\" width=\"587\" height=\"1047\"/></svg>"
+    },
+    "source": "http://samplerepo.edu/api/v1/dataresources/5172f6cb-78c6-403d-b6eb-64d7738c76aa/data/128v.master.jpg"
+  },
+  "motivation": "describing",
+  "via": "http://sampleannoserver.edu/wap/w3c/aea27124-b3be-417a-a3f3-ce9803f9afb4/0073d61a-5d3a-49c7-bffd-2cc0ae0d8443"
+}

@@ -1,0 +1,956 @@
+[
+  {
+    "id": "ced50bd8-9bc6-42a0-b1fd-f131bb15d18d",
+    "identifier": {
+      "id": 2767,
+      "value": "(:tba)",
+      "identifierType": "DOI"
+    },
+    "creators": [
+      {
+        "id": 2767,
+        "familyName": null,
+        "givenName": "SELF",
+        "affiliations": [
+
+        ]
+      }
+    ],
+    "titles": [
+      {
+        "id": 2767,
+        "value": "Mailand Ambr M 71 sup",
+        "titleType": null,
+        "lang": null
+      }
+    ],
+    "publisher": "SFB 980 - A04",
+    "publicationYear": "2019",
+    "resourceType": {
+      "id": 2767,
+      "value": "manuscriptMetadata",
+      "typeGeneral": "TEXT"
+    },
+    "subjects": [
+
+    ],
+    "contributors": [
+
+    ],
+    "dates": [
+      {
+        "id": 2767,
+        "value": "2019-03-12T14:06:53Z",
+        "type": "CREATED"
+      }
+    ],
+    "relatedIdentifiers": [
+      {
+        "id": 5258,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/ac82f32b-fa5f-4c24-ac31-14aa8cce703d",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5297,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/cb0d1639-49d9-49c5-908d-0dab9dfd0053",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5227,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/2d99c7d1-ce84-4f1e-a17b-cbe0414cdcd5",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5220,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/81df266f-3a48-4476-b10c-cf015d507fc7",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5256,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/7ba40d1c-f937-44b6-b31f-cab17e5cbdc6",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5201,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/de372cd2-6c65-47c4-ad8f-5c3c26f7afb9",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5257,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/3342fd20-64a3-4a07-9ec4-6cee22632d28",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5299,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/908e2e9b-6939-412c-b012-f7680c8a53a0",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5294,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/31ec3144-9364-4771-a759-98a44b1e8d9b",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5265,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/dcbf6664-578c-42db-bbc9-0e63a8860fd0",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5211,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/ec387fc4-1f70-45e0-aae4-de18e0880a8a",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5210,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/2c94b0b2-b25f-404b-a916-16bd721c8835",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5209,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/17a68549-ef7f-4836-8c61-9d98c57b4c17",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5229,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/e7ae3483-ac03-43a1-aa58-33744fc4ffd7",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5248,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/2508193c-4579-4947-9951-fd4113159c48",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5208,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/38306899-b929-4409-ac3c-e687cdd59740",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5275,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/7a496cfc-20ee-4517-930b-d73fbe058a30",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5300,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/ae798379-f054-44f9-8109-f537fe3649e0",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5293,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/5eca11b3-71c1-4e31-9af7-2d6b67b3ae4c",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5233,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/729d049e-493c-4cbb-b106-ef28575e9920",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5235,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/d2eb7e1e-5ea9-4091-a8d0-3495ca04080f",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5289,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/59c2c2fb-3cfc-4c22-aaa3-da2f8a45e935",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5226,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/9ede6c45-6d9d-4433-873a-1d98ca475b2c",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5241,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/65a34f5a-1646-4a30-92c0-5a6a0f8331a0",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5280,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/fe96ac72-1d1d-4248-875b-d2d0bad38f05",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5298,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/4c334615-9f53-4c28-bb2f-92b342f4490b",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5218,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/26df3040-f36b-4016-8d8c-e2995344d129",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5228,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/c9d3d789-f73b-4957-802f-ba8c0bd03fca",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5217,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/6ad8fac4-5580-4396-b5c6-baea20dd072b",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5231,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/8dea1920-fdc1-4633-8cac-f488fb8ebec2",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5291,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/569e0671-2102-493b-bfd4-ae632bcc172d",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5223,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/da83519c-0bc5-434f-99ce-7354a721dd44",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5225,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/98bfd292-fae8-45bd-996d-91024ad19c2b",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5238,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/975a2ce2-cbb1-4518-b944-5e4992a84dc0",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5224,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/ef7c8876-b9b0-4746-8e10-f3122b7a2ec4",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5292,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/1e300cae-18ce-432a-a559-aa053abe0d3e",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5267,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/14fd60c5-09ec-4a53-b8da-f9c1e267be21",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5266,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/3ef3dea8-d8e8-4dcd-827c-07640b03927b",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5305,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/574fc562-d2d7-4ea5-80cf-2808ac428298",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5251,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/0cecc1d3-531c-44d9-8235-ed8ff20fac7c",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5296,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/1a1ad053-68d5-42a7-85b8-8dc622e8330c",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5263,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/9b551145-32e9-4dab-9988-29aaa4c76718",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5277,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/63124762-9458-4b3e-9917-1726393a2448",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5284,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/1fcf743b-ee22-40c3-9cad-2b250b6765f6",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5242,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/5239b54c-283f-4749-b3f8-41eb534d184e",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5214,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/1ee61920-3b16-4e1b-a2ba-3e113005f899",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5301,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/c56d0cda-6236-4a73-a2b4-1b2411ef8f63",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5247,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/a0cd0bea-c113-4589-964a-5d85757379d3",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5259,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/c1e8679d-17fa-4537-be3c-14678921ca3e",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5307,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/57e35317-43e9-4aca-8ba8-a804741ac3e2",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5270,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/9106a7fb-1628-43ac-8a79-c0ed0cc018ac",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5202,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/a31184da-dce0-4f23-a7dc-2e244e79ccd4",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5273,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/0bb30fd3-9bfd-4871-83c8-8e46b112c74d",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5286,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/58f6ba6b-3d8d-433d-bcf5-a247c1dada0a",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5206,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/6d53786b-5313-4589-bca7-790e014d8eb8",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5282,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/cee68532-33b2-4fde-b67b-934367f5be34",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5222,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/0622382c-4132-48de-b511-db9165cffdb1",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5244,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/79767143-e10c-45f0-bf46-0c3b7d4dd75c",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5281,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/98c76e68-ff2e-4690-99b7-ba677e480ea8",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5237,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/259e50d8-661c-488b-aa8a-9199e06985fa",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5240,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/5e7e7720-fb59-4f98-9be6-bffe30c3b6a7",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5278,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/b9fc6b90-58f1-4d61-876c-5536cb47889b",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5212,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/a10689c9-90fe-4fa0-8a57-c0679e0a5f0e",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5252,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/f97a43e7-3707-495b-8e18-72125a662396",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5245,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/e4f4d9f4-1b62-487a-946b-6a4d3f60e3ac",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5269,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/b826b20b-72b7-41d6-a6df-d26ab93b657b",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5221,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/f9eea399-07bb-4b3e-91e2-e62cc8bc0e70",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5253,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/f4a8cd78-ad00-47b6-b14b-dcea9616fb2e",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5243,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/88d51b78-2f67-417d-8b1c-3b26dfebac50",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5239,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/49ef437c-eb65-4856-a0ca-db085f2ab237",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5303,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/b4681fdb-d71c-4da5-85eb-b2aee5fb0f09",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5216,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/10f96b1a-f277-47f0-b9d2-962114a6908e",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5204,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/37ab8c1e-03a6-48d4-945c-a3376e7b2b7a",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5276,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/ffb551b8-4b0b-49f2-83fc-7cbc2603f2d9",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5230,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/c8b42a80-fa3c-4f21-9208-ff37362441ed",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5234,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/70cdd510-f735-4e0f-94b3-c62225fd0ca1",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5255,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/4a9a0807-3db4-45b0-b013-bc1c4c8fb6e8",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5279,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/75610947-24be-4896-a5f5-317772dec201",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5236,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/c8b090bf-6952-489d-a315-46b085798a6a",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5290,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/c53ddcff-a202-4e96-a1c9-f16abf820ffa",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5205,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/0b466c58-d224-4671-8ec7-5b31f103e14e",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5232,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/22d85e83-aafc-43f5-b18a-0b6523697fe4",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5287,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/e90a117d-be4b-4d5d-b653-4d1b5a24ca4b",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5288,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/ccc2c0b5-d1c6-4826-a98a-0212055dbc13",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5246,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/e7671603-bbe2-4682-aaac-f61008dfff15",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5260,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/b4e646ac-5c87-4fc4-b88a-e6d470d13a4b",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5283,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/8f5eaf05-3381-439e-a9d5-17ba0ab610c7",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5219,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/5e54deed-66e7-4e2e-9ee0-8f6c54e857c1",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5302,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/54311424-392b-45c5-925d-6b16f1706bb5",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5203,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/44f5bda7-0406-49dd-91d7-439466e7255d",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5272,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/8f60146e-03eb-4d4e-90b0-7ae976ad6bd4",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5271,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/51007e46-ff9e-4646-8ac3-6728de146589",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5215,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/46cd9814-afd2-443e-82e8-9168bf7a24a3",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5262,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/1a66d70f-836c-49d8-8e5c-474e32679653",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5213,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/7e1ed5c4-a408-462a-ab09-5f42cf227936",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5264,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/30a370f7-8b93-49ef-893d-be52bc0774d9",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5207,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/48a723ac-3c0b-4c27-a3c8-eddb6e6a53d1",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5254,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/401baf88-e345-48e7-bce4-29683025f2a8",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5295,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/f1144f80-65e5-484d-adbc-696a9af1437d",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5274,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/47338ab0-c77c-469e-be84-7dd22da30964",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5304,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/5839a4b0-ae0d-43ca-93c3-2f0b787371ca",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5268,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/bd075e8f-200f-44f7-8161-2fa268540b41",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5306,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/23cff047-3640-4d96-9210-9eff3dc5ff5f",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5261,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/f00b3be1-e735-4b07-b767-0e4284fb5336",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5249,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/dbb8cc67-a03e-4a60-884f-2b23597fc6c5",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5285,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/19d0144e-566b-484d-a1de-e7e4cdb5e12b",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      },
+      {
+        "id": 5250,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/b086d967-06b3-4d62-b95e-fa8f9da269ed",
+        "relationType": "IS_METADATA_FOR",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      }
+    ],
+    "descriptions": [
+
+    ],
+    "geoLocations": [
+      {
+        "id": 5533,
+        "point": null,
+        "box": null,
+        "polygon": null,
+        "place": "Mailand"
+      },
+      {
+        "id": 5534,
+        "point": null,
+        "box": null,
+        "polygon": null,
+        "place": "Biblioteca Ambrosiana"
+      }
+    ],
+    "language": null,
+    "alternateIdentifiers": [
+      {
+        "id": 2767,
+        "value": "ced50bd8-9bc6-42a0-b1fd-f131bb15d18d",
+        "identifierType": "INTERNAL"
+      }
+    ],
+    "sizes": [
+
+    ],
+    "formats": [
+
+    ],
+    "version": null,
+    "rights": [
+
+    ],
+    "fundingReferences": [
+
+    ],
+    "lastUpdate": "",
+    "state": "VOLATILE",
+    "embargoDate": "",
+    "acls": [
+      {
+        "id": 2767,
+        "sid": "SELF",
+        "permission": "ADMINISTRATE"
+      }
+    ]
+  }
+]

@@ -1,0 +1,61 @@
+@startuml
+
+  namespace edu.kit.scc.dem.tuhl {
+    namespace model {
+      namespace filter {
+        interface edu.kit.scc.dem.tuhl.model.filter.Filter {
+            {static} + TYPE : FilterType
+            {abstract} + getField()
+            {abstract} + getQuery()
+            {abstract} + getValues()
+            {abstract} + setValue()
+        }
+
+        class edu.kit.scc.dem.tuhl.model.filter.FilterSelection {
+            - filters : List<Filter>
+            + getFilters()
+        }
+
+        enum FilterType {
+          MATCH
+          RANGE
+          TAG
+          UNDEFINED
+        }
+
+        class edu.kit.scc.dem.tuhl.model.filter.MatchFilter {
+            {static} + TYPE : FilterType
+            + MatchFilter()
+            + getField()
+            + getQuery()
+            + getValues()
+            + setValue()
+        }
+
+        class edu.kit.scc.dem.tuhl.model.filter.RangeFilter {
+            {static} + TYPE : FilterType
+            + RangeFilter()
+            + getField()
+            + getQuery()
+            + getValues()
+            + setValue()
+        }
+
+        class edu.kit.scc.dem.tuhl.model.filter.TagFilter {
+            {static} + TYPE : FilterType
+            + TagFilter()
+            + getField()
+            + getQuery()
+            + getValues()
+            + setValue()
+        }
+      }
+    }
+  }
+  
+
+  edu.kit.scc.dem.tuhl.model.filter.MatchFilter ..|> edu.kit.scc.dem.tuhl.model.filter.Filter
+  edu.kit.scc.dem.tuhl.model.filter.RangeFilter ..|> edu.kit.scc.dem.tuhl.model.filter.Filter
+  edu.kit.scc.dem.tuhl.model.filter.TagFilter ..|> edu.kit.scc.dem.tuhl.model.filter.Filter
+
+@enduml

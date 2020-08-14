@@ -1,0 +1,43 @@
+@startuml
+
+title __PAGE's Class Diagram__\n
+
+  namespace edu.kit.scc.dem.tuhl {
+    namespace model {
+      namespace page {
+        class edu.kit.scc.dem.tuhl.model.page.ImagePage {
+            - annotationIds : List<String>
+            - content : Image
+            + addAnnotation()
+            + getAnnotationIds()
+            + getContent()
+            + setAnnotationIds()
+            + setContent()
+        }
+
+        abstract class edu.kit.scc.dem.tuhl.model.page.Page {
+            - id : String
+            - manuscriptId : String
+            - thumbnail : Image
+            + getId()
+            + getManuscriptId()
+            + getThumbnail()
+            + setId()
+            + setManuscriptId()
+            + setThumbnail()
+        }
+
+        class edu.kit.scc.dem.tuhl.model.page.TextPage {
+            - content : String
+            + getContent()
+            + setContent()
+        }
+      }
+    }
+  }
+  
+
+  edu.kit.scc.dem.tuhl.model.page.ImagePage --|> edu.kit.scc.dem.tuhl.model.page.Page
+  edu.kit.scc.dem.tuhl.model.page.TextPage --|> edu.kit.scc.dem.tuhl.model.page.Page
+
+@enduml

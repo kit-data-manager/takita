@@ -1,0 +1,106 @@
+{
+  "id": "f68e307b-c41b-412a-a2e2-60418fbbef27",
+  "identifier": {
+    "id": 697,
+    "value": "(:tba)",
+    "identifierType": "DOI"
+  },
+  "creators": [
+    {
+      "id": 697,
+      "familyName": null,
+      "givenName": "SELF",
+      "affiliations": [
+
+      ]
+    }
+  ],
+  "titles": [
+    {
+      "id": 697,
+      "value": "Florenz Laur 72.5, 63r",
+      "titleType": null,
+      "lang": null
+    }
+  ],
+  "publisher": "SFB 980 - A04",
+  "publicationYear": "2019",
+  "resourceType": {
+    "id": 697,
+    "value": "manuscriptPage",
+    "typeGeneral": "IMAGE"
+  },
+  "subjects": [
+
+  ],
+  "contributors": [
+
+  ],
+  "dates": [
+    {
+      "id": 697,
+      "value": "2019-03-11T14:10:39Z",
+      "type": "CREATED"
+    }
+  ],
+  "relatedIdentifiers": [
+    {
+      "id": 1377,
+      "identifierType": "URL",
+      "value": "http://samplerepo.edu/api/v1/dataresources/0d5aa650-2f1e-4dd3-8eed-66a94771ca7c",
+      "relationType": "HAS_METADATA",
+      "scheme": null,
+      "relatedMetadataScheme": null
+    }
+  ],
+  "descriptions": [
+
+  ],
+  "geoLocations": [
+    {
+      "id": 1393,
+      "point": null,
+      "box": null,
+      "polygon": null,
+      "place": "Biblioteca Medicea Laurenziana"
+    },
+    {
+      "id": 1394,
+      "point": null,
+      "box": null,
+      "polygon": null,
+      "place": "Florenz"
+    }
+  ],
+  "language": null,
+  "alternateIdentifiers": [
+    {
+      "id": 697,
+      "value": "f68e307b-c41b-412a-a2e2-60418fbbef27",
+      "identifierType": "INTERNAL"
+    }
+  ],
+  "sizes": [
+
+  ],
+  "formats": [
+
+  ],
+  "version": null,
+  "rights": [
+
+  ],
+  "fundingReferences": [
+
+  ],
+  "lastUpdate": "",
+  "state": "VOLATILE",
+  "embargoDate": "",
+  "acls": [
+    {
+      "id": 697,
+      "sid": "SELF",
+      "permission": "ADMINISTRATE"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "urn:anno4j:7b560b0b-6adf-40b7-b4f8-2d5747f4d631",
+  "type": [
+    "TextualBody",
+    "https://github.com/anno4j/ns#ExternalWebResource",
+    "https://github.com/anno4j/ns#Resource",
+    "oa:EmbeddedContent",
+    "https://github.com/anno4j/ns#CreationProvenance"
+  ],
+  "format": "xsd:string",
+  "dc:identifier": "r13",
+  "dc:subject": "TextRegion",
+  "dc:title": "VPOS",
+  "creator": "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
+  "http://qudt.org/vocab/unit": "cm",
+  "value": "20.997332"
+}
