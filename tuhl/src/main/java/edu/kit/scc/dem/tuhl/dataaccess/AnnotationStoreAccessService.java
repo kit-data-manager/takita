@@ -186,6 +186,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
     } while (annotationList.has(AnnotationStoreStrings.NEXT.getName()));
     
     nextUri = url + DEINTERPRETATIONE_URL + FIRST_PAGE;
+    /*
     do {
       response = httpRequestHelper.get(nextUri);
       annotationList = new JSONObject(response.body());
@@ -214,6 +215,8 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
 
       // Repeat while there is a next page given by a link in the response
     } while (annotationList.has(AnnotationStoreStrings.NEXT.getName()));
+
+     */
     
     return annotationsJson;
   }

@@ -104,6 +104,7 @@
                 onclick="setResultsPerPage()">
         </button>
     </div>
+    
 </div>
 </form>
 
@@ -113,7 +114,6 @@
     function getValue(event){
         event.preventDefault();
         let input = $('#pageNumberInput').val();
-        console.log(input);
         if(input > 1){
             callPage(input);
         }
@@ -306,7 +306,7 @@
         checkThumb();
         createDropdown();}
         ).catch(function(error){
-            colsole.log(error);
+            console.log(error);
             //handle error loading data
         });
 
@@ -317,10 +317,7 @@
         persistenceReaderFunc:function(id, type){
 
             if(document.getElementById('save-config').checked || [[${flag}]]){
-
                 let data = [[${user.getColumns()}]];
-
-
                 return data ? JSON.parse(data) : false;
             }
             return false;
@@ -366,16 +363,72 @@
                 })
             }
         },
+
         /*<![CDATA[*/
         placeholder:[[#{table.noResults}]],
         /*]]>*/
         rowDblClick: function (e, row) {
             //shows and hides thumbnails for each row
-            const id = row.getData().id;
-            $(".subTable" + id + "").toggle();
+            let thumbnails = row.getData().thumbnails;
+            let id = row.getData().id;
+            if (document.getElementById('holder' + id) == null) {
+                let holder = document.createElement('div');
+                holder.style.display = 'block';
+                holder.setAttribute('id', 'holder' + id)
+                let cardBody = document.createElement('div');
+                cardBody.setAttribute('class', 'card card-body no-wrap');
+                let outerRow = document.createElement('div');
+                outerRow.setAttribute('class', 'row');
+
+                thumbnails.forEach(function(item, index){
+                    let col = document.createElement('div');
+                    col.setAttribute('class', 'mx-1 col-auto');
+                    let innerRow1 = document.createElement('div');
+                    innerRow1.setAttribute('class', 'row');
+                    let innerRow2 = document.createElement('div');
+                    innerRow2.setAttribute('class', 'row');
+                    let innerCol = document.createElement('div');
+                    innerCol.setAttribute('class', 'col');
+                    let img = document.createElement('img');
+                    img.setAttribute('class', 'img-thumbnail');
+                    img.setAttribute('src', item.thumb);
+                    let label = document.createElement('a');
+                    label.setAttribute('class', 'btn btn-primary')
+                    label.setAttribute('href','/editor/' + item.id);
+                    let icon = document.createElement('span');
+                    //TODO: load icon into Button correctly!!
+                    icon.setAttribute('class', 'glyphicon glyphicon-print');
+                    icon.setAttribute('aria-hidden', 'true');
+                    label.appendChild(icon);
+                    innerCol.appendChild(img);
+                    innerRow1.appendChild(innerCol);
+                    innerRow2.appendChild(label);
+                    col.appendChild(innerRow1);
+                    col.appendChild(innerRow2);
+                    outerRow.appendChild(col);
+                })
+
+                cardBody.appendChild(outerRow);
+                holder.appendChild(cardBody);
+                row.getElement().appendChild(holder);
+            } else {
+                document.getElementById('holder' + id).remove();
+            }
+
+
         },
         columns: window.cols,
+        /*
         rowFormatter: function (row) {
+            let holder = document.createElement('div');
+            holder.style.display = 'none';
+            holder.setAttribute('id', 'holder')
+            let para = document.createElement('p');
+            para.innerText = row.getData().thumbnails;
+            holder.appendChild(para);
+            row.getElement().appendChild(holder);
+
+
             //create subtable with thumbnails
             let holderEl = document.createElement("div");
             let tableEl = document.createElement("div");
@@ -398,7 +451,9 @@
 
                 },
             });
-        }
+ }
+             */
+
     });
     /*]]>*/
     // call functions after table has been created
@@ -504,3 +559,14 @@ function callEditor(manId){
 
 </body>
 </html>
+<style>
+    .no-wrap > .row {
+        overflow-x: auto;
+        white-space: nowrap;
+        flex-wrap: nowrap;
+    }
+    .no-wrap > .row > .col-auto{
+        display: inline-block;
+        float: none;
+    }
+</style>
