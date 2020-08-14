@@ -125,6 +125,17 @@ class AccessServiceTest {
       }
     }
   }
+
+  @Test
+  void getFewManuscripts() throws InterruptedException, ParseException, JSONException, IOException, org.json.JSONException {
+    List<Manuscript> expectedManuscripts = buildMocksAndExpectedManuscripts();
+    List<Manuscript> moreManuscripts = buildMoreMocksAndManuscripts();
+    expectedManuscripts.addAll(moreManuscripts);
+
+    List<Manuscript> actualManuscripts = accessService.getFewManuscripts();
+    System.out.println("exp: " + expectedManuscripts.size() + " act: " + actualManuscripts.size());
+    assertEqualManuscriptLists(expectedManuscripts, actualManuscripts);
+  }
   
   @Test
   void addAnnotation() throws IOException, JSONException, InterruptedException, ParseException, NoSuchIndexEntryException {
@@ -289,7 +300,7 @@ class AccessServiceTest {
     }).when(mockedAnnotationStoreAccessService).deleteAnnotation(Mockito.anyString(), Mockito.anyString());
     mockedAnnotationStoreAccessService.deleteAnnotation(annotations.get(0).getId(), annotations.get(0).getEtag());
   }
-  
+
   private List<Manuscript> buildMocksAndExpectedManuscripts()
       throws InterruptedException, JSONException, IOException, ParseException {
     JSONObject annotationJson1
@@ -314,38 +325,38 @@ class AccessServiceTest {
         = new JSONArray(readStringFromRelativePath("getManuscripts/pageAssignment1.json"));
     JSONArray assignmentJson2
         = new JSONArray(readStringFromRelativePath("getManuscripts/pageAssignment2.json"));
-    
+
     List<JSONObject> manuscriptsJson = new ArrayList<>();
     manuscriptsJson.add(manuscriptJson1);
     manuscriptsJson.add(manuscriptJson2);
-    
+
     List<JSONObject> annotationsJson = new ArrayList<>();
     annotationsJson.add(annotationJson1);
     annotationsJson.add(annotationJson2);
     annotationsJson.add(annotationJson3);
     annotationsJson.add(annotationJson4);
-    
+
     DateFormat dateFormat = IRepositoryAccessService.TIMESTAMP_FORMAT;
     DateFormat dateFormatMillis = IRepositoryAccessService.TIMESTAMP_FORMAT_MILLIS;
-    
-    Page page1 = new ImagePage(
+
+    ImagePage page1 = new ImagePage(
         "5172f6cb-78c6-403d-b6eb-64d7738c76aa",
         "076v",
         dateFormat.parse("2019-03-11T14:13:38Z"), "", "");
     page1.setManuscriptId("000073cd-c425-4214-9648-b380ff20c61a");
-    
-    Page page2 = new ImagePage(
+
+    ImagePage page2 = new ImagePage(
         "3f3bf25b-e0b9-48a9-b344-20630f733f8b",
         "076r",
         dateFormat.parse("2019-03-11T14:13:37Z"), "", "");
     page2.setManuscriptId("000073cd-c425-4214-9648-b380ff20c61a");
-    
-    Page page3 = new ImagePage(
+
+    ImagePage page3 = new ImagePage(
         "f68e307b-c41b-412a-a2e2-60418fbbef27",
         "63r",
         dateFormat.parse("2019-03-11T14:10:39Z"), "", "");
     page3.setManuscriptId("0d5aa650-2f1e-4dd3-8eed-66a94771ca7c");
-    
+
     Manuscript manuscript1 = new Manuscript(
         "000073cd-c425-4214-9648-b380ff20c61a",
         dateFormat.parse("2019-03-11T14:13:45Z"),
@@ -357,7 +368,7 @@ class AccessServiceTest {
     pagesManuscript1.add(page2);
     manuscript1.setPages(pagesManuscript1);
     manuscript1.setLastModified(dateFormat.parse("2019-03-11T14:13:45Z"));
-    
+
     Manuscript manuscript2 = new Manuscript(
         "0d5aa650-2f1e-4dd3-8eed-66a94771ca7c",
         dateFormat.parse("2019-03-11T14:10:42Z"),
@@ -368,17 +379,17 @@ class AccessServiceTest {
     pagesManuscript2.add(page3);
     manuscript2.setPages(pagesManuscript2);
     manuscript2.setLastModified(dateFormat.parse("2019-03-11T14:10:42Z"));
-    
-    
+
+
     List<String> creatorListAkita = new ArrayList<>();
     creatorListAkita.add("M. K.");
     creatorListAkita.add("Akita");
     List<String> creatorList = new ArrayList<>();
     creatorList.add("M. K.");
-    
+
     List<String> creatorAlgorithm = new ArrayList<>();
     creatorAlgorithm.add("urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac");
-    
+
     Annotation annotation1 = new Annotation();
     annotation1.setId("http://sampleannoserver.edu/wap/a04/deinterpretatione/51e65450-1059-462f-91aa-cea2bb5de298");
     annotation1.setCreated(dateFormat.parse("2018-02-06T11:06:01Z"));
@@ -390,7 +401,7 @@ class AccessServiceTest {
     annotation1.setSvgCode("<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"0\" y=\"3307\" width=\"587\" height=\"1047\"/></svg>");
     annotation1.setMotivation("describing");
     annotation1.setVia("http://sampleannoserver.edu/wap/w3c/aea27124-b3be-417a-a3f3-ce9803f9afb4/0073d61a-5d3a-49c7-bffd-2cc0ae0d8443");
-    
+
     Annotation annotation2 = new Annotation();
     annotation2.setId("http://sampleannoserver.edu/wap/a04/deinterpretatione/3fe548c5-8be6-40f7-88c8-0118e47c9ac8");
     annotation2.setCreated(dateFormat.parse("2018-02-09T18:31:07Z"));
@@ -402,7 +413,7 @@ class AccessServiceTest {
     annotation2.setSvgCode("<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"2140\" y=\"3170\" width=\"200\" height=\"205\"/></svg>");
     annotation2.setMotivation("describing");
     annotation2.setVia("http://sampleannoserver.edu/wap/w3c/aea27124-b3be-417a-a3f3-ce9803f9afb4/00053422-d1b4-417d-b659-a294facb6485");
-    
+
     Annotation annotation3 = new Annotation();
     annotation3.setId("http://sampleannoserver.edu/wap/a04/validated/7a82a8b2-0398-4b59-aed3-ab6597b26d39");
     annotation3.setCreated(dateFormatMillis.parse("2019-07-04T09:23:24.014Z"));
@@ -415,7 +426,7 @@ class AccessServiceTest {
     annotation3.setSvgCode("<svg><rect x=\"245\" y=\"-2\" width=\"3070\" height=\"4690\"/></svg>");
     annotation3.setMotivation("describing");
     annotation3.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/471a5c9c-25a5-4485-a213-7b51221dba9b");
-    
+
     Annotation annotation4 = new Annotation();
     annotation4.setId("http://sampleannoserver.edu/wap/a04/validated/cd9267d1-5402-4f48-ae99-8b5559ccc456");
     annotation4.setCreated(dateFormatMillis.parse("2019-07-04T07:00:54.634Z"));
@@ -428,7 +439,7 @@ class AccessServiceTest {
     annotation4.setSvgCode("<svg><rect x=\"214\" y=\"73\" width=\"3008\" height=\"4467\"/></svg>");
     annotation4.setMotivation("describing");
     annotation4.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/c6c83ff9-3b68-4965-9e7a-359abad3eb9d");
-    
+
     TextCard textCard1 = new TextCard("0");
     textCard1.setAnnotationId(annotation1.getId());
     textCard1.setCreated(annotation1.getCreated());
@@ -439,7 +450,7 @@ class AccessServiceTest {
     textCard1.setFullJson(
         new JSONObject(readStringFromRelativePath("getManuscripts/textCard1.json")));
     annotation1.addTextCard(textCard1);
-    
+
     TextCard textCard2 = new TextCard("1");
     textCard2.setAnnotationId(annotation2.getId());
     textCard2.setCreated(annotation2.getCreated());
@@ -450,7 +461,7 @@ class AccessServiceTest {
     textCard2.setFullJson(
         new JSONObject(readStringFromRelativePath("getManuscripts/textCard2.json")));
     annotation2.addTextCard(textCard2);
-    
+
     TextCard textCard3 = new TextCard("2");
     textCard3.setAnnotationId(annotation3.getId());
     textCard3.setCreated(annotation3.getCreated());
@@ -459,7 +470,7 @@ class AccessServiceTest {
     textCard3.setFullJson(
         new JSONObject(readStringFromRelativePath("getManuscripts/textCard3.json")));
     annotation3.addTextCard(textCard3);
-    
+
     Tag tag1 = new Tag("3");
     tag1.setAnnotationId(annotation4.getId());
     tag1.setCreated(annotation4.getCreated());
@@ -470,10 +481,10 @@ class AccessServiceTest {
         new JSONObject(readStringFromRelativePath("getManuscripts/tag1.json")));
     annotation4.addTag(tag1);
 
-    ((ImagePage) page1).getAnnotations().add(annotation1);
-    ((ImagePage) page2).getAnnotations().add(annotation2);
-    ((ImagePage) page3).getAnnotations().add(annotation3);
-    ((ImagePage) page3).getAnnotations().add(annotation4);
+    page1.getAnnotations().add(annotation1);
+    page2.getAnnotations().add(annotation2);
+    page3.getAnnotations().add(annotation3);
+    page3.getAnnotations().add(annotation4);
     List<JSONObject> annotationsPage1 = new ArrayList<>();
     annotationsPage1.add(annotationJson1);
     List<JSONObject> annotationsPage2 = new ArrayList<>();
@@ -481,12 +492,16 @@ class AccessServiceTest {
     List<JSONObject> annotationsPage3 = new ArrayList<>();
     annotationsPage3.add(annotationJson3);
     annotationsPage3.add(annotationJson4);
-    
+
     Mockito.when(mockedRepositoryAccessService.getAllManuscripts())
         .thenReturn(manuscriptsJson);
     Mockito.when(mockedRepositoryAccessService.getManuscriptsModifiedAfter(
         IRepositoryAccessService.TIMESTAMP_FORMAT.parse("2019-03-10T14:13:45Z")))
         .thenReturn(manuscriptsJson);
+    Mockito.when(mockedRepositoryAccessService.getManuscriptById(manuscript1.getId()))
+        .thenReturn(manuscriptJson1);
+    Mockito.when(mockedRepositoryAccessService.getManuscriptById(manuscript2.getId()))
+        .thenReturn(manuscriptJson2);
     Mockito.when(mockedRepositoryAccessService.getPageAssignmentForManuscriptId(manuscript1.getId()))
         .thenReturn(assignmentJson1);
     Mockito.when(mockedRepositoryAccessService.getPageAssignmentForManuscriptId(manuscript2.getId()))
@@ -505,14 +520,255 @@ class AccessServiceTest {
         .thenReturn(annotationsPage2);
     Mockito.when(mockedAnnotationStoreAccessService.getAnnotationsByPageId(page3.getId(), page3.getPageNumber()))
         .thenReturn(annotationsPage3);
-    
-    
+
+
     List<Manuscript> manuscripts = new ArrayList<>();
     manuscripts.add(manuscript1);
     manuscripts.add(manuscript2);
     return manuscripts;
   }
-  
+
+  private List<Manuscript> buildMoreMocksAndManuscripts() throws IOException, JSONException, ParseException, InterruptedException {
+    JSONObject annotationJson1
+        = new JSONObject(readStringFromRelativePath("getManuscripts/annotation1.json"));
+    JSONObject annotationJson2
+        = new JSONObject(readStringFromRelativePath("getManuscripts/annotation2.json"));
+    JSONObject annotationJson3
+        = new JSONObject(readStringFromRelativePath("getManuscripts/annotation3.json"));
+    JSONObject annotationJson4
+        = new JSONObject(readStringFromRelativePath("getManuscripts/annotation4.json"));
+    JSONObject pageJson1
+        = new JSONObject(readStringFromRelativePath("getManuscripts/page4.json"));
+    JSONObject pageJson2
+        = new JSONObject(readStringFromRelativePath("getManuscripts/page5.json"));
+    JSONObject pageJson3
+        = new JSONObject(readStringFromRelativePath("getManuscripts/page6.json"));
+    JSONObject manuscriptJson1
+        = new JSONObject(readStringFromRelativePath("getManuscripts/manuscript3.json"));
+    JSONObject manuscriptJson2
+        = new JSONObject(readStringFromRelativePath("getManuscripts/manuscript4.json"));
+    JSONObject manuscriptJson3
+        = new JSONObject(readStringFromRelativePath("getManuscripts/manuscript5.json"));
+    JSONArray assignmentJson1
+        = new JSONArray(readStringFromRelativePath("getManuscripts/pageAssignment3.json"));
+    JSONArray assignmentJson2
+        = new JSONArray(readStringFromRelativePath("getManuscripts/pageAssignment4.json"));
+    JSONArray assignmentJson3
+        = new JSONArray(readStringFromRelativePath("getManuscripts/pageAssignment5.json"));
+
+    List<JSONObject> manuscriptsJson = new ArrayList<>();
+    manuscriptsJson.add(manuscriptJson1);
+    manuscriptsJson.add(manuscriptJson2);
+    manuscriptsJson.add(manuscriptJson3);
+
+    List<JSONObject> annotationsJson = new ArrayList<>();
+    annotationsJson.add(annotationJson1);
+    annotationsJson.add(annotationJson2);
+    annotationsJson.add(annotationJson3);
+    annotationsJson.add(annotationJson4);
+
+    DateFormat dateFormat = IRepositoryAccessService.TIMESTAMP_FORMAT;
+    DateFormat dateFormatMillis = IRepositoryAccessService.TIMESTAMP_FORMAT_MILLIS;
+
+    ImagePage page1 = new ImagePage(
+        "3b868555-f0ac-4de7-abbc-5c14c0742dbf",
+        "6869",
+        dateFormat.parse("2019-03-12T14:11:35Z"), "", "");
+    page1.setManuscriptId("000c557c-4a11-405e-8bbc-a0d4ea5844a4");
+
+    ImagePage page2 = new ImagePage(
+        "33f1a3cf-d06e-429b-996e-3ab794c9767e",
+        "1069",
+        dateFormat.parse("2019-03-11T14:09:45Z"), "", "");
+    page2.setManuscriptId("00125ead-bf62-475e-aeb6-0d2b30df5648");
+
+    ImagePage page3 = new ImagePage(
+        "4b756754-54a2-4932-8b1e-a33889ab0c37",
+        "7559",
+        dateFormat.parse("2019-08-26T09:21:02Z"), "", "");
+    page3.setManuscriptId("001abeb0-f0e4-43ed-be1e-ed37f02cd02b");
+
+    Manuscript manuscript1 = new Manuscript(
+        "000c557c-4a11-405e-8bbc-a0d4ea5844a4",
+        dateFormat.parse("2019-03-11T14:09:50Z"),
+        "Vatikan Reg Gr 116, 073r",
+        "SFB 980 - A04",
+        2019);
+    List<Page> pagesManuscript1 = new ArrayList<>();
+    pagesManuscript1.add(page1);
+    manuscript1.setPages(pagesManuscript1);
+    manuscript1.setLastModified(dateFormat.parse("2019-03-11T14:09:50Z"));
+
+    Manuscript manuscript2 = new Manuscript(
+        "00125ead-bf62-475e-aeb6-0d2b30df5648",
+        dateFormat.parse("2019-03-12T14:11:29Z"),
+        "Vatikan Urb gr 56, 084v",
+        "SFB 980 - A04",
+        2019);
+    List<Page> pagesManuscript2 = new ArrayList<>();
+    pagesManuscript2.add(page2);
+    manuscript2.setPages(pagesManuscript2);
+    manuscript2.setLastModified(dateFormat.parse("2019-03-12T14:11:29Z"));
+
+    Manuscript manuscript3 = new Manuscript(
+        "001abeb0-f0e4-43ed-be1e-ed37f02cd02b",
+        dateFormat.parse("2019-03-11T14:09:50Z"),
+        "Vatikan Reg Gr 116, 073r",
+        "SFB 980 - A04",
+        2019);
+    List<Page> pagesManuscript3 = new ArrayList<>();
+    pagesManuscript3.add(page3);
+    manuscript3.setPages(pagesManuscript3);
+    manuscript3.setLastModified(dateFormat.parse("2019-03-11T14:09:50Z"));
+
+
+    List<String> creatorListAkita = new ArrayList<>();
+    creatorListAkita.add("M. K.");
+    creatorListAkita.add("Akita");
+    List<String> creatorList = new ArrayList<>();
+    creatorList.add("M. K.");
+
+    List<String> creatorAlgorithm = new ArrayList<>();
+    creatorAlgorithm.add("urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac");
+
+    Annotation annotation1 = new Annotation();
+    annotation1.setId("http://sampleannoserver.edu/wap/a04/deinterpretatione/51e65450-1059-462f-91aa-cea2bb5de298");
+    annotation1.setCreated(dateFormat.parse("2018-02-06T11:06:01Z"));
+    annotation1.setCreators(creatorAlgorithm);
+    annotation1.setModified(dateFormat.parse("2019-05-08T10:59:38Z"));
+    annotation1.setColor(Color.TEXT_REGION);
+    annotation1.setIsAlgorithmAnnotation(true);
+    annotation1.setPageId("5172f6cb-78c6-403d-b6eb-64d7738c76aa");
+    annotation1.setSvgCode("<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"0\" y=\"3307\" width=\"587\" height=\"1047\"/></svg>");
+    annotation1.setMotivation("describing");
+    annotation1.setVia("http://sampleannoserver.edu/wap/w3c/aea27124-b3be-417a-a3f3-ce9803f9afb4/0073d61a-5d3a-49c7-bffd-2cc0ae0d8443");
+
+    Annotation annotation2 = new Annotation();
+    annotation2.setId("http://sampleannoserver.edu/wap/a04/deinterpretatione/3fe548c5-8be6-40f7-88c8-0118e47c9ac8");
+    annotation2.setCreated(dateFormat.parse("2018-02-09T18:31:07Z"));
+    annotation2.setCreators(creatorAlgorithm);
+    annotation2.setModified(dateFormat.parse("2019-03-11T14:09:50Z"));
+    annotation2.setColor(Color.TEXT_REGION);
+    annotation2.setIsAlgorithmAnnotation(true);
+    annotation2.setPageId("3f3bf25b-e0b9-48a9-b344-20630f733f8b");
+    annotation2.setSvgCode("<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"2140\" y=\"3170\" width=\"200\" height=\"205\"/></svg>");
+    annotation2.setMotivation("describing");
+    annotation2.setVia("http://sampleannoserver.edu/wap/w3c/aea27124-b3be-417a-a3f3-ce9803f9afb4/00053422-d1b4-417d-b659-a294facb6485");
+
+    Annotation annotation3 = new Annotation();
+    annotation3.setId("http://sampleannoserver.edu/wap/a04/validated/7a82a8b2-0398-4b59-aed3-ab6597b26d39");
+    annotation3.setCreated(dateFormatMillis.parse("2019-07-04T09:23:24.014Z"));
+    annotation3.setCreators(creatorList);
+    annotation3.setModified(dateFormat.parse("2019-07-04T09:25:56Z"));
+    annotation3.setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/471a5c9c-25a5-4485-a213-7b51221dba9b");
+    annotation3.setColor(Color.PAGE_REGION);
+    annotation3.setIsAlgorithmAnnotation(false);
+    annotation3.setPageId("f68e307b-c41b-412a-a2e2-60418fbbef27");
+    annotation3.setSvgCode("<svg><rect x=\"245\" y=\"-2\" width=\"3070\" height=\"4690\"/></svg>");
+    annotation3.setMotivation("describing");
+    annotation3.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/471a5c9c-25a5-4485-a213-7b51221dba9b");
+
+    Annotation annotation4 = new Annotation();
+    annotation4.setId("http://sampleannoserver.edu/wap/a04/validated/cd9267d1-5402-4f48-ae99-8b5559ccc456");
+    annotation4.setCreated(dateFormatMillis.parse("2019-07-04T07:00:54.634Z"));
+    annotation4.setCreators(creatorList);
+    annotation4.setModified(dateFormat.parse("2019-07-04T09:14:59Z"));
+    annotation4.setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/c6c83ff9-3b68-4965-9e7a-359abad3eb9d");
+    annotation4.setColor(Color.TEXT_REGION);
+    annotation4.setIsAlgorithmAnnotation(false);
+    annotation4.setPageId("f68e307b-c41b-412a-a2e2-60418fbbef27");
+    annotation4.setSvgCode("<svg><rect x=\"214\" y=\"73\" width=\"3008\" height=\"4467\"/></svg>");
+    annotation4.setMotivation("describing");
+    annotation4.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/c6c83ff9-3b68-4965-9e7a-359abad3eb9d");
+
+    TextCard textCard1 = new TextCard("0");
+    textCard1.setAnnotationId(annotation1.getId());
+    textCard1.setCreated(annotation1.getCreated());
+    textCard1.setModified(annotation1.getModified());
+    textCard1.setCreators(creatorAlgorithm);
+    textCard1.setTitle("VPOS");
+    textCard1.setValue("20.997332");
+    textCard1.setFullJson(
+        new JSONObject(readStringFromRelativePath("getManuscripts/textCard1.json")));
+    annotation1.addTextCard(textCard1);
+
+    TextCard textCard2 = new TextCard("1");
+    textCard2.setAnnotationId(annotation2.getId());
+    textCard2.setCreated(annotation2.getCreated());
+    textCard2.setModified(annotation2.getModified());
+    textCard2.setCreators(creatorAlgorithm);
+    textCard2.setTitle("RelativeVPOS");
+    textCard2.setValue("90.390656");
+    textCard2.setFullJson(
+        new JSONObject(readStringFromRelativePath("getManuscripts/textCard2.json")));
+    annotation2.addTextCard(textCard2);
+
+    TextCard textCard3 = new TextCard("2");
+    textCard3.setAnnotationId(annotation3.getId());
+    textCard3.setCreated(annotation3.getCreated());
+    textCard3.setModified(annotation3.getModified());
+    textCard3.setCreators(creatorList);
+    textCard3.setFullJson(
+        new JSONObject(readStringFromRelativePath("getManuscripts/textCard3.json")));
+    annotation3.addTextCard(textCard3);
+
+    Tag tag1 = new Tag("3");
+    tag1.setAnnotationId(annotation4.getId());
+    tag1.setCreated(annotation4.getCreated());
+    tag1.setModified(annotation4.getModified());
+    tag1.setCreators(creatorList);
+    tag1.setValue("16a8");
+    tag1.setFullJson(
+        new JSONObject(readStringFromRelativePath("getManuscripts/tag1.json")));
+    annotation4.addTag(tag1);
+
+    page1.getAnnotations().add(annotation1);
+    page2.getAnnotations().add(annotation2);
+    page3.getAnnotations().add(annotation3);
+    page3.getAnnotations().add(annotation4);
+    List<JSONObject> annotationsPage1 = new ArrayList<>();
+    annotationsPage1.add(annotationJson1);
+    List<JSONObject> annotationsPage2 = new ArrayList<>();
+    annotationsPage2.add(annotationJson2);
+    List<JSONObject> annotationsPage3 = new ArrayList<>();
+    annotationsPage3.add(annotationJson3);
+    annotationsPage3.add(annotationJson4);
+
+    Mockito.when(mockedRepositoryAccessService.getManuscriptById(manuscript1.getId()))
+        .thenReturn(manuscriptJson1);
+    Mockito.when(mockedRepositoryAccessService.getManuscriptById(manuscript2.getId()))
+        .thenReturn(manuscriptJson2);
+    Mockito.when(mockedRepositoryAccessService.getManuscriptById(manuscript3.getId()))
+        .thenReturn(manuscriptJson3);
+    Mockito.when(mockedRepositoryAccessService.getPageAssignmentForManuscriptId(manuscript1.getId()))
+        .thenReturn(assignmentJson1);
+    Mockito.when(mockedRepositoryAccessService.getPageAssignmentForManuscriptId(manuscript2.getId()))
+        .thenReturn(assignmentJson2);
+    Mockito.when(mockedRepositoryAccessService.getPageAssignmentForManuscriptId(manuscript3.getId()))
+        .thenReturn(assignmentJson3);
+    Mockito.when(mockedRepositoryAccessService.getPageById(page1.getId()))
+        .thenReturn(pageJson1);
+    Mockito.when(mockedRepositoryAccessService.getPageById(page2.getId()))
+        .thenReturn(pageJson2);
+    Mockito.when(mockedRepositoryAccessService.getPageById(page3.getId()))
+        .thenReturn(pageJson3);
+    Mockito.when(mockedAnnotationStoreAccessService.getAllAnnotations())
+        .thenReturn(annotationsJson);
+    Mockito.when(mockedAnnotationStoreAccessService.getAnnotationsByPageId(page1.getId(), page1.getPageNumber()))
+        .thenReturn(annotationsPage1);
+    Mockito.when(mockedAnnotationStoreAccessService.getAnnotationsByPageId(page2.getId(), page2.getPageNumber()))
+        .thenReturn(annotationsPage2);
+    Mockito.when(mockedAnnotationStoreAccessService.getAnnotationsByPageId(page3.getId(), page3.getPageNumber()))
+        .thenReturn(annotationsPage3);
+
+
+    List<Manuscript> manuscripts = new ArrayList<>();
+    manuscripts.add(manuscript1);
+    manuscripts.add(manuscript2);
+    manuscripts.add(manuscript3);
+    return manuscripts;
+  }
+
   private void assertEqualManuscriptLists(List<Manuscript> expectedManuscripts,
                                          List<Manuscript> actualManuscripts) throws org.json.JSONException, JSONException {
   

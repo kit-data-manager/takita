@@ -44,6 +44,12 @@ public class AccessService implements IAccessService {
   private static final String ALGORITHM_CREATOR_PREFIX = "urn:uuid";
   private static final String SOURCE_PATTERN_STRING = "/dataresources/(.*?)/data/";
 
+  private static final String manuscriptId1 = "000073cd-c425-4214-9648-b380ff20c61a";
+  private static final String manuscriptId2 = "0d5aa650-2f1e-4dd3-8eed-66a94771ca7c";
+  private static final String manuscriptId3 = "000c557c-4a11-405e-8bbc-a0d4ea5844a4";
+  private static final String manuscriptId4 = "00125ead-bf62-475e-aeb6-0d2b30df5648";
+  private static final String manuscriptId5 = "001abeb0-f0e4-43ed-be1e-ed37f02cd02b";
+
   @Value("${repository.baseUrl}")
   private String baseUrl;
   @Value("${repository.staticPath}")
@@ -287,7 +293,7 @@ public class AccessService implements IAccessService {
     for (Annotation annotation : newAnnotations) {
       Page page = searchIndexService.getPageById(annotation.getPageId());
       Manuscript manuscript = searchIndexService.getManuscriptById(page.getManuscriptId());
-      if (!((ImagePage) page).getAnnotations().contains(annotation)) {
+      if (!page.getAnnotations().contains(annotation)) {
         ((ImagePage) page).addAnnotation(annotation);
       }
       manuscripts.add(manuscript);
@@ -304,6 +310,33 @@ public class AccessService implements IAccessService {
     }
 
     return manuscripts;
+  }
+
+  /**
+   * Gets a limited number of manuscripts with pages and annotations specified above.
+   *
+   * @return List of some manuscripts
+   * @throws InterruptedException when http request is interrupted
+   * @throws JSONException when there is a problem with parsing the JSON files
+   * @throws IOException when the http request is faulty
+   */
+  @Override
+  public List<Manuscript> getFewManuscripts()
+      throws InterruptedException, JSONException, IOException {
+    List<String> manuscriptIds = new ArrayList<>();
+    manuscriptIds.add(manuscriptId1);
+    manuscriptIds.add(manuscriptId2);
+    manuscriptIds.add(manuscriptId3);
+    manuscriptIds.add(manuscriptId4);
+    manuscriptIds.add(manuscriptId5);
+
+    List<Manuscript> reducedManuscripts = new ArrayList<>();
+    for (String id : manuscriptIds) {
+      reducedManuscripts.add(buildManuscriptFromJson(
+          repositoryAccessService.getManuscriptById(id), null));
+    }
+
+    return reducedManuscripts;
   }
 
   /**

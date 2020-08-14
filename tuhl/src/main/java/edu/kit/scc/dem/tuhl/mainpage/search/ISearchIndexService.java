@@ -41,6 +41,15 @@ public interface ISearchIndexService {
    */
   void updateIndex() throws InterruptedException, JSONException, IOException;
 
+  /**
+   * Builds a new search index from scratch. This search index is limited to 5 manuscripts.
+   *
+   * @throws IOException if an error occurs while sending/receiving http request to annotation store
+   * @throws InterruptedException if http request is interrupted
+   * @throws JSONException if an error occurs while parsing the JSON
+   */
+  void buildSmallIndex() throws InterruptedException, IOException, JSONException;
+
 
   //CRUD Annotation
 

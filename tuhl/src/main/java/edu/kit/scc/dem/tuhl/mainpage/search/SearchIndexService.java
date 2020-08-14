@@ -184,6 +184,48 @@ public class SearchIndexService implements ISearchIndexService {
     return elasticsearchRestTemplate.execute(client ->
         client.indices().exists(new GetIndexRequest(INDEX_NAME), RequestOptions.DEFAULT));
   }
+
+  /**
+   * Builds a new search index from scratch. This search index is limited to 5 manuscripts.
+   *
+   * @throws IOException if an error occurs while sending/receiving http request to annotation store
+   * @throws InterruptedException if http request is interrupted
+   * @throws JSONException if an error occurs while parsing the JSON
+   */
+  @Override
+  public void buildSmallIndex() throws InterruptedException, IOException, JSONException {
+    logger.info("Limited Index rebuild started. Deleting old index.");
+    LocalDateTime startBuild = LocalDateTime.now();
+    deleteIndex();
+
+    //Creating the index
+    elasticsearchRestTemplate.execute(client ->
+        client.indices().create(new CreateIndexRequest(INDEX_NAME)
+                .settings(Settings.builder()
+                    .put("index.mapping.nested_objects.limit", 1000000)),
+            RequestOptions.DEFAULT));
+
+    logger.info("Building new small index.");
+    IndexOperations indexOp = elasticsearchRestTemplate.indexOps(Manuscript.class);
+    indexOp.putMapping(indexOp.createMapping(Manuscript.class));
+    indexOp.putMapping(indexOp.createMapping(ImagePage.class));
+    indexOp.putMapping(indexOp.createMapping(TextPage.class));
+    indexOp.putMapping(indexOp.createMapping(Annotation.class));
+    indexOp.putMapping(indexOp.createMapping(Tag.class));
+    indexOp.putMapping(indexOp.createMapping(TextCard.class));
+
+    List<Manuscript> allManuscripts = accessService.getFewManuscripts();
+    logger.info("Indexing Manuscripts.");
+
+    for (Manuscript manuscript : allManuscripts) {
+      manuscriptRepository.save(manuscript);
+    }
+    indexOp.refresh();
+
+    Duration duration = Duration.between(startBuild, LocalDateTime.now());
+    logger.info("Finished limited index build in {} minutes and {} seconds", duration.toMinutes(),
+        duration.getSeconds() % 60);
+  }
   
   //CRUD Annotation
 

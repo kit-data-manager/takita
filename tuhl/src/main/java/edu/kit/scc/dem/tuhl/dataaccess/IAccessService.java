@@ -50,6 +50,16 @@ public interface IAccessService {
       ParseException, NoSuchIndexEntryException;
 
   /**
+   * Gets a limited number of manuscripts with pages and annotations specified above.
+   *
+   * @return List of some manuscripts
+   * @throws InterruptedException when http request is interrupted
+   * @throws JSONException when there is a problem with parsing the JSON files
+   * @throws IOException when the http request is faulty
+   */
+  List<Manuscript> getFewManuscripts() throws InterruptedException, JSONException, IOException;
+
+  /**
    * Converts annotation to JSONObject so it can be added to database more easily,
    * then tells AnnotationStoreAccess to add it.
    *
