@@ -65,6 +65,7 @@
             <div class="input-group-prepend">
                 <button type="button"
                         class="btn btn-secondary"
+                        id="prevPage"
                         onclick="goToPrevPage()" th:text="#{buttons.prev}"> </button>
             </div>
 
@@ -74,7 +75,6 @@
                    id="pageNumberInput"
                    min="1"
                    th:max="${numberOfPages}"
-                   onkeyup="if(this.value > this.max) {this.value = this.max}"
                    required>
             <div class="input-group-append">
                 <button type="submit"
@@ -82,6 +82,7 @@
                         th:text="#{buttons.ok}"> </button>
                 <button type="button"
                         class="btn btn-secondary"
+                        id="nextPage"
                         onclick="goToNextPage()" th:text="#{buttons.next}"> </button>
             </div>
 
@@ -93,30 +94,33 @@
                 th:text="${numberOfPages}"
                 onclick="goToLastPage()"> </button>
     </div>
-
-    <div class="col-auto">
-        <label th:text="#{input_label.resultsPerPage}"></label>
-        <input type="number"
-               id="resultsPerPage">
-        <button type="button"
-                class="btn btn-secondary"
-                th:text="#{buttons.ok}"
-                onclick="setResultsPerPage()">
-        </button>
-    </div>
-    
 </div>
 </form>
+
+    <div class="col-auto">
+        <form onsubmit="setResultsPerPage(event)">
+        <label th:text="#{input_label.resultsPerPage}"></label>
+        <input class="form-control"
+                type="number"
+               id="resultsPerPage"
+               th:value="${noResults}"
+        min="1">
+        <button type="submit"
+                class="btn btn-secondary"
+                th:text="#{buttons.ok}">
+        </button>
+    </form>
+    </div>
+    
+
 
 <script src="js/table_view.js"></script>
 <script th:inline="javascript">
 
     function getValue(event){
         event.preventDefault();
-        let input = $('#pageNumberInput').val();
-        if(input > 1){
-            callPage(input);
-        }
+        callPage($('#pageNumberInput').val());
+
     }
 
     $('#save-config').change(function () {
@@ -128,7 +132,7 @@
     })
 
     /*<![CDATA[*/
-    document.getElementById("pageNumberInput").value = [[${user.getCurrentPage()}]];
+    // document.getElementById("pageNumberInput").value = [[${user.getCurrentPage()}]];
     /*]]>*/
 
     // loads data for table with thymeleaf
@@ -257,17 +261,24 @@
         /*<![CDATA[*/
         let currentPage = [[${currentPage}]];
         /*]]>*/
-        currentPage--;
-        callPage(currentPage);
+        if(currentPage > 1){
+            currentPage--;
+            callPage(currentPage);
+        }
+
     }
 
     //go to next page call
     function goToNextPage() {
         /*<![CDATA[*/
         let currentPage = [[${currentPage}]];
+
+        if(currentPage < [[${numberOfPages}]]){
+            currentPage++;
+            callPage(currentPage);
+        }
+
         /*]]>*/
-        currentPage++;
-        callPage(currentPage);
     }
 
     function callPage(currentPage){
@@ -277,7 +288,7 @@
             dataType: 'text',
 
             success: function (responseData) {
-                updateData();
+                // updateData();
                 $('#dashboard').load('/tableview/flag');
             }
         })
@@ -299,18 +310,6 @@
         return sort
     }
 
-    function updateData(){
-        window.table.replaceData(loadData()).then(function(){
-            setHeaderMenues();
-        setThumbCheckbox();
-        checkThumb();
-        createDropdown();}
-        ).catch(function(error){
-            console.log(error);
-            //handle error loading data
-        });
-
-    }
     // creates Table
     /*<![CDATA[*/
     window.table = new Tabulator("#searchresults", {
@@ -379,7 +378,6 @@
                 cardBody.setAttribute('class', 'card card-body no-wrap');
                 let outerRow = document.createElement('div');
                 outerRow.setAttribute('class', 'row');
-
                 thumbnails.forEach(function(item, index){
                     let col = document.createElement('div');
                     col.setAttribute('class', 'mx-1 col-auto');
@@ -407,60 +405,34 @@
                     col.appendChild(innerRow2);
                     outerRow.appendChild(col);
                 })
-
                 cardBody.appendChild(outerRow);
                 holder.appendChild(cardBody);
                 row.getElement().appendChild(holder);
             } else {
                 document.getElementById('holder' + id).remove();
             }
-
-
         },
         columns: window.cols,
-        /*
-        rowFormatter: function (row) {
-            let holder = document.createElement('div');
-            holder.style.display = 'none';
-            holder.setAttribute('id', 'holder')
-            let para = document.createElement('p');
-            para.innerText = row.getData().thumbnails;
-            holder.appendChild(para);
-            row.getElement().appendChild(holder);
-
-
-            //create subtable with thumbnails
-            let holderEl = document.createElement("div");
-            let tableEl = document.createElement("div");
-            holderEl.setAttribute('class', 'subTable');
-            const id = row.getData().id;
-            tableEl.setAttribute('class', "subTable" + id + "");
-            tableEl.setAttribute('id', id);
-            holderEl.appendChild(tableEl);
-            row.getElement().appendChild(holderEl);
-            let subTable = new Tabulator(tableEl, {
-                layout: "fitColumns",
-                //TODO: fill in right thumbnails (maybe here)
-                data: row.getData().thumbnails,
-                columns: [{title:"id", field:"id", headerSort:false, visible: false},
-                    {title: [[#{col_name.thumbnails}]], field: "thumb", headerSort: false, formatter:"image"}],
-                rowDblClick: function (e, row) {
-                    //opens editor on page
-                    const id = row.getData().id;
-                    location.href = "editor/" + id;
-
-                },
-            });
- }
-             */
-
     });
     /*]]>*/
     // call functions after table has been created
     setHeaderMenues();
     createDropdown();
     setThumbCheckbox();
-    checkThumb();
+    disableButtons();
+
+    function disableButtons(){
+        /*<![CDATA[*/
+        let currentPage = [[${currentPage}]];
+
+        if(currentPage === [[${numberOfPages}]]){
+            $('#nextPage').prop("disabled",true);
+        }
+        if(currentPage === 1){
+            $('#prevPage').prop("disabled",true);
+        }
+        /*]]>*/
+    }
 
 
     function setThumbCheckbox(){

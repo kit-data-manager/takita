@@ -113,7 +113,7 @@ public class TableViewController {
    * @return tabelview html
    */
   @GetMapping("/flag")
-  public String getNePage(Model model) {
+  public String setFlag(Model model) {
 
     mainPageService.update(model);
     model.addAttribute("flag", true);
@@ -136,6 +136,15 @@ public class TableViewController {
     tableViewService.setCurrentPage(1);
     tableViewService.setSortAsc(order.equals("asc"));
     tableViewService.setSortField(column);
+    mainPageService.update(model);
+    return "placeholder";
+  }
+
+  @GetMapping("/results_per_page/{noResults}")
+  @ResponseBody
+  public String setResultPerPage(@PathVariable("noResults") int noResults, Model model){
+    tableViewService.setNumberOfResults(noResults);
+    tableViewService.setCurrentPage(1);
     mainPageService.update(model);
     return "placeholder";
   }

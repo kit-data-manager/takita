@@ -180,4 +180,8 @@ public class TableViewService implements IContentViewService {
     model.addAttribute("currentPage", getCurrentPage());
     model.addAttribute("flag", false);
   }
+
+  public void setNumberOfResults(int noResults){
+    searchService.setPageSize(noResults);
+  }
 }

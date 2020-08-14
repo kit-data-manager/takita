@@ -197,6 +197,7 @@ public class SearchService implements ISearchService {
   public void updateModel(Model model) {
       model.addAttribute("numberOfPages", checkForEmptyResults());
       model.addAttribute("searchterm", searchTerm);
+      model.addAttribute("noResults", pageSize);
     }
 
     private long checkForEmptyResults(){
