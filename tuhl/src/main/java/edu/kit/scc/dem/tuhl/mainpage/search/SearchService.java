@@ -195,7 +195,14 @@ public class SearchService implements ISearchService {
    * @param model the holder for model attributes, used to pass attributes back to the view
    */
   public void updateModel(Model model) {
-    model.addAttribute("numberOfPages", getResultPagesCount());
-    model.addAttribute("searchterm", searchTerm);
-  }
+      model.addAttribute("numberOfPages", checkForEmptyResults());
+      model.addAttribute("searchterm", searchTerm);
+    }
+
+    private long checkForEmptyResults(){
+      if (getResultPagesCount() < 1){
+        return 1;
+      }
+      return getResultPagesCount();
+    }
 }
