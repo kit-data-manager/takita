@@ -24,7 +24,7 @@ Override the default path to the manuscript repository. The default path is `api
 * `--annotationStore.url=<myUrl>`  
 Override the default url of the root annotation
  container containing the `validated` and `deinterpretatione` containers. The default url is
-  `http://sampleannoserver.edu/wap/a04` 
+  `http://sampleannoserver.edu/wap/a04/` 
 
 ##### Search Index
 * `buildIndex`  
