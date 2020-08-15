@@ -1,0 +1,90 @@
+{
+  "id": "001abeb0-f0e4-43ed-be1e-ed37f02cd02b",
+  "identifier": {
+    "id": 574,
+    "value": "(:tba)",
+    "identifierType": "DOI"
+  },
+  "creators": [
+    {
+      "id": 574,
+      "familyName": null,
+      "givenName": "SELF",
+      "affiliations": []
+    }
+  ],
+  "titles": [
+    {
+      "id": 574,
+      "value": "Vatikan Reg Gr 116, 073r",
+      "titleType": null,
+      "lang": null
+    }
+  ],
+  "publisher": "SFB 980 - A04",
+  "publicationYear": "2019",
+  "resourceType": {
+    "id": 574,
+    "value": "manuscriptPage",
+    "typeGeneral": "IMAGE"
+  },
+  "subjects": [],
+  "contributors": [],
+  "dates": [
+    {
+      "id": 574,
+      "value": "2019-03-11T14:09:50Z",
+      "type": "CREATED"
+    }
+  ],
+  "relatedIdentifiers": [
+    {
+      "id": 1135,
+      "identifierType": "URL",
+      "value": "http://samplerepo.edu/api/v1/dataresources/c0a3be47-ce53-4dee-a8b7-07b2467d6c39",
+      "relationType": "HAS_METADATA",
+      "scheme": null,
+      "relatedMetadataScheme": null
+    }
+  ],
+  "descriptions": [],
+  "geoLocations": [
+    {
+      "id": 1148,
+      "point": null,
+      "box": null,
+      "polygon": null,
+      "place": "Vatikan"
+    },
+    {
+      "id": 1147,
+      "point": null,
+      "box": null,
+      "polygon": null,
+      "place": "Biblioteca Apostolica Vaticana"
+    }
+  ],
+  "language": null,
+  "alternateIdentifiers": [
+    {
+      "id": 574,
+      "value": "001abeb0-f0e4-43ed-be1e-ed37f02cd02b",
+      "identifierType": "INTERNAL"
+    }
+  ],
+  "sizes": [],
+  "formats": [],
+  "version": null,
+  "rights": [],
+  "fundingReferences": [],
+  "lastUpdate": "",
+  "state": "VOLATILE",
+  "embargoDate": "",
+  "acls": [
+    {
+      "id": 574,
+      "sid": "SELF",
+      "permission": "ADMINISTRATE"
+    }
+  ]
+}

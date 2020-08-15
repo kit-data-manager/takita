@@ -590,14 +590,14 @@ class AccessServiceTest {
 
     Manuscript manuscript1 = new Manuscript(
         "000c557c-4a11-405e-8bbc-a0d4ea5844a4",
-        dateFormat.parse("2019-03-11T14:09:50Z"),
-        "Vatikan Reg Gr 116, 073r",
+        dateFormat.parse("2019-03-12T14:11:16Z"),
+        "Modena α V 8 13, 069r",
         "SFB 980 - A04",
         2019);
     List<Page> pagesManuscript1 = new ArrayList<>();
     pagesManuscript1.add(page1);
     manuscript1.setPages(pagesManuscript1);
-    manuscript1.setLastModified(dateFormat.parse("2019-03-11T14:09:50Z"));
+    manuscript1.setLastModified(dateFormat.parse("2019-03-12T14:11:16Z"));
 
     Manuscript manuscript2 = new Manuscript(
         "00125ead-bf62-475e-aeb6-0d2b30df5648",
