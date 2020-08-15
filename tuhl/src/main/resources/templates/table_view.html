@@ -375,47 +375,13 @@
         /*]]>*/
         rowDblClick: function (e, row) {
             //shows and hides thumbnails for each row
-            let thumbnails = row.getData().thumbnails;
             let id = row.getData().id;
             if (document.getElementById('holder' + id) == null) {
-                let holder = document.createElement('div');
-                holder.style.display = 'block';
-                holder.setAttribute('id', 'holder' + id)
-                let cardBody = document.createElement('div');
-                cardBody.setAttribute('class', 'card card-body no-wrap');
-                let outerRow = document.createElement('div');
-                outerRow.setAttribute('class', 'row');
-                thumbnails.forEach(function(item, index){
-                    let col = document.createElement('div');
-                    col.setAttribute('class', 'mx-1 col-auto');
-                    let innerRow1 = document.createElement('div');
-                    innerRow1.setAttribute('class', 'row');
-                    let innerRow2 = document.createElement('div');
-                    innerRow2.setAttribute('class', 'row mb-2 mt-1 justify-content-center');
-                    let innerCol = document.createElement('div');
-                    innerCol.setAttribute('class', 'col');
-                    let img = document.createElement('img');
-                    img.setAttribute('class', 'img-thumbnail');
-                    img.setAttribute('src', item.thumb);
-                    let label = document.createElement('a');
-                    label.setAttribute('class', 'btn-sm btn-secondary')
-                    label.setAttribute('href','/editor/' + item.id);
-                    let icon = document.createElement('i');
-                    icon.setAttribute('class', 'fa fa-pencil');
-                    label.appendChild(icon);
-                    innerCol.appendChild(img);
-                    innerRow1.appendChild(innerCol);
-                    innerRow2.appendChild(label);
-                    col.appendChild(innerRow1);
-                    col.appendChild(innerRow2);
-                    outerRow.appendChild(col);
-                })
-                cardBody.appendChild(outerRow);
-                holder.appendChild(cardBody);
-                row.getElement().appendChild(holder);
+                showThumbnails(row);
             } else {
-                document.getElementById('holder' + id).remove();
+                hideThumbnails(row);
             }
+
         },
         columns: window.cols,
     });
@@ -425,6 +391,51 @@
     createDropdown();
     setThumbCheckbox();
     disableButtons();
+
+    function showThumbnails(row){
+        let thumbnails = row.getData().thumbnails;
+        let id = row.getData().id;
+        let holder = document.createElement('div');
+        holder.style.display = 'block';
+        holder.setAttribute('id', 'holder' + id)
+        let cardBody = document.createElement('div');
+        cardBody.setAttribute('class', 'card card-body no-wrap');
+        let outerRow = document.createElement('div');
+        outerRow.setAttribute('class', 'row');
+        thumbnails.forEach(function(item, index){
+            let col = document.createElement('div');
+            col.setAttribute('class', 'mx-1 col-auto');
+            let innerRow1 = document.createElement('div');
+            innerRow1.setAttribute('class', 'row');
+            let innerRow2 = document.createElement('div');
+            innerRow2.setAttribute('class', 'row mb-2 mt-1 justify-content-center');
+            let innerCol = document.createElement('div');
+            innerCol.setAttribute('class', 'col');
+            let img = document.createElement('img');
+            img.setAttribute('class', 'img-thumbnail');
+            img.setAttribute('src', item.thumb);
+            let label = document.createElement('a');
+            label.setAttribute('class', 'btn-sm btn-secondary')
+            label.setAttribute('href','/editor/' + item.id);
+            let icon = document.createElement('i');
+            icon.setAttribute('class', 'fa fa-pencil');
+            label.appendChild(icon);
+            innerCol.appendChild(img);
+            innerRow1.appendChild(innerCol);
+            innerRow2.appendChild(label);
+            col.appendChild(innerRow1);
+            col.appendChild(innerRow2);
+            outerRow.appendChild(col);
+        })
+        cardBody.appendChild(outerRow);
+        holder.appendChild(cardBody);
+        row.getElement().appendChild(holder);
+    }
+
+    function hideThumbnails(row) {
+        let id = row.getData().id;
+        document.getElementById('holder' + id).remove();
+    }
 
     function disableButtons(){
         /*<![CDATA[*/

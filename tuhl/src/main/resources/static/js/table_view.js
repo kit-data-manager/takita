@@ -4,13 +4,18 @@
 function onChangeCheckbox(checkbox) {
     if (checkbox.checked) {
         table.getRows().forEach(function (row) {
-            const id = row.getData().id;
-            $(".subTable" + id + "").show();
+            let id = row.getData().id;
+            if(document.getElementById('holder' + id) == null){
+                showThumbnails(row);
+            }
+
         })
     } else {
         table.getRows().forEach(function (row) {
-            const id = row.getData().id;
-            $(".subTable" + id + "").hide();
+            let id = row.getData().id;
+            if(document.getElementById('holder' + id) !== null){
+                hideThumbnails(row);
+            }
         })
     }
 
@@ -21,6 +26,7 @@ function onChangeCheckbox(checkbox) {
         });
 
 }
+
 
 
 
