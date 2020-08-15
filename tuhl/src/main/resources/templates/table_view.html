@@ -50,78 +50,10 @@
 </div>
 
 <div id="searchresults"></div>
-<form onsubmit="getValue(event)">
-<div class="form-row m-2 align-content-center justify-content-center">
-    <div class="col-auto align-self-center">
-        <button type="button"
-                class="btn-sm btn-secondary"
-                onclick="goToFirstPage()"
-                th:text="#{buttons.first}"> </button>
-    </div>
-
-    <div class="col-3">
-        <div class="input-group">
-
-            <div class="input-group-prepend">
-                <button type="button"
-                        class="btn btn-secondary"
-                        id="prevPage"
-                        onclick="goToPrevPage()" th:text="#{buttons.prev}"> </button>
-            </div>
-
-            <input class="form-control"
-                   type="number"
-                   th:value="${currentPage}"
-                   id="pageNumberInput"
-                   min="1"
-                   th:max="${numberOfPages}"
-                   required>
-            <div class="input-group-append">
-                <button type="submit"
-                        class="btn btn-info"
-                        th:text="#{buttons.ok}"> </button>
-                <button type="button"
-                        class="btn btn-secondary"
-                        id="nextPage"
-                        onclick="goToNextPage()" th:text="#{buttons.next}"> </button>
-            </div>
-
-        </div>
-    </div>
-    <div class="col-auto align-self-center">
-        <button type="button"
-                class="btn-sm btn-secondary"
-                th:text="${numberOfPages}"
-                onclick="goToLastPage()"> </button>
-    </div>
-</div>
-</form>
-
-    <div class="col-auto">
-        <form onsubmit="setResultsPerPage(event)">
-        <label th:text="#{input_label.resultsPerPage}"></label>
-        <input class="form-control"
-                type="number"
-               id="resultsPerPage"
-               th:value="${noResults}"
-        min="1">
-        <button type="submit"
-                class="btn btn-secondary"
-                th:text="#{buttons.ok}">
-        </button>
-    </form>
-    </div>
-    
 
 
 <script src="js/table_view.js"></script>
 <script th:inline="javascript">
-
-    function getValue(event){
-        event.preventDefault();
-        callPage($('#pageNumberInput').val());
-
-    }
 
     $('#save-config').change(function () {
         $.ajax({
@@ -130,43 +62,6 @@
             dataType: 'text',
         });
     })
-
-    /*<![CDATA[*/
-    // document.getElementById("pageNumberInput").value = [[${user.getCurrentPage()}]];
-    /*]]>*/
-
-    // loads data for table with thymeleaf
-    function loadData() {
-        /*<![CDATA[*/
-        let data = [];
-        let counter = 0;
-        let manuscriptData;
-        let thumbnails;
-        let counter2;
-        /*[# th:each="man :${results}"]*/
-        thumbnails = [];
-        counter2 = 0;
-        /*[# th:each="pg :${man.getPages()}"]*/
-        thumbnails[counter2] = {thumb: [[${pg.getThumbResourceUrl()}]], id:[[${pg.getId()}]]};
-        counter2++;
-        /*[/]*/
-        manuscriptData = {
-            id:[[${man.getId()}]],
-            title:[[${man.getTitle()}]],
-            publisher:[[${man.getPublisher()}]],
-            publicationYear:[[${man.getPublicationYear()}]],
-            lastModified:[[${man.getLastModified()}]],
-            noPages:[[${man.getPages().size()}]],
-            hasAlgorithmAnnotations:[[${man.hasAlgorithmAnnotations()}]],
-            created:[[${man.getCreated()}]],
-            thumbnails: thumbnails
-        };
-        data[counter] = manuscriptData;
-        counter++;
-        /*[/]*/
-        /*]]>*/
-        return data;
-    }
 
     /*<![CDATA[*/
     //define columns
@@ -183,55 +78,47 @@
             {
                 title: [[#{col_name.id}]],
                 field: "id",
-                headerSortStartingDir: toggleSort("id"),
             },
             {
                 title: [[#{col_name.title}]],
                 field: "title",
                 headerMenu: headerMenu(),
-                headerSortStartingDir: toggleSort("title"),
                 visible: true,
             },
             {
                 title: [[#{col_name.publisher}]],
                 field: "publisher",
                 headerMenu: headerMenu(),
-                headerSortStartingDir: toggleSort("publisher"),
                 visible: true,
             },
             {
                 title: [[#{col_name.publicationYear}]],
                 field: "publicationYear",
                 headerMenu: headerMenu(),
-                headerSortStartingDir: toggleSort("publicationYear"),
                 visible: true,
             },
             {
                 title: [[#{col_name.lastModified}]],
                 field: "lastModified",
                 headerMenu: headerMenu(),
-                headerSortStartingDir: toggleSort("lastModified"),
                 visible: true,
             },
             {
                 title: [[#{col_name.noPages}]],
                 field: "noPages",
                 headerMenu: headerMenu(),
-                headerSortStartingDir: toggleSort("noPages"),
                 visible: true,
             },
             {
                 title: [[#{col_name.hasAlgoAnnos}]],
                 field: "hasAlgorithmAnnotations",
                 headerMenu: headerMenu(),
-                headerSortStartingDir: toggleSort("hasAlgorithmAnnotations"),
                 visible: true,
             },
             {
                 title: [[#{col_name.created}]],
                 field: "created",
                 headerMenu: headerMenu(),
-                headerSortStartingDir: toggleSort("created"),
                 visible: true,
             },
         ];
@@ -243,6 +130,7 @@
         /*<![CDATA[*/
         return [
             {
+                // TODO icon MAAAAAAAAX!!!
                 label: "<i class='fas fa-eye-slash'> </i>" + [[#{menu.hideCol}]],
                 action: function (e, column) {
                     column.hide();
@@ -253,69 +141,6 @@
         /*]]>*/
     }
 
-    //--- change page calls ---
-
-    //go to last page call
-    function goToLastPage() {
-        /*<![CDATA[*/
-        let lastPage = [[${numberOfPages}]];
-        /*]]>*/
-        callPage(lastPage);
-    }
-
-    //go to previous page call
-    function goToPrevPage() {
-        /*<![CDATA[*/
-        let currentPage = [[${currentPage}]];
-        /*]]>*/
-        if(currentPage > 1){
-            currentPage--;
-            callPage(currentPage);
-        }
-
-    }
-
-    //go to next page call
-    function goToNextPage() {
-        /*<![CDATA[*/
-        let currentPage = [[${currentPage}]];
-
-        if(currentPage < [[${numberOfPages}]]){
-            currentPage++;
-            callPage(currentPage);
-        }
-
-        /*]]>*/
-    }
-
-    function callPage(currentPage){
-        $.ajax({
-            type: 'GET',
-            url: '/tableview/page/' + currentPage,
-            dataType: 'text',
-
-            success: function (responseData) {
-                // updateData();
-                $('#dashboard').load('/tableview/flag');
-            }
-        })
-    }
-
-    function toggleSort(field) {
-        /*<![CDATA[*/
-        let sort =  [[${order}]];
-        if (field === [[${sortField}]]) {
-            if (sort === 'asc') {
-                sort = 'desc';
-            } else {
-                sort = 'asc';
-            }
-        } else {
-            sort = 'asc';
-        }
-        /*]]>*/
-        return sort
-    }
 
     // creates Table
     /*<![CDATA[*/
@@ -330,7 +155,6 @@
         },
         persistenceID:"example1",
         persistenceWriterFunc: function(id, type, data){
-
             $.ajax({
                 type: 'POST',
                 url: 'assistance/saveTableConfig',
@@ -341,35 +165,22 @@
                 dataType: 'text',
                 data: JSON.stringify(data),
             });
-
         },
         persistence:{
             sort: true, //persist column sorting
             columns: true, //persist columns
         },
-        data: loadData(),
         layout:"fitDataTable",
+        initialSort: [{column:"id", dir:"asc"}],
         layoutColumnsOnNewData:true,
-        height: "80%",
+        paginationSizeSelector:true,
+        height: 800,
+        pagination:"remote",
+        paginationSize:10,
         movableColumns: true, //enable user movable columns
-        dataSorting: function (sorters) {
-            // calls sort function in server to load new sorted results
-            if (sorters.length > 0) {
-                //TODO: put as ajax request FIX IT!
-
-                
-                $.ajax({
-                    type: 'GET',
-                    url: "/tableview/sort/" + sorters[0]['field'] + "/" + sorters[0]['dir'],
-                    dataType: 'text',
-
-                    success: function (responseData) {
-                        $('#dashboard').load('/tableview/flag');
-                    }
-                })
-            }
-        },
-
+        ajaxURL:"/tableview/sort", //set url for ajax request
+        ajaxSorting:true,
+        columnHeaderSortMulti:false,
         /*<![CDATA[*/
         placeholder:[[#{table.noResults}]],
         /*]]>*/
@@ -390,7 +201,6 @@
     setHeaderMenues();
     createDropdown();
     setThumbCheckbox();
-    disableButtons();
 
     function showThumbnails(row){
         let thumbnails = row.getData().thumbnails;
@@ -435,19 +245,6 @@
     function hideThumbnails(row) {
         let id = row.getData().id;
         document.getElementById('holder' + id).remove();
-    }
-
-    function disableButtons(){
-        /*<![CDATA[*/
-        let currentPage = [[${currentPage}]];
-
-        if(currentPage === [[${numberOfPages}]]){
-            $('#nextPage').prop("disabled",true);
-        }
-        if(currentPage === 1){
-            $('#prevPage').prop("disabled",true);
-        }
-        /*]]>*/
     }
 
 
@@ -557,10 +354,11 @@ function callEditor(manId){
 
     //reset columns function
     function resetColumns() {
-        window.table.getColumns().forEach(function(col){
-            col.show();
-        });
+        /*<![CDATA[*/
+        window.table.setColumns(window.cols)
+        window.table.setSort("id", "asc");
         updateDropdown();
+        /*]]>*/
     }
 
 </script>

@@ -8,11 +8,15 @@ import edu.kit.scc.dem.tuhl.model.Manuscript;
 import edu.kit.scc.dem.tuhl.model.page.ImagePage;
 import edu.kit.scc.dem.tuhl.model.page.Page;
 import edu.kit.scc.dem.tuhl.model.page.ResourceType;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.annotation.SessionScope;
+
+import java.util.List;
 
 
 /**
@@ -147,7 +151,7 @@ public class TableViewService implements IContentViewService {
    * @param manuscriptId of manuscript
    * @return List of pages
    * @throws NoSuchIndexEntryException when there is no manuscript with the given ID
-   *                                    in the search index
+   *                                   in the search index
    */
   public List<Page> getPages(String manuscriptId) throws NoSuchIndexEntryException {
     return searchIndexService.getManuscriptById(manuscriptId).getPages();
@@ -181,7 +185,46 @@ public class TableViewService implements IContentViewService {
     model.addAttribute("flag", false);
   }
 
-  public void setNumberOfResults(int noResults){
+  public void setNumberOfResults(int noResults) {
     searchService.setPageSize(noResults);
+  }
+
+  public long getNumberOfResultsPages()
+  {
+    return searchService.getResultPagesCount();
+  }
+  public JSONArray getData() {
+
+
+    JSONArray data = new JSONArray();
+    try {
+      for (Manuscript man : getResults()) {
+        JSONArray thumbnails = new JSONArray();
+        for (Page pg : man.getPages()) {
+          JSONObject obj = new JSONObject();
+          String thumb = pg.getThumbResourceUrl();
+          String id = pg.getId();
+          obj.put("thumb", thumb);
+          obj.put("id", id);
+          thumbnails.put(obj);
+        }
+        JSONObject row = new JSONObject();
+        row.put("id", man.getId());
+        row.put("title", man.getTitle());
+        row.put("publisher", man.getPublisher());
+        row.put("created", man.getCreated());
+        row.put("publicationYear", man.getPublicationYear());
+        row.put("hasAlgorithmAnnotations", man.hasAlgorithmAnnotations());
+        row.put("lastModified", man.getLastModified());
+        row.put("noPages", man.getNoPages());
+        row.put("thumbnails", thumbnails);
+
+        data.put(row);
+
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return data;
   }
 }

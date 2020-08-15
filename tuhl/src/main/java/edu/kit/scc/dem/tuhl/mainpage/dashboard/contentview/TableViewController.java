@@ -5,12 +5,12 @@ import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.mainpage.IMainPageService;
 import edu.kit.scc.dem.tuhl.mainpage.dashboard.IDashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 
 /**
@@ -41,24 +41,6 @@ public class TableViewController {
   }
 
   /**
-   * Handles GET request for pages of manuscript. Adds all pages to Model.
-   *
-   * @param manId of manuscript
-   * @param model the holder for model attributes, used to pass attributes back to the view
-   * @return placeholder
-   * @throws NoSuchIndexEntryException when there is no manuscript with the given ID
-   *                                    in the search index
-   */
-  @GetMapping("/getManPages/{manId}")
-  @ResponseBody
-  public String getPages(@PathVariable("manId") String manId, Model model)
-      throws NoSuchIndexEntryException {
-    model.addAttribute("pages", tableViewService.getPages(manId));
-    mainPageService.update(model);
-    return "placeholder";
-  }
-
-  /**
    * Handles get request to show table view, gets Manuscripts and needed information on metadata
    * from SearchIndexService, adds full Table to Model.
    *
@@ -71,20 +53,6 @@ public class TableViewController {
     return "table_view.html :: tableView";
   }
 
-  /**
-   * Handles http get request for new table page.
-   *
-   * @param pageNo of Page to be displayed
-   * @param model  the holder for model attributes, used to pass attributes back to the view
-   * @return html file name to display table view
-   */
-  @GetMapping("/page/{pageNo}")
-  @ResponseBody
-  public String getNewPage(@PathVariable("pageNo") int pageNo, Model model) {
-    tableViewService.setCurrentPage(pageNo);
-    mainPageService.update(model);
-    return "placeholder";
-  }
 
   /**
    * Handles GET request for first page of manuscript.
@@ -106,47 +74,47 @@ public class TableViewController {
 
   }
 
-  /**
-   * Handles Get request to set flag in model.
-   *
-   * @param model the holder for model attributes, used to pass attributes back to the view
-   * @return tabelview html
-   */
-  @GetMapping("/flag")
-  public String setFlag(Model model) {
 
-    mainPageService.update(model);
-    model.addAttribute("flag", true);
-    return "table_view.html :: tableView";
-  }
-
-
-  /**
-   * Handles http get request to sort table.
-   *
-   * @param column to be sorted by
-   * @param order  in which column is sorted (desc or asc)
-   * @param model  the holder for model attributes, used to pass attributes back to the view
-   * @return html file name to display table view
-   */
-  @GetMapping("/sort/{col}/{order}")
+  @RequestMapping(value = "/sort", params = {"sorters[0][field]", "sorters[0][dir]", "page", "size"})
   @ResponseBody
-  public String getSorted(@PathVariable("col") String column, @PathVariable("order") String order,
+  public String getSorted(@RequestParam("sorters[0][field]") String column, @RequestParam("sorters[0][dir]") String order,
+                          @RequestParam("page") int pageNo, @RequestParam("size") int size,
                           Model model) {
-    tableViewService.setCurrentPage(1);
+    tableViewService.setCurrentPage(pageNo);
+    tableViewService.setNumberOfResults(size);
     tableViewService.setSortAsc(order.equals("asc"));
     tableViewService.setSortField(column);
     mainPageService.update(model);
-    return "placeholder";
+
+    JSONArray data = tableViewService.getData();
+    JSONObject newData = new JSONObject();
+    try {
+      newData.put("last_page", tableViewService.getNumberOfResultsPages());
+      newData.put("data", data);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return newData.toString();
   }
 
-  @GetMapping("/results_per_page/{noResults}")
+  @RequestMapping(value = "/sort", params = {"page", "size"})
   @ResponseBody
-  public String setResultPerPage(@PathVariable("noResults") int noResults, Model model){
-    tableViewService.setNumberOfResults(noResults);
-    tableViewService.setCurrentPage(1);
+  public String getPage(@RequestParam("page") int pageNo, @RequestParam("size") int size,
+                         Model model) {
+    tableViewService.setCurrentPage(pageNo);
+    tableViewService.setNumberOfResults(size);
     mainPageService.update(model);
-    return "placeholder";
+
+    JSONArray data = tableViewService.getData();
+    JSONObject newData = new JSONObject();
+    try {
+      newData.put("last_page", tableViewService.getNumberOfResultsPages());
+      newData.put("data", data);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return newData.toString();
   }
+
 
 }
