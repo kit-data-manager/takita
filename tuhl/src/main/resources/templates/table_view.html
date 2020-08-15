@@ -174,7 +174,7 @@
             {
                 formatter:function(cell, formatterParams, onRendered){
                     window.idd = cell.getRow().getData().id;
-                return "<button class='btn btn-primary' onclick='callEditor(window.idd)' ><span class='glyphicon glyphicon-align-left' aria-hidden='true'></span></button>";},
+                return "<button class='btn-sm btn-secondary m-1 row' onclick='callEditor(window.idd)'><i class='fa fa-pencil'></i></button>";},
                 width:40,
                 hozAlign:"center",
                 frozen: true,
@@ -390,19 +390,17 @@
                     let innerRow1 = document.createElement('div');
                     innerRow1.setAttribute('class', 'row');
                     let innerRow2 = document.createElement('div');
-                    innerRow2.setAttribute('class', 'row');
+                    innerRow2.setAttribute('class', 'row mb-2 mt-1 justify-content-center');
                     let innerCol = document.createElement('div');
                     innerCol.setAttribute('class', 'col');
                     let img = document.createElement('img');
                     img.setAttribute('class', 'img-thumbnail');
                     img.setAttribute('src', item.thumb);
                     let label = document.createElement('a');
-                    label.setAttribute('class', 'btn btn-primary')
+                    label.setAttribute('class', 'btn-sm btn-secondary')
                     label.setAttribute('href','/editor/' + item.id);
-                    let icon = document.createElement('span');
-                    //TODO: load icon into Button correctly!!
-                    icon.setAttribute('class', 'glyphicon glyphicon-print');
-                    icon.setAttribute('aria-hidden', 'true');
+                    let icon = document.createElement('i');
+                    icon.setAttribute('class', 'fa fa-pencil');
                     label.appendChild(icon);
                     innerCol.appendChild(img);
                     innerRow1.appendChild(innerCol);
@@ -559,7 +557,7 @@ function callEditor(manId){
 </html>
 <style>
     .no-wrap > .row {
-        overflow-x: auto;
+        overflow-x: scroll;
         white-space: nowrap;
         flex-wrap: nowrap;
     }
