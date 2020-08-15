@@ -7,35 +7,60 @@ import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Objects;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.SessionScope;
 
-import java.io.IOException;
-import java.time.Instant;
-import java.util.*;
-
+/**
+ * Implements IEditorStubService, is responsible for handling requests to the SearchIndexService.
+ */
 @Service
 @SessionScope
-public class EditorStubService implements IEditorStubService{
+public class EditorStubService implements IEditorStubService {
 
   private final IAssistanceService assistanceService;
   private final ISearchIndexService searchIndexService;
 
+  /**
+   * Constructor, initializes instances of used interfaces.
+   *
+   * @param assistanceService instance of IAssistanceService
+   * @param searchIndexService instance of ISearchIndexService
+   */
   @Autowired
-  public EditorStubService(IAssistanceService assistanceService, ISearchIndexService searchIndexService) {
+  public EditorStubService(IAssistanceService assistanceService,
+                           ISearchIndexService searchIndexService) {
     this.assistanceService = assistanceService;
     this.searchIndexService = searchIndexService;
   }
 
+  /**
+   * Adds an annotation to the search index and the database.
+   *
+   * @param pageId ID of the page on which the annotation is located
+   * @param color color of the annotation
+   * @param svgCode svg code of the shape of the annotation
+   * @param motivation motivation of the annotation
+   * @return the added annotation
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws NoSuchIndexEntryException when there is no such page in the index
+   * @throws IOException when the http request to database was faulty
+   */
   @Override
   public Annotation addAnnotation(String pageId, Color color, String svgCode, String motivation)
       throws InterruptedException, NoSuchIndexEntryException, IOException {
     Annotation newAnnotation = new Annotation();
     newAnnotation.setPageId(pageId);
-    newAnnotation.setCreators(Collections.singletonList(assistanceService.getCurrentUser().getName()));
+    newAnnotation.setCreators(Collections.singletonList(
+        assistanceService.getCurrentUser().getName()));
     newAnnotation.setCreated(Date.from(Instant.now()));
     newAnnotation.setModified(Date.from(Instant.now()));
 
@@ -61,11 +86,25 @@ public class EditorStubService implements IEditorStubService{
     return newAnnotation;
   }
 
+  /**
+   * Updates an annotation in the search index and the database.
+   *
+   * @param annotationId ID of the annotation to update
+   * @param color new color of the annotation
+   * @param svgCode new svg code of the annotation
+   * @param motivation new motivation of the annotation
+   * @return updated annotation
+   * @throws NoSuchIndexEntryException when there is no such annotation in the index
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
+   */
   @Override
-  public Annotation updateAnnotation(String annotationId, Color color, String svgCode, String motivation)
+  public Annotation updateAnnotation(String annotationId, Color color,
+                                     String svgCode, String motivation)
       throws NoSuchIndexEntryException, InterruptedException, IOException {
     Annotation updatedAnnotation = searchIndexService.getAnnotationById(annotationId);
-    if (updatedAnnotation.getCreators().contains(assistanceService.getCurrentUser().getName())) {
+    if (updatedAnnotation.getCreators().contains(assistanceService
+        .getCurrentUser().getName())) {
       updatedAnnotation.addCreator(assistanceService.getCurrentUser().getName());
     }
     updatedAnnotation.setModified(Date.from(Instant.now()));
@@ -81,7 +120,7 @@ public class EditorStubService implements IEditorStubService{
     }
 
     try {
-    searchIndexService.updateAnnotation(updatedAnnotation);
+      searchIndexService.updateAnnotation(updatedAnnotation);
     } catch (JSONException e) {
       e.printStackTrace();
     }
@@ -89,35 +128,67 @@ public class EditorStubService implements IEditorStubService{
     return updatedAnnotation;
   }
 
+  /**
+   * Validates an annotation in the search index and the database.
+   *
+   * @param annotationId ID of the annotation to be validated
+   * @return validated annotation
+   * @throws NoSuchIndexEntryException when there is no such annotation in the index
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
+   */
   @Override
   public Annotation validateAnnotation(String annotationId)
       throws NoSuchIndexEntryException, InterruptedException, IOException {
     try {
-      return searchIndexService.validateAnnotation(searchIndexService.getAnnotationById(annotationId));
+      return searchIndexService.validateAnnotation(
+          searchIndexService.getAnnotationById(annotationId));
     } catch (JSONException e) {
       e.printStackTrace();
     }
     return null;
   }
 
+  /**
+   * Deletes an annotation from the search index and the database.
+   *
+   * @param annotationId of the annotation to delete
+   * @return deleted annotation
+   * @throws NoSuchIndexEntryException when there is no such annotation in the index
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
+   */
   @Override
   public Annotation deleteAnnotation(String annotationId)
       throws NoSuchIndexEntryException, InterruptedException, IOException {
     Annotation deletedAnnotation = searchIndexService.getAnnotationById(annotationId);
     try {
-    searchIndexService.deleteAnnotationById(annotationId);
+      searchIndexService.deleteAnnotationById(annotationId);
     } catch (JSONException e) {
       e.printStackTrace();
     }
     return deletedAnnotation;
   }
 
+  /**
+   * Adds a text card to an annotation in the search index and the database.
+   *
+   * @param annotationId of the annotation to which the text card belongs
+   * @param title of the text card
+   * @param value of the text card
+   * @param purpose of the text card
+   * @return added text card
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws NoSuchIndexEntryException when there is no such annotation in the index
+   * @throws IOException when the http request to database was faulty
+   */
   @Override
   public TextCard addTextCard(String annotationId, String title, String value, String purpose)
       throws InterruptedException, NoSuchIndexEntryException, IOException {
     TextCard newTextCard = new TextCard(UUID.randomUUID().toString());
     newTextCard.setAnnotationId(annotationId);
-    newTextCard.setCreators(Collections.singletonList(assistanceService.getCurrentUser().getName()));
+    newTextCard.setCreators(Collections.singletonList(
+        assistanceService.getCurrentUser().getName()));
     newTextCard.setCreated(Date.from(Instant.now()));
     newTextCard.setModified(Date.from(Instant.now()));
 
@@ -133,7 +204,7 @@ public class EditorStubService implements IEditorStubService{
       newTextCard.setPurpose(purpose);
     }
     try {
-    searchIndexService.addBody(newTextCard);
+      searchIndexService.addBody(newTextCard);
     } catch (JSONException e) {
       e.printStackTrace();
     }
@@ -141,6 +212,17 @@ public class EditorStubService implements IEditorStubService{
     return newTextCard;
   }
 
+  /**
+   * Adds a tag to an annotation in the search index and the database.
+   *
+   * @param annotationId of the annotation to which the tag belongs
+   * @param title of the tag
+   * @param value of the tag
+   * @return added tag
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws NoSuchIndexEntryException when there is no such annotation in the index
+   * @throws IOException when the http request to database was faulty
+   */
   @Override
   public Tag addTag(String annotationId, String title, String value)
       throws InterruptedException, NoSuchIndexEntryException, IOException {
@@ -159,13 +241,25 @@ public class EditorStubService implements IEditorStubService{
     }
 
     try {
-    searchIndexService.addBody(newTag);
+      searchIndexService.addBody(newTag);
     } catch (JSONException e) {
       e.printStackTrace();
     }
     return newTag;
   }
 
+  /**
+   * Updates a text card in the search index and the database.
+   *
+   * @param textCardId of the text card which should be updated
+   * @param title new title of the text card
+   * @param value new value of the text card
+   * @param purpose new purpose of the text card
+   * @return updated text card
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws NoSuchIndexEntryException when there is no such text card in the index
+   * @throws IOException when the http request to database was faulty
+   */
   @Override
   public TextCard updateTextCard(String textCardId, String title, String value, String purpose)
       throws InterruptedException, NoSuchIndexEntryException, IOException {
@@ -188,7 +282,7 @@ public class EditorStubService implements IEditorStubService{
     }
 
     try {
-    searchIndexService.updateBody(updatedTextCard);
+      searchIndexService.updateBody(updatedTextCard);
     } catch (JSONException e) {
       e.printStackTrace();
     }
@@ -196,6 +290,17 @@ public class EditorStubService implements IEditorStubService{
     return searchIndexService.getTextCardById(textCardId);
   }
 
+  /**
+   * Updates a tag in the search index and the database.
+   *
+   * @param tagId of the tag which should be updated
+   * @param title new title of the tag
+   * @param value new value of the tag
+   * @return updated tag
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws NoSuchIndexEntryException when there is no such tag in the index
+   * @throws IOException when the http request to database was faulty
+   */
   @Override
   public Tag updateTag(String tagId, String title, String value)
       throws NoSuchIndexEntryException, InterruptedException, IOException {
@@ -222,6 +327,15 @@ public class EditorStubService implements IEditorStubService{
 
   }
 
+  /**
+   * Deletes a text card in the search index and the database.
+   *
+   * @param textCardId of the text card which should be deleted
+   * @return deleted text card
+   * @throws NoSuchIndexEntryException when there is no such text card in the index
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
+   */
   @Override
   public TextCard deleteTextCard(String textCardId)
       throws NoSuchIndexEntryException, InterruptedException, IOException {
@@ -234,6 +348,15 @@ public class EditorStubService implements IEditorStubService{
     return deletedTextCard;
   }
 
+  /**
+   * Deletes a tag in the search index and the database.
+   *
+   * @param tagId of the tag which should be deleted
+   * @return deleted tag
+   * @throws NoSuchIndexEntryException when there is no such tag in the index
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
+   */
   @Override
   public Tag deleteTag(String tagId)
       throws InterruptedException, NoSuchIndexEntryException, IOException {
@@ -246,8 +369,17 @@ public class EditorStubService implements IEditorStubService{
     return deletedTag;
   }
 
+  /**
+   * Gets the raw JSON of a manuscript.
+   *
+   * @param manuscriptId of the manuscript to which the raw JSON should be gotten
+   * @return manuscript as JSONObject
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
+   */
   @Override
-  public JSONObject getManuscriptJson(String manuscriptId) throws InterruptedException, IOException {
+  public JSONObject getManuscriptJson(String manuscriptId)
+      throws InterruptedException, IOException {
     try {
       return searchIndexService.getRawManuscriptJson(manuscriptId);
     } catch (JSONException e) {
@@ -256,11 +388,27 @@ public class EditorStubService implements IEditorStubService{
     return null;
   }
 
+  /**
+   * Gets the raw XML of a manuscript.
+   *
+   * @param manuscriptId of the manuscript to which the raw XML should be gotten
+   * @return manuscript as XML as String
+   * @throws IOException when the http request to database was faulty
+   * @throws InterruptedException when the http request to database is interrupted
+   */
   @Override
   public String getManuscriptXml(String manuscriptId) throws IOException, InterruptedException {
     return searchIndexService.getRawManuscriptXml(manuscriptId);
   }
 
+  /**
+   * Gets the raw JSON of a page.
+   *
+   * @param pageId of the page to which the raw JSON should be gotten
+   * @return page as JSONObject
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
+   */
   @Override
   public JSONObject getPageJson(String pageId)
       throws InterruptedException, IOException {
@@ -272,6 +420,14 @@ public class EditorStubService implements IEditorStubService{
     return null;
   }
 
+  /**
+   * Gets the raw JSON of an annotation.
+   *
+   * @param annotationId of the annotation to which the raw JSON should be gotten
+   * @return annotation as JSONObject
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
+   */
   @Override
   public JSONObject getAnnotationJson(String annotationId)
       throws InterruptedException, IOException {
