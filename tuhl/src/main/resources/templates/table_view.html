@@ -141,13 +141,12 @@
         /*]]>*/
     }
 
-
     // creates Table
     /*<![CDATA[*/
     window.table = new Tabulator("#searchresults", {
         persistenceReaderFunc:function(id, type){
 
-            if(document.getElementById('save-config').checked || [[${flag}]]){
+            if(document.getElementById('save-config').checked){
                 let data = [[${user.getColumns()}]];
                 return data ? JSON.parse(data) : false;
             }
@@ -167,8 +166,9 @@
             });
         },
         persistence:{
-            sort: true, //persist column sorting
             columns: true, //persist columns
+            pagination: true,
+            page: true
         },
         layout:"fitDataTable",
         initialSort: [{column:"id", dir:"asc"}],
@@ -355,7 +355,10 @@ function callEditor(manId){
     //reset columns function
     function resetColumns() {
         /*<![CDATA[*/
-        window.table.setColumns(window.cols)
+        window.table.setColumns(window.cols);
+        window.table.getColumns().forEach(function(col){
+            col.show();
+        });
         window.table.setSort("id", "asc");
         updateDropdown();
         /*]]>*/
