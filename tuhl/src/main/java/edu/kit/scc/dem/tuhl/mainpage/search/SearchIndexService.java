@@ -310,8 +310,8 @@ public class SearchIndexService implements ISearchIndexService {
       manuscriptRepository.delete(manuscriptHit.get());
       
       if (page.getResourceType() == ResourceType.IMAGE
-          && ((ImagePage) page).getAnnotations().contains(annotation)) {
-        ((ImagePage) page).getAnnotations().remove(annotation);
+          && page.getAnnotations().contains(annotation)) {
+        page.getAnnotations().remove(annotation);
         ((ImagePage) page).addAnnotation(newAnnotation);
       }
       manuscriptRepository.save(manuscriptHit.get());
@@ -323,11 +323,12 @@ public class SearchIndexService implements ISearchIndexService {
    * Validates an annotation in the search index and notifies the dataaccess package.
    *
    * @param annotation unvalidated annotation
+   * @return validated annotation
    * @throws IOException if an error occurs while sending/receiving http request to annotation store
    * @throws InterruptedException if http request is interrupted
    */
   @Override
-  public void validateAnnotation(Annotation annotation) throws IOException, InterruptedException,
+  public Annotation validateAnnotation(Annotation annotation) throws IOException, InterruptedException,
       JSONException, NoSuchIndexEntryException {
     Page page = getPageById(annotation.getPageId());
     
@@ -339,11 +340,12 @@ public class SearchIndexService implements ISearchIndexService {
     if (manuscriptHit.isPresent()) {
       manuscriptRepository.delete(manuscriptHit.get());
       if (page.getResourceType() == ResourceType.IMAGE) {
-        ((ImagePage) page).getAnnotations().remove(annotation);
+        page.getAnnotations().remove(annotation);
         ((ImagePage) page).addAnnotation(validatedAnnotation);
       }
       manuscriptRepository.save(manuscriptHit.get());
     }
+    return validatedAnnotation;
   }
 
   /**
