@@ -24,10 +24,7 @@ function onChangeCheckbox(checkbox) {
 
 
 
-//reset columns function
-function resetColumns() {
-    table.setColumns(window.cols);
-}
+
 
 //go to dashboard call
 function backToDashboard() {

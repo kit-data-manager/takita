@@ -492,6 +492,7 @@ function callEditor(manId){
         }
         tbl.forEach(function (col, index) {
             if(col.getField() !== "id" && index > 0) {
+                console.log(col.getField());
                 cont = document.createElement("div");
                 cont.className = "form-check ml-1"
                 checkbox = document.createElement("input");
@@ -523,9 +524,9 @@ function callEditor(manId){
             window.table.getColumns().forEach(function (col, index) {
                 if(col.getField() !== "id" && index > 0) {
                     if (document.getElementById("check_" + col.getField()).checked) {
-                        table.getColumn(col.getField()).show();
+                        col.show();
                     } else {
-                        table.getColumn(col.getField()).hide();
+                        col.hide();
                     }
                 }
             });
@@ -534,6 +535,22 @@ function callEditor(manId){
         container.append(applyBtn);
         /*]]>*/
 
+    }
+
+    function updateDropdown(){
+        window.table.getColumns().forEach(function (col, index) {
+            if(col.getField() !== "id" && index > 0 && col.isVisible()){
+                document.getElementById("check_" + col.getField()).checked = true;
+            }
+        });
+    }
+
+    //reset columns function
+    function resetColumns() {
+        window.table.getColumns().forEach(function(col){
+            col.show();
+        });
+        updateDropdown();
     }
 
 </script>
