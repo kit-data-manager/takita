@@ -172,11 +172,17 @@
     //define columns
         window.cols = [
             {
+                formatter:function(cell, formatterParams, onRendered){
+                    window.idd = cell.getRow().getData().id;
+                return "<button class='btn btn-primary' onclick='callEditor(window.idd)' ><span class='glyphicon glyphicon-align-left' aria-hidden='true'></span></button>";},
+                width:40,
+                hozAlign:"center",
+                frozen: true,
+            },
+            {
                 title: [[#{col_name.id}]],
-                field: "id", frozen: true, headerSortStartingDir: toggleSort("id"), cellDblClick: function (e, cell) {
-                    // opens editor on first Page of Manuscript
-                    callEditor(cell.getValue());
-                }
+                field: "id",
+                headerSortStartingDir: toggleSort("id"),
             },
             {
                 title: [[#{col_name.title}]],
@@ -447,14 +453,11 @@
     }
 
 function setHeaderMenues(){
-    window.table.getColumns()[1].getDefinition().headerMenu = headerMenu();
-    window.table.getColumns()[2].getDefinition().headerMenu = headerMenu();
-    window.table.getColumns()[3].getDefinition().headerMenu = headerMenu();
-    window.table.getColumns()[4].getDefinition().headerMenu = headerMenu();
-    window.table.getColumns()[5].getDefinition().headerMenu = headerMenu();
-    window.table.getColumns()[6].getDefinition().headerMenu = headerMenu();
-    window.table.getColumns()[7].getDefinition().headerMenu = headerMenu();
-
+        window.table.getColumns().forEach(function(item, index) {
+            if (index > 1) {
+            item.getDefinition().headerMenu = headerMenu();
+            }
+        })
 }
 
 function callEditor(manId){
@@ -483,29 +486,31 @@ function callEditor(manId){
         let cont;
         let checkbox;
         let label;
-        let tbl = [];
-        for (let i = 0; i < table.getColumns().length - 1; i++) {
-            tbl[i] = table.getColumns()[i + 1];
+        let tbl = window.table.getColumns();
+        for (let i = 1; i < table.getColumns().length - 1; i++) {
+            //tbl[i] = table.getColumns()[i + 1];
         }
-        tbl.forEach(function (col) {
-            cont = document.createElement("div");
-            cont.className = "form-check ml-1"
-            checkbox = document.createElement("input");
-            checkbox.type = "checkbox";
-            checkbox.className = "form-check-input";
-            checkbox.id = "check_" + col.getField();
+        tbl.forEach(function (col, index) {
+            if(col.getField() !== "id" && index > 0) {
+                cont = document.createElement("div");
+                cont.className = "form-check ml-1"
+                checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.className = "form-check-input";
+                checkbox.id = "check_" + col.getField();
 
-            label = document.createElement("label");
-            label.htmlFor = "check_" + col.getField();
-            label.className = "form-check-label";
-            label.appendChild(document.createTextNode(col.getDefinition().title));
+                label = document.createElement("label");
+                label.htmlFor = "check_" + col.getField();
+                label.className = "form-check-label";
+                label.appendChild(document.createTextNode(col.getDefinition().title));
 
-            cont.appendChild(checkbox);
-            cont.appendChild(label);
-            if(col.isVisible()){
-                checkbox.checked = true;
+                cont.appendChild(checkbox);
+                cont.appendChild(label);
+                if (col.isVisible()) {
+                    checkbox.checked = true;
+                }
+                container.appendChild(cont);
             }
-            container.appendChild(cont);
         });
         let divider = document.createElement("div");
         divider.className = "dropdown-divider";
@@ -515,18 +520,22 @@ function callEditor(manId){
         applyBtn.type = "submit";
         applyBtn.innerHTML = [[#{buttons.apply}]];
         applyBtn.addEventListener("click", function (e) {
-            tbl.forEach(function (col) {
-                if (document.getElementById("check_" + col.getField()).checked) {
-                    table.getColumn(col.getField()).show();
-                } else {
-                    table.getColumn(col.getField()).hide();
+            window.table.getColumns().forEach(function (col, index) {
+                if(col.getField() !== "id" && index > 0) {
+                    if (document.getElementById("check_" + col.getField()).checked) {
+                        table.getColumn(col.getField()).show();
+                    } else {
+                        table.getColumn(col.getField()).hide();
+                    }
                 }
             });
             e.preventDefault();
         });
         container.append(applyBtn);
         /*]]>*/
+
     }
+
 </script>
 
 </body>
