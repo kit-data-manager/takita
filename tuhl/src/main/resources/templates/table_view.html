@@ -175,9 +175,10 @@
                 formatter:function(cell, formatterParams, onRendered){
                     window.idd = cell.getRow().getData().id;
                 return "<button class='btn-sm btn-secondary m-1 row' onclick='callEditor(window.idd)'><i class='fa fa-pencil'></i></button>";},
-                width:40,
                 hozAlign:"center",
+                resizable: false,
                 frozen: true,
+                headerSort: false,
             },
             {
                 title: [[#{col_name.id}]],
