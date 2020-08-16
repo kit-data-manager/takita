@@ -1,4 +1,5 @@
-function searchTerm() {
+function setSearchTerm(event) {
+    event.preventDefault();
     let searchTerm;
     if(document.getElementById("searchTermEmpty") == null){
         searchTerm = $('#searchTerm').val();
@@ -22,5 +23,4 @@ function searchTerm() {
             }
         });
     }
-
 }

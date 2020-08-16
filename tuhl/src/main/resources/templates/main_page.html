@@ -53,7 +53,6 @@
 
 </head>
 <body class="container-fluid p-0">
-
 <div class="modal" tabindex="-1" role="dialog" id="pseudonymInputModal" data-backdrop="static">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -84,23 +83,27 @@
         <h1 class="text-center display-4" th:text="#{label.tuhl}"> </h1>
     </div>
     <div class="col-sm-4 p-6 my-1 align-self-center">
-        <div class="input-group">
-            <input id="searchTerm"
-                   class="form-control"
-                   th:placeholder="#{hint.search_term}"
-                   th:if="${searchterm != null}"
-                   th:value="${searchterm}">
-            <input id="searchTermEmpty"
-                   class="form-control"
-                   th:if="${searchterm == null}"
-                   th:placeholder="#{hint.search_term}">
-            <div class="input-group-append">
-                <button class="btn btn-outline-primary"
-                        th:text="#{buttons.search}"
-                        onclick="searchTerm()">
-                </button>
+        <form onsubmit="setSearchTerm(event)">
+            <div class="input-group">
+                <input id="searchTerm"
+                       type="text"
+                       class="form-control"
+                       th:placeholder="#{hint.search_term}"
+                       th:if="${searchterm != null}"
+                       th:value="${searchterm}">
+                <input id="searchTermEmpty"
+                       type="text"
+                       class="form-control"
+                       th:if="${searchterm == null}"
+                       th:placeholder="#{hint.search_term}">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-primary"
+                            type="submit"
+                            th:text="#{buttons.search}">
+                    </button>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
     <div class="col-sm p-6 my-1 align-self-center"
          th:insert="header.html :: header"></div>
