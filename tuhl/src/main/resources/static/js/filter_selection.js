@@ -20,4 +20,5 @@ function clearFilters() {
     $('#filterSelection').parent().load('/filter/clear', function () {
         $('.selectpicker').selectpicker();
     });
+    $('#filterInput').submit();
 }
