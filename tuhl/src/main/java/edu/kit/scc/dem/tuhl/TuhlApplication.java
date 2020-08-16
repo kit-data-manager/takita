@@ -54,18 +54,37 @@ public class TuhlApplication implements ApplicationRunner, WebMvcConfigurer {
         Arrays.toString(args.getSourceArgs()));
     logger.info("NonOptionArgs: {}", args.getNonOptionArgs());
     logger.info("OptionNames: {}", args.getOptionNames());
-
+    handleArguments(args);
+  }
+  
+  private void handleArguments(ApplicationArguments args) {
+    if (args.getNonOptionArgs().contains("buildDevIndex")) {
+      try {
+        searchIndexService.buildSmallIndex();
+      } catch (InterruptedException | IOException | JSONException e) {
+        logger.error(e.getMessage());
+      }
+    }
+    
     if (args.getNonOptionArgs().contains("updateIndex")) {
+      try {
+        searchIndexService.updateIndex();
+      } catch (InterruptedException | IOException | JSONException e) {
+        logger.error(e.getMessage());
+      }
+    }
+  
+    if (args.getNonOptionArgs().contains("scheduleIndex")) {
       int updateIndexDayInterval = 1;
       int updateIndexHour = 3;
-
+    
       if (args.getOptionNames().contains("dayInterval")) {
         try {
           updateIndexDayInterval = Integer.parseInt(args.getOptionValues("dayInterval").get(0));
         } catch (NumberFormatException e) {
           logger.error(e.getMessage());
         }
-
+      
       }
       if (args.getOptionNames().contains("hour")) {
         try {
@@ -76,7 +95,7 @@ public class TuhlApplication implements ApplicationRunner, WebMvcConfigurer {
       }
       searchIndexService.startIndexUpdateCycle(updateIndexDayInterval, updateIndexHour);
     }
-
+  
     if (args.getNonOptionArgs().contains("buildIndex")) {
       try {
         searchIndexService.buildIndex();

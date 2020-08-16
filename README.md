@@ -30,7 +30,11 @@ Override the default url of the root annotation
 * `buildIndex`  
 The program will delete the old search index and rebuild it at the startup.
 
-* `updateIndex`  
+* `updateIndex`   
+The program will perform an index update. This will look for Annotations and Manuscripts that
+ where added or modified after the last update or build of the index.
+
+* `scheduleIndex`  
 The program will schedule an index update. Per default the update will be at 03:00 
 every 5 days. These parameters can be customized with the following arguments:
     * `--hour=<myHour>`  
@@ -39,6 +43,10 @@ every 5 days. These parameters can be customized with the following arguments:
     * `--dayInterval=<myDayInterval>`  
     Perform the update at the given interval of days.
     
+* `buildDevIndex`   
+The program will delete the old search index and build a small one based on a few manuscripts.  
+This can be used for development purposes.
+  
 ##### Elasticsearch
 * `--elasticsearch.ip=<myIp>`  
 Set a custom ip for the elasticsearch server. The default ip is localhost.
