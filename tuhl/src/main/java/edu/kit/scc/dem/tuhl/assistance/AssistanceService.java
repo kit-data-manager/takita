@@ -114,6 +114,9 @@ public class AssistanceService implements IAssistanceService {
     currentUser.setSaveFilter(!currentUser.isSaveFilter());
     if (currentUser.isSaveFilter()) {
       currentUser.setFilter(filterService.getCurrentFilters());
+    } else {
+
+      currentUser.setFilter(new ArrayList<>());
     }
     updateUser();
   }
@@ -145,7 +148,7 @@ public class AssistanceService implements IAssistanceService {
     User user = new User(currentUser.getCurrentPage(), currentUser.getColumns(),
         currentUser.getMatchFilter(), currentUser.getRangeFilter(),
         currentUser.isSaveTable(), currentUser.isSaveFilter(),
-        currentUser.isCheckThumbs(), currentUser.getName());
+        currentUser.isCheckThumbs(), currentUser.getName(), currentUser.getPageSize());
     repo.save(user);
   }
 
@@ -157,6 +160,12 @@ public class AssistanceService implements IAssistanceService {
    */
   public void setTableConfig(String columns, Model model) {
     currentUser.setColumns(columns);
+    updateUser();
+    mainPageService.update(model);
+  }
+
+  public void setTablePage(int pageSize, Model model) {
+    currentUser.setPageSize(pageSize);
     updateUser();
     mainPageService.update(model);
   }

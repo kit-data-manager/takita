@@ -109,4 +109,10 @@ public interface IUser {
    * @param columns config to be set.
    */
   void setColumns(String columns);
+
+  int getPageSize();
+
+  void setPageSize(int pageSize);
+
+  String getPage();
 }

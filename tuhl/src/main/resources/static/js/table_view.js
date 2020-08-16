@@ -1,7 +1,7 @@
 // todo: show all thumbnails
 //function of alwaysShowThumbnails checkbox
-function onChangeCheckbox(checkbox) {
-    if (checkbox.checked) {
+$('#thumbnails').change(function () {
+    if (document.getElementById("thumbnails").checked) {
         table.getRows().forEach(function (row) {
             let id = row.getData().id;
             if (document.getElementById('holder' + id) == null) {
@@ -24,7 +24,7 @@ function onChangeCheckbox(checkbox) {
         dataType: 'text',
     });
 
-}
+})
 
 
 //go to dashboard call

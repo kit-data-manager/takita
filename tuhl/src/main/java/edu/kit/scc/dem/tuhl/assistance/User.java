@@ -7,15 +7,16 @@ import edu.kit.scc.dem.tuhl.model.filter.Filter;
 import edu.kit.scc.dem.tuhl.model.filter.FilterType;
 import edu.kit.scc.dem.tuhl.model.filter.MatchFilter;
 import edu.kit.scc.dem.tuhl.model.filter.RangeFilter;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Lob;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-
-
 
 
 /**
@@ -32,6 +33,8 @@ public class User implements IUser {
   private boolean saveFilter;
   private boolean checkThumbs;
   private int currentPage;
+  private int pageSize;
+
   @Lob
   private String columns;
 
@@ -58,11 +61,12 @@ public class User implements IUser {
     this.saveFilter = false;
     this.checkThumbs = false;
     this.currentPage = 1;
+    this.pageSize = 10;
     setFilter(new ArrayList<>());
   }
 
   User(int currentPage, String columns, String matchFilter, String rangeFilter,
-       boolean saveTable, boolean saveFilter, boolean checkThumbs, String name) {
+       boolean saveTable, boolean saveFilter, boolean checkThumbs, String name, int pageSize) {
     this.currentPage = currentPage;
     this.columns = columns;
 
@@ -72,6 +76,7 @@ public class User implements IUser {
     this.saveFilter = saveFilter;
     this.checkThumbs = checkThumbs;
     this.name = name;
+    this.pageSize = pageSize;
   }
 
   /**
@@ -187,6 +192,7 @@ public class User implements IUser {
 
   /**
    * Gets currentPage.
+   *
    * @return currentPage
    */
   public int getCurrentPage() {
@@ -195,6 +201,7 @@ public class User implements IUser {
 
   /**
    * Sets current Page.
+   *
    * @param currentPage to be set
    */
   public void setCurrentPage(int currentPage) {
@@ -203,6 +210,7 @@ public class User implements IUser {
 
   /**
    * Gets table config.
+   *
    * @return table config
    */
   public String getColumns() {
@@ -211,10 +219,30 @@ public class User implements IUser {
 
   /**
    * Sets table config.
+   *
    * @param columns config to be set.
    */
   public void setColumns(String columns) {
     this.columns = columns;
   }
 
+  public int getPageSize() {
+    return pageSize;
+  }
+
+  public void setPageSize(int pageSize) {
+    this.pageSize = pageSize;
+  }
+
+  public String getPage() {
+    JSONObject obj = new JSONObject();
+    try {
+      obj.put("paginationSize", pageSize);
+
+      obj.put("paginationInitialPage", 1);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return obj.toString();
+  }
 }

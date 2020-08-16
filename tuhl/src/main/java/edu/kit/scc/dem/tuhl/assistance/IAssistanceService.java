@@ -73,4 +73,6 @@ public interface IAssistanceService {
    */
   void updateModel(Model model);
 
+  void setTablePage(int page, Model model);
+
 }

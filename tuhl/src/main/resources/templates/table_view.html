@@ -13,7 +13,7 @@
                    class="form-check-input"
                    id="thumbnails"
                    name="thumbnails"
-                   onclick="onChangeCheckbox(this)">
+                   >
             <label for="thumbnails"
                    class="form-check-label" th:text="#{input_label.always_show_thumbs}"></label>
         </div>
@@ -62,6 +62,8 @@
             dataType: 'text',
         });
     })
+
+
 
     /*<![CDATA[*/
     //define columns
@@ -140,15 +142,33 @@
         ];
         /*]]>*/
     }
+    function getCurrentPage(){
+        if(document.getElementById('save-config').checked) {
+           return [[${user.getCurrentPage()}]]
+        }
+        return 1;
+    }
 
     // creates Table
     /*<![CDATA[*/
     window.table = new Tabulator("#searchresults", {
+
         persistenceReaderFunc:function(id, type){
 
             if(document.getElementById('save-config').checked){
-                let data = [[${user.getColumns()}]];
-                return data ? JSON.parse(data) : false;
+                console.log("loadFromConfig");
+                if(type === "columns"){
+                    let data = [[${user.getColumns()}]];
+                    return JSON.parse(data);
+                } else if(type === "page"){
+                    let data = [[${user.getPage()}]];
+                    data = JSON.parse(data);
+                    data.paginationInitialPage = 1;
+                    return data;
+                } else if (type === "sort"){
+                    return [{"column":"id","dir":"asc"}];
+                }
+
             }
             return false;
         },
@@ -156,7 +176,7 @@
         persistenceWriterFunc: function(id, type, data){
             $.ajax({
                 type: 'POST',
-                url: 'assistance/saveTableConfig',
+                url: 'assistance/saveTable' + type,
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
@@ -168,7 +188,11 @@
         persistence:{
             columns: true, //persist columns
             pagination: true,
-            page: true
+            page: {
+                size: true,
+                page: true,
+            },
+            sort: true,
         },
         layout:"fitDataTable",
         initialSort: [{column:"id", dir:"asc"}],
@@ -176,13 +200,14 @@
         paginationSizeSelector:true,
         height: 800,
         pagination:"remote",
-        paginationSize:10,
         movableColumns: true, //enable user movable columns
         ajaxURL:"/tableview/sort", //set url for ajax request
         ajaxSorting:true,
         columnHeaderSortMulti:false,
         /*<![CDATA[*/
         placeholder:[[#{table.noResults}]],
+        paginationSize:10,
+        paginationInitialPage:1,
         /*]]>*/
         rowDblClick: function (e, row) {
             //shows and hides thumbnails for each row
@@ -195,12 +220,54 @@
 
         },
         columns: window.cols,
+
+        dataLoaded:function(data){
+            //data - all data loaded into the table
+            setThumbCheckbox();
+            showThumbs();
+        },
+        langs:{
+            "def":{
+                "ajax":{
+                    "loading":[[#{table.loading}]], //ajax loader text
+                    "error":[[#{table.error}]], //ajax error text
+                },
+                "pagination":{
+                    "page_size":[[#{input_label.resultsPerPage}]], //label for the page size select element
+                    "page_title":[[#{buttons.pageTooltip}]],//tooltip text for the numeric page button, appears in front of the page number (eg. "Show Page" will result in a tool tip of "Show Page 1" on the page 1 button)
+                    "first":[[#{buttons.first}]], //text for the first page button
+                    "first_title":[[#{buttons.first}]], //tooltip text for the first page button
+                    "last":[[#{buttons.last}]],
+                    "last_title":[[#{buttons.last}]],
+                    "prev":[[#{buttons.prev}]],
+                    "prev_title":[[#{buttons.prev}]],
+                    "next":[[#{buttons.next}]],
+                    "next_title":[[#{buttons.next}]],
+                },
+            }
+        },
+        locale:"def",
+
     });
-    /*]]>*/
-    // call functions after table has been created
+    table.setMaxPage(getCurrentPage());
+    table.setPage(getCurrentPage());
     setHeaderMenues();
     createDropdown();
-    setThumbCheckbox();
+
+
+
+    function showThumbs(){
+        if([[${user.isCheckThumbs()}]]) {
+            console.log("message")
+            console.log(table.getRows())
+            window.table.getRows().forEach(function (row) {
+                console.log("bla");
+                    showThumbnails(row);
+
+            });
+        }
+    }
+
 
     function showThumbnails(row){
         let thumbnails = row.getData().thumbnails;
@@ -240,6 +307,7 @@
         cardBody.appendChild(outerRow);
         holder.appendChild(cardBody);
         row.getElement().appendChild(holder);
+        console.log(holder + "   appended")
     }
 
     function hideThumbnails(row) {
@@ -252,10 +320,7 @@
     /*<![CDATA[*/
         if(document.getElementById("save-config").checked){
             document.getElementById("thumbnails").checked = [[${user.isCheckThumbs()}]];
-            document.getElementById("pageNumberInput").value = [[${user.getCurrentPage()}]];
-        } else {
-            document.getElementById("pageNumberInput").value = [[${currentPage}]];
-        }
+            }
         /*]]>*/
     }
 
@@ -299,7 +364,6 @@ function callEditor(manId){
         }
         tbl.forEach(function (col, index) {
             if(col.getField() !== "id" && index > 0) {
-                console.log(col.getField());
                 cont = document.createElement("div");
                 cont.className = "form-check ml-1"
                 checkbox = document.createElement("input");
@@ -341,7 +405,6 @@ function callEditor(manId){
         });
         container.append(applyBtn);
         /*]]>*/
-
     }
 
     function updateDropdown(){

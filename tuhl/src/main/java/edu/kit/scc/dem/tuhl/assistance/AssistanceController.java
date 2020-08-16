@@ -1,6 +1,8 @@
 package edu.kit.scc.dem.tuhl.assistance;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -85,12 +87,55 @@ public class AssistanceController {
    * @param model the holder for model attributes, used to pass attributes back to the view
    * @return placeholder
    */
-  @PostMapping("/saveTableConfig")
+  @PostMapping("/saveTablecolumns")
   @ResponseBody
   public String saveTableConfig(@RequestBody String columns, Model model) {
+    System.out.println(columns);
+
     assistanceService.setTableConfig(columns, model);
+
     return "placeholder";
   }
+
+  /**
+   * Handles http POST request to save table configuration.
+   *
+   * @param columns table config
+   * @param model the holder for model attributes, used to pass attributes back to the view
+   * @return placeholder
+   */
+  @PostMapping("/saveTablesort")
+  @ResponseBody
+  public String saveTableSort(@RequestBody String sort, Model model) {
+    System.out.println(sort);
+
+    //assistanceService.setTableConfig(columns, model);
+
+    return "placeholder";
+  }
+
+  @PostMapping("/saveTablepage")
+  @ResponseBody
+  public String saveTablePage(@RequestBody String pageInfo, Model model) {
+    System.out.println(pageInfo);
+    JSONObject obj = null;
+    try {
+      obj = new JSONObject(pageInfo);
+
+    int pageSize = Integer.parseInt(obj.get("paginationSize").toString());
+    System.out.println(pageSize);
+    int currentPage = Integer.parseInt(obj.get("paginationInitialPage").toString());
+    System.out.println(currentPage);
+
+    assistanceService.getCurrentUser().setCurrentPage(currentPage);
+    assistanceService.setTablePage(pageSize, model);
+  } catch (JSONException e) {
+    e.printStackTrace();
+  }
+    return "placeholder";
+  }
+
+
 
   /**
    * Handles http request when showThumbnails checkbox is toggled.

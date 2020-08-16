@@ -116,5 +116,12 @@ public class TableViewController {
     return newData.toString();
   }
 
+  @RequestMapping(value = "/getData")
+  @ResponseBody
+  public String getPage(Model model) {
+    mainPageService.update(model);
+    return tableViewService.getData().toString();
+  }
+
 
 }

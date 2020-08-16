@@ -182,7 +182,6 @@ public class TableViewService implements IContentViewService {
       model.addAttribute("order", "desc");
     }
     model.addAttribute("currentPage", getCurrentPage());
-    model.addAttribute("flag", false);
   }
 
   public void setNumberOfResults(int noResults) {
