@@ -70,7 +70,7 @@ class RepositoryAccessServiceTest {
     expected.add(new JSONObject(readStringFromRelativePath("getAllManuscripts/expectedObject1.json")));
     expected.add(new JSONObject(readStringFromRelativePath("getAllManuscripts/expectedObject2.json")));
     
-    List<JSONObject> actual = repositoryAccessService.getAllManuscripts();
+    List<JSONObject> actual = repositoryAccessService.getAllManuscripts(-1);
   
     assertEquals(expected.size(), actual.size());
     for (int i = 0; i < expected.size(); i++) {

@@ -132,8 +132,9 @@ class AccessServiceTest {
     List<Manuscript> moreManuscripts = buildMoreMocksAndManuscripts();
     expectedManuscripts.addAll(moreManuscripts);
 
+    Mockito.when(mockedRepositoryAccessService.getAllManuscripts(5)).thenReturn(buildExpectedManuscriptsJSON());
+
     List<Manuscript> actualManuscripts = accessService.getFewManuscripts();
-    System.out.println("exp: " + expectedManuscripts.size() + " act: " + actualManuscripts.size());
     assertEqualManuscriptLists(expectedManuscripts, actualManuscripts);
   }
   
@@ -493,7 +494,9 @@ class AccessServiceTest {
     annotationsPage3.add(annotationJson3);
     annotationsPage3.add(annotationJson4);
 
-    Mockito.when(mockedRepositoryAccessService.getAllManuscripts())
+    Mockito.when(mockedRepositoryAccessService.getAllManuscripts(-1))
+        .thenReturn(manuscriptsJson);
+    Mockito.when(mockedRepositoryAccessService.getAllManuscripts(2))
         .thenReturn(manuscriptsJson);
     Mockito.when(mockedRepositoryAccessService.getManuscriptsModifiedAfter(
         IRepositoryAccessService.TIMESTAMP_FORMAT.parse("2019-03-10T14:13:45Z")))
@@ -767,6 +770,28 @@ class AccessServiceTest {
     manuscripts.add(manuscript2);
     manuscripts.add(manuscript3);
     return manuscripts;
+  }
+
+  private List<JSONObject> buildExpectedManuscriptsJSON() throws JSONException, IOException {
+    JSONObject manuscriptJson1
+        = new JSONObject(readStringFromRelativePath("getManuscripts/manuscript1.json"));
+    JSONObject manuscriptJson2
+        = new JSONObject(readStringFromRelativePath("getManuscripts/manuscript2.json"));
+    JSONObject manuscriptJson3
+        = new JSONObject(readStringFromRelativePath("getManuscripts/manuscript3.json"));
+    JSONObject manuscriptJson4
+        = new JSONObject(readStringFromRelativePath("getManuscripts/manuscript4.json"));
+    JSONObject manuscriptJson5
+        = new JSONObject(readStringFromRelativePath("getManuscripts/manuscript5.json"));
+
+    List<JSONObject> manuscriptsJson = new ArrayList<>();
+    manuscriptsJson.add(manuscriptJson1);
+    manuscriptsJson.add(manuscriptJson2);
+    manuscriptsJson.add(manuscriptJson3);
+    manuscriptsJson.add(manuscriptJson4);
+    manuscriptsJson.add(manuscriptJson5);
+
+    return manuscriptsJson;
   }
 
   private void assertEqualManuscriptLists(List<Manuscript> expectedManuscripts,

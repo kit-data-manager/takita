@@ -1,9 +1,7 @@
 package edu.kit.scc.dem.tuhl.dataaccess;
 
 
-import java.awt.Image;
 import java.io.IOException;
-import java.net.URL;
 import java.net.http.HttpResponse;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -12,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.imageio.ImageIO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -25,6 +22,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class RepositoryAccessService implements IRepositoryAccessService {
 
+  //All public variables are for accessing the path to images/thumbnails
   public static final String DATA_PATH = "/data/";
   public static final String THUMB_JPG = ".thumb.jpg";
   public static final String MASTER_JPG = ".master.jpg";
@@ -40,12 +38,16 @@ public class RepositoryAccessService implements IRepositoryAccessService {
 
   private final HttpRequestHelper httpRequestHelper;
 
+  /**
+   * Implements IRepositoryAccessService, contains logic for accessing the repository.
+   */
   public RepositoryAccessService() {
     httpRequestHelper = new HttpRequestHelper();
   }
 
   /**
    * Gets a manuscript from the repository by its unique manuscript identifier.
+   *
    * @param manuscriptId manuscript identifier as String
    * @return manuscript as JSONObject
    * @throws JSONException if the response body could not be parsed to JSON
@@ -60,6 +62,7 @@ public class RepositoryAccessService implements IRepositoryAccessService {
 
   /**
    * Gets the page of a manuscript by its unique identifier.
+   *
    * @param pageId page identifier as String
    * @return page as JSONObject
    * @throws JSONException if the response body could not be parsed to JSON
@@ -74,6 +77,7 @@ public class RepositoryAccessService implements IRepositoryAccessService {
 
   /**
    * Gets the page assignment from a manuscript by its unique manuscript identifier.
+   *
    * @param manuscriptId manuscript identifier as String
    * @return page assignment as JSONObject
    * @throws JSONException if the response body could not be parsed to JSON
@@ -90,14 +94,20 @@ public class RepositoryAccessService implements IRepositoryAccessService {
 
   /**
    * Gets all manuscripts in the repository.
+   * @param pages number of pages you want to get manuscripts from, -1 if you want all
    * @return list of manuscripts as JSONObjects
    * @throws JSONException if the response body could not be parsed to JSON
    * @throws IOException if an error occurs while sending or receiving
    * @throws InterruptedException if the get request is interrupted
    */
   @Override
-  public List<JSONObject> getAllManuscripts()
+  public List<JSONObject> getAllManuscripts(int pages)
       throws IOException, InterruptedException, JSONException {
+    int pageCounter = 0;
+    if (pages <= 0 && pages != -1) {
+      return new ArrayList<>();
+    }
+
     Pattern pattern = Pattern.compile(MANUSCRIPT_PATTERN);
 
     List<JSONObject> manuscriptsJson = new ArrayList<>();
@@ -137,14 +147,16 @@ public class RepositoryAccessService implements IRepositoryAccessService {
           pageResponse = httpRequestHelper.get(nextUri);
         }
       }
+      pageCounter++;
       // Repeat while there is a next page given by a link in the response header
-    } while (findNextLink);
+    } while (findNextLink && (pageCounter < pages || pages == -1));
 
     return manuscriptsJson;
   }
 
   /**
    * Gets all manuscripts in the repository modified after a certain time.
+   *
    * @param timestamp specified time after which all manuscripts should be returned as Date
    * @return list of manuscripts modified after a certain time
    * @throws JSONException if the response body could not be parsed to JSON
@@ -157,7 +169,7 @@ public class RepositoryAccessService implements IRepositoryAccessService {
     List<JSONObject> modifiedManuscripts = new ArrayList<>();
 
     //Goes through all manuscripts
-    for (JSONObject manuscript : getAllManuscripts()) {
+    for (JSONObject manuscript : getAllManuscripts(-1)) {
       try {
 
         //Retrieves its modified and created timestamps
