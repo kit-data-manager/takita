@@ -31,8 +31,8 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   private String repositoryBaseUrl;
   @Value("${repository.staticPath}")
   private String repositoryStaticPath;
-  @Value("${sparqlQuery.baseUrl}")
-  private String sparqlQueryBaseUrl;
+  @Value("${sparqlQuery.urlPrefix}")
+  private String sparqlQueryUrlPrefix;
 
   private static final String VALIDATED_URL = "validated/";
 
@@ -139,7 +139,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   public List<JSONObject> getAnnotationsByPageId(String pageId, String pageNumber)
       throws IOException, InterruptedException, JSONException {
     //Sparql query to get only the annotations modified after date
-    HttpResponse<String> response = httpRequestHelper.get(sparqlQueryBaseUrl
+    HttpResponse<String> response = httpRequestHelper.get(sparqlQueryUrlPrefix
         + SPARQL_QUERY_ANNOTATION_BY_PAGE_1 + URLEncoder.encode(repositoryBaseUrl
         + repositoryStaticPath + pageId + RepositoryAccessService.DATA_PATH + pageNumber
             + RepositoryAccessService.MASTER_JPG, Charset.defaultCharset())
@@ -237,7 +237,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
     String date = IAnnotationStoreAccessService.TIMESTAMP_FORMAT_MILLIS.format(timestamp);
 
     //Sparql query to get only the annotations modified after date
-    HttpResponse<String> response = httpRequestHelper.get(sparqlQueryBaseUrl
+    HttpResponse<String> response = httpRequestHelper.get(sparqlQueryUrlPrefix
         + SPARQL_QUERY_LAST_MODIFIED_1 + date + SPARQL_QUERY_LAST_MODIFIED_2
         + date + SPARQL_QUERY_LAST_MODIFIED_3);
 
