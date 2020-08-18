@@ -60,13 +60,13 @@ public interface IRepositoryAccessService {
   /**
    * Gets all manuscripts in the repository.
    *
-   * @param pages number of pages you want to get manuscripts from, -1 if you want all
+   * @param numberManuscripts number of pages you want to get manuscripts from, -1 if you want all
    * @return list of manuscripts as JSONObjects
    * @throws JSONException if the response body could not be parsed to JSON
    * @throws IOException if an error occurs while sending or receiving
    * @throws InterruptedException if the get request is interrupted
    */
-  List<JSONObject> getAllManuscripts(int pages) throws IOException, InterruptedException, JSONException;
+  List<JSONObject> getAllManuscripts(int numberManuscripts) throws IOException, InterruptedException, JSONException;
 
   /**
    * Gets all manuscripts in the repository modified after a certain time.

@@ -172,7 +172,13 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
       annotationList = new JSONObject(response.body());
 
       //Extracts annotations from response and adds them to the list
-      JSONArray items = annotationList.getJSONArray(AnnotationStoreStrings.ITEMS.getName());
+      JSONArray items;
+      if (annotationList.has(AnnotationStoreStrings.ITEMS.getName())) {
+        items = annotationList.getJSONArray(AnnotationStoreStrings.ITEMS.getName());
+      } else {
+        logger.error("There are no annotations to be got.");
+        return null;
+      }
 
       for (int i = 0; i < items.length(); i++) {
         annotationsJson.add(getAnnotationById(items.getString(i)));
