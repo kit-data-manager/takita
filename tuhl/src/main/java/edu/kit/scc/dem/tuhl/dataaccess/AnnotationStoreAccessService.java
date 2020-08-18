@@ -31,15 +31,15 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   private String repositoryBaseUrl;
   @Value("${repository.staticPath}")
   private String repositoryStaticPath;
+  @Value("${sparqlQuery.baseUrl}")
+  private String sparqlQueryBaseUrl;
 
   private static final String VALIDATED_URL = "validated/";
 
   private static final String DEINTERPRETATIONE_URL = "deinterpretatione/";
 
   private static final String FIRST_PAGE = "?iris=1&page=0";
-  
-  private static final String SPARQL_QUERY_BASE_URL = "http://sampleannoserver-sparql.edu/wap/sparql?query=";
-  
+
   private static final String SPARQL_QUERY_LAST_MODIFIED_1 = URLEncoder.encode(
       "PREFIX oa: <http://www.w3.org/ns/oa#> PREFIX as: <http://www.w3.org"
       + "/ns/activitystreams#> PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> "
@@ -139,7 +139,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   public List<JSONObject> getAnnotationsByPageId(String pageId, String pageNumber)
       throws IOException, InterruptedException, JSONException {
     //Sparql query to get only the annotations modified after date
-    HttpResponse<String> response = httpRequestHelper.get(SPARQL_QUERY_BASE_URL
+    HttpResponse<String> response = httpRequestHelper.get(sparqlQueryBaseUrl
         + SPARQL_QUERY_ANNOTATION_BY_PAGE_1 + URLEncoder.encode(repositoryBaseUrl
         + repositoryStaticPath + pageId + RepositoryAccessService.DATA_PATH + pageNumber
             + RepositoryAccessService.MASTER_JPG, Charset.defaultCharset())
@@ -237,7 +237,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
     String date = IAnnotationStoreAccessService.TIMESTAMP_FORMAT_MILLIS.format(timestamp);
 
     //Sparql query to get only the annotations modified after date
-    HttpResponse<String> response = httpRequestHelper.get(SPARQL_QUERY_BASE_URL
+    HttpResponse<String> response = httpRequestHelper.get(sparqlQueryBaseUrl
         + SPARQL_QUERY_LAST_MODIFIED_1 + date + SPARQL_QUERY_LAST_MODIFIED_2
         + date + SPARQL_QUERY_LAST_MODIFIED_3);
 
@@ -325,12 +325,12 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
     if (validatedAnnotation.has(AnnotationStoreStrings.CANONICAL.getName())) {
       HttpResponse<String> response = httpRequestHelper.get(validatedAnnotation
           .get(AnnotationStoreStrings.CANONICAL.getName()).toString());
-      String deinterpretationeEtag = response.headers().allValues(
+      String deInterpretationeEtag = response.headers().allValues(
           AnnotationStoreStrings.ETAG.getName()).get(response.headers()
           .allValues(AnnotationStoreStrings.ETAG.getName()).size() - 1);
       httpRequestHelper.delete(validatedAnnotation.get(
           AnnotationStoreStrings.CANONICAL.getName()).toString(),
-          deinterpretationeEtag);
+          deInterpretationeEtag);
     }
   }
 
