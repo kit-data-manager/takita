@@ -48,6 +48,8 @@ public class AccessService implements IAccessService {
   private String baseUrl;
   @Value("${repository.staticPath}")
   private String staticPath;
+  @Value(("${devIndex.size}"))
+  private int devIndexSize;
 
   /**
    * Constructor, initializes instances of used interfaces.
@@ -317,7 +319,7 @@ public class AccessService implements IAccessService {
   @Override
   public List<Manuscript> getFewManuscripts()
       throws InterruptedException, JSONException, IOException {
-    List<JSONObject> manuscriptsJson = repositoryAccessService.getAllManuscripts(5);
+    List<JSONObject> manuscriptsJson = repositoryAccessService.getAllManuscripts(devIndexSize);
 
     List<Manuscript> reducedManuscripts = new ArrayList<>();
     for (JSONObject manuscript : manuscriptsJson) {

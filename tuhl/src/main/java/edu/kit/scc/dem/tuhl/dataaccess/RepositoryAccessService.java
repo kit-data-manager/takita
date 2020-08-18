@@ -94,17 +94,16 @@ public class RepositoryAccessService implements IRepositoryAccessService {
 
   /**
    * Gets all manuscripts in the repository.
-   * @param pages number of pages you want to get manuscripts from, -1 if you want all
+   * @param numberManuscripts number of pages you want to get manuscripts from, -1 if you want all
    * @return list of manuscripts as JSONObjects
    * @throws JSONException if the response body could not be parsed to JSON
    * @throws IOException if an error occurs while sending or receiving
    * @throws InterruptedException if the get request is interrupted
    */
   @Override
-  public List<JSONObject> getAllManuscripts(int pages)
+  public List<JSONObject> getAllManuscripts(int numberManuscripts)
       throws IOException, InterruptedException, JSONException {
-    int pageCounter = 0;
-    if (pages <= 0 && pages != -1) {
+    if (numberManuscripts <= 0 && numberManuscripts != -1) {
       return new ArrayList<>();
     }
 
@@ -131,6 +130,11 @@ public class RepositoryAccessService implements IRepositoryAccessService {
             .get(RepositoryStrings.VALUE.getName()).equals(RepositoryStrings
                 .MANUSCRIPT_METADATA.getName())) {
           manuscriptsJson.add(resource);
+
+          // Check if number of required manuscripts already reached
+          if (numberManuscripts != -1 && manuscriptsJson.size() >= numberManuscripts) {
+            return manuscriptsJson;
+          }
         }
       }
       if (link.isPresent()) {
@@ -147,9 +151,8 @@ public class RepositoryAccessService implements IRepositoryAccessService {
           pageResponse = httpRequestHelper.get(nextUri);
         }
       }
-      pageCounter++;
       // Repeat while there is a next page given by a link in the response header
-    } while (findNextLink && (pageCounter < pages || pages == -1));
+    } while (findNextLink);
 
     return manuscriptsJson;
   }
