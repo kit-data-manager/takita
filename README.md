@@ -24,7 +24,11 @@ Override the default path to the manuscript repository. The default path is `api
 * `--annotationStore.url=<myUrl>`  
 Override the default url of the root annotation
  container containing the `validated` and `deinterpretatione` containers. The default url is
-  `http://sampleannoserver.edu/wap/a04/` 
+  `http://sampleannoserver.edu/wap/a04/`
+  
+* `--sparqlQuery.urlPrefix=<myPrefix>`   
+Set the url prefix of the sparql query. The default prefix is 
+`http://sampleannoserver-sparql.edu/wap/sparql?query=`.
 
 ##### Search Index
 * `buildIndex`  
@@ -46,6 +50,9 @@ every 5 days. These parameters can be customized with the following arguments:
 * `buildDevIndex`   
 The program will delete the old search index and build a small one based on a few manuscripts.  
 This can be used for development purposes.
+    * `--devIndex.size=<mySize>`   
+    Sets the size of the dev index and therefore how many manuscripts will be obtained. The
+    default value is 5.
   
 ##### Elasticsearch
 * `--elasticsearch.ip=<myIp>`  
