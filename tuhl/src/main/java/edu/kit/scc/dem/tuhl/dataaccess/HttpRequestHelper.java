@@ -5,6 +5,8 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+
+import org.apache.http.protocol.HTTP;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 
@@ -51,7 +53,9 @@ class HttpRequestHelper {
       throws IOException, InterruptedException {
     HttpRequest request = HttpRequest.newBuilder()
         .uri(URI.create(url))
-        .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+        .header(HTTP.CONTENT_TYPE, "application/ld+json;profile=\"http://www.w3.org/ns/anno.jsonld\"")
+        // JSON automatically escapes slashes, this removes that
+        .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString().replace("\\/", "/")))
         .build();
 
     return client.send(request,

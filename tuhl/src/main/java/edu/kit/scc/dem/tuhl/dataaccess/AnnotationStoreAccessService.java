@@ -25,7 +25,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   private final HttpRequestHelper httpRequestHelper;
 
   @Value("${annotationStore.url}")
-  private String url;
+  private String urlPrefix;
 
   @Value("${repository.baseUrl}")
   private String repositoryBaseUrl;
@@ -84,13 +84,14 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   public JSONObject addAnnotation(JSONObject jsonAnnotation)
       throws IOException, InterruptedException, JSONException {
     JSONObject deinterpretationeAnnotation = new JSONObject(httpRequestHelper
-        .post(url + DEINTERPRETATIONE_URL, jsonAnnotation).body());
+        .post(urlPrefix + DEINTERPRETATIONE_URL, jsonAnnotation).body());
+
     String deinterpretationeId = deinterpretationeAnnotation
         .getString(AnnotationStoreStrings.ID.getName());
 
     jsonAnnotation.put(AnnotationStoreStrings.VIA.getName(), deinterpretationeId);
     jsonAnnotation.put(AnnotationStoreStrings.CANONICAL.getName(), deinterpretationeId);
-    HttpResponse<String> response = httpRequestHelper.post(url
+    HttpResponse<String> response = httpRequestHelper.post(urlPrefix
         + VALIDATED_URL, jsonAnnotation);
     JSONObject validatedAnnotation = new JSONObject(response.body());
     String etag = response.headers().allValues(AnnotationStoreStrings.ETAG.getName())
@@ -163,7 +164,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
     logger.info("Getting all annotations.");
     List<JSONObject> annotationsJson = new ArrayList<>();
 
-    String nextUri = url + VALIDATED_URL + FIRST_PAGE;
+    String nextUri = urlPrefix + VALIDATED_URL + FIRST_PAGE;
     JSONObject annotationList;
     HttpResponse<String> response;
 
@@ -191,7 +192,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
       // Repeat while there is a next page given by a link in the response
     } while (annotationList.has(AnnotationStoreStrings.NEXT.getName()));
     
-    nextUri = url + DEINTERPRETATIONE_URL + FIRST_PAGE;
+    nextUri = urlPrefix + DEINTERPRETATIONE_URL + FIRST_PAGE;
 
     do {
       response = httpRequestHelper.get(nextUri);
@@ -267,7 +268,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
         AnnotationStoreStrings.ID.getName()));
     jsonAnnotation.put(AnnotationStoreStrings.CANONICAL.getName(), jsonAnnotation.getString(
         AnnotationStoreStrings.ID.getName()));
-    HttpResponse<String> response = httpRequestHelper.post(url + VALIDATED_URL, jsonAnnotation);
+    HttpResponse<String> response = httpRequestHelper.post(urlPrefix + VALIDATED_URL, jsonAnnotation);
     JSONObject result = new JSONObject(response.body());
     String etag = response.headers().allValues(
         AnnotationStoreStrings.ETAG.getName()).get(response.headers()
