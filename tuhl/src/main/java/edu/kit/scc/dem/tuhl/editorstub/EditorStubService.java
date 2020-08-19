@@ -55,7 +55,7 @@ public class EditorStubService implements IEditorStubService {
    * @throws IOException when the http request to database was faulty
    */
   @Override
-  public Annotation addAnnotation(String pageId, Color color, String svgCode, String motivation)
+  public Annotation addAnnotation(String pageId, String color, String svgCode, String motivation)
       throws InterruptedException, NoSuchIndexEntryException, IOException {
     Annotation newAnnotation = new Annotation();
     newAnnotation.setPageId(pageId);
@@ -65,16 +65,16 @@ public class EditorStubService implements IEditorStubService {
     newAnnotation.setModified(Date.from(Instant.now()));
 
     if (color != null) {
-      newAnnotation.setColor(color);
+      newAnnotation.setColor(stringToColor(color));
     } else {
       newAnnotation.setColor(Color.DEFAULT);
     }
 
-    if (svgCode != null && svgCode.trim() != "") {
+    if (svgCode != null && !svgCode.trim().equals("")) {
       newAnnotation.setSvgCode(svgCode);
     }
 
-    if (motivation != null && motivation.trim() != "") {
+    if (motivation != null && !motivation.trim().equals("")) {
       newAnnotation.setMotivation(motivation);
     }
 
@@ -99,7 +99,7 @@ public class EditorStubService implements IEditorStubService {
    * @throws IOException when the http request to database was faulty
    */
   @Override
-  public Annotation updateAnnotation(String annotationId, Color color,
+  public Annotation updateAnnotation(String annotationId, String color,
                                      String svgCode, String motivation)
       throws NoSuchIndexEntryException, InterruptedException, IOException {
     Annotation updatedAnnotation = searchIndexService.getAnnotationById(annotationId);
@@ -109,7 +109,7 @@ public class EditorStubService implements IEditorStubService {
     }
     updatedAnnotation.setModified(Date.from(Instant.now()));
 
-    updatedAnnotation.setColor(Objects.requireNonNullElse(color, Color.DEFAULT));
+    updatedAnnotation.setColor(Objects.requireNonNullElse(stringToColor(color), Color.DEFAULT));
 
     if (svgCode != null && !svgCode.trim().equals("")) {
       updatedAnnotation.setSvgCode(svgCode);
@@ -437,5 +437,41 @@ public class EditorStubService implements IEditorStubService {
       e.printStackTrace();
     }
     return null;
+  }
+
+  private Color stringToColor(String stringColor) {
+    if (Color.TEXT_REGION.getName().equals(stringColor)) {
+      return Color.TEXT_REGION;
+    } else if (Color.IMAGE_REGION.getName().equals(stringColor)) {
+      return Color.IMAGE_REGION;
+    } else if (Color.PAGE_REGION.getName().equals(stringColor)) {
+      return Color.PAGE_REGION;
+    } else if (Color.LINE_DRAWING_REGION.getName().equals(stringColor)) {
+      return Color.LINE_DRAWING_REGION;
+    } else if (Color.GRAPHIC_REGION.getName().equals(stringColor)) {
+      return Color.GRAPHIC_REGION;
+    } else if (Color.TABLE_REGION.getName().equals(stringColor)) {
+      return Color.TABLE_REGION;
+    } else if (Color.CHART_REGION.getName().equals(stringColor)) {
+      return Color.CHART_REGION;
+    } else if (Color.SEPARATOR_REGION.getName().equals(stringColor)) {
+      return Color.SEPARATOR_REGION;
+    } else if (Color.MATHS_REGION.getName().equals(stringColor)) {
+      return Color.MATHS_REGION;
+    } else if (Color.CHEM_REGION.getName().equals(stringColor)) {
+      return Color.CHEM_REGION;
+    } else if (Color.MUSIC_REGION.getName().equals(stringColor)) {
+      return Color.MUSIC_REGION;
+    } else if (Color.ADVERT_REGION.getName().equals(stringColor)) {
+      return Color.ADVERT_REGION;
+    } else if (Color.NOISE_REGION.getName().equals(stringColor)) {
+      return Color.NOISE_REGION;
+    } else if (Color.UNKNOWN_REGION.getName().equals(stringColor)) {
+      return Color.UNKNOWN_REGION;
+    } else if (Color.CUSTOM_REGION.getName().equals(stringColor)) {
+      return Color.CUSTOM_REGION;
+    } else {
+      return Color.DEFAULT;
+    }
   }
 }

@@ -41,7 +41,7 @@ public class EditorStubController {
       String color = json.getString("color");
       String svgCode = json.getString("svgCode");
       String motivation = json.getString("motivation");
-      Annotation annotation = editorStubService.addAnnotation(pageId, null, svgCode, motivation);
+      Annotation annotation = editorStubService.addAnnotation(pageId, color, svgCode, motivation);
       model.addAttribute("annotation", annotation);
     } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
       return "redirect:/error/" + e.getMessage();

@@ -25,7 +25,7 @@ public interface IEditorStubService {
    * @throws NoSuchIndexEntryException when there is no such page in the index
    * @throws IOException when the http request to database was faulty
    */
-  Annotation addAnnotation(String pageId, Color color, String svgCode, String motivation)
+  Annotation addAnnotation(String pageId, String color, String svgCode, String motivation)
       throws InterruptedException, NoSuchIndexEntryException, IOException;
 
   /**
@@ -40,7 +40,7 @@ public interface IEditorStubService {
    * @throws InterruptedException when the http request to database is interrupted
    * @throws IOException when the http request to database was faulty
    */
-  Annotation updateAnnotation(String annotationId, Color color, String svgCode, String motivation)
+  Annotation updateAnnotation(String annotationId, String color, String svgCode, String motivation)
       throws NoSuchIndexEntryException, InterruptedException, IOException;
 
   /**
