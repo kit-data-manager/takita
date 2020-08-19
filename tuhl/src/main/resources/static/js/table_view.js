@@ -1,6 +1,7 @@
 // todo: show all thumbnails
 //function of alwaysShowThumbnails checkbox
 $('#thumbnails').change(function () {
+    console.log("checkbox");
     if (document.getElementById("thumbnails").checked) {
         table.getRows().forEach(function (row) {
             let id = row.getData().id;

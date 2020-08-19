@@ -116,6 +116,7 @@
                 field: "hasAlgorithmAnnotations",
                 headerMenu: headerMenu(),
                 visible: true,
+                formatter:"tickCross"
             },
             {
                 title: [[#{col_name.created}]],
@@ -224,7 +225,7 @@
         dataLoaded:function(data){
             //data - all data loaded into the table
             setThumbCheckbox();
-            showThumbs();
+
         },
         langs:{
             "def":{
@@ -307,7 +308,8 @@
         cardBody.appendChild(outerRow);
         holder.appendChild(cardBody);
         row.getElement().appendChild(holder);
-        console.log(holder + "   appended")
+        console.log(holder);
+        console.log(row.getElement());
     }
 
     function hideThumbnails(row) {
@@ -320,6 +322,9 @@
     /*<![CDATA[*/
         if(document.getElementById("save-config").checked){
             document.getElementById("thumbnails").checked = [[${user.isCheckThumbs()}]];
+            if([[${user.isCheckThumbs()}]]){
+                showThumbs()
+            }
             }
         /*]]>*/
     }
