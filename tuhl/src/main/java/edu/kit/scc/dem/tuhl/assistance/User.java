@@ -35,6 +35,7 @@ public class User implements IUser {
   private int currentPage;
   private int pageSize;
   private String lang;
+  private String sort;
 
   @Lob
   private String columns;
@@ -64,11 +65,12 @@ public class User implements IUser {
     this.currentPage = 1;
     this.pageSize = 10;
     this.lang = "en";
+    this.sort = "[{\"column\":\"id\",\"dir\":\"asc\"}]";
     setFilter(new ArrayList<>());
   }
 
   User(int currentPage, String columns, String matchFilter, String rangeFilter,
-       boolean saveTable, boolean saveFilter, boolean checkThumbs, String name, int pageSize, String lang) {
+       boolean saveTable, boolean saveFilter, boolean checkThumbs, String name, int pageSize, String lang, String sort) {
     this.currentPage = currentPage;
     this.columns = columns;
 
@@ -80,6 +82,7 @@ public class User implements IUser {
     this.name = name;
     this.pageSize = pageSize;
     this.lang = lang;
+    this.sort = sort;
   }
 
   /**
@@ -255,5 +258,13 @@ public class User implements IUser {
       e.printStackTrace();
     }
     return obj.toString();
+  }
+
+  public String getSort() {
+    return sort;
+  }
+
+  public void setSort(String sort) {
+    this.sort = sort;
   }
 }

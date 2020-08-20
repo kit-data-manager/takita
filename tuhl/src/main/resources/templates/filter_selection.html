@@ -108,20 +108,8 @@
         </div>
     </form>
 
-    <div class="form-check form-check-inline">
-        <input type="checkbox" class="form-check-input" id="safeFilterConfig" th:checked="${user.isSaveFilter()}">
-        <label class="form-check-label" th:text="#{input_label.save_filters}"> </label>
-    </div>
 
     <script th:inline="javascript">
-
-        $('#safeFilterConfig').change(function () {
-            $.ajax({
-                type: 'GET',
-                url: "assistance/safeFilterConfig",
-                dataType: 'text',
-            });
-        })
 
         function add() {
             //Check if there is something to add

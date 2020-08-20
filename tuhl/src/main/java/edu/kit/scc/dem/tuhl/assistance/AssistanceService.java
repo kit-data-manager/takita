@@ -21,7 +21,7 @@ import org.springframework.web.context.annotation.SessionScope;
 public class AssistanceService implements IAssistanceService {
 
   private final UserRepository repo;
-  private IUser currentUser = new User("default");
+  private IUser currentUser;
   private final IFilterService filterService;
   private final TableViewService tableViewService;
   private final IMainPageService mainPageService;
@@ -49,6 +49,8 @@ public class AssistanceService implements IAssistanceService {
     this.filterService = filterService;
     this.tableViewService = tableViewService;
     this.mainPageService = mainPageService;
+    this.currentUser = new User("default");
+    updateUser();
   }
 
   /**
@@ -149,7 +151,8 @@ public class AssistanceService implements IAssistanceService {
     User user = new User(currentUser.getCurrentPage(), currentUser.getColumns(),
         currentUser.getMatchFilter(), currentUser.getRangeFilter(),
         currentUser.isSaveTable(), currentUser.isSaveFilter(),
-        currentUser.isCheckThumbs(), currentUser.getName(), currentUser.getPageSize(), currentUser.getLang());
+        currentUser.isCheckThumbs(), currentUser.getName(), currentUser.getPageSize(), currentUser.getLang(), currentUser.getSort());
+    System.out.println(user.getName());
     repo.save(user);
   }
 
@@ -160,13 +163,21 @@ public class AssistanceService implements IAssistanceService {
    * @param model the holder for model attributes, used to pass attributes back to the view
    */
   public void setTableConfig(String columns, Model model) {
-    currentUser.setColumns(columns);
-    updateUser();
-    mainPageService.update(model);
+    if (currentUser.getName() != "default") {
+      currentUser.setColumns(columns);
+      updateUser();
+      mainPageService.update(model);
+    }
   }
 
   public void setTablePage(int pageSize, Model model) {
     currentUser.setPageSize(pageSize);
+    updateUser();
+    mainPageService.update(model);
+  }
+
+  public void setTableSort(String sort, Model model) {
+    currentUser.setSort(sort);
     updateUser();
     mainPageService.update(model);
   }

@@ -17,15 +17,6 @@
             <label for="thumbnails"
                    class="form-check-label" th:text="#{input_label.always_show_thumbs}"></label>
         </div>
-        <div class="form-check form-check-inline">
-            <input type="checkbox"
-                   id="save-config"
-                   class="form-check-input"
-                   name="safe-config"
-                   th:checked="${user.isSaveTable()}">
-            <label for="save-config"
-                   class="form-check-label" th:text="#{input_label.save_config}"></label>
-        </div>
     </div>
     <div class="col-auto dropdown">
         <button class="btn-sm btn-secondary dropdown-toggle"
@@ -54,16 +45,6 @@
 
 <script src="js/table_view.js"></script>
 <script th:inline="javascript">
-
-    $('#save-config').change(function () {
-        $.ajax({
-            type: 'GET',
-            url: "assistance/saveTableConfigSetting",
-            dataType: 'text',
-        });
-    })
-
-
 
     /*<![CDATA[*/
     //define columns
@@ -144,10 +125,7 @@
         /*]]>*/
     }
     function getCurrentPage(){
-        if(document.getElementById('save-config').checked) {
-           return [[${user.getCurrentPage()}]]
-        }
-        return 1;
+           return [[${user.getCurrentPage()}]];
     }
 
     // creates Table
@@ -155,9 +133,6 @@
     window.table = new Tabulator("#searchresults", {
 
         persistenceReaderFunc:function(id, type){
-
-            if(document.getElementById('save-config').checked){
-                console.log("loadFromConfig");
                 if(type === "columns"){
                     let data = [[${user.getColumns()}]];
                     return JSON.parse(data);
@@ -167,11 +142,9 @@
                     data.paginationInitialPage = 1;
                     return data;
                 } else if (type === "sort"){
-                    return [{"column":"id","dir":"asc"}];
+                    let sort = [[${user.getSort()}]]
+                    return JSON.parse(sort);
                 }
-
-            }
-            return false;
         },
         persistenceID:"example1",
         persistenceWriterFunc: function(id, type, data){
@@ -209,6 +182,7 @@
         placeholder:[[#{table.noResults}]],
         paginationSize:10,
         paginationInitialPage:1,
+        layoutColumnsOnNewData:false,
         /*]]>*/
         rowDblClick: function (e, row) {
             //shows and hides thumbnails for each row
@@ -332,12 +306,11 @@
 
     function setThumbCheckbox(){
     /*<![CDATA[*/
-        if(document.getElementById("save-config").checked){
             document.getElementById("thumbnails").checked = [[${user.isCheckThumbs()}]];
             if([[${user.isCheckThumbs()}]]){
                 showThumbs()
             }
-            }
+
         /*]]>*/
     }
 

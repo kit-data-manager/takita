@@ -119,4 +119,8 @@ public interface IUser {
   String getLang();
 
   void setLang(String lang);
+
+  void setSort(String sort);
+
+  String getSort();
 }

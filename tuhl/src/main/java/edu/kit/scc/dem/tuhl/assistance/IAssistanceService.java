@@ -78,4 +78,6 @@ public interface IAssistanceService {
   void setLanguage(String lang, Model model);
 
   String getLang();
+
+  void setTableSort(String sort, Model model);
 }

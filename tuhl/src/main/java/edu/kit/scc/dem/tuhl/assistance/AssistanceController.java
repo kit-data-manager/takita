@@ -90,7 +90,6 @@ public class AssistanceController {
   @PostMapping("/saveTablecolumns")
   @ResponseBody
   public String saveTableConfig(@RequestBody String columns, Model model) {
-    System.out.println(columns);
 
     assistanceService.setTableConfig(columns, model);
 
@@ -107,9 +106,8 @@ public class AssistanceController {
   @PostMapping("/saveTablesort")
   @ResponseBody
   public String saveTableSort(@RequestBody String sort, Model model) {
-    System.out.println(sort);
 
-    //assistanceService.setTableConfig(columns, model);
+    assistanceService.setTableSort(sort, model);
 
     return "placeholder";
   }
@@ -117,15 +115,15 @@ public class AssistanceController {
   @PostMapping("/saveTablepage")
   @ResponseBody
   public String saveTablePage(@RequestBody String pageInfo, Model model) {
-    System.out.println(pageInfo);
+
     JSONObject obj = null;
     try {
       obj = new JSONObject(pageInfo);
 
     int pageSize = Integer.parseInt(obj.get("paginationSize").toString());
-    System.out.println(pageSize);
+
     int currentPage = Integer.parseInt(obj.get("paginationInitialPage").toString());
-    System.out.println(currentPage);
+
 
     assistanceService.getCurrentUser().setCurrentPage(currentPage);
     assistanceService.setTablePage(pageSize, model);
@@ -152,7 +150,7 @@ public class AssistanceController {
   @GetMapping("/lang/{lang}")
   @ResponseBody
   public String setLanguage(@PathVariable("lang") String lang, Model model) {
-    System.out.println("save " + lang);
+
     assistanceService.setLanguage(lang, model);
     return "placeholder";
   }
