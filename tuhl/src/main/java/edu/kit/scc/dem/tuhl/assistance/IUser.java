@@ -115,4 +115,8 @@ public interface IUser {
   void setPageSize(int pageSize);
 
   String getPage();
+
+  String getLang();
+
+  void setLang(String lang);
 }

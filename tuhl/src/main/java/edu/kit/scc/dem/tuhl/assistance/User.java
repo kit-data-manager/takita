@@ -34,6 +34,7 @@ public class User implements IUser {
   private boolean checkThumbs;
   private int currentPage;
   private int pageSize;
+  private String lang;
 
   @Lob
   private String columns;
@@ -62,11 +63,12 @@ public class User implements IUser {
     this.checkThumbs = false;
     this.currentPage = 1;
     this.pageSize = 10;
+    this.lang = "en";
     setFilter(new ArrayList<>());
   }
 
   User(int currentPage, String columns, String matchFilter, String rangeFilter,
-       boolean saveTable, boolean saveFilter, boolean checkThumbs, String name, int pageSize) {
+       boolean saveTable, boolean saveFilter, boolean checkThumbs, String name, int pageSize, String lang) {
     this.currentPage = currentPage;
     this.columns = columns;
 
@@ -77,6 +79,7 @@ public class User implements IUser {
     this.checkThumbs = checkThumbs;
     this.name = name;
     this.pageSize = pageSize;
+    this.lang = lang;
   }
 
   /**
@@ -232,6 +235,14 @@ public class User implements IUser {
 
   public void setPageSize(int pageSize) {
     this.pageSize = pageSize;
+  }
+
+  public String getLang() {
+    return lang;
+  }
+
+  public void setLang(String lang) {
+    this.lang = lang;
   }
 
   public String getPage() {

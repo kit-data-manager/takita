@@ -51,9 +51,9 @@ public class AssistanceController {
    */
   @GetMapping("/{pseudonym}")
   @ResponseBody
-  public String setPseudonym(@PathVariable("pseudonym") String pseudonym) {
-    assistanceService.changeUser(pseudonym);
-    return "initiateStuff";
+  public String setPseudonym(@PathVariable("pseudonym") String pseudonym, Model model) {
+    assistanceService.changeUser(pseudonym, model);
+    return assistanceService.getLang();
   }
 
   /**
@@ -146,6 +146,14 @@ public class AssistanceController {
   @ResponseBody
   public String toggleCheckThumbs() {
     assistanceService.toggleCheckThumbs();
+    return "placeholder";
+  }
+
+  @GetMapping("/lang/{lang}")
+  @ResponseBody
+  public String setLanguage(@PathVariable("lang") String lang, Model model) {
+    System.out.println("save " + lang);
+    assistanceService.setLanguage(lang, model);
     return "placeholder";
   }
 

@@ -118,7 +118,8 @@
          th:insert="dashboard.html :: dashboard"></div>
 </div>
 
-<script>
+<script th:inline="javascript">
+    /*<![CDATA[*/
     function enterPseudonym(event) {
         event.preventDefault();
         let input = $('#pseudonymInitInput').val();
@@ -127,12 +128,13 @@
             url: 'assistance/' + input,
             dataType: 'text',
             success: function (responseData) {
-                location.href = '/';
+                location.href = '/?lang=' + responseData;
             }
         });
 
         sessionStorage.setItem('visited', '1');
     }
+    /*]]>*/
 
 </script>
 </body>

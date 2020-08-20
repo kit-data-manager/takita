@@ -91,7 +91,7 @@ public class AssistanceService implements IAssistanceService {
    * @param pseudonym of new User
    */
   @Override
-  public void changeUser(String pseudonym) {
+  public void changeUser(String pseudonym, Model model) {
     IUser user = getUserByPseudonym(pseudonym);
     if (user != currentUser) {
       this.currentUser = user;
@@ -103,6 +103,7 @@ public class AssistanceService implements IAssistanceService {
       }
       filterService.addToCurrentFilters(fields);
     }
+    mainPageService.update(model);
   }
 
 
@@ -148,7 +149,7 @@ public class AssistanceService implements IAssistanceService {
     User user = new User(currentUser.getCurrentPage(), currentUser.getColumns(),
         currentUser.getMatchFilter(), currentUser.getRangeFilter(),
         currentUser.isSaveTable(), currentUser.isSaveFilter(),
-        currentUser.isCheckThumbs(), currentUser.getName(), currentUser.getPageSize());
+        currentUser.isCheckThumbs(), currentUser.getName(), currentUser.getPageSize(), currentUser.getLang());
     repo.save(user);
   }
 
@@ -183,5 +184,15 @@ public class AssistanceService implements IAssistanceService {
     User user = new User(pseudonym);
     repo.save(user);
     return user;
+  }
+
+  public void setLanguage(String lang, Model model){
+    currentUser.setLang(lang);
+    updateUser();
+    mainPageService.update(model);
+  }
+
+  public String getLang(){
+    return currentUser.getLang();
   }
 }

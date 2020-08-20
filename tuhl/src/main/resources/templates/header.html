@@ -20,17 +20,39 @@
     </div>
     <button class="col-auto btn btn-info" th:text="#{buttons.help}" onclick="getHelp()"> </button>
     <div class="dropdown col-auto">
-        <button class="btn btn-info dropdown-toggle" type="button"  data-toggle="dropdown"
+        <button id="Languages" class="btn btn-info dropdown-toggle" type="button"  data-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false" th:text="#{buttons.language}">
         </button>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-            <a class="dropdown-item" href="?lang=de" th:text="#{language.de}"> </a>
-            <a class="dropdown-item" href="?lang=en" th:text="#{language.gb}"> </a>
+            <a class="dropdown-item" href="?lang=de" onclick="return clickDe()"  th:text="#{language.de}"> </a>
+            <a class="dropdown-item" href="?lang=en" onclick="return clickEn()" th:text="#{language.gb}"> </a>
         </div>
     </div>
 
 
     <script th:inline="javascript">
+
+        function clickDe(){
+            console.log("click de");
+            $.ajax({
+                type: 'GET',
+                url: '/assistance/lang/de',
+                dataType: 'text',
+            })
+            return true;
+        }
+
+        function clickEn(){
+            console.log("click en");
+            $.ajax({
+                type: 'GET',
+                url: '/assistance/lang/en',
+                dataType: 'text',
+            })
+
+            return true;
+        }
+
         function getHelp(){
             location.href = '/assistance/help';
         }
@@ -62,7 +84,7 @@
                 url: 'assistance/' + input,
                 dataType: 'text',
                 success: function (responseData) {
-                    location.href = '/';
+                    location.href = '?lang=' + responseData;
                 }
             });
         }

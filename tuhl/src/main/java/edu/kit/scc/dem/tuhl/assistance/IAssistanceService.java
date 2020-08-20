@@ -37,7 +37,7 @@ public interface IAssistanceService {
    *
    * @param pseudonym of new User
    */
-  void changeUser(String pseudonym);
+  void changeUser(String pseudonym, Model model);
 
   /**
    * toggles saveFilter boolean of current User.
@@ -75,4 +75,7 @@ public interface IAssistanceService {
 
   void setTablePage(int page, Model model);
 
+  void setLanguage(String lang, Model model);
+
+  String getLang();
 }

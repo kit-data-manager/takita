@@ -31,7 +31,7 @@ public class DashboardService implements IDashboardService {
   private String currentContentView;
 
   public DashboardService() throws IOException, JSONException {
-    this.currentContentView = "dashboard";
+    this.currentContentView = "tableview";
     this.availableContentViews = readAvailableViews();
   }
   
