@@ -10,12 +10,12 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.indices.GetFieldMappingsRequest;
 import org.elasticsearch.client.indices.GetFieldMappingsResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
-import org.elasticsearch.index.query.MatchAllQueryBuilder;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryStringQueryBuilder;
+import org.elasticsearch.common.unit.Fuzziness;
+import org.elasticsearch.index.query.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
@@ -97,18 +97,20 @@ public class SearchService implements ISearchService {
     QueryBuilder searchTermQueryBuilder;
     if (searchTerm != null && !searchTerm.trim().equals("")) {
       //Add the search term as a query that matches against all fields
-      searchTermQueryBuilder = new QueryStringQueryBuilder(searchTerm);
+      searchTermQueryBuilder = new QueryStringQueryBuilder(searchTerm).fuzziness(Fuzziness.ZERO);
     } else {
       searchTermQueryBuilder = new MatchAllQueryBuilder();
     }
-    queryBuilder = queryBuilder.withQuery(searchTermQueryBuilder);
     
+    BoolQueryBuilder boolQuery = new BoolQueryBuilder();
+    boolQuery.must(searchTermQueryBuilder);
     //Add the query of each filter to the query builder
     for (Filter f : filterService.getCurrentFilters()) {
       if (f.getQuery() != null) {
-        queryBuilder = queryBuilder.withQuery(f.getQuery().getQuery());
+        boolQuery.must(f.getQuery().getQuery());
       }
     }
+    queryBuilder.withQuery(boolQuery);
     
     resultPagesCount = calculatePageCount(queryBuilder.build());
     
