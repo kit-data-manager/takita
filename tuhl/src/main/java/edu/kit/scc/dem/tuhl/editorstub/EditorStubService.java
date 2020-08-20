@@ -137,7 +137,7 @@ public class EditorStubService implements IEditorStubService {
                                      String svgCode, String motivation)
       throws NoSuchIndexEntryException, InterruptedException, IOException {
     Annotation updatedAnnotation = searchIndexService.getAnnotationById(annotationId);
-    if (updatedAnnotation.getCreators().contains(assistanceService
+    if (!updatedAnnotation.getCreators().contains(assistanceService
         .getCurrentUser().getName())) {
       updatedAnnotation.addCreator(assistanceService.getCurrentUser().getName());
     }

@@ -241,19 +241,17 @@ public class SearchIndexService implements ISearchIndexService {
   public Annotation addAnnotation(Annotation annotation) throws InterruptedException, IOException,
       JSONException, NoSuchIndexEntryException {
     Page page = getPageById(annotation.getPageId());
-    
-    Annotation newAnnotation = accessService.addAnnotation(
-          annotation, page.getPageNumber());
+
+    Annotation newAnnotation = accessService.addAnnotation(annotation, page.getPageNumber());
 
     Optional<Manuscript> manuscriptHit = manuscriptRepository.findById(page.getManuscriptId());
-    
+
     if (manuscriptHit.isPresent()) {
-      manuscriptRepository.delete(manuscriptHit.get());
-      if (page.getResourceType() == ResourceType.IMAGE) {
-        ((ImagePage) page).addAnnotation(newAnnotation);
-      }
+      Page updatedPage = getPageById(annotation.getPageId(), manuscriptHit.get());
+      updatedPage.getAnnotations().add(newAnnotation);
       manuscriptRepository.save(manuscriptHit.get());
     }
+
     return newAnnotation;
   }
 
@@ -277,7 +275,7 @@ public class SearchIndexService implements ISearchIndexService {
     
     for (Page p : searchHits.getSearchHit(0).getContent().getPages()) {
       if (p.getResourceType().equals(ResourceType.IMAGE)) {
-        for (Annotation a : ((ImagePage) p).getAnnotations()) {
+        for (Annotation a : p.getAnnotations()) {
           if (a.getId().equals(id)) {
             return a;
           }
@@ -309,12 +307,10 @@ public class SearchIndexService implements ISearchIndexService {
         manuscriptRepository.findById(page.getManuscriptId());
     
     if (manuscriptHit.isPresent()) {
-      manuscriptRepository.delete(manuscriptHit.get());
-      
-      if (page.getResourceType() == ResourceType.IMAGE
-          && page.getAnnotations().contains(annotation)) {
-        page.getAnnotations().remove(annotation);
-        ((ImagePage) page).addAnnotation(newAnnotation);
+      Page updatedPage = getPageById(annotation.getPageId(), manuscriptHit.get());
+      if (updatedPage.getAnnotations().contains(annotation)) {
+        updatedPage.getAnnotations().remove(annotation);
+        updatedPage.getAnnotations().add(newAnnotation);
       }
       manuscriptRepository.save(manuscriptHit.get());
     }
@@ -340,11 +336,10 @@ public class SearchIndexService implements ISearchIndexService {
     Optional<Manuscript> manuscriptHit = manuscriptRepository.findById(page.getManuscriptId());
     
     if (manuscriptHit.isPresent()) {
-      manuscriptRepository.delete(manuscriptHit.get());
-      if (page.getResourceType() == ResourceType.IMAGE) {
-        page.getAnnotations().remove(annotation);
-        ((ImagePage) page).addAnnotation(validatedAnnotation);
-      }
+      Page updatedPage = getPageById(annotation.getPageId(), manuscriptHit.get());
+        updatedPage.getAnnotations().remove(annotation);
+        updatedPage.getAnnotations().add(validatedAnnotation);
+
       manuscriptRepository.save(manuscriptHit.get());
     }
     return validatedAnnotation;
@@ -359,8 +354,7 @@ public class SearchIndexService implements ISearchIndexService {
    */
   @Override
   public void deleteAnnotationById(String id) throws IOException, InterruptedException,
-      JSONException,
-      NoSuchIndexEntryException {
+      JSONException, NoSuchIndexEntryException {
     Annotation annotation = getAnnotationById(id);
     
     //Delete Annotation in the annotation store
@@ -368,13 +362,12 @@ public class SearchIndexService implements ISearchIndexService {
     
     //Update corresponding manuscript in the index
     Page page = getPageById(annotation.getPageId());
-    Optional<Manuscript> manResult = manuscriptRepository.findById(page.getManuscriptId());
-    if (manResult.isPresent()) {
-      elasticsearchRestTemplate.delete(manResult.get());
-      if (page.getResourceType() == ResourceType.IMAGE) {
-        ((ImagePage) page).getAnnotations().remove(annotation);
-      }
-      manuscriptRepository.save(manResult.get());
+    Optional<Manuscript> manuscriptHit = manuscriptRepository.findById(page.getManuscriptId());
+    if (manuscriptHit.isPresent()) {
+      Page updatedPage = getPageById(annotation.getPageId(), manuscriptHit.get());
+      updatedPage.getAnnotations().remove(annotation);
+
+      manuscriptRepository.save(manuscriptHit.get());
     }
   }
 
@@ -586,6 +579,15 @@ public class SearchIndexService implements ISearchIndexService {
       }
     }
     throw new NoSuchIndexEntryException("The page with the id " + id + " could not be found");
+  }
+
+  private Page getPageById(String pageId, Manuscript manuscript) throws NoSuchIndexEntryException {
+    for (Page p : manuscript.getPages()) {
+      if (p.getId().equals(pageId)) {
+        return p;
+      }
+    }
+    throw new NoSuchIndexEntryException("The page with the id \" + id + \" could not be found");
   }
 
   /**

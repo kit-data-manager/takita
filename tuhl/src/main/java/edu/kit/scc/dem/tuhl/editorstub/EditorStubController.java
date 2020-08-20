@@ -1,8 +1,9 @@
 package edu.kit.scc.dem.tuhl.editorstub;
 
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
+import edu.kit.scc.dem.tuhl.dataaccess.IAnnotationStoreAccessService;
+import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
-import edu.kit.scc.dem.tuhl.model.Color;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -11,6 +12,10 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.time.Instant;
+import java.util.Calendar;
+import java.util.List;
 
 @Controller
 @RequestMapping("/editor_stub")
@@ -18,9 +23,16 @@ public class EditorStubController {
 
   private final IEditorStubService editorStubService;
 
+  private final ISearchIndexService searchIndexService;
+  private final IAnnotationStoreAccessService annotationStoreAccessService;
+
   @Autowired
-  public EditorStubController(IEditorStubService editorStubService) {
+  public EditorStubController(IEditorStubService editorStubService,
+                              ISearchIndexService searchIndexService,
+                              IAnnotationStoreAccessService accessService) {
     this.editorStubService = editorStubService;
+    this.searchIndexService = searchIndexService;
+    this.annotationStoreAccessService = accessService;
   }
   
   @RequestMapping

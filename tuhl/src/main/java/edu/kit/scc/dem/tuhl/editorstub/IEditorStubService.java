@@ -30,10 +30,31 @@ public interface IEditorStubService {
   Annotation addAnnotation(String pageId, String color, String svgCode, String motivation)
       throws InterruptedException, NoSuchIndexEntryException, IOException;
 
+  /**
+   * Gets an annotation from the searchIndexService by its ID.
+   *
+   * @param annotationId ID of annotation
+   * @return requested annotation
+   * @throws NoSuchIndexEntryException when there is no annotation like this in the index
+   */
   Annotation getAnnotation(String annotationId) throws NoSuchIndexEntryException;
 
+  /**
+   * Gets the text cards for an annotation from the searchIndexService.
+   *
+   * @param annotationId ID of the annotation for the text cards
+   * @return list of text cards
+   * @throws NoSuchIndexEntryException when there is no annotation like this in the index
+   */
   List<TextCard> getTextCardsForAnnotation(String annotationId) throws NoSuchIndexEntryException;
 
+  /**
+   * Gets the tags for an annotation from the searchIndexService.
+   *
+   * @param annotationId ID of the annotation for the tags
+   * @return list of tags
+   * @throws NoSuchIndexEntryException when there is no annotation like this in the index
+   */
   List<Tag> getTagsForAnnotation(String annotationId) throws NoSuchIndexEntryException;
 
   /**

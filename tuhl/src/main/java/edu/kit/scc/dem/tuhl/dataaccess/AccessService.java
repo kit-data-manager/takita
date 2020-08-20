@@ -343,9 +343,7 @@ public class AccessService implements IAccessService {
   @Override
   public Annotation addAnnotation(Annotation annotation, String pageNumber)
       throws JSONException, IOException, InterruptedException {
-    System.out.println("Acc BEFORE : " + buildJsonFromAnnotation(annotation, pageNumber));
     JSONObject response = annotationStoreAccessService.addAnnotation(buildJsonFromAnnotation(annotation, pageNumber));
-    System.out.println("Acc AFTER : " + response);
     return buildAnnotationFromJson(response);
   }
 
