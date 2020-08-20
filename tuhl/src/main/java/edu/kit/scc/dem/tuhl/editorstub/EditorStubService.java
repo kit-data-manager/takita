@@ -9,10 +9,8 @@ import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -65,7 +63,6 @@ public class EditorStubService implements IEditorStubService {
     newAnnotation.setModified(Date.from(Instant.now()));
 
     if (color != null) {
-      System.out.println("color " + color + " stringtocolor " + stringToColor(color));
       newAnnotation.setColor(stringToColor(color));
     } else {
       newAnnotation.setColor(Color.DEFAULT);
@@ -85,6 +82,42 @@ public class EditorStubService implements IEditorStubService {
       e.printStackTrace();
     }
     return newAnnotation;
+  }
+
+  /**
+   * Gets an annotation from the searchIndexService by its ID.
+   *
+   * @param annotationId ID of annotation
+   * @return requested annotation
+   * @throws NoSuchIndexEntryException when there is no annotation like this in the index
+   */
+  @Override
+  public Annotation getAnnotation(String annotationId) throws NoSuchIndexEntryException {
+    return searchIndexService.getAnnotationById(annotationId);
+  }
+
+  /**
+   * Gets the text cards for an annotation from the searchIndexService.
+   *
+   * @param annotationId ID of the annotation for the text cards
+   * @return list of text cards
+   * @throws NoSuchIndexEntryException when there is no annotation like this in the index
+   */
+  @Override
+  public List<TextCard> getTextCardsForAnnotation(String annotationId) throws NoSuchIndexEntryException {
+    return searchIndexService.getAnnotationById(annotationId).getTextCards();
+  }
+
+  /**
+   * Gets the tags for an annotation from the searchIndexService.
+   *
+   * @param annotationId ID of the annotation for the tags
+   * @return list of tags
+   * @throws NoSuchIndexEntryException when there is no annotation like this in the index
+   */
+  @Override
+  public List<Tag> getTagsForAnnotation(String annotationId) throws NoSuchIndexEntryException {
+    return searchIndexService.getAnnotationById(annotationId).getTags();
   }
 
   /**

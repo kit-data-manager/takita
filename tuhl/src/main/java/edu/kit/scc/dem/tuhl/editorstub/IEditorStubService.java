@@ -6,6 +6,8 @@ import edu.kit.scc.dem.tuhl.model.Color;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import java.io.IOException;
+import java.util.List;
+
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 /**
@@ -27,6 +29,12 @@ public interface IEditorStubService {
    */
   Annotation addAnnotation(String pageId, String color, String svgCode, String motivation)
       throws InterruptedException, NoSuchIndexEntryException, IOException;
+
+  Annotation getAnnotation(String annotationId) throws NoSuchIndexEntryException;
+
+  List<TextCard> getTextCardsForAnnotation(String annotationId) throws NoSuchIndexEntryException;
+
+  List<Tag> getTagsForAnnotation(String annotationId) throws NoSuchIndexEntryException;
 
   /**
    * Updates an annotation in the search index and the database.
