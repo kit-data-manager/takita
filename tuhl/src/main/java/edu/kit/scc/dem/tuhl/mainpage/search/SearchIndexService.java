@@ -233,11 +233,12 @@ public class SearchIndexService implements ISearchIndexService {
    * Adds an annotation to the search index.
    *
    * @param annotation new Annotation
+   * @return added annotation
    * @throws IOException if an error occurs while sending/receiving http request to annotation store
    * @throws InterruptedException if http request is interrupted
    */
   @Override
-  public void addAnnotation(Annotation annotation) throws InterruptedException, IOException,
+  public Annotation addAnnotation(Annotation annotation) throws InterruptedException, IOException,
       JSONException, NoSuchIndexEntryException {
     Page page = getPageById(annotation.getPageId());
     
@@ -253,6 +254,7 @@ public class SearchIndexService implements ISearchIndexService {
       }
       manuscriptRepository.save(manuscriptHit.get());
     }
+    return newAnnotation;
   }
 
   /**
@@ -288,19 +290,19 @@ public class SearchIndexService implements ISearchIndexService {
   /**
    * Updates an annotation in the search index.
    *
-   * @param annotation updated Annotation
+   * @param annotation updated annotation
+   * @return updated annotation
    * @throws IOException if an error occurs while sending/receiving http request to annotation store
    * @throws InterruptedException if http request is interrupted
    */
   @Override
-  public void updateAnnotation(Annotation annotation) throws IOException, InterruptedException,
+  public Annotation updateAnnotation(Annotation annotation) throws IOException, InterruptedException,
       JSONException, NoSuchIndexEntryException {
     // update annotation in dataaccess, dataaccess adds some information
     // to annotation only dataaccess needs
     
     Page page = getPageById(annotation.getPageId());
     Annotation newAnnotation = accessService.updateAnnotation(annotation, page.getPageNumber());
-    newAnnotation.setModified(Date.from(Instant.now()));
 
     // update annotation in index by first deleting manuscript and later adding updated one
     Optional<Manuscript> manuscriptHit =
@@ -316,7 +318,7 @@ public class SearchIndexService implements ISearchIndexService {
       }
       manuscriptRepository.save(manuscriptHit.get());
     }
-    
+    return newAnnotation;
   }
 
   /**

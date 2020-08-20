@@ -56,13 +56,14 @@ public interface ISearchIndexService {
   /**
    * Adds an annotation to the search index.
    *
-   * @param annotation new Annotation
+   * @param annotation new annotation
+   * @return added annotation
    * @throws IOException if an error occurs while sending/receiving http request to annotation store
    * @throws InterruptedException if http request is interrupted
    * @throws JSONException when the object couldn't be parsed to JSON
    * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
    */
-  void addAnnotation(Annotation annotation)
+  Annotation addAnnotation(Annotation annotation)
       throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException;
 
   /**
@@ -78,12 +79,13 @@ public interface ISearchIndexService {
    * Updates an annotation in the search index.
    *
    * @param annotation updated Annotation
+   * @return updated annotation
    * @throws IOException if an error occurs while sending/receiving http request to annotation store
    * @throws InterruptedException if http request is interrupted
    * @throws JSONException when the object couldn't be parsed to JSON
    * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
    */
-  void updateAnnotation(Annotation annotation)
+  Annotation updateAnnotation(Annotation annotation)
       throws IOException, InterruptedException, JSONException, NoSuchIndexEntryException;
 
   /**

@@ -46,7 +46,7 @@
           <label th:text="#{att_name.color}"> </label>
           <select id="addA_color" class="form-control">
             <option th:each="color : ${T(edu.kit.scc.dem.tuhl.model.Color).values()}"
-                    th:value="${color.getName()}"
+                    th:value="${color}"
                     th:text="${color.getName()}"></option>
           </select>
         </div>
@@ -75,7 +75,7 @@
           <label th:text="#{att_name.color}"> </label>
           <select id="updateA_color" class="form-control">
             <option th:each="color : ${T(edu.kit.scc.dem.tuhl.model.Color).values()}"
-                    th:value="${color.getName()}"
+                    th:value="${color}"
                     th:text="${color.getName()}"></option>
           </select>
         </div>
@@ -155,7 +155,7 @@
         </tr>
         <tr>
           <td th:text="#{att_name.color}"> </td>
-          <td th:text="${annotation.color}"> </td>
+          <td th:text="${annotation.color.getName()}"> </td>
         </tr>
         <tr>
           <td th:text="#{att_name.svgCode}"> </td>
