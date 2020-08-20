@@ -28,10 +28,6 @@ public class EditorStubController {
     return "editor_stub";
   }
 
-  /*
-  Needs: pageId
-  Can get: color, svgCode, motivation
-   */
   @PostMapping("/add_annotation")
   public String addAnnotation(@RequestBody String jsonString,
                               Model model) {
@@ -49,28 +45,49 @@ public class EditorStubController {
     return "editor_stub :: annotationViewer";
   }
 
-  /*
-  Needs: annoId
-  Can get: color, svgCode, motivation
-   */
-  public String updateAnnotation() {
-    throw new AssertionError("Not implemented yet");
+  @PostMapping("/update_annotation")
+  public String updateAnnotation(@RequestBody String jsonString,
+                                 Model model) {
+    try {
+      JSONObject json = new JSONObject(jsonString);
+      String annoId = json.getString("annoId");
+      String color = json.getString("color");
+      String svgCode = json.getString("svgCode");
+      String motivation = json.getString("motivation");
+      Annotation annotation = editorStubService.updateAnnotation(annoId, color, svgCode, motivation);
+      model.addAttribute("annotation", annotation);
+    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
+      return "redirect:/error/" + e.getMessage();
+    }
+    return "editor_stub :: annotationViewer";
   }
 
-  /*
-  Needs: annoId
-  Can get:
-   */
-  public String validateAnnotation() {
-    throw new AssertionError("Not implemented yet");
+  @PostMapping("validate_annotation")
+  public String validateAnnotation(@RequestBody String jsonString,
+  Model model) {
+    try {
+      JSONObject json = new JSONObject(jsonString);
+      String annoId = json.getString("annoId");
+      Annotation annotation = editorStubService.validateAnnotation(annoId);
+      model.addAttribute("annotation", annotation);
+    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
+      return "redirect:/error/" + e.getMessage();
+    }
+    return "editor_stub :: annotationViewer";
   }
-
-  /*
-  Needs: annoId
-  Can get:
-   */
-  public String deleteAnnotation() {
-    throw new AssertionError("Not implemented yet");
+  
+  @PostMapping("delete_annotation")
+  public String deleteAnnotation(@RequestBody String jsonString,
+                                 Model model) {
+    try {
+      JSONObject json = new JSONObject(jsonString);
+      String annoId = json.getString("annoId");
+      Annotation annotation = editorStubService.deleteAnnotation(annoId);
+      model.addAttribute("annotation", annotation);
+    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
+      return "redirect:/error/" + e.getMessage();
+    }
+    return "editor_stub :: annotationViewer";
   }
 
   /*
