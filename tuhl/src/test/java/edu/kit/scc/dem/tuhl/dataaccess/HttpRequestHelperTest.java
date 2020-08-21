@@ -74,7 +74,7 @@ class HttpRequestHelperTest {
           return response;
         });
   
-    assertEquals(response, httpRequestHelper.post(uriString, requestBody));
+    assertEquals(response, httpRequestHelper.postAnnotations(uriString, requestBody));
   }
   
   @Test

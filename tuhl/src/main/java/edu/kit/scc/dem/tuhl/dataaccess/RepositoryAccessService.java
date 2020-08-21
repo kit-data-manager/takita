@@ -30,6 +30,7 @@ public class RepositoryAccessService implements IRepositoryAccessService {
   private static final String PAGE_STRING = "?page=";
   private static final String MANUSCRIPT_METADATA_FILE = "manuscript_metadata.xml";
   private static final String PAGES_JSON = "pages.json";
+  private static final String SEARCH_URL = "search?page=0&size=";
 
   @Value("${repository.baseUrl}")
   private String baseUrl;
@@ -103,16 +104,27 @@ public class RepositoryAccessService implements IRepositoryAccessService {
   @Override
   public List<JSONObject> getAllManuscripts(int numberManuscripts)
       throws IOException, InterruptedException, JSONException {
+    int pageSize;
     if (numberManuscripts <= 0 && numberManuscripts != -1) {
       return new ArrayList<>();
+    } else if (numberManuscripts > 100 || numberManuscripts == -1) {
+      pageSize = 99;
+    } else {
+      pageSize = numberManuscripts;
     }
 
     Pattern pattern = Pattern.compile(MANUSCRIPT_PATTERN);
 
     List<JSONObject> manuscriptsJson = new ArrayList<>();
-    String nextUri = baseUrl + staticPath;
+    String nextUri = baseUrl + staticPath + SEARCH_URL;
 
-    HttpResponse<String> pageResponse = httpRequestHelper.get(nextUri);
+    JSONObject resourceType = new JSONObject();
+    JSONObject typeGeneral = new JSONObject();
+    typeGeneral.put(RepositoryStrings.TYPE_GENERAL.getName(), RepositoryStrings.TEXT.getName());
+    resourceType.put(RepositoryStrings.RESOURCE_TYPE.getName(), typeGeneral);
+
+
+    HttpResponse<String> pageResponse = httpRequestHelper.postManuscript(nextUri + pageSize, resourceType);
     Optional<String> link;
   
     boolean findNextLink;
@@ -125,17 +137,12 @@ public class RepositoryAccessService implements IRepositoryAccessService {
       for (int i = 0; i < responseBodyJson.length(); i++) {
         JSONObject resource = responseBodyJson.getJSONObject(i);
         //Adds all resources which are manuscripts and not pages to the list
-        if (resource.has(RepositoryStrings.RESOURCE_TYPE.getName())
-            && resource.getJSONObject(RepositoryStrings.RESOURCE_TYPE.getName())
-            .get(RepositoryStrings.VALUE.getName()).equals(RepositoryStrings
-                .MANUSCRIPT_METADATA.getName())) {
           manuscriptsJson.add(resource);
 
           // Check if number of required manuscripts already reached
           if (numberManuscripts != -1 && manuscriptsJson.size() >= numberManuscripts) {
             return manuscriptsJson;
           }
-        }
       }
       if (link.isPresent()) {
         //Extracts next link from response header

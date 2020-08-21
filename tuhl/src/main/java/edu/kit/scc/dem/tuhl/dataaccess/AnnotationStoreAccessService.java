@@ -52,7 +52,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
       "\"^^xsd:dateTime) FILTER(xsd:dateTime(?modified) > \"", Charset.defaultCharset());
 
   private static final String SPARQL_QUERY_LAST_MODIFIED_3 = URLEncoder.encode(
-      "\"^^xsd:dateTime) MINUS { ?annotation <http://dem.scc.kit.edu"
+      "\"^^xsd:dateTime) FILTER NOT EXISTS { ?annotation <http://dem.scc.kit.edu"
           + "/wapserv/ns#deleted> \"true\"^^xsd:boolean} } }", Charset.defaultCharset());
 
   private static final String SPARQL_QUERY_ANNOTATION_BY_PAGE_1 = URLEncoder.encode(
@@ -61,7 +61,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
           + "rg/2001/XMLSchema#> SELECT ?anno {GRAPH ?g {?anno oa:hasTarget/oa:hasSource <",
       Charset.defaultCharset());
 
-  private static final String SPARQL_QUERY_ANNOTATION_BY_PAGE_2 = URLEncoder.encode("> . MINUS {"
+  private static final String SPARQL_QUERY_ANNOTATION_BY_PAGE_2 = URLEncoder.encode("> . FILTER NOT EXISTS {"
       + " ?anno <http://dem.scc.kit.edu/wapserv/ns#deleted> \"true\"^^xsd:boolean} } }", Charset.defaultCharset());
 
   /**
@@ -84,14 +84,14 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   public JSONObject addAnnotation(JSONObject jsonAnnotation)
       throws IOException, InterruptedException, JSONException {
     JSONObject deinterpretationeAnnotation = new JSONObject(httpRequestHelper
-        .post(urlPrefix + DEINTERPRETATIONE_URL, jsonAnnotation).body());
+        .postAnnotations(urlPrefix + DEINTERPRETATIONE_URL, jsonAnnotation).body());
 
     String deinterpretationeId = deinterpretationeAnnotation
         .getString(AnnotationStoreStrings.ID.getName());
 
     jsonAnnotation.put(AnnotationStoreStrings.VIA.getName(), deinterpretationeId);
     jsonAnnotation.put(AnnotationStoreStrings.CANONICAL.getName(), deinterpretationeId);
-    HttpResponse<String> response = httpRequestHelper.post(urlPrefix
+    HttpResponse<String> response = httpRequestHelper.postAnnotations(urlPrefix
         + VALIDATED_URL, jsonAnnotation);
     JSONObject validatedAnnotation = new JSONObject(response.body());
     String etag = response.headers().allValues(AnnotationStoreStrings.ETAG.getName())
@@ -288,7 +288,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
         AnnotationStoreStrings.ID.getName()));
     jsonAnnotation.put(AnnotationStoreStrings.CANONICAL.getName(), jsonAnnotation.getString(
         AnnotationStoreStrings.ID.getName()));
-    HttpResponse<String> response = httpRequestHelper.post(urlPrefix + VALIDATED_URL, jsonAnnotation);
+    HttpResponse<String> response = httpRequestHelper.postAnnotations(urlPrefix + VALIDATED_URL, jsonAnnotation);
     JSONObject result = new JSONObject(response.body());
     String etag = response.headers().allValues(
         AnnotationStoreStrings.ETAG.getName()).get(response.headers()

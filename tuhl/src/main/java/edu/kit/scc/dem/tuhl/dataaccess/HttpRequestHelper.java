@@ -40,6 +40,18 @@ class HttpRequestHelper {
           HttpResponse.BodyHandlers.ofString());
   }
 
+  public HttpResponse<String> postManuscript(String url, JSONObject requestBody) throws IOException, InterruptedException {
+    HttpRequest request = HttpRequest.newBuilder()
+        .uri(URI.create(url))
+        .header(HTTP.CONTENT_TYPE, "application/json")
+        // JSON automatically escapes slashes, this removes that
+        .POST(HttpRequest.BodyPublishers.ofString(requestBody.toString().replace("\\/", "/")))
+        .build();
+
+    return client.send(request,
+        HttpResponse.BodyHandlers.ofString());
+  }
+
   /**
    * Performs a HTTP post request at the specified url.
    *
@@ -49,7 +61,7 @@ class HttpRequestHelper {
    * @throws IOException if an error occurs while sending or receiving
    * @throws InterruptedException if the get request is interrupted
    */
-  public HttpResponse<String> post(String url, JSONObject requestBody)
+  public HttpResponse<String> postAnnotations(String url, JSONObject requestBody)
       throws IOException, InterruptedException {
     HttpRequest request = HttpRequest.newBuilder()
         .uri(URI.create(url))

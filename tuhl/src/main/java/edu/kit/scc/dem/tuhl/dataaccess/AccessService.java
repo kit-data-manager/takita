@@ -207,6 +207,7 @@ public class AccessService implements IAccessService {
    */
   private Page buildPageFromJson(JSONObject pageJson, String pageNumber)
       throws JSONException, IOException, InterruptedException {
+
     String id = pageJson.getString(RepositoryStrings.ID.getName());
 
     Date created = extractDateFromJsonManuscript(pageJson, RepositoryStrings.CREATED.getName());
@@ -655,8 +656,8 @@ public class AccessService implements IAccessService {
        jsonAnnotation.put(AnnotationStoreStrings.ID.getName(), annotation.getId());
     } else {
       jsonAnnotation = new JSONObject();
-      jsonAnnotation.put("@context", "http://www.w3.org/ns/anno.jsonld");
-      jsonAnnotation.put("type", "Annotation");
+      jsonAnnotation.put(AnnotationStoreStrings.CONTEXT.getName(), AnnotationStoreStrings.URL_JSONID.getName());
+      jsonAnnotation.put(AnnotationStoreStrings.TYPE.getName(), AnnotationStoreStrings.ANNOTATION.getName());
     }
 
     if (annotation.getCreated() != null) {

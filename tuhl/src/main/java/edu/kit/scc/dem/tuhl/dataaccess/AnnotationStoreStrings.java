@@ -5,6 +5,8 @@ package edu.kit.scc.dem.tuhl.dataaccess;
  * regarding the annotationStore.
  */
 public enum AnnotationStoreStrings {
+  CONTEXT("@context"),
+  URL_JSONID("http://www.w3.org/ns/anno.jsonld"),
   ID("id"),
   ETAG("etag"),
   VIA("via"),

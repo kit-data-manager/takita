@@ -90,11 +90,11 @@ class AnnotationStoreAccessServiceTest {
         .thenReturn(HttpHeaders.of(headersPage1, (a, b) -> true));
 
     //Define mock response to get requests
-    Mockito.when(mockedRequestHelper.post("http://sampleannoserver.edu/wap/a04/deinterpretatione/", newAnnotation1))
+    Mockito.when(mockedRequestHelper.postAnnotations("http://sampleannoserver.edu/wap/a04/deinterpretatione/", newAnnotation1))
         .thenReturn(mockedAnnotation1);
     newAnnotation1.put("via", newAnnotation1.getString("id"));
     newAnnotation1.put("canonical", newAnnotation1.getString("id"));
-    Mockito.when(mockedRequestHelper.post("http://sampleannoserver.edu/wap/a04/validated/", newAnnotation1))
+    Mockito.when(mockedRequestHelper.postAnnotations("http://sampleannoserver.edu/wap/a04/validated/", newAnnotation1))
         .thenReturn(mockedAnnotation2);
 
     JSONObject actualAnnotation1 = annotationStoreAccessService.addAnnotation(newAnnotation1);
@@ -336,7 +336,7 @@ class AnnotationStoreAccessServiceTest {
         .thenReturn(HttpHeaders.of(headersPage1, (a, b) -> true));
 
     //Define mock response to get requests
-    Mockito.when(mockedRequestHelper.post("http://sampleannoserver.edu/wap/a04/validated/", newAnnotation1))
+    Mockito.when(mockedRequestHelper.postAnnotations("http://sampleannoserver.edu/wap/a04/validated/", newAnnotation1))
         .thenReturn(mockedAnnotation2);
 
     JSONObject actualAnnotation = annotationStoreAccessService.validateAnnotation(newAnnotation1);
