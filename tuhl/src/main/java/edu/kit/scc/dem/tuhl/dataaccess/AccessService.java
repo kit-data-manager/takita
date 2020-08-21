@@ -936,6 +936,24 @@ public class AccessService implements IAccessService {
     for (JSONObject annotation : jsonAnnotations) {
       annotations.add(buildAnnotationFromJson(annotation));
     }
+
+    // removes de interpretatione annos to which there is a corresponding validated anno
+    List<String> canonicalIds = new ArrayList<>();
+    for (Annotation annotation : annotations) {
+      if (annotation.getCanonical() != null) {
+        canonicalIds.add(annotation.getCanonical());
+      }
+    }
+    List<Annotation> redundantAnnotations = new ArrayList<>();
+    for (Annotation annotation : annotations) {
+      if (canonicalIds.contains(annotation.getId())) {
+        redundantAnnotations.add(annotation);
+      }
+    }
+    for (Annotation redundantAnno : redundantAnnotations) {
+      annotations.remove(redundantAnno);
+    }
+
     return annotations;
   }
 

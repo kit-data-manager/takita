@@ -118,11 +118,14 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
       throws IOException, InterruptedException, JSONException {
     HttpResponse<String> response = httpRequestHelper.get(annotationId);
     JSONObject result = new JSONObject(response.body());
-    String etag = response.headers().allValues(AnnotationStoreStrings.ETAG.getName())
-        .get(response.headers()
-        .allValues(AnnotationStoreStrings.ETAG.getName()).size() - 1);
 
-    result.put(AnnotationStoreStrings.ETAG.getName(), etag);
+    if (!response.headers().allValues(AnnotationStoreStrings.ETAG.getName()).isEmpty()) {
+      String etag = response.headers().allValues(AnnotationStoreStrings.ETAG.getName())
+          .get(response.headers()
+              .allValues(AnnotationStoreStrings.ETAG.getName()).size() - 1);
+      result.put(AnnotationStoreStrings.ETAG.getName(), etag);
+    }
+
     return result;
   }
 
@@ -191,8 +194,17 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
 
       // Repeat while there is a next page given by a link in the response
     } while (annotationList.has(AnnotationStoreStrings.NEXT.getName()));
+
+    List<String> canonicalIds = new ArrayList<>();
+    for (JSONObject validatedAnnotation : annotationsJson) {
+      if (validatedAnnotation.has(AnnotationStoreStrings.CANONICAL.getName())) {
+        canonicalIds.add(validatedAnnotation.getString(AnnotationStoreStrings.CANONICAL.getName()));
+      }
+    }
     
     nextUri = urlPrefix + DEINTERPRETATIONE_URL + FIRST_PAGE;
+
+    List<JSONObject> deInterpretationeAnnotations = new ArrayList<>();
 
     do {
       response = httpRequestHelper.get(nextUri);
@@ -203,16 +215,8 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
 
       for (int i = 0; i < items.length(); i++) {
         JSONObject item = getAnnotationById(items.getString(i));
-        boolean isContainedIn = false;
-        for (JSONObject jsonObject : annotationsJson) {
-          if (jsonObject.has(AnnotationStoreStrings.CANONICAL.getName())
-              && item.getString(AnnotationStoreStrings.ID.getName())
-              .equals(jsonObject.getString(AnnotationStoreStrings.CANONICAL.getName()))) {
-            isContainedIn = true;
-          }
-        }
-        if (!isContainedIn) {
-          annotationsJson.add(item);
+        if (!canonicalIds.contains(item.getString(AnnotationStoreStrings.ID.getName()))) {
+          deInterpretationeAnnotations.add(item);
         }
       }
 
@@ -222,7 +226,8 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
 
       // Repeat while there is a next page given by a link in the response
     } while (annotationList.has(AnnotationStoreStrings.NEXT.getName()));
-    
+
+    annotationsJson.addAll(deInterpretationeAnnotations);
     return annotationsJson;
   }
 
@@ -239,7 +244,6 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   public List<JSONObject> getAnnotationsModifiedAfter(Date timestamp)
       throws JSONException, IOException, InterruptedException {
     logger.info("Getting all annotations modified after {}.", timestamp.toString());
-    List<JSONObject> annotationsJson = new ArrayList<>();
 
     String date = IAnnotationStoreAccessService.TIMESTAMP_FORMAT_MILLIS.format(timestamp);
 
@@ -249,7 +253,23 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
         + date + SPARQL_QUERY_LAST_MODIFIED_3);
 
     //Extracts annotations from response and adds them to the list
-    return getAnnotationsFromXml(response.body());
+    List<JSONObject> modifiedAnnotations = getAnnotationsFromXml(response.body());
+    List<String> canonicalIds = new ArrayList<>();
+    for (JSONObject annotation : modifiedAnnotations) {
+      if (annotation.has(AnnotationStoreStrings.CANONICAL.getName())) {
+        canonicalIds.add(annotation.getString(AnnotationStoreStrings.CANONICAL.getName()));
+      }
+    }
+    List<JSONObject> redundantAnnotations = new ArrayList<>();
+    for (JSONObject annotation : modifiedAnnotations) {
+      if (canonicalIds.contains(annotation.getString(AnnotationStoreStrings.ID.getName()))) {
+        redundantAnnotations.add(annotation);
+      }
+    }
+    for (JSONObject redundantAnnotation : redundantAnnotations) {
+      modifiedAnnotations.remove(redundantAnnotation);
+    }
+    return modifiedAnnotations;
   }
 
   /**
@@ -304,11 +324,14 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
           .get(AnnotationStoreStrings.CANONICAL.getName()).toString());
     }
     HttpResponse<String> response = httpRequestHelper.put(annotationId, jsonAnnotation);
-    String etag = response.headers().allValues(AnnotationStoreStrings.ETAG.getName())
-        .get(response.headers()
-        .allValues(AnnotationStoreStrings.ETAG.getName()).size() - 1);
 
-    jsonAnnotation.put(AnnotationStoreStrings.ETAG.getName(), etag);
+    if (!response.headers().allValues(AnnotationStoreStrings.ETAG.getName()).isEmpty()) {
+      String etag = response.headers().allValues(AnnotationStoreStrings.ETAG.getName())
+          .get(response.headers()
+              .allValues(AnnotationStoreStrings.ETAG.getName()).size() - 1);
+      jsonAnnotation.put(AnnotationStoreStrings.ETAG.getName(), etag);
+    }
+
     return jsonAnnotation;
   }
 

@@ -273,12 +273,10 @@ public class SearchIndexService implements ISearchIndexService {
       throw new NoSuchIndexEntryException("Could not find Annotation with id: " + id);
     }
     
-    for (Page p : searchHits.getSearchHit(0).getContent().getPages()) {
-      if (p.getResourceType().equals(ResourceType.IMAGE)) {
-        for (Annotation a : p.getAnnotations()) {
-          if (a.getId().equals(id)) {
-            return a;
-          }
+    for (Page page : searchHits.getSearchHit(0).getContent().getPages()) {
+      for (Annotation annotation : page.getAnnotations()) {
+        if (annotation.getId().equals(id)) {
+          return annotation;
         }
       }
     }
@@ -364,8 +362,15 @@ public class SearchIndexService implements ISearchIndexService {
     Page page = getPageById(annotation.getPageId());
     Optional<Manuscript> manuscriptHit = manuscriptRepository.findById(page.getManuscriptId());
     if (manuscriptHit.isPresent()) {
+
       Page updatedPage = getPageById(annotation.getPageId(), manuscriptHit.get());
-      updatedPage.getAnnotations().remove(annotation);
+      Annotation annoToRemove = new Annotation();
+      for (Annotation anno : updatedPage.getAnnotations()) {
+        if (anno.getId().equals(id)) {
+          annoToRemove = anno;
+        }
+      }
+      updatedPage.getAnnotations().remove(annoToRemove);
 
       manuscriptRepository.save(manuscriptHit.get());
     }
