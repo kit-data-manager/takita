@@ -40,8 +40,8 @@ public class ElasticSearchConfiguration {
   public RestHighLevelClient elasticsearchClient() {
     final ClientConfiguration clientConfiguration = ClientConfiguration.builder()
         .connectedTo(elasticsearchIP + ":" + elasticsearchPort)
-        .withConnectTimeout(10000)
-        .withSocketTimeout(10000)
+        .withConnectTimeout(100000)
+        .withSocketTimeout(100000)
         .build();
     
     return RestClients.create(clientConfiguration).rest();
