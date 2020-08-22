@@ -30,211 +30,440 @@
          th:insert="header.html :: header"></div>-->
   </div>
 
-  <div class="row mx-auto" id="fragmentHolder">
+  <div class="row">
+    <div class="col">
+      <div class="row mx-auto">
+        <div class="col" th:fragment="createAnnotation">
+          <label class="text-left display-4" th:text="#{label.anno_create}"> </label>
+          <form onsubmit="createAnnotation(event)">
+            <div class="form-group">
+              <label th:text="#{att_name.pageId}"> </label>
+              <input id="addA_pageId" type="text" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label th:text="#{att_name.color}"> </label>
+              <select id="addA_color" class="form-control">
+                <option th:each="color : ${T(edu.kit.scc.dem.tuhl.model.Color).values()}"
+                        th:value="${color}"
+                        th:text="${color.getName()}"></option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label th:text="#{att_name.svgCode}"> </label>
+              <input id="addA_svgCode" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+              <label th:text="#{att_name.motivation}"> </label>
+              <input id="addA_motivation" type="text" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}"> </button>
+          </form>
+        </div>
+      </div>
 
-  </div>
+      <div class="row mx-auto">
+        <div class="col" th:fragment="updateAnnotation">
+          <label class="text-left display-4" th:text="#{label.anno_update}"> </label>
+          <form onsubmit="updateAnnotation(event)">
+            <div class="form-group">
+              <label th:text="#{att_name.id}"> </label>
+              <input id="updateA_annoId" type="text" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label th:text="#{att_name.color}"> </label>
+              <select id="updateA_color" class="form-control">
+                <option th:each="color : ${T(edu.kit.scc.dem.tuhl.model.Color).values()}"
+                        th:value="${color}"
+                        th:text="${color.getName()}"></option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label th:text="#{att_name.svgCode}"> </label>
+              <input id="updateA_svgCode" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+              <label th:text="#{att_name.motivation}"> </label>
+              <input id="updateA_motivation" type="text" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}"> </button>
+          </form>
+        </div>
+      </div>
 
-  <div class="row mx-auto">
-    <div class="col" th:fragment="createAnnotation">
-      <label class="text-left display-4" th:text="#{label.anno_create}"> </label>
-      <form onsubmit="addAnnotation(event)">
-        <div class="form-group">
-          <label th:text="#{att_name.pageId}"> </label>
-          <input id="addA_pageId" type="text" class="form-control" required>
+      <div class="row mx-auto">
+        <div class="col" th:fragment="deleteAnnotation">
+          <label class="text-left display-4" th:text="#{label.anno_delete}"> </label>
+          <form onsubmit="deleteAnnotation(event)">
+            <div class="form-group">
+              <label th:text="#{att_name.id}"> </label>
+              <input id="deleteA_annoId" type="text" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}"> </button>
+          </form>
         </div>
-        <div class="form-group">
-          <label th:text="#{att_name.color}"> </label>
-          <select id="addA_color" class="form-control">
-            <option th:each="color : ${T(edu.kit.scc.dem.tuhl.model.Color).values()}"
-                    th:value="${color}"
-                    th:text="${color.getName()}"></option>
-          </select>
+      </div>
+
+      <div class="row mx-auto">
+        <div class="col" th:fragment="validateAnnotation">
+          <label class="text-left display-4" th:text="#{label.anno_validate}"> </label>
+          <form onsubmit="validateAnnotation(event)">
+            <div class="form-group">
+              <label th:text="#{att_name.id}"> </label>
+              <input id="validateA_annoId" type="text" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}"> </button>
+          </form>
         </div>
-        <div class="form-group">
-          <label th:text="#{att_name.svgCode}"> </label>
-          <input id="addA_svgCode" type="text" class="form-control">
+      </div>
+
+      <div class="row mx-auto">
+        <div class="col" th:fragment="createTextCard">
+          <label class="text-left display-4" th:text="#{label.card_create}"> </label>
+          <form onsubmit="createCard(event)">
+            <div class="form-group">
+              <label th:text="#{att_name.annotationId}"> </label>
+              <input id="createC_annoId" type="text" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label th:text="#{att_name.title}"> </label>
+              <input id="createC_title" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+              <label th:text="#{att_name.value}"> </label>
+              <input id="createC_purpose" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+              <label th:text="#{att_name.purpose}"> </label>
+              <input id="createC_value" type="text" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}"> </button>
+          </form>
         </div>
-        <div class="form-group">
-          <label th:text="#{att_name.motivation}"> </label>
-          <input id="addA_motivation" type="text" class="form-control">
+      </div>
+
+      <div class="row mx-auto">
+        <div class="col" th:fragment="updateTextCard">
+          <label class="text-left display-4" th:text="#{label.card_update}"> </label>
+          <form onsubmit="updateCard(event)">
+            <div class="form-group">
+              <label th:text="#{att_name.id}"> </label>
+              <input id="updateC_id" type="text" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label th:text="#{att_name.title}"> </label>
+              <input id="updateC_title" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+              <label th:text="#{att_name.value}"> </label>
+              <input id="updateC_purpose" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+              <label th:text="#{att_name.purpose}"> </label>
+              <input id="updateC_value" type="text" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}"> </button>
+          </form>
         </div>
-        <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}"> </button>
-      </form>
+      </div>
+
+      <div class="row mx-auto">
+        <div class="col" th:fragment="deleteTextCard">
+          <label class="text-left display-4" th:text="#{label.card_delete}"> </label>
+          <form onsubmit="deleteCard(event)">
+            <div class="form-group">
+              <label th:text="#{att_name.id}"> </label>
+              <input id="deleteC_id" type="text" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}"> </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="row mx-auto">
+        <div class="col" th:fragment="createTag">
+          <label class="text-left display-4" th:text="#{label.tag_create}"> </label>
+          <form onsubmit="createTag(event)">
+            <div class="form-group">
+              <label th:text="#{att_name.annotationId}"> </label>
+              <input id="createT_annoId" type="text" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label th:text="#{att_name.title}"> </label>
+              <input id="createT_title" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+              <label th:text="#{att_name.purpose}"> </label>
+              <input id="createT_value" type="text" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}"> </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="row mx-auto">
+        <div class="col" th:fragment="updateTag">
+          <label class="text-left display-4" th:text="#{label.tag_update}"> </label>
+          <form onsubmit="updateTag(event)">
+            <div class="form-group">
+              <label th:text="#{att_name.id}"> </label>
+              <input id="updateT_id" type="text" class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label th:text="#{att_name.title}"> </label>
+              <input id="updateT_title" type="text" class="form-control">
+            </div>
+            <div class="form-group">
+              <label th:text="#{att_name.purpose}"> </label>
+              <input id="updateT_value" type="text" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}"> </button>
+          </form>
+        </div>
+      </div>
+
+      <div class="row mx-auto">
+        <div class="col" th:fragment="deleteTag">
+          <label class="text-left display-4" th:text="#{label.tag_delete}"> </label>
+          <form onsubmit="deleteTag(event)">
+            <div class="form-group">
+              <label th:text="#{att_name.id}"> </label>
+              <input id="deleteT_id" type="text" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}"> </button>
+          </form>
+        </div>
+      </div>
+
+    </div>
+    <div class="col">
+      <div class="row mx-auto" id="viewerHolder">
+      </div>
     </div>
   </div>
 
-  <div class="row mx-auto">
-    <div class="col" th:fragment="updateAnnotation">
-      <label class="text-left display-4" th:text="#{label.anno_update}"> </label>
-      <form onsubmit="updateAnnotation(event)">
-        <div class="form-group">
-          <label th:text="#{att_name.id}"> </label>
-          <input id="updateA_annoId" type="text" class="form-control" required>
-        </div>
-        <div class="form-group">
-          <label th:text="#{att_name.color}"> </label>
-          <select id="updateA_color" class="form-control">
-            <option th:each="color : ${T(edu.kit.scc.dem.tuhl.model.Color).values()}"
-                    th:value="${color}"
-                    th:text="${color.getName()}"></option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label th:text="#{att_name.svgCode}"> </label>
-          <input id="updateA_svgCode" type="text" class="form-control">
-        </div>
-        <div class="form-group">
-          <label th:text="#{att_name.motivation}"> </label>
-          <input id="updateA_motivation" type="text" class="form-control">
-        </div>
-        <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}"> </button>
-      </form>
+  <div hidden>
+    <div class="col" th:fragment="annotationViewer">
+      <div th:if="${annotation == null}">
+        <label th:text="#{prompt.nothing_here}"> </label>
+      </div>
+      <div th:if="${annotation != null}">
+        <label th:text="#{label.anno}"> </label>
+        <table class="table">
+          <tbody>
+          <tr>
+            <td th:text="#{att_name.pageId}"> </td>
+            <td th:text="${annotation.pageId}"> </td>
+          </tr>
+          <tr>
+            <td th:text="#{att_name.id}"> </td>
+            <td th:text="${annotation.id}"> </td>
+          </tr>
+          <tr>
+            <td th:text="#{att_name.modified}"> </td>
+            <td th:text="${annotation.modified}"> </td>
+          </tr>
+          <tr>
+            <td th:text="#{att_name.creators}"> </td>
+            <td th:text="${annotation.creators}"> </td>
+          </tr>
+          <tr>
+            <td th:text="#{att_name.created}"> </td>
+            <td th:text="${annotation.created}"> </td>
+          </tr>
+          <tr>
+            <td th:text="#{att_name.via}"> </td>
+            <td th:text="${annotation.via}"> </td>
+          </tr>
+          <tr>
+            <td th:text="#{att_name.canonical}"> </td>
+            <td th:text="${annotation.canonical}"> </td>
+          </tr>
+          <tr>
+            <td th:text="#{att_name.color}"> </td>
+            <td th:text="${annotation.color.getName()}"> </td>
+          </tr>
+          <tr>
+            <td th:text="#{att_name.svgCode}"> </td>
+            <td th:text="${annotation.svgCode}"> </td>
+          </tr>
+          <tr>
+            <td th:text="#{att_name.motivation}"> </td>
+            <td th:text="${annotation.motivation}"> </td>
+          </tr>
+          <tr>
+            <td th:text="#{att_name.tags}"> </td>
+            <td th:text="${annotation.tags}"> </td>
+          </tr>
+          <tr>
+            <td th:text="#{att_name.etag}"> </td>
+            <td th:text="${annotation.etag}"> </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="col" th:fragment="bodyViewer">
+      <div th:if="${body == null}">
+        <label th:text="#{prompt.nothing_here}"> </label>
+      </div>
+      <div th:if="${body != null}">
+        <label th:if="${body.purpose != 'tagging'}" th:text="#{label.textCard}"> </label>
+        <label th:if="${body.purpose == 'tagging'}" th:text="#{label.tag}"> </label>
+        <table class="table">
+          <tbody>
+          <tr>
+            <td th:text="#{att_name.annotationId}"> </td>
+            <td th:text="${body.annotationId}"> </td>
+          </tr>
+          <tr>
+            <td th:text="#{att_name.id}"> </td>
+            <td th:text="${body.id}"> </td>
+          </tr>
+          <tr>
+            <td th:text="#{att_name.modified}"> </td>
+            <td th:text="${body.modified}"> </td>
+          </tr>
+          <tr>
+            <td th:text="#{att_name.creators}"> </td>
+            <td th:text="${body.creators}"> </td>
+          </tr>
+          <tr>
+            <td th:text="#{att_name.created}"> </td>
+            <td th:text="${body.created}"> </td>
+          </tr>
+          <tr>
+            <td th:text="#{att_name.title}"> </td>
+            <td th:text="${body.title}"> </td>
+          </tr>
+          <tr>
+            <td th:text="#{att_name.purpose}"> </td>
+            <td th:text="${body.purpose}"> </td>
+          </tr>
+          <tr>
+            <td th:text="#{att_name.value}"> </td>
+            <td th:text="${body.value}"> </td>
+          </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
-
-  <div class="row mx-auto">
-    <div class="col" th:fragment="deleteAnnotation">
-      <label class="text-left display-4" th:text="#{label.anno_delete}"> </label>
-      <form onsubmit="deleteAnnotation(event)">
-        <div class="form-group">
-          <label th:text="#{att_name.id}"> </label>
-          <input id="deleteA_annoId" type="text" class="form-control" required>
-        </div>
-        <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}"> </button>
-      </form>
-    </div>
-  </div>
-
-  <div class="row mx-auto">
-    <div class="col" th:fragment="validateAnnotation">
-      <label class="text-left display-4" th:text="#{label.anno_validate}"> </label>
-      <form onsubmit="validateAnnotation(event)">
-        <div class="form-group">
-          <label th:text="#{att_name.id}"> </label>
-          <input id="validateA_annoId" type="text" class="form-control" required>
-        </div>
-        <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}"> </button>
-      </form>
-    </div>
-  </div>
-
-  <div class="col" th:fragment="annotationViewer">
-    <div th:if="${annotation == null}">
-      <label th:text="#{prompt.nothing_here}"> </label>
-    </div>
-    <div th:if="${annotation != null}">
-      <table class="table">
-        <tbody>
-        <tr>
-          <td th:text="#{att_name.pageId}"> </td>
-          <td th:text="${annotation.pageId}"> </td>
-        </tr>
-        <tr>
-          <td th:text="#{att_name.id}"> </td>
-          <td th:text="${annotation.id}"> </td>
-        </tr>
-        <tr>
-          <td th:text="#{att_name.modified}"> </td>
-          <td th:text="${annotation.modified}"> </td>
-        </tr>
-        <tr>
-          <td th:text="#{att_name.creators}"> </td>
-          <td th:text="${annotation.creators}"> </td>
-        </tr>
-        <tr>
-          <td th:text="#{att_name.created}"> </td>
-          <td th:text="${annotation.created}"> </td>
-        </tr>
-        <tr>
-          <td th:text="#{att_name.via}"> </td>
-          <td th:text="${annotation.via}"> </td>
-        </tr>
-        <tr>
-          <td th:text="#{att_name.canonical}"> </td>
-          <td th:text="${annotation.canonical}"> </td>
-        </tr>
-        <tr>
-          <td th:text="#{att_name.color}"> </td>
-          <td th:text="${annotation.color.getName()}"> </td>
-        </tr>
-        <tr>
-          <td th:text="#{att_name.svgCode}"> </td>
-          <td th:text="${annotation.svgCode}"> </td>
-        </tr>
-        <tr>
-          <td th:text="#{att_name.motivation}"> </td>
-          <td th:text="${annotation.motivation}"> </td>
-        </tr>
-        <tr>
-          <td th:text="#{att_name.tags}"> </td>
-          <td th:text="${annotation.tags}"> </td>
-        </tr>
-        <tr>
-          <td th:text="#{att_name.etag}"> </td>
-          <td th:text="${annotation.etag}"> </td>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
-
 </div>
-</body>
 <script>
-   function addAnnotation(event) {
-       event.preventDefault()
-       let params = {
-           pageId: $('#addA_pageId').val(),
-           color: $('#addA_color').val(),
-           svgCode: $('#addA_svgCode').val(),
-           motivation: $('#addA_motivation').val()
-       }
-       postEditorStubController("add_annotation", params);
-   }
+    function createAnnotation(event) {
+        event.preventDefault();
+        let params = {
+            pageId: $('#addA_pageId').val(),
+            color: $('#addA_color').val(),
+            svgCode: $('#addA_svgCode').val(),
+            motivation: $('#addA_motivation').val()
+        }
+        postEditorStubController("create_annotation", params);
+    }
 
-   function updateAnnotation(event) {
-       event.preventDefault()
-       let params = {
-           annoId: $('#updateA_annoId').val(),
-           color: $('#updateA_color').val(),
-           svgCode: $('#updateA_svgCode').val(),
-           motivation: $('#updateA_motivation').val()
-       }
-       postEditorStubController("update_annotation", params);
-   }
+    function updateAnnotation(event) {
+        event.preventDefault();
+        let params = {
+            annoId: $('#updateA_annoId').val(),
+            color: $('#updateA_color').val(),
+            svgCode: $('#updateA_svgCode').val(),
+            motivation: $('#updateA_motivation').val()
+        }
+        postEditorStubController("update_annotation", params);
+    }
 
-   function deleteAnnotation(event) {
-       event.preventDefault()
-       let params = {
-           annoId: $('#deleteA_annoId').val(),
-       }
-       postEditorStubController("delete_annotation", params);
-   }
+    function deleteAnnotation(event) {
+        event.preventDefault();
+        let params = {
+            annoId: $('#deleteA_annoId').val(),
+        }
+        postEditorStubController("delete_annotation", params);
+    }
 
-   function validateAnnotation(event) {
-       event.preventDefault()
-       let params = {
-           annoId: $('#validateA_annoId').val(),
-       }
-       postEditorStubController("validate_annotation", params);
-   }
+    function validateAnnotation(event) {
+        event.preventDefault();
+        let params = {
+            annoId: $('#validateA_annoId').val(),
+        }
+        postEditorStubController("validate_annotation", params);
+    }
 
-  function postEditorStubController(endpoint, params) {
-      $ .ajax({
-          type: 'POST',
-          url: '/editor_stub/' + endpoint,
-          headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-          },
-          dataType: 'text',
-          data: JSON.stringify(params),
+    function createCard(event) {
+        event.preventDefault();
+        let params = {
+            annoId: $('#createC_annoId').val(),
+            title: $('#createC_title').val(),
+            purpose: $('#createC_purpose').val(),
+            value: $('#createC_value').val()
+        }
+        postEditorStubController("create_card", params);
+    }
 
-          success: function(responseData) {
-              $('#fragmentHolder').html(responseData);
-          }
-      });
-  }
+    function updateCard(event) {
+        event.preventDefault();
+        let params = {
+            id: $('#updateC_id').val(),
+            title: $('#updateC_title').val(),
+            purpose: $('#updateC_purpose').val(),
+            value: $('#updateC_value').val()
+        }
+        postEditorStubController("update_card", params);
+    }
+
+    function deleteCard(event) {
+        event.preventDefault();
+        let params = {
+            id: $('#deleteC_id').val()
+        }
+        postEditorStubController("delete_card", params);
+    }
+
+    function createTag(event) {
+        event.preventDefault();
+        let params = {
+            annoId: $('#createT_annoId').val(),
+            title: $('#createT_title').val(),
+            value: $('#createT_value').val()
+        }
+        postEditorStubController("create_tag", params);
+    }
+
+    function updateTag(event) {
+        event.preventDefault();
+        let params = {
+            id: $('#updateT_id').val(),
+            title: $('#updateT_title').val(),
+            value: $('#updateT_value').val()
+        }
+        postEditorStubController("update_tag", params);
+    }
+
+    function deleteTag(event) {
+        event.preventDefault();
+        let params = {
+            id: $('#deleteT_id').val()
+        }
+        postEditorStubController("delete_tag", params);
+    }
+
+    function postEditorStubController(endpoint, params) {
+        $ .ajax({
+            type: 'POST',
+            url: '/editor_stub/' + endpoint,
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            dataType: 'text',
+            data: JSON.stringify(params),
+
+            success: function(responseData) {
+                $('#viewerHolder').html(responseData);
+            }
+        });
+    }
 </script>
+</body>
 
 </html>

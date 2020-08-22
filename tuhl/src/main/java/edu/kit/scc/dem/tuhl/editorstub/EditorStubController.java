@@ -4,6 +4,8 @@ import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.dataaccess.IAnnotationStoreAccessService;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
+import edu.kit.scc.dem.tuhl.model.body.Tag;
+import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -40,8 +42,8 @@ public class EditorStubController {
     return "editor_stub";
   }
 
-  @PostMapping("/add_annotation")
-  public String addAnnotation(@RequestBody String jsonString,
+  @PostMapping("/create_annotation")
+  public String createAnnotation(@RequestBody String jsonString,
                               Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
@@ -102,52 +104,98 @@ public class EditorStubController {
     return "editor_stub :: annotationViewer";
   }
 
-  /*
-  Needs: annoId
-  Can get: title, value, purpose
-   */
-  public String addTextCard(){
-    throw new AssertionError("Not implemented yet");
+  @PostMapping("create_card")
+  public String createTextCard(@RequestBody String jsonString,
+                               Model model) {
+    try {
+      JSONObject json = new JSONObject(jsonString);
+      String annoId = json.getString("annoId");
+      String title = json.getString("title");
+      String value = json.getString("value");
+      String purpose = json.getString("purpose");
+      TextCard textCard = editorStubService.addTextCard(annoId, title, value, purpose);
+      model.addAttribute("body", textCard);
+    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
+      return "redirect:/error/" + e.getMessage();
+    }
+    return "editor_stub :: bodyViewer";
   }
-
-  /*
-  Needs: annoId
-  Can get: title, value
-   */
-  public String addTag(){
-    throw new AssertionError("Not implemented yet");
+  
+  @PostMapping("update_card")
+  public String updateTextCard(@RequestBody String jsonString,
+                               Model model) {
+    try {
+      JSONObject json = new JSONObject(jsonString);
+      String id = json.getString("id");
+      String title = json.getString("title");
+      String value = json.getString("value");
+      String purpose = json.getString("purpose");
+      TextCard textCard = editorStubService.updateTextCard(id, title, value, purpose);
+      model.addAttribute("body", textCard);
+    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
+      return "redirect:/error/" + e.getMessage();
+    }
+    return "editor_stub :: bodyViewer";
   }
-
-  /*
-  Needs: textcardId
-  Can get: title, value, purpose
-   */
-  public String updateTextCard(){
-    throw new AssertionError("Not implemented yet");
+  
+  @PostMapping("delete_card")
+  public String deleteTextCard(@RequestBody String jsonString,
+                               Model model) {
+    try {
+      JSONObject json = new JSONObject(jsonString);
+      String id = json.getString("id");
+      TextCard textCard = editorStubService.deleteTextCard(id);
+      model.addAttribute("body", textCard);
+    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
+      return "redirect:/error/" + e.getMessage();
+    }
+    return "editor_stub :: bodyViewer";
   }
-
-  /*
-  Needs: tagId
-  Can get: title, value
-   */
-  public String updateTag(){
-    throw new AssertionError("Not implemented yet");
+  
+  @PostMapping("create_tag")
+  public String createTag(@RequestBody String jsonString,
+                               Model model) {
+    try {
+      JSONObject json = new JSONObject(jsonString);
+      String annoId = json.getString("annoId");
+      String title = json.getString("title");
+      String value = json.getString("value");
+      Tag tag = editorStubService.addTag(annoId, title, value);
+      model.addAttribute("body", tag);
+    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
+      return "redirect:/error/" + e.getMessage();
+    }
+    return "editor_stub :: bodyViewer";
   }
-
-  /*
-  Needs: textCardId
-  Can get:
-   */
-  public String deleteTextCard(){
-    throw new AssertionError("Not implemented yet");
+  
+  @PostMapping("update_tag")
+  public String updateTag(@RequestBody String jsonString,
+                               Model model) {
+    try {
+      JSONObject json = new JSONObject(jsonString);
+      String id = json.getString("id");
+      String title = json.getString("title");
+      String value = json.getString("value");
+      Tag tag = editorStubService.updateTag(id, title, value);
+      model.addAttribute("body", tag);
+    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
+      return "redirect:/error/" + e.getMessage();
+    }
+    return "editor_stub :: bodyViewer";
   }
-
-  /*
-  Needs: tagId
-  Can get:
-   */
-  public String deleteTag(){
-    throw new AssertionError("Not implemented yet");
+  
+  @PostMapping("delete_tag")
+  public String deleteTag(@RequestBody String jsonString,
+                               Model model) {
+    try {
+      JSONObject json = new JSONObject(jsonString);
+      String id = json.getString("id");
+      Tag tag = editorStubService.deleteTag(id);
+      model.addAttribute("body", tag);
+    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
+      return "redirect:/error/" + e.getMessage();
+    }
+    return "editor_stub :: bodyViewer";
   }
 
   /*
