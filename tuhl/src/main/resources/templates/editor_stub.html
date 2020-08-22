@@ -349,6 +349,27 @@
       </div>
     </div>
   </div>
+
+  <div class="col" th:fragment="rawJsonViewer">
+    <div th:if="${rawJson == null}">
+      <label th:text="#{prompt.nothing_here}"> </label>
+    </div>
+    <div th:if="${rawJson != null}">
+      <label th:text="#{label.rawJson}"> </label>
+      <label th:text="${rawJson}"> </label>
+    </div>
+  </div>
+
+  <div class="col" th:fragment="rawXmlViewer">
+    <div th:if="${rawXml == null}">
+      <label th:text="#{prompt.nothing_here}"> </label>
+    </div>
+    <div th:if="${rawXml != null}">
+      <label th:text="#{label.rawXml}"> </label>
+      <label th:text="${rawXml}"> </label>
+    </div>
+  </div>
+
 </div>
 <script>
     function createAnnotation(event) {
