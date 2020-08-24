@@ -83,11 +83,14 @@ class HttpRequestHelper {
    * @throws IOException if an error occurs while sending or receiving
    * @throws InterruptedException if the get request is interrupted
    */
-  public HttpResponse<String> put(String url, JSONObject requestBody)
+  public HttpResponse<String> put(String url, JSONObject requestBody, String etag)
       throws IOException, InterruptedException {
     HttpRequest request = HttpRequest.newBuilder()
         .uri(URI.create(url))
-        .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString()))
+        .header(HTTP.CONTENT_TYPE, "application/ld+json;profile=\"http://www.w3.org/ns/anno.jsonld\"")
+        // JSON automatically escapes slashes, this removes that
+        .PUT(HttpRequest.BodyPublishers.ofString(requestBody.toString().replace("\\/", "/")))
+        .header("if-match", etag)
         .build();
 
     return client.send(request,

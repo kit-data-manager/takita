@@ -23,12 +23,14 @@ public enum AnnotationStoreStrings {
   DC_TITLE("dc:title"),
   DC_SUBJECT("dc:subject"),
   TARGET("target"),
+  SPECIFIC_RESOURCE("SpecificResource"),
   SELECTOR("selector"),
+  SVG_SELECTOR("SvgSelector"),
   SOURCE("source"),
   MOTIVATION("motivation"),
 
 
-  ANNOTATION("annotation"),
+  ANNOTATION("Annotation"),
   BINDINGS("bindings"),
   RESULTS("results"),
   VALUE("value"),

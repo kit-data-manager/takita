@@ -158,7 +158,7 @@ class AnnotationStoreAccessServiceTest {
             "tp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E+PREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.or" +
             "g%2F2001%2FXMLSchema%23%3E+SELECT+%3Fanno+%7BGRAPH+%3Fg+%7B%3Fanno+oa%3AhasTarget%2Foa%3AhasSource+" +
             "%3Chttp%3A%2F%2Fsamplerepo.edu%2Fapi%2Fv1%2Fdataresources%2Ff2e20635-8898-4983-9a86-c" +
-            "6e3d8006016%2Fdata%2F033r.master.jpg%3E+.+MINUS+%7B+%3Fanno+%3Chttp%3A%2F%2Fdem.scc.kit.edu%2Fwapse" +
+            "6e3d8006016%2Fdata%2F033r.master.jpg%3E+.+FILTER+NOT+EXISTS+%7B+%3Fanno+%3Chttp%3A%2F%2Fdem.scc.kit.edu%2Fwapse" +
             "rv%2Fns%23deleted%3E+%22true%22%5E%5Exsd%3Aboolean%7D+%7D+%7D"))
         .thenReturn(mockedResponsePage1);
     Mockito.when(mockedRequestHelper.get("http://sampleannoserver.edu/wap/a04/deinterpretatione/fa1aca6a-00a" +
@@ -281,18 +281,17 @@ class AnnotationStoreAccessServiceTest {
         .thenReturn(HttpHeaders.of(headersPage1, (a, b) -> true));
 
     //Define mock response to get requests
-    Mockito.when(mockedRequestHelper.get("http://sampleannoserver-sparql.edu/wap/sparql?query=" +
-        "PREFIX+oa%3A+%3Chttp%3A%2F%2Fwww.w3.org%2Fns%2Foa%23%3E+PREFIX+as%3A+%3Chttp%3A%2F%2" +
-        "Fwww.w3.org%2Fns%2Factivitystreams%23%3E+PREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1" +
-        "999%2F02%2F22-rdf-syntax-ns%23%3E+PREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2F" +
-        "XMLSchema%23%3E+PREFIX+foaf%3A+%3Chttp%3A%2F%2Fxmlns.com%2Ffoaf%2F0.1%2F%3E+PREFIX+d" +
-        "cterms%3A+%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3E+SELECT+%3Fannotation+%7BGRAPH+" +
-        "%3Fg+%7B+%3Fannotation+a+oa%3AAnnotation.+%3Fannotation+dcterms%3Acreated+%3Fcreated" +
-        ".+%3Fannotation+dcterms%3Amodified+%3Fmodified.+FILTER%28xsd%3AdateTime%28%3Fcreated" +
-        "%29+%3E+%222019-05-08T10:59:35.000Z%22%5E%5Exsd%3AdateTime%29+FILTER%28xsd%3AdateTim" +
-        "e%28%3Fmodified%29+%3E+%222019-05-08T10:59:35.000Z%22%5E%5Exsd%3AdateTime%29+MINUS+%" +
-        "7B+%3Fannotation+%3Chttp%3A%2F%2Fdem.scc.kit.edu%2Fwapserv%2Fns%23deleted%3E+%22true%" +
-        "22%5E%5Exsd%3Aboolean%7D+%7D+%7D")).thenReturn(mockedResponsePage3);
+    Mockito.when(mockedRequestHelper.get("http://sampleannoserver-sparql.edu/wap/sparql?query=PREFIX+oa%" +
+        "3A+%3Chttp%3A%2F%2Fwww.w3.org%2Fns%2Foa%23%3E+PREFIX+as%3A+%3Chttp%3A%2F%2Fwww.w3.org%2Fns%2Fac" +
+        "tivitystreams%23%3E+PREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%" +
+        "3E+PREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2001%2FXMLSchema%23%3E+PREFIX+foaf%3A+%3Chttp%3A" +
+        "%2F%2Fxmlns.com%2Ffoaf%2F0.1%2F%3E+PREFIX+dcterms%3A+%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3" +
+        "E+SELECT+%3Fannotation+%7BGRAPH+%3Fg+%7B+%3Fannotation+a+oa%3AAnnotation.+%3Fannotation+dcterms" +
+        "%3Acreated+%3Fcreated.+%3Fannotation+dcterms%3Amodified+%3Fmodified.+FILTER%28xsd%3AdateTime%28" +
+        "%3Fcreated%29+%3E+%222019-05-08T10:59:35.000Z%22%5E%5Exsd%3AdateTime%29+FILTER%28xsd%3AdateTime" +
+        "%28%3Fmodified%29+%3E+%222019-05-08T10:59:35.000Z%22%5E%5Exsd%3AdateTime%29+FILTER+NOT+EXISTS+%" +
+        "7B+%3Fannotation+%3Chttp%3A%2F%2Fdem.scc.kit.edu%2Fwapserv%2Fns%23deleted%3E+%22true%22%5E%5Exs" +
+        "d%3Aboolean%7D+%7D+%7D")).thenReturn(mockedResponsePage3);
 
     Mockito.when(mockedRequestHelper.get("http://sampleannoserver.edu/wap/a04/deinterpretatione/" +
         "05c281d1-5184-4b74-a9dd-5fbac538f75c")).thenReturn(mockedAnnotation1);
@@ -322,6 +321,7 @@ class AnnotationStoreAccessServiceTest {
   void validateAnnotationTest() throws IOException, JSONException, InterruptedException {
     JSONObject newAnnotation1 = new JSONObject(readStringFromRelativePath("addAnnotation/annotation1.json"));
     JSONObject newAnnotation2 = new JSONObject(readStringFromRelativePath("addAnnotation/annotation2.json"));
+    JSONObject expectedUnvalidatedAnnotation = new JSONObject(readStringFromRelativePath("addAnnotation/annotation1.json"));
 
     //Builds body for mock response
     Mockito.when(mockedAnnotation1.body()).thenReturn(newAnnotation1.toString());
@@ -341,8 +341,8 @@ class AnnotationStoreAccessServiceTest {
 
     JSONObject actualAnnotation = annotationStoreAccessService.validateAnnotation(newAnnotation1);
     JSONObject expectedAnnotation = newAnnotation2;
-    expectedAnnotation.put("via", newAnnotation1.getString("id"));
-    expectedAnnotation.put("canonical", newAnnotation1.getString("id"));
+    expectedAnnotation.put("via", expectedUnvalidatedAnnotation.getString("id"));
+    expectedAnnotation.put("canonical", expectedUnvalidatedAnnotation.getString("id"));
     expectedAnnotation.put("etag", etags.get(0));
 
     assertEquals(expectedAnnotation.toString(), actualAnnotation.toString());
@@ -371,12 +371,14 @@ class AnnotationStoreAccessServiceTest {
     //Define mock response to get requests
     Mockito.when(mockedRequestHelper.get(newAnnotation2.getString("id")))
         .thenReturn(mockedAnnotation2);
-    Mockito.when(mockedRequestHelper.put(newAnnotation2.getString("canonical"), newAnnotation2))
+    Mockito.when(mockedRequestHelper.put(newAnnotation2.getString("canonical"), newAnnotation2, etags.get(0)))
         .thenReturn(mockedAnnotation1);
-    Mockito.when(mockedRequestHelper.put(newAnnotation2.getString("id"), newAnnotation2))
+    Mockito.when(mockedRequestHelper.put(newAnnotation2.getString("id"), newAnnotation2, etags.get(0)))
+        .thenReturn(mockedAnnotation2);
+    Mockito.when(mockedRequestHelper.get("http://sampleannoserver.edu/wap/a04/deinterpretatione/3fe548c5-8be6-40f7-88c8-0118e47c9ac8"))
         .thenReturn(mockedAnnotation2);
 
-    annotationStoreAccessService.updateAnnotation(newAnnotation2.getString("id"), newAnnotation2);
+    annotationStoreAccessService.updateAnnotation(newAnnotation2.getString("id"), newAnnotation2, etags.get(0));
 
     originalAnnotation.put("etag", etags.get(0));
 

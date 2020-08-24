@@ -82,6 +82,7 @@ class HttpRequestHelperTest {
     String uriString = "http://www.samplerepo.edu";
     URI uri = new URI(uriString);
     JSONObject requestBody = new JSONObject("{\"test\": \"putRequest\"}");
+    String etag = "etag";
   
     Mockito.when(mockedHttpClient.send(Mockito.any(HttpRequest.class),
         ArgumentMatchers.<HttpResponse.BodyHandler<String>>any()))
@@ -96,7 +97,7 @@ class HttpRequestHelperTest {
           return response;
         });
   
-    assertEquals(response, httpRequestHelper.put(uriString, requestBody));
+    assertEquals(response, httpRequestHelper.put(uriString, requestBody, etag));
   }
   
   @Test

@@ -95,5 +95,6 @@
     },
     "source" : "http://samplerepo.edu/api/v1/dataresources/758735a2-8e0d-4ac7-815e-bba2060217c3/data/082v.master.jpg"
   },
-  "motivation" : "describing"
+  "motivation" : "describing",
+  "etag" : "\"begpdiwhaqtrcnhyawyx\""
 }

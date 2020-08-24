@@ -91,12 +91,13 @@ public interface IAnnotationStoreAccessService {
    *
    * @param annotationId annotation identifier as String
    * @param jsonAnnotation updated annotation as JSONObject
-   * @return JSONObject updated Annotation with etag
+   * @param etag etag for updating annotation
+   * @return JSONObject updated Annotation with new etag
    * @throws IOException if an I/O error occurs when sending or receiving http request
    * @throws InterruptedException if the http request is interrupted
    * @throws JSONException if the response body could not be parsed to json
    */
-  JSONObject updateAnnotation(String annotationId, JSONObject jsonAnnotation)
+  JSONObject updateAnnotation(String annotationId, JSONObject jsonAnnotation, String etag)
       throws IOException, InterruptedException, JSONException;
 
   /**

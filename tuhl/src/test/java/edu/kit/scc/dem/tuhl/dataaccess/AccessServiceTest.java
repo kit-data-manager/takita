@@ -218,14 +218,13 @@ class AccessServiceTest {
 
     Mockito.when(mockedAnnotationStoreAccessService.validateAnnotation(jsonAnnotation2))
         .thenAnswer(invocation -> {
-          JSONObject actualJsonAnnotation2 = jsonAnnotation2;
 
-          JSONAssert.assertEquals(jsonAnnotation2.toString(), actualJsonAnnotation2.toString(), true);
-          actualJsonAnnotation2.put("via", actualJsonAnnotation2.getString("id"));
-          actualJsonAnnotation2.put("canonical", actualJsonAnnotation2.getString("id"));
-          actualJsonAnnotation2.put("id", expectedAnnotation2.getId());
-          actualJsonAnnotation2.put("etag", "def");
-          return actualJsonAnnotation2;
+          JSONAssert.assertEquals(jsonAnnotation2.toString(), jsonAnnotation2.toString(), true);
+          jsonAnnotation2.put("via", jsonAnnotation2.getString("id"));
+          jsonAnnotation2.put("canonical", jsonAnnotation2.getString("id"));
+          jsonAnnotation2.put("id", expectedAnnotation2.getId());
+          jsonAnnotation2.put("etag", "def");
+          return jsonAnnotation2;
         });
 
     Annotation actualAnnotationAfter = accessService.validateAnnotation(actualAnnotationBefore, page.getPageNumber());
@@ -262,16 +261,15 @@ class AccessServiceTest {
           return validatedJsonAnnotation2;
         });
 
-    Mockito.when(mockedAnnotationStoreAccessService.updateAnnotation(jsonAnnotation2.getString("id"), jsonAnnotation2))
+    Mockito.when(mockedAnnotationStoreAccessService.updateAnnotation(jsonAnnotation2.getString("id"), jsonAnnotation2, "abc"))
         .thenAnswer(invocation -> {
-          JSONObject actualJsonAnnotation2 = jsonAnnotation2;
 
-          JSONAssert.assertEquals(jsonAnnotation2.toString(), actualJsonAnnotation2.toString(), true);
-          actualJsonAnnotation2.put("via", actualJsonAnnotation2.getString("id"));
-          actualJsonAnnotation2.put("canonical", actualJsonAnnotation2.getString("id"));
-          actualJsonAnnotation2.put("id", expectedAnnotation.getId());
-          actualJsonAnnotation2.put("etag", "def");
-          return actualJsonAnnotation2;
+          JSONAssert.assertEquals(jsonAnnotation2.toString(), jsonAnnotation2.toString(), true);
+          jsonAnnotation2.put("via", jsonAnnotation2.getString("id"));
+          jsonAnnotation2.put("canonical", jsonAnnotation2.getString("id"));
+          jsonAnnotation2.put("id", expectedAnnotation.getId());
+          jsonAnnotation2.put("etag", "def");
+          return jsonAnnotation2;
         });
 
     Annotation actualAnnotationAfter = accessService.updateAnnotation(actualAnnotationBefore, "082r");
@@ -904,7 +902,7 @@ class AccessServiceTest {
     annotations.get(0).setColor(Color.PAGE_REGION);
     annotations.get(0).setIsAlgorithmAnnotation(false);
     annotations.get(0).setPageId("758735a2-8e0d-4ac7-815e-bba2060217c3");
-    annotations.get(0).setSvgCode("<svg><rect x=\\\"279\\\" y=\\\"48\\\" width=\\\"2951\\\" height=\\\"4500\\\"/></svg>");
+    annotations.get(0).setSvgCode("<svg><rect x=\"279\" y=\"48\" width=\"2951\" height=\"4500\"/></svg>");
     annotations.get(0).setMotivation("describing");
     annotations.get(0).setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/c3aeb1ef-af1e-41fe-823c-76ea3761ee89");
     annotations.get(0).setEtag("def");
@@ -917,7 +915,7 @@ class AccessServiceTest {
     annotations.get(1).setColor(Color.PAGE_REGION);
     annotations.get(1).setIsAlgorithmAnnotation(false);
     annotations.get(1).setPageId("758735a2-8e0d-4ac7-815e-bba2060217c3");
-    annotations.get(1).setSvgCode("<svg><rect x=\\\"279\\\" y=\\\"48\\\" width=\\\"2951\\\" height=\\\"4500\\\"/></svg>");
+    annotations.get(1).setSvgCode("<svg><rect x=\"279\" y=\"48\" width=\"2951\" height=\"4500\"/></svg>");
     annotations.get(1).setMotivation("describing");
     annotations.get(1).setEtag("abc");
 

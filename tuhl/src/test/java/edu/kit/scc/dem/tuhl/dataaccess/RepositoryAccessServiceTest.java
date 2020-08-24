@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.IOException;
 import java.net.http.HttpHeaders;
+import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -167,7 +168,7 @@ class RepositoryAccessServiceTest {
     assertEquals(expected, actual);
   }
   
-  private void prepareGetManuscriptsMock() throws IOException, InterruptedException {
+  private void prepareGetManuscriptsMock() throws IOException, InterruptedException, JSONException {
     //Builds body for first mock response
     Mockito.when(mockedResponsePage1.body())
         .thenReturn(readStringFromRelativePath("getAllManuscripts/responsePage1.json"));
@@ -191,15 +192,28 @@ class RepositoryAccessServiceTest {
     headersPage1.put("link", links2);
     Mockito.when(mockedResponsePage2.headers())
         .thenReturn(HttpHeaders.of(headersPage2, (a, b) -> true));
-  
-  
+
+    JSONObject resourceType = new JSONObject();
+    JSONObject typeGeneral = new JSONObject();
+    typeGeneral.put(RepositoryStrings.TYPE_GENERAL.getName(), RepositoryStrings.TEXT.getName());
+    resourceType.put(RepositoryStrings.RESOURCE_TYPE.getName(), typeGeneral);
+
     //Define mock response to get requests
     Mockito.when(mockedRequestHelper
-        .get("http://samplerepo.edu/api/v1/dataresources/"))
-        .thenReturn(mockedResponsePage1);
+        .postManuscript(Mockito.eq("http://samplerepo.edu/api/v1/dataresources/search?page=0&size=99"), Mockito.any(JSONObject.class)))
+        .thenAnswer(invocation -> {
+          JSONObject jsonObject = invocation.getArgument(1);
+          assertEquals(resourceType.getString(RepositoryStrings.RESOURCE_TYPE.getName()), jsonObject.getString(RepositoryStrings.RESOURCE_TYPE.getName()));
+          return mockedResponsePage1;
+        });
     Mockito.when(mockedRequestHelper
-        .get("http://samplerepo.edu/api/v1/dataresources/?page=1&size=20"))
-        .thenReturn(mockedResponsePage2);
+        .postManuscript(Mockito.eq("http://samplerepo.edu/api/v1/dataresources/search?page=1&size=99"), Mockito.any(JSONObject.class)))
+        .thenAnswer(invocation -> {
+          JSONObject jsonObject = invocation.getArgument(1);
+          assertEquals(resourceType.getString(RepositoryStrings.RESOURCE_TYPE.getName()), jsonObject.getString(RepositoryStrings.RESOURCE_TYPE.getName()));
+
+          return mockedResponsePage2;
+        });
   }
   
   private String readStringFromRelativePath(String relativePath) throws IOException {

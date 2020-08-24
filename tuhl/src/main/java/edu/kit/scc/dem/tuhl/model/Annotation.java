@@ -47,6 +47,7 @@ public class Annotation {
   public Annotation() {
     textCards = new ArrayList<>();
     tags = new ArrayList<>();
+    creators = new ArrayList<>();
   }
 
   /**

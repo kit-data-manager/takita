@@ -26,11 +26,12 @@ public class RepositoryAccessService implements IRepositoryAccessService {
   public static final String DATA_PATH = "/data/";
   public static final String THUMB_JPG = ".thumb.jpg";
   public static final String MASTER_JPG = ".master.jpg";
-  private static final String MANUSCRIPT_PATTERN = "<(.*?)>; rel=\"next\"";
   private static final String PAGE_STRING = "?page=";
+  private static final String MANUSCRIPT_PATTERN = "<(.*?)>; rel=\"next\",";
   private static final String MANUSCRIPT_METADATA_FILE = "manuscript_metadata.xml";
   private static final String PAGES_JSON = "pages.json";
-  private static final String SEARCH_URL = "search?page=0&size=";
+  private static final String SEARCH_URL = "search?page=";
+  private static final String SEARCH_SIZE_URL = "&size=";
 
   @Value("${repository.baseUrl}")
   private String baseUrl;
@@ -105,6 +106,7 @@ public class RepositoryAccessService implements IRepositoryAccessService {
   public List<JSONObject> getAllManuscripts(int numberManuscripts)
       throws IOException, InterruptedException, JSONException {
     int pageSize;
+    int pageCounter = 0;
     if (numberManuscripts <= 0 && numberManuscripts != -1) {
       return new ArrayList<>();
     } else if (numberManuscripts > 100 || numberManuscripts == -1) {
@@ -116,14 +118,14 @@ public class RepositoryAccessService implements IRepositoryAccessService {
     Pattern pattern = Pattern.compile(MANUSCRIPT_PATTERN);
 
     List<JSONObject> manuscriptsJson = new ArrayList<>();
-    String nextUri = baseUrl + staticPath + SEARCH_URL;
+    String nextUri = baseUrl + staticPath + SEARCH_URL + pageCounter + SEARCH_SIZE_URL;
 
     JSONObject resourceType = new JSONObject();
     JSONObject typeGeneral = new JSONObject();
     typeGeneral.put(RepositoryStrings.TYPE_GENERAL.getName(), RepositoryStrings.TEXT.getName());
     resourceType.put(RepositoryStrings.RESOURCE_TYPE.getName(), typeGeneral);
 
-
+    System.out.println(nextUri + pageSize);
     HttpResponse<String> pageResponse = httpRequestHelper.postManuscript(nextUri + pageSize, resourceType);
     Optional<String> link;
   
@@ -150,12 +152,16 @@ public class RepositoryAccessService implements IRepositoryAccessService {
         findNextLink = matcher.find();
         if (findNextLink) {
           nextUri = matcher.group(1);
-  
+
           //Workaround for bug in the repository; inserts missing "/"
-          nextUri = new StringBuilder(nextUri).insert(nextUri.indexOf(PAGE_STRING), "/").toString();
-  
+          //nextUri = new StringBuilder(nextUri).insert(nextUri.indexOf(PAGE_STRING), "/").toString();
+
+          //Workaround for bug in repository
+          pageCounter++;
+          nextUri = baseUrl + staticPath + SEARCH_URL + pageCounter + SEARCH_SIZE_URL + pageSize;
+
           //Gets manuscripts from extracted next link
-          pageResponse = httpRequestHelper.get(nextUri);
+          pageResponse = httpRequestHelper.postManuscript(nextUri, resourceType);
         }
       }
       // Repeat while there is a next page given by a link in the response header

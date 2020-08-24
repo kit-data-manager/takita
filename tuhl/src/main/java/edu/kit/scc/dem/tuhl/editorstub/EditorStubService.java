@@ -146,7 +146,11 @@ public class EditorStubService implements IEditorStubService {
     }
     updatedAnnotation.setModified(Date.from(Instant.now()));
 
-    updatedAnnotation.setColor(Objects.requireNonNullElse(stringToColor(color), Color.DEFAULT));
+    if (color != null) {
+      updatedAnnotation.setColor(stringToColor(color));
+    } else {
+      updatedAnnotation.setColor(Color.DEFAULT);
+    }
 
     if (svgCode != null && !svgCode.trim().equals("")) {
       updatedAnnotation.setSvgCode(svgCode);
@@ -177,9 +181,11 @@ public class EditorStubService implements IEditorStubService {
   @Override
   public Annotation validateAnnotation(String annotationId)
       throws NoSuchIndexEntryException, InterruptedException, IOException {
+    Annotation annotation = searchIndexService.getAnnotationById(annotationId);
+    annotation.setModified(Date.from(Instant.now()));
+    annotation.addCreator(assistanceService.getCurrentUser().getName());
     try {
-      return searchIndexService.validateAnnotation(
-          searchIndexService.getAnnotationById(annotationId));
+      return searchIndexService.validateAnnotation(annotation);
     } catch (JSONException e) {
       e.printStackTrace();
     }

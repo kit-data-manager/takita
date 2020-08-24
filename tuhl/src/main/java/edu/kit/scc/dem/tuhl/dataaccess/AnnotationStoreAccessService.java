@@ -91,6 +91,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
 
     jsonAnnotation.put(AnnotationStoreStrings.VIA.getName(), deinterpretationeId);
     jsonAnnotation.put(AnnotationStoreStrings.CANONICAL.getName(), deinterpretationeId);
+    jsonAnnotation.remove(AnnotationStoreStrings.ID.getName());
     HttpResponse<String> response = httpRequestHelper.postAnnotations(urlPrefix
         + VALIDATED_URL, jsonAnnotation);
     JSONObject validatedAnnotation = new JSONObject(response.body());
@@ -288,13 +289,18 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
         AnnotationStoreStrings.ID.getName()));
     jsonAnnotation.put(AnnotationStoreStrings.CANONICAL.getName(), jsonAnnotation.getString(
         AnnotationStoreStrings.ID.getName()));
-    HttpResponse<String> response = httpRequestHelper.postAnnotations(urlPrefix + VALIDATED_URL, jsonAnnotation);
-    JSONObject result = new JSONObject(response.body());
-    String etag = response.headers().allValues(
-        AnnotationStoreStrings.ETAG.getName()).get(response.headers()
-        .allValues(AnnotationStoreStrings.ETAG.getName()).size() - 1);
+    jsonAnnotation.remove(AnnotationStoreStrings.ID.getName());
+    HttpResponse<String> response = httpRequestHelper.postAnnotations(urlPrefix
+        + VALIDATED_URL, jsonAnnotation);
 
-    result.put(AnnotationStoreStrings.ETAG.getName(), etag);
+    JSONObject result = new JSONObject(response.body());
+
+    if (!response.headers().allValues(AnnotationStoreStrings.ETAG.getName()).isEmpty()) {
+      String newEtag = response.headers().allValues(AnnotationStoreStrings.ETAG.getName())
+          .get(response.headers()
+              .allValues(AnnotationStoreStrings.ETAG.getName()).size() - 1);
+      result.put(AnnotationStoreStrings.ETAG.getName(), newEtag);
+    }
     return result;
   }
 
@@ -303,33 +309,29 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
    *
    * @param annotationId annotation identifier as String
    * @param jsonAnnotation updated annotation as JSONObject
-   * @return JSONObject updated Annotation with etag
+   * @param etag etag for updating annotation
+   * @return JSONObject updated Annotation with new etag
    * @throws IOException if an I/O error occurs when sending or receiving http request
    * @throws InterruptedException if the http request is interrupted
    * @throws JSONException if the response body could not be parsed to json
    */
   @Override
-  public JSONObject updateAnnotation(String annotationId, JSONObject jsonAnnotation)
+  public JSONObject updateAnnotation(String annotationId, JSONObject jsonAnnotation, String etag)
       throws IOException, InterruptedException, JSONException {
 
-    JSONObject databaseAnnotation = new JSONObject(httpRequestHelper.get(annotationId).body());
     // put in deinterpretatione and add via and canonical fields if anno is already in validated
-    if (databaseAnnotation.has(AnnotationStoreStrings.CANONICAL.getName())) {
-      httpRequestHelper.put(databaseAnnotation.get(AnnotationStoreStrings
-          .CANONICAL.getName()).toString(), jsonAnnotation);
-
-      jsonAnnotation.put(AnnotationStoreStrings.VIA.getName(), databaseAnnotation
-          .get(AnnotationStoreStrings.VIA.getName()).toString());
-      jsonAnnotation.put(AnnotationStoreStrings.CANONICAL.getName(), databaseAnnotation
-          .get(AnnotationStoreStrings.CANONICAL.getName()).toString());
+    if (jsonAnnotation.has(AnnotationStoreStrings.CANONICAL.getName())) {
+      JSONObject deInterpretationeAnnotation = getAnnotationById(jsonAnnotation.getString(AnnotationStoreStrings.CANONICAL.getName()));
+      httpRequestHelper.put(jsonAnnotation.get(AnnotationStoreStrings
+          .CANONICAL.getName()).toString(), jsonAnnotation, deInterpretationeAnnotation.getString(AnnotationStoreStrings.ETAG.getName()));
     }
-    HttpResponse<String> response = httpRequestHelper.put(annotationId, jsonAnnotation);
+    HttpResponse<String> response = httpRequestHelper.put(annotationId, jsonAnnotation, etag);
 
     if (!response.headers().allValues(AnnotationStoreStrings.ETAG.getName()).isEmpty()) {
-      String etag = response.headers().allValues(AnnotationStoreStrings.ETAG.getName())
+      String newEtag = response.headers().allValues(AnnotationStoreStrings.ETAG.getName())
           .get(response.headers()
               .allValues(AnnotationStoreStrings.ETAG.getName()).size() - 1);
-      jsonAnnotation.put(AnnotationStoreStrings.ETAG.getName(), etag);
+      jsonAnnotation.put(AnnotationStoreStrings.ETAG.getName(), newEtag);
     }
 
     return jsonAnnotation;
