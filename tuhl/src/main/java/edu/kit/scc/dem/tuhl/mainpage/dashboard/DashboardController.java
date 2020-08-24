@@ -61,6 +61,4 @@ public class DashboardController {
     dashboardService.setCurrentContentView(contentView);
     return "redirect:/dashboard/contentview";
   }
-
-
 }

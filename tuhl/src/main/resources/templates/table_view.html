@@ -277,26 +277,30 @@
         thumbnails.forEach(function(item, index){
             let col = document.createElement('div');
             col.setAttribute('class', 'mx-1 col-auto');
-            let innerRow1 = document.createElement('div');
-            innerRow1.setAttribute('class', 'row');
-            let innerRow2 = document.createElement('div');
-            innerRow2.setAttribute('class', 'row mb-2 mt-1 justify-content-center');
-            let innerCol = document.createElement('div');
-            innerCol.setAttribute('class', 'col');
-            let img = document.createElement('img');
-            img.setAttribute('class', 'img-thumbnail');
-            img.setAttribute('src', item.thumb);
-            let label = document.createElement('a');
-            label.setAttribute('class', 'btn-sm btn-secondary')
-            label.setAttribute('href','/editor/' + item.id);
-            let icon = document.createElement('i');
-            icon.setAttribute('class', 'fa fa-pencil');
-            label.appendChild(icon);
-            innerCol.appendChild(img);
-            innerRow1.appendChild(innerCol);
-            innerRow2.appendChild(label);
-            col.appendChild(innerRow1);
-            col.appendChild(innerRow2);
+                let imgRow = document.createElement('div');
+                imgRow.setAttribute('class', 'row');
+                    let imgCol = document.createElement('div');
+                    imgCol.setAttribute('class', 'col');
+                        let img = document.createElement('img');
+                        img.setAttribute('class', 'img-thumbnail');
+                        img.setAttribute('src', item.thumb);
+                    imgCol.appendChild(img);
+                imgRow.appendChild(imgCol);
+                let subtitleRow = document.createElement('div');
+                subtitleRow.setAttribute('class', 'row mb-2 mt-1 justify-content-center');
+                    let link = document.createElement('a');
+                    link.setAttribute('class', 'btn-sm btn-secondary col-auto')
+                    link.setAttribute('href','/editor/' + item.id);
+                        let icon = document.createElement('i');
+                        icon.setAttribute('class', 'fa fa-pencil');
+                    link.appendChild(icon);
+                    let label = document.createElement('label');
+                    label.setAttribute('class', 'col-auto m-0');
+                    label.innerText = item.pageNumber;
+                subtitleRow.appendChild(link);
+                subtitleRow.appendChild(label);
+            col.appendChild(imgRow);
+            col.appendChild(subtitleRow);
             outerRow.appendChild(col);
         })
         cardBody.appendChild(outerRow);
