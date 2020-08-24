@@ -102,7 +102,8 @@ public class SearchService implements ISearchService {
     QueryBuilder searchTermQueryBuilder;
     if (searchTerm != null && !searchTerm.trim().equals("")) {
       //Add the search term as a query that matches against all fields
-      searchTermQueryBuilder = new QueryStringQueryBuilder(searchTerm).fuzziness(Fuzziness.ZERO);
+      searchTermQueryBuilder =
+          new QueryStringQueryBuilder("*" + searchTerm + "*").fuzziness(Fuzziness.AUTO);
     } else {
       searchTermQueryBuilder = new MatchAllQueryBuilder();
     }
