@@ -4,23 +4,29 @@ import static edu.kit.scc.dem.tuhl.mainpage.search.SearchIndexService.INDEX_NAME
 
 import edu.kit.scc.dem.tuhl.model.Manuscript;
 import edu.kit.scc.dem.tuhl.model.filter.Filter;
+
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import edu.kit.scc.dem.tuhl.model.page.ImagePage;
+import edu.kit.scc.dem.tuhl.model.page.Page;
+import edu.kit.scc.dem.tuhl.model.page.TextPage;
+import org.elasticsearch.action.search.*;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.indices.GetFieldMappingsRequest;
 import org.elasticsearch.client.indices.GetFieldMappingsResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.*;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-import org.springframework.data.elasticsearch.core.SearchHit;
-import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
@@ -28,7 +34,6 @@ import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.annotation.SessionScope;
-
 
 /**
  * SearchService contains all business logic to search the index provided by Spring.Data.
@@ -72,7 +77,6 @@ public class SearchService implements ISearchService {
    */
   @Override
   public List<Manuscript> search(int pageNumber, String sortField, boolean sortAsc) {
-    System.out.println("search");
     if (!elasticsearchRestTemplate.execute(client ->
         client.indices().exists(new GetIndexRequest(INDEX_NAME), RequestOptions.DEFAULT))) {
       logger.error("The index does not exist. Please try to build it first.");
@@ -115,13 +119,8 @@ public class SearchService implements ISearchService {
     
     resultPagesCount = calculatePageCount(queryBuilder.build());
     
-    //Configure the query page after calculating the number of total results
-    queryBuilder = queryBuilder.withPageable(PageRequest.of(pageNumber - 1, pageSize, Sort.by(
-        sortAsc ? Sort.Direction.ASC : Sort.Direction.DESC,
-        sortField + suffix)));
     //Perform the search
-    results = searchWithQuery(queryBuilder.build());
-    return results;
+    return performRequest(queryBuilder.build(), pageNumber, sortField, sortAsc, suffix);
   }
   
   private long calculatePageCount(Query query) {
@@ -140,16 +139,62 @@ public class SearchService implements ISearchService {
     return resultPagesCount;
   }
   
-  private List<Manuscript> searchWithQuery(NativeSearchQuery query) {
-    SearchHits<Manuscript> searchHits = elasticsearchRestTemplate.search(
-        query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
+  private List<Manuscript> performRequest(NativeSearchQuery query, int pageStart,
+                                          String sortField, boolean sortAsc, String suffix) {
+    SearchResponse response = elasticsearchRestTemplate.execute(client -> client.search(
+        new SearchRequestBuilder(null, SearchAction.INSTANCE).setIndices(INDEX_NAME)
+            .setQuery(query.getQuery())
+            .setFrom((pageStart - 1) * pageSize)
+            .setSize(pageSize)
+            .addSort(sortField + suffix, sortAsc ? SortOrder.ASC : SortOrder.DESC)
+            .setFetchSource(null, "pages.annotations")
+            .request(),
+        RequestOptions.DEFAULT)
+    );
+    return parseResults(response.getHits());
+  }
+  
+  private List<Manuscript> parseResults(SearchHits hits) {
+    List<Manuscript> searchResults = new ArrayList<>();
+    for (SearchHit hit : hits.getHits()) {
+      Map<String, Object> manuscriptMap = hit.getSourceAsMap();
     
-    List<Manuscript> results = new ArrayList<>();
-    //Add the manuscript of each search hit to a list
-    for (SearchHit<Manuscript> hit : searchHits) {
-      results.add(hit.getContent());
+      Manuscript m = new Manuscript(
+          (String) manuscriptMap.get("id"),
+          new Date((Long) manuscriptMap.get("created")),
+          (String) manuscriptMap.get("title"),
+          (String) manuscriptMap.get("publisher"),
+          (int) manuscriptMap.get("publicationYear"));
+    
+      m.setLastModified(new Date((Long) manuscriptMap.get("lastModified")));
+      m.setNoPages((int) manuscriptMap.get("noPages"));
+      m.setHasAlgorithmAnnotations((boolean) manuscriptMap.get("hasAlgorithmAnnotations"));
+    
+      List<Map<String, Object>> pageMaps = (List<Map<String, Object>>) manuscriptMap.get("pages");
+      List<Page> pages = new ArrayList<>();
+      for (Map<String, Object> pageMap : pageMaps) {
+        Page p;
+        String id = (String) pageMap.get("id");
+        String thumbResourceUrl = (String) pageMap.get("thumbResourceUrl");
+        Date created = new Date((Long) pageMap.get("created"));
+        String resourceUrl = (String) pageMap.get("resourceUrl");
+        String manuscriptId = (String) pageMap.get("manuscriptId");
+        String pageNumber = (String) pageMap.get("pageNumber");
+        if (pageMap.get("resourceType").equals("TEXT")) {
+          p = new TextPage(id, pageNumber, created, resourceUrl);
+          p.setManuscriptId(manuscriptId);
+          pages.add(p);
+        } else if (pageMap.get("resourceType").equals("IMAGE")) {
+          p = new ImagePage(id, pageNumber, created, resourceUrl, thumbResourceUrl);
+          p.setManuscriptId(manuscriptId);
+          pages.add(p);
+        }
+      }
+      m.setPages(pages);
+      searchResults.add(m);
     }
-    return results;
+    this.results = searchResults;
+    return searchResults;
   }
   
   /**
