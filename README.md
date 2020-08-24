@@ -3,9 +3,13 @@
 #### Executing the Program
 In order for the program to run properly there are two major requirements:
 * Java Runtime Environment 11 or higher needs to be installed
-* A server with the Elasticsearch image on version 7.6.2 must be running.
-    * Use for example docker:  
-    `docker run -d --name es762 -p 9200:9200 -e "discovery.type=single-node" elasticsearch:7.6.2` 
+* A server with the Elasticsearch image on version 7.6.2, or a compatible higher version must be
+ running. 
+
+##### Running an Elasticsearch server using Docker
+In order for this to work, Docker must be installed and running.
+The next step is to open a terminal in the same directory as the configuration file 
+`docker-compose.yml` is located and execute the command `docker-compose up` to run the docker.
 
 #### Program Arguments
 
