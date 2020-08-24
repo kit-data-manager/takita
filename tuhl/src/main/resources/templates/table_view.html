@@ -115,7 +115,7 @@
         return [
             {
                 // TODO icon MAAAAAAAAX!!!
-                label: "<i class='fas fa-eye-slash'> </i>" + [[#{menu.hideCol}]],
+                label: "<i class='fa fa-eye-slash mr-1'> </i>" + [[#{menu.hideCol}]],
                 action: function (e, column) {
                     column.hide();
                     document.getElementById('check_' + column.getField()).checked = false;
@@ -182,7 +182,6 @@
         placeholder:[[#{table.noResults}]],
         paginationSize:10,
         paginationInitialPage:1,
-        layoutColumnsOnNewData:false,
         /*]]>*/
         rowDblClick: function (e, row) {
             //shows and hides thumbnails for each row
