@@ -209,6 +209,7 @@ public class TableViewService implements IContentViewService {
           String id = pg.getId();
           obj.put("thumb", thumb);
           obj.put("id", id);
+          obj.put("pageNumber", pg.getPageNumber());
           thumbnails.put(obj);
         }
         JSONObject row = new JSONObject();
