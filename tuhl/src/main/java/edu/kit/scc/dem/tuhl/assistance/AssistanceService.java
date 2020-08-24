@@ -152,7 +152,6 @@ public class AssistanceService implements IAssistanceService {
         currentUser.getMatchFilter(), currentUser.getRangeFilter(),
         currentUser.isSaveTable(), currentUser.isSaveFilter(),
         currentUser.isCheckThumbs(), currentUser.getName(), currentUser.getPageSize(), currentUser.getLang(), currentUser.getSort());
-    System.out.println(user.getName());
     repo.save(user);
   }
 

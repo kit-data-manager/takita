@@ -196,10 +196,8 @@
         },
         columns: window.cols,
 
-        dataLoaded:function(data){
-            //data - all data loaded into the table
-            setThumbCheckbox();
-
+        renderComplete:function(){
+            showThumbs();
         },
         langs:{
             "def":{
@@ -238,19 +236,17 @@
     });
     table.setMaxPage(getCurrentPage());
     table.setPage(getCurrentPage());
+    setThumbCheckbox();
     setHeaderMenues();
     createDropdown();
 
 
 
-    function showThumbs(){
-        if([[${user.isCheckThumbs()}]]) {
-            console.log("message")
-            console.log(table.getRows())
-            window.table.getRows().forEach(function (row) {
-                console.log("bla");
-                    showThumbnails(row);
 
+    function showThumbs(){
+        if(document.getElementById("thumbnails").checked) {
+            window.table.getRows().forEach(function (row) {
+                showThumbnails(row);
             });
         }
     }
@@ -294,8 +290,6 @@
         cardBody.appendChild(outerRow);
         holder.appendChild(cardBody);
         row.getElement().appendChild(holder);
-        console.log(holder);
-        console.log(row.getElement());
     }
 
     function hideThumbnails(row) {
@@ -307,9 +301,9 @@
     function setThumbCheckbox(){
     /*<![CDATA[*/
             document.getElementById("thumbnails").checked = [[${user.isCheckThumbs()}]];
-            if([[${user.isCheckThumbs()}]]){
-                showThumbs()
-            }
+            // if([[${user.isCheckThumbs()}]]){
+             //    showThumbs()
+        // }
 
         /*]]>*/
     }
