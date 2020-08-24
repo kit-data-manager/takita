@@ -72,6 +72,7 @@ public class SearchService implements ISearchService {
    */
   @Override
   public List<Manuscript> search(int pageNumber, String sortField, boolean sortAsc) {
+    System.out.println("search");
     if (!elasticsearchRestTemplate.execute(client ->
         client.indices().exists(new GetIndexRequest(INDEX_NAME), RequestOptions.DEFAULT))) {
       logger.error("The index does not exist. Please try to build it first.");

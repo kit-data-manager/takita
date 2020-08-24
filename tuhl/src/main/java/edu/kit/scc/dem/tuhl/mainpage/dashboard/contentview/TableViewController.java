@@ -84,6 +84,7 @@ public class TableViewController {
     tableViewService.setNumberOfResults(size);
     tableViewService.setSortAsc(order.equals("asc"));
     tableViewService.setSortField(column);
+    tableViewService.search();
     mainPageService.update(model);
 
     JSONArray data = tableViewService.getData();
@@ -103,6 +104,7 @@ public class TableViewController {
                          Model model) {
     tableViewService.setCurrentPage(pageNo);
     tableViewService.setNumberOfResults(size);
+    tableViewService.search();
     mainPageService.update(model);
 
     JSONArray data = tableViewService.getData();

@@ -62,22 +62,46 @@ public class TableViewService implements IContentViewService {
 
 
   /**
-   * Gets search Results from Search Service.
+   * Trigger search
    *
    * @return List of Manuscripts
    */
-  public List<Manuscript> getResults() {
+  public List<Manuscript> search() {
     List<Manuscript> results = searchService.search(currentPage, sortField, sortAsc);
     //Shorten results to only necessary attributes
-    for (Manuscript m : results) {
-      for (Page p : m.getPages()) {
-        if (p.getResourceType().equals(ResourceType.IMAGE)) {
-          ((ImagePage) p).setAnnotations(null);
+    if (results != null) {
+      for (Manuscript m : results) {
+        for (Page p : m.getPages()) {
+          if (p.getResourceType().equals(ResourceType.IMAGE)) {
+            ((ImagePage) p).setAnnotations(null);
+          }
         }
       }
     }
     return results;
   }
+
+  /**
+   * Gets search Results from Search Service.
+   *
+   * @return List of Manuscripts
+   */
+  public List<Manuscript> getResults() {
+    List<Manuscript> results = searchService.getResults();
+    //Shorten results to only necessary attributes
+    if (results != null) {
+      for (Manuscript m : results) {
+        for (Page p : m.getPages()) {
+          if (p.getResourceType().equals(ResourceType.IMAGE)) {
+            ((ImagePage) p).setAnnotations(null);
+          }
+        }
+      }
+    }
+    return results;
+  }
+
+
 
 
   /**
