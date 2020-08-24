@@ -127,6 +127,9 @@
            return [[${user.getCurrentPage()}]];
     }
 
+    window.flag = true;
+
+
     // creates Table
     /*<![CDATA[*/
     window.table = new Tabulator("#searchresults", {
@@ -169,7 +172,6 @@
         },
         layout:"fitDataTable",
         initialSort: [{column:"id", dir:"asc"}],
-        layoutColumnsOnNewData:true,
         paginationSizeSelector:true,
         height: 800,
         pagination:"remote",
@@ -193,9 +195,21 @@
 
         },
         columns: window.cols,
-
-        renderComplete:function(){
+        renderComplete:function() {
             showThumbs();
+            if (window.flag) {
+                $.ajax({
+                    type: 'POST',
+                    url: 'assistance/saveTablecolumns',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    dataType: 'text',
+                    data: JSON.stringify(window.table.getColumnLayout()),
+                });
+                window.flag = false;
+            }
         },
         langs:{
             "def":{
@@ -232,8 +246,8 @@
         locale:"def",
 
     });
-    table.setMaxPage(getCurrentPage());
-    table.setPage(getCurrentPage());
+    window.table.setMaxPage(getCurrentPage());
+    window.table.setPage(getCurrentPage());
     setThumbCheckbox();
     setHeaderMenues();
     createDropdown();
