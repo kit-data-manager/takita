@@ -68,16 +68,6 @@ public class TableViewService implements IContentViewService {
    */
   public List<Manuscript> search() {
     List<Manuscript> results = searchService.search(currentPage, sortField, sortAsc);
-    //Shorten results to only necessary attributes
-    if (results != null) {
-      for (Manuscript m : results) {
-        for (Page p : m.getPages()) {
-          if (p.getResourceType().equals(ResourceType.IMAGE)) {
-            ((ImagePage) p).setAnnotations(null);
-          }
-        }
-      }
-    }
     return results;
   }
 
@@ -88,16 +78,6 @@ public class TableViewService implements IContentViewService {
    */
   public List<Manuscript> getResults() {
     List<Manuscript> results = searchService.getResults();
-    //Shorten results to only necessary attributes
-    if (results != null) {
-      for (Manuscript m : results) {
-        for (Page p : m.getPages()) {
-          if (p.getResourceType().equals(ResourceType.IMAGE)) {
-            ((ImagePage) p).setAnnotations(null);
-          }
-        }
-      }
-    }
     return results;
   }
 
