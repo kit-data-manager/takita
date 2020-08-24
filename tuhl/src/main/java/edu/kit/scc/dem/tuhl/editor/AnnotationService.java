@@ -64,7 +64,7 @@ public class AnnotationService implements IAnnotationService {
     annotation.setCreators(Collections.singletonList(assistanceService.getCurrentUser().getName()));
     annotation.setColor(color);
     annotation.setSvgCode(svg);
-    annotation.setMotivation(motivation);
+    //annotation.setMotivation(motivation);
     searchIndexService.addAnnotation(annotation);
   }
 
@@ -85,7 +85,7 @@ public class AnnotationService implements IAnnotationService {
       throws InterruptedException, JSONException, IOException, NoSuchIndexEntryException {
     Annotation annotation = searchIndexService.getAnnotationById(annotationId);
     annotation.setColor(color);
-    annotation.setMotivation(motivation);
+    //annotation.setMotivation(motivation);
     annotation.setSvgCode(svg);
     annotation.setModified(Date.from(Instant.now()));
     if (!annotation.getCreators().contains(assistanceService.getCurrentUser().getName())) {
@@ -155,7 +155,7 @@ public class AnnotationService implements IAnnotationService {
       throws InterruptedException, JSONException, IOException, NoSuchIndexEntryException {
     Annotation annotation = searchIndexService.getAnnotationById(annotationId);
     annotation.setModified(Date.from(Instant.now()));
-    annotation.setMotivation(motivation);
+    //annotation.setMotivation(motivation);
     if (!annotation.getCreators().contains(assistanceService.getCurrentUser().getName())) {
       annotation.addCreator(assistanceService.getCurrentUser().getName());
     }

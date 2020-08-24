@@ -3,6 +3,8 @@ package edu.kit.scc.dem.tuhl.model.body;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import edu.kit.scc.dem.tuhl.model.Motivation;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
@@ -20,7 +22,7 @@ public abstract class Body {
 
   //Text content
   private String value;
-  private String purpose;
+  private Motivation purpose;
 
   private String fullJson;
 
@@ -164,7 +166,7 @@ public abstract class Body {
    *
    * @return purpose
    */
-  public String getPurpose() {
+  public Motivation getPurpose() {
     return purpose;
   }
 
@@ -173,7 +175,7 @@ public abstract class Body {
    *
    * @param purpose to be set
    */
-  public void setPurpose(String purpose) {
+  public void setPurpose(Motivation purpose) {
     this.purpose = purpose;
   }
 

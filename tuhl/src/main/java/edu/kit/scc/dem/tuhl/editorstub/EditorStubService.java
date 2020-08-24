@@ -5,6 +5,7 @@ import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
+import edu.kit.scc.dem.tuhl.model.Motivation;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import java.io.IOException;
@@ -75,8 +76,8 @@ public class EditorStubService implements IEditorStubService {
       newAnnotation.setSvgCode(svgCode);
     }
 
-    if (motivation != null && !motivation.trim().equals("")) {
-      newAnnotation.setMotivation(motivation);
+    if (motivation != null && stringToMotivation(motivation) != null) {
+      newAnnotation.setMotivation(stringToMotivation(motivation));
     }
 
     try {
@@ -156,8 +157,8 @@ public class EditorStubService implements IEditorStubService {
       updatedAnnotation.setSvgCode(svgCode);
     }
 
-    if (motivation != null && !motivation.trim().equals("")) {
-      updatedAnnotation.setMotivation(motivation);
+    if (motivation != null && stringToMotivation(motivation) != null) {
+      updatedAnnotation.setMotivation(stringToMotivation(motivation));
     }
 
     try {
@@ -243,8 +244,8 @@ public class EditorStubService implements IEditorStubService {
       newTextCard.setValue(value);
     }
 
-    if (purpose != null && !purpose.trim().equals("")) {
-      newTextCard.setPurpose(purpose);
+    if (purpose != null && stringToMotivation(purpose) != null) {
+      newTextCard.setPurpose(stringToMotivation(purpose));
     }
     try {
       searchIndexService.addBody(newTextCard);
@@ -320,8 +321,8 @@ public class EditorStubService implements IEditorStubService {
       updatedTextCard.setValue(value);
     }
 
-    if (purpose != null && !purpose.trim().equals("")) {
-      updatedTextCard.setPurpose(purpose);
+    if (purpose != null && stringToMotivation(purpose) != null) {
+      updatedTextCard.setPurpose(stringToMotivation(purpose));
     }
 
     try {
@@ -516,5 +517,36 @@ public class EditorStubService implements IEditorStubService {
     } else {
       return Color.DEFAULT;
     }
+  }
+
+  private Motivation stringToMotivation(String stringMotivation) {
+    if (Motivation.ASSESSING.getName().equals(stringMotivation)) {
+      return Motivation.ASSESSING;
+    } else if (Motivation.BOOKMARKING.getName().equals(stringMotivation)) {
+      return Motivation.BOOKMARKING;
+    } else if (Motivation.CLASSIFYING.getName().equals(stringMotivation)) {
+      return Motivation.CLASSIFYING;
+    } else if (Motivation.COMMENTING.getName().equals(stringMotivation)) {
+      return Motivation.COMMENTING;
+    } else if (Motivation.DESCRIBING.getName().equals(stringMotivation)) {
+      return Motivation.DESCRIBING;
+    } else if (Motivation.EDITING.getName().equals(stringMotivation)) {
+      return Motivation.EDITING;
+    } else if (Motivation.HIGHLIGHTING.getName().equals(stringMotivation)) {
+      return Motivation.HIGHLIGHTING;
+    } else if (Motivation.IDENTIFYING.getName().equals(stringMotivation)) {
+      return Motivation.IDENTIFYING;
+    } else if (Motivation.LINKING.getName().equals(stringMotivation)) {
+      return Motivation.LINKING;
+    } else if (Motivation.MODERATING.getName().equals(stringMotivation)) {
+      return Motivation.MODERATING;
+    } else if (Motivation.QUESTIONING.getName().equals(stringMotivation)) {
+      return Motivation.QUESTIONING;
+    } else if (Motivation.REPLYING.getName().equals(stringMotivation)) {
+      return Motivation.REPLYING;
+    } else if (Motivation.TAGGING.getName().equals(stringMotivation)) {
+      return Motivation.TAGGING;
+    }
+    return null;
   }
 }

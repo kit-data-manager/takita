@@ -33,7 +33,7 @@ public class Annotation {
   private Color color;
   private String svgCode;
 
-  private String motivation;
+  private Motivation motivation;
   
   @Field(type = FieldType.Nested, includeInParent = true)
   private List<Tag> tags;
@@ -262,7 +262,7 @@ public class Annotation {
    *
    * @return motivation
    */
-  public String getMotivation() {
+  public Motivation getMotivation() {
     return motivation;
   }
 
@@ -271,7 +271,7 @@ public class Annotation {
    *
    * @param motivation to be set
    */
-  public void setMotivation(String motivation) {
+  public void setMotivation(Motivation motivation) {
     this.motivation = motivation;
   }
 

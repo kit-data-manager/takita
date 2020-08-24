@@ -54,7 +54,7 @@ public class TextCardService implements ITextCardService {
   public void createTextCard(String annotationId, String text, String purpose, String title)
       throws NoSuchIndexEntryException, InterruptedException, JSONException, IOException {
     TextCard textCard = new TextCard(UUID.randomUUID().toString());
-    textCard.setPurpose(purpose);
+    //textCard.setPurpose(purpose);
     textCard.setAnnotationId(annotationId);
     textCard.setValue(text);
     textCard.setCreated(Date.from(Instant.now()));
@@ -96,7 +96,7 @@ public class TextCardService implements ITextCardService {
   public void modifyPurpose(String textCardId, String purpose)
       throws InterruptedException, JSONException, IOException, NoSuchIndexEntryException {
     TextCard textCard = searchIndexService.getTextCardById(textCardId);
-    textCard.setPurpose(purpose);
+    //textCard.setPurpose(purpose);
     searchIndexService.updateBody(textCard);
   }
 

@@ -138,7 +138,7 @@ public class EditorController {
   @PostMapping("/add/textcard")
   public String addTextCard(@ModelAttribute("textCard") TextCard textCard)
       throws NoSuchIndexEntryException, InterruptedException, JSONException, IOException {
-    editorService.addTextCard(textCard.getValue(), textCard.getPurpose(), textCard.getTitle());
+    editorService.addTextCard(textCard.getValue(), textCard.getPurpose().getName(), textCard.getTitle());
     System.out.println("Textkarte hinzugefügt" + textCard.getPurpose() + textCard.getValue()
             + textCard.getTitle());
     return "editor";

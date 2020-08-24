@@ -5,6 +5,7 @@ import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
+import edu.kit.scc.dem.tuhl.model.Motivation;
 import edu.kit.scc.dem.tuhl.model.body.Body;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
@@ -548,9 +549,10 @@ public class AccessService implements IAccessService {
       annotation.setCreators(creatorList);
     }
 
-    if (jsonAnnotation.has(AnnotationStoreStrings.MOTIVATION.getName())) {
-      annotation.setMotivation(jsonAnnotation.getString(
-          AnnotationStoreStrings.MOTIVATION.getName()));
+    if (jsonAnnotation.has(AnnotationStoreStrings.MOTIVATION.getName()) && buildMotivation(
+        jsonAnnotation.getString(AnnotationStoreStrings.MOTIVATION.getName())) != null) {
+      annotation.setMotivation(buildMotivation(jsonAnnotation.getString(
+          AnnotationStoreStrings.MOTIVATION.getName())));
     }
     if (jsonAnnotation.has(AnnotationStoreStrings.TARGET.getName())
         && jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName())
@@ -581,6 +583,37 @@ public class AccessService implements IAccessService {
     return annotation;
   }
 
+  private Motivation buildMotivation(String stringMotivation) {
+    if (Motivation.ASSESSING.getName().equals(stringMotivation)) {
+      return Motivation.ASSESSING;
+    } else if (Motivation.BOOKMARKING.getName().equals(stringMotivation)) {
+      return Motivation.BOOKMARKING;
+    } else if (Motivation.CLASSIFYING.getName().equals(stringMotivation)) {
+      return Motivation.CLASSIFYING;
+    } else if (Motivation.COMMENTING.getName().equals(stringMotivation)) {
+      return Motivation.COMMENTING;
+    } else if (Motivation.DESCRIBING.getName().equals(stringMotivation)) {
+      return Motivation.DESCRIBING;
+    } else if (Motivation.EDITING.getName().equals(stringMotivation)) {
+      return Motivation.EDITING;
+    } else if (Motivation.HIGHLIGHTING.getName().equals(stringMotivation)) {
+      return Motivation.HIGHLIGHTING;
+    } else if (Motivation.IDENTIFYING.getName().equals(stringMotivation)) {
+      return Motivation.IDENTIFYING;
+    } else if (Motivation.LINKING.getName().equals(stringMotivation)) {
+      return Motivation.LINKING;
+    } else if (Motivation.MODERATING.getName().equals(stringMotivation)) {
+      return Motivation.MODERATING;
+    } else if (Motivation.QUESTIONING.getName().equals(stringMotivation)) {
+      return Motivation.QUESTIONING;
+    } else if (Motivation.REPLYING.getName().equals(stringMotivation)) {
+      return Motivation.REPLYING;
+    } else if (Motivation.TAGGING.getName().equals(stringMotivation)) {
+      return Motivation.TAGGING;
+    }
+    return null;
+  }
+
   private void buildBodiesFromJson(JSONObject jsonAnnotation, Annotation annotation)
       throws JSONException {
     JSONArray bodyJson = new JSONArray();
@@ -602,8 +635,9 @@ public class AccessService implements IAccessService {
         tags.add((Tag) thisBody);
       } else {
         thisBody = new TextCard(UUID.randomUUID().toString());
-        if (thisJson.has(AnnotationStoreStrings.PURPOSE.getName())) {
-          thisBody.setPurpose(thisJson.getString(AnnotationStoreStrings.PURPOSE.getName()));
+        if (thisJson.has(AnnotationStoreStrings.PURPOSE.getName()) &&
+            buildMotivation(thisJson.getString(AnnotationStoreStrings.PURPOSE.getName())) != null) {
+          thisBody.setPurpose(buildMotivation(thisJson.getString(AnnotationStoreStrings.PURPOSE.getName())));
         }
         textCards.add((TextCard) thisBody);
       }
@@ -738,8 +772,8 @@ public class AccessService implements IAccessService {
     }
     jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), target);
 
-    if (annotation.getMotivation() != null&& !annotation.getMotivation().trim().equals("")) {
-      jsonAnnotation.put(AnnotationStoreStrings.MOTIVATION.getName(), annotation.getMotivation());
+    if (annotation.getMotivation() != null) {
+      jsonAnnotation.put(AnnotationStoreStrings.MOTIVATION.getName(), annotation.getMotivation().getName());
     }
 
     if (annotation.getVia() != null && !annotation.getVia().equals("")) {
