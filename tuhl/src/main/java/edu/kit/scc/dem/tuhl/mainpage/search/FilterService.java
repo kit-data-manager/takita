@@ -10,10 +10,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -36,7 +34,7 @@ public class FilterService implements IFilterService {
    */
   public FilterService() {
     currentFilters = new ArrayList<>();
-    possibleFilters = new HashMap<>();
+    possibleFilters = new LinkedHashMap<>();
     readPossibleFilters();
   }
   
