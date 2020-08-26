@@ -7,16 +7,18 @@ import edu.kit.scc.dem.tuhl.model.filter.Filter;
 import edu.kit.scc.dem.tuhl.model.filter.FilterType;
 import edu.kit.scc.dem.tuhl.model.filter.MatchFilter;
 import edu.kit.scc.dem.tuhl.model.filter.RangeFilter;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
-
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Lob;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
+
+
+
 
 
 /**
@@ -70,7 +72,8 @@ public class User implements IUser {
   }
 
   User(int currentPage, String columns, String matchFilter, String rangeFilter,
-       boolean saveTable, boolean saveFilter, boolean checkThumbs, String name, int pageSize, String lang, String sort) {
+       boolean saveTable, boolean saveFilter, boolean checkThumbs,
+       String name, int pageSize, String lang, String sort) {
     this.currentPage = currentPage;
     this.columns = columns;
 
@@ -248,6 +251,11 @@ public class User implements IUser {
     this.lang = lang;
   }
 
+  /**
+   * Gets saved page configuration.
+   *
+   * @return page configuration
+   */
   public String getPage() {
     JSONObject obj = new JSONObject();
     try {

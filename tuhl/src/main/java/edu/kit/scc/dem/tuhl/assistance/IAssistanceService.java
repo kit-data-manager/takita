@@ -56,8 +56,9 @@ public interface IAssistanceService {
 
   /**
    * Saves current Table config in current User and updates Model.
+   *
    * @param columns table config
-   * @param model the holder for model attributes, used to pass attributes back to the view
+   * @param model   the holder for model attributes, used to pass attributes back to the view
    */
   void setTableConfig(String columns, Model model);
 
@@ -69,15 +70,39 @@ public interface IAssistanceService {
 
   /**
    * Update Model with everything from assistanceService.
+   *
    * @param model the holder for model attributes, used to pass attributes back to the view
    */
   void updateModel(Model model);
 
+  /**
+   * Set number of Results shown on one Tableview Page for current User.
+   *
+   * @param page  selected number of Results
+   * @param model the holder for model attributes, used to pass attributes back to the view
+   */
   void setTablePage(int page, Model model);
 
+  /**
+   * set selected language for current user.
+   *
+   * @param lang  that is selected
+   * @param model the holder for model attributes, used to pass attributes back to the view
+   */
   void setLanguage(String lang, Model model);
 
+  /**
+   * Gets saved language of current User.
+   *
+   * @return language
+   */
   String getLang();
 
+  /**
+   * Set sort that is selected for current User.
+   *
+   * @param sort  selected Sort in JSON format
+   * @param model the holder for model attributes, used to pass attributes back to the view
+   */
   void setTableSort(String sort, Model model);
 }

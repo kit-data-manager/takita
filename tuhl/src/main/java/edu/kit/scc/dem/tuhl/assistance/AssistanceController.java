@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+
+
+
+
 /**
  * Controller to handle help menu requests and User data requests.
  */
@@ -81,10 +85,10 @@ public class AssistanceController {
   }
 
   /**
-   * Handles http POST request to save table configuration.
+   * Handles http POST request to save table column configuration.
    *
-   * @param columns table config
-   * @param model the holder for model attributes, used to pass attributes back to the view
+   * @param columns table column config
+   * @param model   the holder for model attributes, used to pass attributes back to the view
    * @return placeholder
    */
   @PostMapping("/saveTablecolumns")
@@ -97,9 +101,9 @@ public class AssistanceController {
   }
 
   /**
-   * Handles http POST request to save table configuration.
+   * Handles http POST request to save table sort configuration.
    *
-   * @param columns table config
+   * @param sort  table sort config
    * @param model the holder for model attributes, used to pass attributes back to the view
    * @return placeholder
    */
@@ -112,6 +116,13 @@ public class AssistanceController {
     return "placeholder";
   }
 
+  /**
+   * Handles http POST request to save table page configuration.
+   *
+   * @param pageInfo table page config
+   * @param model    the holder for model attributes, used to pass attributes back to the view
+   * @return placeholder
+   */
   @PostMapping("/saveTablepage")
   @ResponseBody
   public String saveTablePage(@RequestBody String pageInfo, Model model) {
@@ -120,19 +131,18 @@ public class AssistanceController {
     try {
       obj = new JSONObject(pageInfo);
 
-    int pageSize = Integer.parseInt(obj.get("paginationSize").toString());
+      int pageSize = Integer.parseInt(obj.get("paginationSize").toString());
 
-    int currentPage = Integer.parseInt(obj.get("paginationInitialPage").toString());
+      int currentPage = Integer.parseInt(obj.get("paginationInitialPage").toString());
 
 
-    assistanceService.getCurrentUser().setCurrentPage(currentPage);
-    assistanceService.setTablePage(pageSize, model);
-  } catch (JSONException e) {
-    e.printStackTrace();
-  }
+      assistanceService.getCurrentUser().setCurrentPage(currentPage);
+      assistanceService.setTablePage(pageSize, model);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
     return "placeholder";
   }
-
 
 
   /**
@@ -147,6 +157,11 @@ public class AssistanceController {
     return "placeholder";
   }
 
+  /**
+   * Handles http request to save selected language of current User.
+   *
+   * @return placeholder
+   */
   @GetMapping("/lang/{lang}")
   @ResponseBody
   public String setLanguage(@PathVariable("lang") String lang, Model model) {

@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.annotation.SessionScope;
 
+
+
+
 /**
  * Class to handle help menu requests and to get User form Repository by its Pseudonym.
  */
@@ -29,18 +32,18 @@ public class AssistanceService implements IAssistanceService {
   /**
    * Constructor for the Assistance Service to autowire required instances.
    *
-   * @param repo instance of the User Repository giving access to user data.
-   *             Injected with Springs dependency injection system
-   *             indicated by @autowired annotation.
-   * @param filterService instance of the logic for filter.
-   *                               Injected with Springs dependency injection system
-   *                               indicated by @autowired annotation.
-   * @param mainPageService instance of the logic for mainPage.
-   *                               Injected with Springs dependency injection system
-   *                               indicated by @autowired annotation.
+   * @param repo             instance of the User Repository giving access to user data.
+   *                         Injected with Springs dependency injection system
+   *                         indicated by @autowired annotation.
+   * @param filterService    instance of the logic for filter.
+   *                         Injected with Springs dependency injection system
+   *                         indicated by @autowired annotation.
+   * @param mainPageService  instance of the logic for mainPage.
+   *                         Injected with Springs dependency injection system
+   *                         indicated by @autowired annotation.
    * @param tableViewService instance of the logic for tabelview.
-   *                               Injected with Springs dependency injection system
-   *                               indicated by @autowired annotation.
+   *                         Injected with Springs dependency injection system
+   *                         indicated by @autowired annotation.
    */
   @Autowired
   public AssistanceService(UserRepository repo, IFilterService filterService,
@@ -151,7 +154,8 @@ public class AssistanceService implements IAssistanceService {
     User user = new User(currentUser.getCurrentPage(), currentUser.getColumns(),
         currentUser.getMatchFilter(), currentUser.getRangeFilter(),
         currentUser.isSaveTable(), currentUser.isSaveFilter(),
-        currentUser.isCheckThumbs(), currentUser.getName(), currentUser.getPageSize(), currentUser.getLang(), currentUser.getSort());
+        currentUser.isCheckThumbs(), currentUser.getName(), currentUser.getPageSize(),
+        currentUser.getLang(), currentUser.getSort());
     repo.save(user);
   }
 
@@ -159,7 +163,7 @@ public class AssistanceService implements IAssistanceService {
    * Saves current Table config in current User and updates Model.
    *
    * @param columns table config
-   * @param model the holder for model attributes, used to pass attributes back to the view
+   * @param model   the holder for model attributes, used to pass attributes back to the view
    */
   public void setTableConfig(String columns, Model model) {
     if (currentUser.getName() != "default") {
@@ -169,12 +173,25 @@ public class AssistanceService implements IAssistanceService {
     }
   }
 
+  /**
+   * Set number of Results shown on one Tableview Page for current User.
+   *
+   * @param pageSize selected number of Results
+   * @param model    the holder for model attributes, used to pass attributes back to the view
+   */
   public void setTablePage(int pageSize, Model model) {
     currentUser.setPageSize(pageSize);
     updateUser();
     mainPageService.update(model);
   }
 
+
+  /**
+   * Set sort that is selected for current User.
+   *
+   * @param sort  selected Sort in JSON format
+   * @param model the holder for model attributes, used to pass attributes back to the view
+   */
   public void setTableSort(String sort, Model model) {
     currentUser.setSort(sort);
     updateUser();
@@ -196,13 +213,24 @@ public class AssistanceService implements IAssistanceService {
     return user;
   }
 
-  public void setLanguage(String lang, Model model){
+  /**
+   * set selected language for current user.
+   *
+   * @param lang  that is selected
+   * @param model the holder for model attributes, used to pass attributes back to the view
+   */
+  public void setLanguage(String lang, Model model) {
     currentUser.setLang(lang);
     updateUser();
     mainPageService.update(model);
   }
 
-  public String getLang(){
+  /**
+   * Gets saved language of current User.
+   *
+   * @return language
+   */
+  public String getLang() {
     return currentUser.getLang();
   }
 }

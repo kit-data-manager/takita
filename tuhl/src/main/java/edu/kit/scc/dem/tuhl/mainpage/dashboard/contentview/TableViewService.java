@@ -5,9 +5,8 @@ import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchService;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
-import edu.kit.scc.dem.tuhl.model.page.ImagePage;
 import edu.kit.scc.dem.tuhl.model.page.Page;
-import edu.kit.scc.dem.tuhl.model.page.ResourceType;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.annotation.SessionScope;
 
-import java.util.List;
+
 
 
 /**
@@ -62,7 +61,7 @@ public class TableViewService implements IContentViewService {
 
 
   /**
-   * Trigger search
+   * Trigger search.
    *
    * @return List of Manuscripts
    */
@@ -80,8 +79,6 @@ public class TableViewService implements IContentViewService {
     List<Manuscript> results = searchService.getResults();
     return results;
   }
-
-
 
 
   /**
@@ -192,10 +189,15 @@ public class TableViewService implements IContentViewService {
     searchService.setPageSize(noResults);
   }
 
-  public long getNumberOfResultsPages()
-  {
+  public long getNumberOfResultsPages() {
     return searchService.getResultPagesCount();
   }
+
+  /**
+   * Gets results and formats them in JSON Array for table to read.
+   *
+   * @return table data as JSONArray
+   */
   public JSONArray getData() {
 
 

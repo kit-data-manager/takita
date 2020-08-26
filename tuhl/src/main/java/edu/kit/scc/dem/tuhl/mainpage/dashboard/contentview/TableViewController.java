@@ -10,7 +10,11 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 
 /**
@@ -74,10 +78,21 @@ public class TableViewController {
 
   }
 
-
-  @RequestMapping(value = "/sort", params = {"sorters[0][field]", "sorters[0][dir]", "page", "size"})
+  /**
+   * Handles request when sort function in table is called.
+   *
+   * @param column to be sorted by
+   * @param order  asc or desc
+   * @param pageNo current pageNo
+   * @param size   current page size
+   * @param model  the holder for model attributes, used to pass attributes back to the view
+   * @return
+   */
+  @RequestMapping(value = "/sort", params = {"sorters[0][field]",
+      "sorters[0][dir]", "page", "size"})
   @ResponseBody
-  public String getSorted(@RequestParam("sorters[0][field]") String column, @RequestParam("sorters[0][dir]") String order,
+  public String getSorted(@RequestParam("sorters[0][field]") String column,
+                          @RequestParam("sorters[0][dir]") String order,
                           @RequestParam("page") int pageNo, @RequestParam("size") int size,
                           Model model) {
     tableViewService.setCurrentPage(pageNo);
@@ -98,6 +113,9 @@ public class TableViewController {
     return newData.toString();
   }
 
+  // not sure if needed anymore
+
+  /*
   @RequestMapping(value = "/sort", params = {"page", "size"})
   @ResponseBody
   public String getPage(@RequestParam("page") int pageNo, @RequestParam("size") int size,
@@ -117,6 +135,8 @@ public class TableViewController {
     }
     return newData.toString();
   }
+
+   */
 
   @RequestMapping(value = "/getData")
   @ResponseBody
