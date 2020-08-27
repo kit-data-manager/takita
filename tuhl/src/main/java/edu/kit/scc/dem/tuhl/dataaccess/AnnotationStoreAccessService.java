@@ -322,10 +322,18 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
     // put in deinterpretatione and add via and canonical fields if anno is already in validated
     if (jsonAnnotation.has(AnnotationStoreStrings.CANONICAL.getName())) {
       JSONObject deInterpretationeAnnotation = getAnnotationById(jsonAnnotation.getString(AnnotationStoreStrings.CANONICAL.getName()));
-      httpRequestHelper.put(jsonAnnotation.get(AnnotationStoreStrings
-          .CANONICAL.getName()).toString(), jsonAnnotation, deInterpretationeAnnotation.getString(AnnotationStoreStrings.ETAG.getName()));
+      JSONObject deInterpretationeJson = new JSONObject(jsonAnnotation.toString());
+      deInterpretationeJson.remove(AnnotationStoreStrings.CANONICAL.getName());
+      if (!deInterpretationeAnnotation.has(AnnotationStoreStrings.VIA.getName())) {
+        deInterpretationeJson.remove(AnnotationStoreStrings.VIA.getName());
+      }
+      deInterpretationeJson.put(AnnotationStoreStrings.ID.getName(), deInterpretationeAnnotation.getString(AnnotationStoreStrings.ID.getName()));
+      httpRequestHelper.put(deInterpretationeAnnotation.get(AnnotationStoreStrings
+          .ID.getName()).toString(), deInterpretationeJson, deInterpretationeAnnotation.getString(AnnotationStoreStrings.ETAG.getName()));
     }
     HttpResponse<String> response = httpRequestHelper.put(annotationId, jsonAnnotation, etag);
+    System.out.println("response " + response);
+    System.out.println("response headers " + response.headers());
 
     if (!response.headers().allValues(AnnotationStoreStrings.ETAG.getName()).isEmpty()) {
       String newEtag = response.headers().allValues(AnnotationStoreStrings.ETAG.getName())

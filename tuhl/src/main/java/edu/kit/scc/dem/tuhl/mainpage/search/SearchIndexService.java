@@ -8,6 +8,7 @@ import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.dataaccess.IAccessService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
+import edu.kit.scc.dem.tuhl.model.Motivation;
 import edu.kit.scc.dem.tuhl.model.body.Body;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
@@ -402,7 +403,7 @@ public class SearchIndexService implements ISearchIndexService {
   public void addBody(Body body) throws IOException, InterruptedException, JSONException,
       NoSuchIndexEntryException {
     Annotation updatedAnnotation = getAnnotationById(body.getAnnotationId());
-    if (body.getPurpose().equals("tagging")) {
+    if (body.getPurpose() == Motivation.TAGGING) {
       updatedAnnotation.addTag((Tag) body);
     } else {
       updatedAnnotation.addTextCard((TextCard) body);

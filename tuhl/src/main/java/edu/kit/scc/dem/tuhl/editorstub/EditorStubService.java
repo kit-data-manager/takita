@@ -101,30 +101,6 @@ public class EditorStubService implements IEditorStubService {
   }
 
   /**
-   * Gets the text cards for an annotation from the searchIndexService.
-   *
-   * @param annotationId ID of the annotation for the text cards
-   * @return list of text cards
-   * @throws NoSuchIndexEntryException when there is no annotation like this in the index
-   */
-  @Override
-  public List<TextCard> getTextCardsForAnnotation(String annotationId) throws NoSuchIndexEntryException {
-    return searchIndexService.getAnnotationById(annotationId).getTextCards();
-  }
-
-  /**
-   * Gets the tags for an annotation from the searchIndexService.
-   *
-   * @param annotationId ID of the annotation for the tags
-   * @return list of tags
-   * @throws NoSuchIndexEntryException when there is no annotation like this in the index
-   */
-  @Override
-  public List<Tag> getTagsForAnnotation(String annotationId) throws NoSuchIndexEntryException {
-    return searchIndexService.getAnnotationById(annotationId).getTags();
-  }
-
-  /**
    * Updates an annotation in the search index and the database.
    *
    * @param annotationId ID of the annotation to update
@@ -257,28 +233,6 @@ public class EditorStubService implements IEditorStubService {
   }
 
   /**
-   * Gets a text card from the search index.
-   *
-   * @param id of the text card
-   * @return text card in question
-   */
-  @Override
-  public TextCard getTextCard(String id) throws NoSuchIndexEntryException {
-    return searchIndexService.getTextCardById(id);
-  }
-
-  /**
-   * Gets a tag from the search index.
-   *
-   * @param id of the tag
-   * @return tag in question
-   */
-  @Override
-  public Tag getTag(String id) throws NoSuchIndexEntryException {
-    return searchIndexService.getTagById(id);
-  }
-
-  /**
    * Adds a tag to an annotation in the search index and the database.
    *
    * @param annotationId of the annotation to which the tag belongs
@@ -312,6 +266,28 @@ public class EditorStubService implements IEditorStubService {
       e.printStackTrace();
     }
     return newTag;
+  }
+
+  /**
+   * Gets a text card from the search index.
+   *
+   * @param id of the text card
+   * @return text card in question
+   */
+  @Override
+  public TextCard getTextCard(String id) throws NoSuchIndexEntryException {
+    return searchIndexService.getTextCardById(id);
+  }
+
+  /**
+   * Gets a tag from the search index.
+   *
+   * @param id of the tag
+   * @return tag in question
+   */
+  @Override
+  public Tag getTag(String id) throws NoSuchIndexEntryException {
+    return searchIndexService.getTagById(id);
   }
 
   /**

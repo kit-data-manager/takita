@@ -384,6 +384,7 @@ public class AccessService implements IAccessService {
       throws JSONException, IOException, InterruptedException {
     JSONObject updatedAnnotation = annotationStoreAccessService.updateAnnotation(annotation.getId(),
         buildJsonFromAnnotation(annotation, pageNumber), annotation.getEtag());
+    System.out.println("updatedAnnotation etag " + updatedAnnotation.getString("etag"));
     return buildAnnotationFromJson(updatedAnnotation);
   }
 
@@ -827,7 +828,13 @@ public class AccessService implements IAccessService {
 
     if (annotation.getTextCards().size() >= 1) {
       for (TextCard textCard : annotation.getTextCards()) {
-        JSONObject jsonTextCard = textCard.getFullJson();
+        JSONObject jsonTextCard = new JSONObject();
+        System.out.println("textcard " + textCard);
+        if (textCard.getFullJson() != null) {
+           jsonTextCard = textCard.getFullJson();
+        } else {
+          textCard.setFullJson(jsonTextCard);
+        }
 
         if (textCard.getTitle() != null) {
           jsonTextCard.put(AnnotationStoreStrings.DC_TITLE.getName(), textCard.getTitle());
@@ -857,7 +864,12 @@ public class AccessService implements IAccessService {
     }
     if (annotation.getTags().size() >= 1) {
       for (Tag tag : annotation.getTags()) {
-        JSONObject jsonTag = tag.getFullJson();
+        JSONObject jsonTag = new JSONObject();
+        if (tag.getFullJson() != null) {
+         jsonTag = tag.getFullJson();
+        } else {
+          tag.setFullJson(jsonTag);
+        }
 
         if (tag.getTitle() != null) {
           jsonTag.put(AnnotationStoreStrings.DC_TITLE.getName(), tag.getTitle());
@@ -954,7 +966,8 @@ public class AccessService implements IAccessService {
       modelObject = tag;
     }
 
-    if (isJsonArray(jsonObject.getString(AnnotationStoreStrings.CREATOR.getName()))) {
+    if (jsonObject.has(AnnotationStoreStrings.CREATOR.getName()) &&
+    isJsonArray(jsonObject.getString(AnnotationStoreStrings.CREATOR.getName()))) {
       JSONArray creators = jsonObject.getJSONArray(AnnotationStoreStrings.CREATOR.getName());
       boolean containsCreator = false;
       for (int i = 0; i < creators.length(); i++) {
@@ -975,10 +988,14 @@ public class AccessService implements IAccessService {
         }
       }
     } else {
-      JSONObject creator = jsonObject.getJSONObject(AnnotationStoreStrings.CREATOR.getName());
+      JSONObject creator = new JSONObject();
+      if (jsonObject.has(AnnotationStoreStrings.CREATOR.getName())) {
+        creator = jsonObject.getJSONObject(AnnotationStoreStrings.CREATOR.getName());
+      }
       JSONArray newCreators = new JSONArray();
       for (String newCreator : modelObject.getCreators()) {
-        if (!creator.getString(AnnotationStoreStrings.NAME.getName()).equals(newCreator)) {
+        if (!creator.has(AnnotationStoreStrings.CREATOR.getName()) ||
+        !creator.getString(AnnotationStoreStrings.NAME.getName()).equals(newCreator)) {
           JSONObject person = new JSONObject();
           person.put(AnnotationStoreStrings.TYPE.getName(),
               AnnotationStoreStrings.PERSON.getName());

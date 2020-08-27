@@ -158,7 +158,6 @@
             <div class="form-group">
               <label th:text="#{att_name.purpose}"> </label>
               <select id="createC_purpose" class="form-control">
-                <option th:value="" th:text="#{label.notAssigned}" selected></option>
                 <option th:each="motivation : ${T(edu.kit.scc.dem.tuhl.model.Motivation).values()}"
                         th:value="${motivation}"
                         th:text="${motivation.getName()}"></option>
@@ -201,7 +200,6 @@
             <div class="form-group">
               <label th:text="#{att_name.purpose}"> </label>
               <select id="updateC_purpose" class="form-control">
-                <option th:value="" th:text="#{label.notAssigned}" selected></option>
                 <option th:each="motivation : ${T(edu.kit.scc.dem.tuhl.model.Motivation).values()}"
                         th:value="${motivation}"
                         th:text="${motivation.getName()}"></option>

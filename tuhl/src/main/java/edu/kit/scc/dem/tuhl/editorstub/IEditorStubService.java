@@ -40,24 +40,6 @@ public interface IEditorStubService {
   Annotation getAnnotation(String annotationId) throws NoSuchIndexEntryException;
 
   /**
-   * Gets the text cards for an annotation from the searchIndexService.
-   *
-   * @param annotationId ID of the annotation for the text cards
-   * @return list of text cards
-   * @throws NoSuchIndexEntryException when there is no annotation like this in the index
-   */
-  List<TextCard> getTextCardsForAnnotation(String annotationId) throws NoSuchIndexEntryException;
-
-  /**
-   * Gets the tags for an annotation from the searchIndexService.
-   *
-   * @param annotationId ID of the annotation for the tags
-   * @return list of tags
-   * @throws NoSuchIndexEntryException when there is no annotation like this in the index
-   */
-  List<Tag> getTagsForAnnotation(String annotationId) throws NoSuchIndexEntryException;
-
-  /**
    * Updates an annotation in the search index and the database.
    *
    * @param annotationId ID of the annotation to update

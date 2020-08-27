@@ -125,7 +125,6 @@ public class RepositoryAccessService implements IRepositoryAccessService {
     typeGeneral.put(RepositoryStrings.TYPE_GENERAL.getName(), RepositoryStrings.TEXT.getName());
     resourceType.put(RepositoryStrings.RESOURCE_TYPE.getName(), typeGeneral);
 
-    System.out.println(nextUri + pageSize);
     HttpResponse<String> pageResponse = httpRequestHelper.postManuscript(nextUri + pageSize, resourceType);
     Optional<String> link;
   

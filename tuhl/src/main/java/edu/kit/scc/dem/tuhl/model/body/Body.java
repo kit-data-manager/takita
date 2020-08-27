@@ -185,7 +185,11 @@ public abstract class Body {
    * @return text card as JSONObject
    */
   public JSONObject getFullJson() throws JSONException {
-    return new JSONObject(fullJson);
+    if (fullJson != null) {
+      return new JSONObject(fullJson);
+    } else {
+      return new JSONObject();
+    }
   }
 
   /**
