@@ -257,6 +257,28 @@ public class EditorStubService implements IEditorStubService {
   }
 
   /**
+   * Gets a text card from the search index.
+   *
+   * @param id of the text card
+   * @return text card in question
+   */
+  @Override
+  public TextCard getTextCard(String id) throws NoSuchIndexEntryException {
+    return searchIndexService.getTextCardById(id);
+  }
+
+  /**
+   * Gets a tag from the search index.
+   *
+   * @param id of the tag
+   * @return tag in question
+   */
+  @Override
+  public Tag getTag(String id) throws NoSuchIndexEntryException {
+    return searchIndexService.getTagById(id);
+  }
+
+  /**
    * Adds a tag to an annotation in the search index and the database.
    *
    * @param annotationId of the annotation to which the tag belongs

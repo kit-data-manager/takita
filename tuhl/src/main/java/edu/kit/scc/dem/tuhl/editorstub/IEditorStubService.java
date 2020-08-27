@@ -97,6 +97,22 @@ public interface IEditorStubService {
       throws NoSuchIndexEntryException, InterruptedException, IOException;
 
   /**
+   * Gets a text card from the search index.
+   *
+   * @param id of the text card
+   * @return text card in question
+   */
+  TextCard getTextCard(String id) throws NoSuchIndexEntryException;
+
+  /**
+   * Gets a tag from the search index.
+   *
+   * @param id of the tag
+   * @return tag in question
+   */
+  Tag getTag(String id) throws NoSuchIndexEntryException;
+
+  /**
    * Adds a text card to an annotation in the search index and the database.
    *
    * @param annotationId of the annotation to which the text card belongs
