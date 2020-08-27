@@ -412,9 +412,40 @@
           </tbody>
         </table>
 
-        <div th:each="body : ${annotation.textCards}">
-          <div th:include="editor_stub :: bodyViewer(${body})"></div>
+        <div class="accordion" id="cards">
+          <div class="card" th:each="body, i : ${annotation.textCards}">
+              <div class="card-header"
+                   type="button"
+                   data-toggle="collapse"
+                   th:data-target="${'#card'+ i.index}">
+                <label th:text="${body.id}"> </label>
+              </div>
+              <div class="collapse"
+                   th:id="${'card' + i.index}">
+                <div class="card-body"
+                     th:include="editor_stub :: bodyViewer(${body})">
+                </div>
+              </div>
+          </div>
         </div>
+
+        <div class="accordion" id="tags">
+          <div class="card" th:each="body, i : ${annotation.tags}">
+            <div class="card-header"
+                 type="button"
+                 data-toggle="collapse"
+                 th:data-target="${'#tag'+ i.index}">
+              <label th:text="${body.id}"> </label>
+            </div>
+            <div class="collapse"
+                 th:id="${'tag' + i.index}">
+              <div class="card-body"
+                   th:include="editor_stub :: bodyViewer(${body})">
+              </div>
+            </div>
+          </div>
+        </div>
+
 
       </div>
     </div>
@@ -455,6 +486,10 @@
           <tr th:if="${body.purpose != null}">
             <td th:text="#{att_name.purpose}"> </td>
             <td th:text="${body.purpose.getName()}"> </td>
+          </tr>
+          <tr th:if="${body.purpose == null}">
+            <td th:text="#{att_name.purpose}"> </td>
+            <td> </td>
           </tr>
           <tr>
             <td th:text="#{att_name.value}"> </td>

@@ -87,7 +87,7 @@ public class EditorStubController {
     return "editor_stub :: annotationViewer";
   }
   
-  @PostMapping("validate_annotation")
+  @PostMapping("/validate_annotation")
   public String validateAnnotation(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
@@ -100,7 +100,7 @@ public class EditorStubController {
     return "editor_stub :: annotationViewer";
   }
   
-  @PostMapping("delete_annotation")
+  @PostMapping("/delete_annotation")
   public String deleteAnnotation(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
@@ -113,7 +113,7 @@ public class EditorStubController {
     return "editor_stub :: annotationViewer";
   }
   
-  @PostMapping("create_card")
+  @PostMapping("/create_card")
   public String createTextCard(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
@@ -142,7 +142,7 @@ public class EditorStubController {
     return "editor_stub :: bodyViewer";
   }
   
-  @PostMapping("update_card")
+  @PostMapping("/update_card")
   public String updateTextCard(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
@@ -158,7 +158,7 @@ public class EditorStubController {
     return "editor_stub :: bodyViewer";
   }
   
-  @PostMapping("delete_card")
+  @PostMapping("/delete_card")
   public String deleteTextCard(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
@@ -171,7 +171,7 @@ public class EditorStubController {
     return "editor_stub :: bodyViewer";
   }
   
-  @PostMapping("create_tag")
+  @PostMapping("/create_tag")
   public String createTag(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
@@ -199,7 +199,7 @@ public class EditorStubController {
     return "editor_stub :: bodyViewer";
   }
   
-  @PostMapping("update_tag")
+  @PostMapping("/update_tag")
   public String updateTag(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
@@ -214,7 +214,7 @@ public class EditorStubController {
     return "editor_stub :: bodyViewer";
   }
   
-  @PostMapping("delete_tag")
+  @PostMapping("/delete_tag")
   public String deleteTag(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
@@ -227,7 +227,7 @@ public class EditorStubController {
     return "editor_stub :: bodyViewer";
   }
   
-  @PostMapping("raw_manuscript_json")
+  @PostMapping("/raw_manuscript_json")
   public String getManuscriptJson(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
@@ -240,7 +240,7 @@ public class EditorStubController {
     return "editor_stub :: rawJsonViewer";
   }
   
-  @PostMapping("raw_manuscript_xml")
+  @PostMapping("/raw_manuscript_xml")
   public String getManuscriptXml(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
@@ -253,7 +253,7 @@ public class EditorStubController {
     return "editor_stub :: rawXmlViewer";
   }
   
-  @PostMapping("raw_page_json")
+  @PostMapping("/raw_page_json")
   public String getPageJson(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
@@ -266,7 +266,7 @@ public class EditorStubController {
     return "editor_stub :: rawJsonViewer";
   }
   
-  @PostMapping("raw_annotation_json")
+  @PostMapping("/raw_annotation_json")
   public String getAnnotationJson(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
