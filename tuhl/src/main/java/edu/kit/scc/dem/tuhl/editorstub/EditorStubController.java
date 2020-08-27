@@ -63,9 +63,9 @@ public class EditorStubController {
     try {
       JSONObject json = new JSONObject(jsonString);
       String id = json.getString("id");
-      Annotation annotation = editorStubService.deleteAnnotation(id);
+      Annotation annotation = editorStubService.getAnnotation(id);
       model.addAttribute("annotation", annotation);
-    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
+    } catch (JSONException | NoSuchIndexEntryException e) {
       return "redirect:/error/" + e.getMessage();
     }
     return "editor_stub :: annotationViewer";

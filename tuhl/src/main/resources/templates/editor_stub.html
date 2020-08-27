@@ -175,7 +175,7 @@
           <form onsubmit="readCard(event)">
             <div class="form-group">
               <label th:text="#{att_name.id}"> </label>
-              <input id="readC_annoId" type="text" class="form-control" required>
+              <input id="readC_id" type="text" class="form-control" required>
             </div>
             <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}"> </button>
           </form>
@@ -252,7 +252,7 @@
           <form onsubmit="readTag(event)">
             <div class="form-group">
               <label th:text="#{att_name.id}"> </label>
-              <input id="readT_annoId" type="text" class="form-control" required>
+              <input id="readT_id" type="text" class="form-control" required>
             </div>
             <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}"> </button>
           </form>
@@ -353,7 +353,7 @@
   </div>
 
   <div hidden>
-    <div class="col" th:fragment="annotationViewer(body)">
+    <div class="col" th:fragment="annotationViewer">
       <div th:if="${annotation == null}">
         <label th:text="#{prompt.nothing_here}"> </label>
       </div>
@@ -419,7 +419,7 @@
       </div>
     </div>
 
-    <div class="col" th:fragment="bodyViewer">
+    <div class="col" th:fragment="bodyViewer(body)">
       <div th:if="${body == null}">
         <label th:text="#{prompt.nothing_here}"> </label>
       </div>
