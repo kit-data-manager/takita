@@ -22,12 +22,12 @@ import java.util.List;
 @Controller
 @RequestMapping("/editor_stub")
 public class EditorStubController {
-
+  
   private final IEditorStubService editorStubService;
-
+  
   private final ISearchIndexService searchIndexService;
   private final IAnnotationStoreAccessService annotationStoreAccessService;
-
+  
   @Autowired
   public EditorStubController(IEditorStubService editorStubService,
                               ISearchIndexService searchIndexService,
@@ -41,10 +41,9 @@ public class EditorStubController {
   public String init() {
     return "editor_stub";
   }
-
+  
   @PostMapping("/create_annotation")
-  public String createAnnotation(@RequestBody String jsonString,
-                              Model model) {
+  public String createAnnotation(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
       String pageId = json.getString("pageId");
@@ -58,10 +57,22 @@ public class EditorStubController {
     }
     return "editor_stub :: annotationViewer";
   }
-
+  
+  @PostMapping("/read_annotation")
+  public String readAnnotation(@RequestBody String jsonString, Model model) {
+    try {
+      JSONObject json = new JSONObject(jsonString);
+      String id = json.getString("id");
+      Annotation annotation = editorStubService.deleteAnnotation(id);
+      model.addAttribute("annotation", annotation);
+    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
+      return "redirect:/error/" + e.getMessage();
+    }
+    return "editor_stub :: annotationViewer";
+  }
+  
   @PostMapping("/update_annotation")
-  public String updateAnnotation(@RequestBody String jsonString,
-                                 Model model) {
+  public String updateAnnotation(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
       String annoId = json.getString("annoId");
@@ -75,10 +86,9 @@ public class EditorStubController {
     }
     return "editor_stub :: annotationViewer";
   }
-
+  
   @PostMapping("validate_annotation")
-  public String validateAnnotation(@RequestBody String jsonString,
-  Model model) {
+  public String validateAnnotation(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
       String annoId = json.getString("annoId");
@@ -91,8 +101,7 @@ public class EditorStubController {
   }
   
   @PostMapping("delete_annotation")
-  public String deleteAnnotation(@RequestBody String jsonString,
-                                 Model model) {
+  public String deleteAnnotation(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
       String annoId = json.getString("annoId");
@@ -103,10 +112,9 @@ public class EditorStubController {
     }
     return "editor_stub :: annotationViewer";
   }
-
+  
   @PostMapping("create_card")
-  public String createTextCard(@RequestBody String jsonString,
-                               Model model) {
+  public String createTextCard(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
       String annoId = json.getString("annoId");
@@ -121,9 +129,21 @@ public class EditorStubController {
     return "editor_stub :: bodyViewer";
   }
   
+  @PostMapping("/read_card")
+  public String readCard(@RequestBody String jsonString, Model model) {
+    try {
+      JSONObject json = new JSONObject(jsonString);
+      String id = json.getString("id");
+      TextCard textCard = editorStubService.getTextCard(id);
+      model.addAttribute("body", textCard);
+    } catch (JSONException | NoSuchIndexEntryException e) {
+      return "redirect:/error/" + e.getMessage();
+    }
+    return "editor_stub :: bodyViewer";
+  }
+  
   @PostMapping("update_card")
-  public String updateTextCard(@RequestBody String jsonString,
-                               Model model) {
+  public String updateTextCard(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
       String id = json.getString("id");
@@ -139,8 +159,7 @@ public class EditorStubController {
   }
   
   @PostMapping("delete_card")
-  public String deleteTextCard(@RequestBody String jsonString,
-                               Model model) {
+  public String deleteTextCard(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
       String id = json.getString("id");
@@ -153,8 +172,7 @@ public class EditorStubController {
   }
   
   @PostMapping("create_tag")
-  public String createTag(@RequestBody String jsonString,
-                               Model model) {
+  public String createTag(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
       String annoId = json.getString("annoId");
@@ -168,9 +186,21 @@ public class EditorStubController {
     return "editor_stub :: bodyViewer";
   }
   
+  @PostMapping("/read_tag")
+  public String readTag(@RequestBody String jsonString, Model model) {
+    try {
+      JSONObject json = new JSONObject(jsonString);
+      String id = json.getString("id");
+      Tag tag = editorStubService.getTag(id);
+      model.addAttribute("body", tag);
+    } catch (JSONException | NoSuchIndexEntryException e) {
+      return "redirect:/error/" + e.getMessage();
+    }
+    return "editor_stub :: bodyViewer";
+  }
+  
   @PostMapping("update_tag")
-  public String updateTag(@RequestBody String jsonString,
-                               Model model) {
+  public String updateTag(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
       String id = json.getString("id");
@@ -185,8 +215,7 @@ public class EditorStubController {
   }
   
   @PostMapping("delete_tag")
-  public String deleteTag(@RequestBody String jsonString,
-                               Model model) {
+  public String deleteTag(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
       String id = json.getString("id");
@@ -197,36 +226,56 @@ public class EditorStubController {
     }
     return "editor_stub :: bodyViewer";
   }
-
-  /*
-  Needs: manuId
-  Can get:
-   */
-  public String getManuscriptJson(){
-    throw new AssertionError("Not implemented yet");
+  
+  @PostMapping("raw_manuscript_json")
+  public String getManuscriptJson(@RequestBody String jsonString, Model model) {
+    try {
+      JSONObject json = new JSONObject(jsonString);
+      String id = json.getString("id");
+      String rawJson = editorStubService.getManuscriptJson(id).toString();
+      model.addAttribute("rawJson", rawJson);
+    } catch (JSONException | InterruptedException | IOException e) {
+      return "redirect:/error/" + e.getMessage();
+    }
+    return "editor_stub :: rawJsonViewer";
   }
-
-  /*
-  Needs: manuId
-  Can get:
-   */
-  public String getManuscriptXml(){
-    throw new AssertionError("Not implemented yet");
+  
+  @PostMapping("raw_manuscript_xml")
+  public String getManuscriptXml(@RequestBody String jsonString, Model model) {
+    try {
+      JSONObject json = new JSONObject(jsonString);
+      String id = json.getString("id");
+      String rawXml = editorStubService.getManuscriptXml(id);
+      model.addAttribute("rawXml", rawXml);
+    } catch (JSONException | InterruptedException | IOException e) {
+      return "redirect:/error/" + e.getMessage();
+    }
+    return "editor_stub :: rawXmlViewer";
   }
-
-  /*
-  Needs: pageId
-  Can get:
-   */
-  public String getPageJson(){
-    throw new AssertionError("Not implemented yet");
+  
+  @PostMapping("raw_page_json")
+  public String getPageJson(@RequestBody String jsonString, Model model) {
+    try {
+      JSONObject json = new JSONObject(jsonString);
+      String id = json.getString("id");
+      String rawJson = editorStubService.getPageJson(id).toString();
+      model.addAttribute("rawJson", rawJson);
+    } catch (JSONException | InterruptedException | IOException e) {
+      return "redirect:/error/" + e.getMessage();
+    }
+    return "editor_stub :: rawJsonViewer";
   }
-
-  /*
-  Needs: annoId
-  Can get:
-   */
-  public String getAnnotationJson(){
-    throw new AssertionError("Not implemented yet");
+  
+  @PostMapping("raw_annotation_json")
+  public String getAnnotationJson(@RequestBody String jsonString, Model model) {
+    try {
+      JSONObject json = new JSONObject(jsonString);
+      String id = json.getString("id");
+      String rawJson = editorStubService.getAnnotationJson(id).toString();
+      model.addAttribute("rawJson", rawJson);
+    } catch (JSONException | InterruptedException | IOException e) {
+      return "redirect:/error/" + e.getMessage();
+    }
+    return "editor_stub :: rawJsonViewer";
   }
 }
