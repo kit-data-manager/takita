@@ -46,7 +46,7 @@ function validateAnnotation(event) {
 
 function createCard(event) {
     event.preventDefault();
-    let purpose = $('#updateC_purpose').val();
+    let purpose = $('#createC_purpose').val();
     if (purpose === "noPurpose") {
         purpose = "";
     }
@@ -70,10 +70,11 @@ function readCard(event) {
 function updateCard(event) {
     event.preventDefault();
     let purpose = $('#updateC_purpose').val();
+    console.log(purpose)
     if (purpose === "noPurpose") {
         purpose = "";
     }
-
+    console.log(purpose)
     let params = {
         id: $('#updateC_id').val(),
         title: $('#updateC_title').val(),
