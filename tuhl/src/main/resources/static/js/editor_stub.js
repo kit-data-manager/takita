@@ -46,10 +46,14 @@ function validateAnnotation(event) {
 
 function createCard(event) {
     event.preventDefault();
+    let purpose = $('#updateC_purpose').val();
+    if (purpose === "noPurpose") {
+        purpose = "";
+    }
     let params = {
         annoId: $('#createC_annoId').val(),
         title: $('#createC_title').val(),
-        purpose: $('#createC_purpose').val(),
+        purpose: purpose,
         value: $('#createC_value').val()
     }
     postEditorStubController("create_card", params);
@@ -65,10 +69,15 @@ function readCard(event) {
 
 function updateCard(event) {
     event.preventDefault();
+    let purpose = $('#updateC_purpose').val();
+    if (purpose === "noPurpose") {
+        purpose = "";
+    }
+
     let params = {
         id: $('#updateC_id').val(),
         title: $('#updateC_title').val(),
-        purpose: $('#updateC_purpose').val(),
+        purpose: purpose,
         value: $('#updateC_value').val()
     }
     postEditorStubController("update_card", params);
