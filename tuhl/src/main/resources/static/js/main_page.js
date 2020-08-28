@@ -8,19 +8,21 @@ function setSearchTerm(event) {
     }
 
     if (searchTerm != null) {
-        $ .ajax({
-            type: 'POST',
-            url: '/search',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            dataType: 'text',
-            data: searchTerm,
+        $.get( "/tableview/getFirst", function( data ) {
+            $ .ajax({
+                type: 'POST',
+                url: '/search',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                dataType: 'text',
+                data: searchTerm,
 
-            success: function() {
-                location.href="/"
-            }
+                success: function() {
+                    location.href="/"
+                }
+            });
         });
     }
 }

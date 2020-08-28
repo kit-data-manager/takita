@@ -145,5 +145,17 @@ public class TableViewController {
     return tableViewService.getData().toString();
   }
 
+  /**
+   * Handles GET request to set table to first Page.
+   *
+   * @return placeholder
+   */
+  @GetMapping("/getFirst")
+  @ResponseBody
+  public String getFirstPage() {
+    tableViewService.setCurrentPage(1);
+    return "placeholder";
+  }
+
 
 }
