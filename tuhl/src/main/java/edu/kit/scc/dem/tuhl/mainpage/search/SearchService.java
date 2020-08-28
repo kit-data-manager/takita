@@ -4,22 +4,25 @@ import static edu.kit.scc.dem.tuhl.mainpage.search.SearchIndexService.INDEX_NAME
 
 import edu.kit.scc.dem.tuhl.model.Manuscript;
 import edu.kit.scc.dem.tuhl.model.filter.Filter;
-
+import edu.kit.scc.dem.tuhl.model.page.ImagePage;
+import edu.kit.scc.dem.tuhl.model.page.Page;
+import edu.kit.scc.dem.tuhl.model.page.TextPage;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import edu.kit.scc.dem.tuhl.model.page.ImagePage;
-import edu.kit.scc.dem.tuhl.model.page.Page;
-import edu.kit.scc.dem.tuhl.model.page.TextPage;
-import org.elasticsearch.action.search.*;
+import org.elasticsearch.action.search.SearchAction;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.indices.GetFieldMappingsRequest;
-import org.elasticsearch.client.indices.GetFieldMappingsResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.unit.Fuzziness;
-import org.elasticsearch.index.query.*;
+import org.elasticsearch.index.query.BoolQueryBuilder;
+import org.elasticsearch.index.query.MatchAllQueryBuilder;
+import org.elasticsearch.index.query.Operator;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.elasticsearch.search.SearchHit;
 import org.elasticsearch.search.SearchHits;
 import org.elasticsearch.search.sort.SortOrder;
@@ -35,6 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.annotation.SessionScope;
 
+
 /**
  * SearchService contains all business logic to search the index provided by Spring.Data.
  */
@@ -45,7 +49,6 @@ public class SearchService implements ISearchService {
   private static final Logger logger = LoggerFactory.getLogger(SearchService.class);
   private final IFilterService filterService;
   private final ElasticsearchRestTemplate elasticsearchRestTemplate;
-  private static final String KEYWORD_SUFFIX = ".keyword";
   
   private List<Manuscript> results;
   private long resultPagesCount;
@@ -55,7 +58,7 @@ public class SearchService implements ISearchService {
   
   /**
    * Constructor for the SearchService to autowire required instances.
-   * 
+   *
    * @param filterService instance of the business logic for filters. Injected with Springs
    *                      dependency injection system indicated by @autowired annotation.
    */
@@ -71,43 +74,54 @@ public class SearchService implements ISearchService {
    * Searches the index and returns a certain number of results specified in pageSize.
    *
    * @param pageNumber page of search results
-   * @param sortField field to sort the results
-   * @param sortAsc specifies if the sorting direction is ascending
+   * @param sortField  field to sort the results
+   * @param sortAsc    specifies if the sorting direction is ascending
    * @return limited number of search results in list of manuscripts
    */
   @Override
   public List<Manuscript> search(int pageNumber, String sortField, boolean sortAsc) {
-    if (!elasticsearchRestTemplate.execute(client ->
-        client.indices().exists(new GetIndexRequest(INDEX_NAME), RequestOptions.DEFAULT))) {
+    boolean exists = !elasticsearchRestTemplate.execute(client ->
+        client.indices().exists(new GetIndexRequest(INDEX_NAME), RequestOptions.DEFAULT));
+    if (!exists) {
       logger.error("The index does not exist. Please try to build it first.");
     }
     
-    //Check if the ".keyword" suffix is needed. This is the case when the sortField has a
-    // keyboard field.
-    String suffix = elasticsearchRestTemplate.execute(client -> {
-      GetFieldMappingsResponse response =
-          client.indices().getFieldMapping(new GetFieldMappingsRequest()
-          .indices(INDEX_NAME)
-          .fields(sortField + KEYWORD_SUFFIX), RequestOptions.DEFAULT);
-      
-      boolean hasKeyword = response.mappings().get(INDEX_NAME)
-          .containsKey(sortField + KEYWORD_SUFFIX);
-      return hasKeyword ? KEYWORD_SUFFIX : "";
-    });
-    
     //Create the query builder
-    NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
+    final NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
     
     //Check if a search term is specified
     QueryBuilder searchTermQueryBuilder;
     if (searchTerm != null && !searchTerm.trim().equals("")) {
+      String escapedTerm = searchTerm.replace(":", "\\:");
+      
       //Add the search term as a query that matches against all fields
-      searchTermQueryBuilder =
-          new QueryStringQueryBuilder("*" + searchTerm + "*").fuzziness(Fuzziness.AUTO);
+      QueryStringQueryBuilder queryStringQueryBuilder =
+          QueryBuilders.queryStringQuery(
+              String.format("(%s) OR (*%s*) OR (%s)", escapedTerm, escapedTerm, escapedTerm))
+              .defaultOperator(Operator.AND)
+              .fuzziness(Fuzziness.ZERO)
+              .field("title")
+              .field("publisher")
+              .field("pages.pageNumber")
+              .field("pages.resourceType")
+              .field("pages.annotations.title")
+              .field("pages.annotations.creators", .3f)
+              .field("pages.annotations.color")
+              .field("pages.annotations.tags.creators", .3f)
+              .field("pages.annotations.tags.purpose")
+              .field("pages.annotations.tags.value")
+              .field("pages.annotations.textCards.creators", .3f)
+              .field("pages.annotations.textCards.title")
+              .field("pages.annotations.textCards.purpose")
+              .field("pages.annotations.textCards.value");
+      
+      if (searchTerm.matches("^[0-9]*$")) {
+        queryStringQueryBuilder.field("publicationYear");
+      }
+      searchTermQueryBuilder = queryStringQueryBuilder;
     } else {
       searchTermQueryBuilder = new MatchAllQueryBuilder();
     }
-    
     BoolQueryBuilder boolQuery = new BoolQueryBuilder();
     boolQuery.must(searchTermQueryBuilder);
     //Add the query of each filter to the query builder
@@ -121,7 +135,7 @@ public class SearchService implements ISearchService {
     resultPagesCount = calculatePageCount(queryBuilder.build());
     
     //Perform the search
-    return performRequest(queryBuilder.build(), pageNumber, sortField, sortAsc, suffix);
+    return performRequest(queryBuilder.build(), pageNumber, sortField, sortAsc);
   }
   
   private long calculatePageCount(Query query) {
@@ -141,13 +155,13 @@ public class SearchService implements ISearchService {
   }
   
   private List<Manuscript> performRequest(NativeSearchQuery query, int pageStart,
-                                          String sortField, boolean sortAsc, String suffix) {
+                                          String sortField, boolean sortAsc) {
     SearchResponse response = elasticsearchRestTemplate.execute(client -> client.search(
         new SearchRequestBuilder(null, SearchAction.INSTANCE).setIndices(INDEX_NAME)
             .setQuery(query.getQuery())
             .setFrom((pageStart - 1) * pageSize)
             .setSize(pageSize)
-            .addSort(sortField + suffix, sortAsc ? SortOrder.ASC : SortOrder.DESC)
+            .addSort(sortField, sortAsc ? SortOrder.ASC : SortOrder.DESC)
             .setFetchSource(null, "pages.annotations")
             .request(),
         RequestOptions.DEFAULT)
@@ -159,18 +173,19 @@ public class SearchService implements ISearchService {
     List<Manuscript> searchResults = new ArrayList<>();
     for (SearchHit hit : hits.getHits()) {
       Map<String, Object> manuscriptMap = hit.getSourceAsMap();
-    
+      
       Manuscript m = new Manuscript(
           (String) manuscriptMap.get("id"),
           new Date((Long) manuscriptMap.get("created")),
           (String) manuscriptMap.get("title"),
           (String) manuscriptMap.get("publisher"),
           (int) manuscriptMap.get("publicationYear"));
-    
+      
       m.setLastModified(new Date((Long) manuscriptMap.get("lastModified")));
       m.setNoPages((int) manuscriptMap.get("noPages"));
       m.setHasAlgorithmAnnotations((boolean) manuscriptMap.get("hasAlgorithmAnnotations"));
-    
+      
+      @SuppressWarnings("unchecked")
       List<Map<String, Object>> pageMaps = (List<Map<String, Object>>) manuscriptMap.get("pages");
       List<Page> pages = new ArrayList<>();
       for (Map<String, Object> pageMap : pageMaps) {
@@ -237,22 +252,22 @@ public class SearchService implements ISearchService {
   public void setPageSize(int pageSize) {
     this.pageSize = pageSize;
   }
-
+  
   /**
    * Updates the number of pages and search term in the model to pass to UI.
    *
    * @param model the holder for model attributes, used to pass attributes back to the view
    */
   public void updateModel(Model model) {
-      model.addAttribute("numberOfPages", checkForEmptyResults());
-      model.addAttribute("searchterm", searchTerm);
-      model.addAttribute("noResults", pageSize);
+    model.addAttribute("numberOfPages", checkForEmptyResults());
+    model.addAttribute("searchterm", searchTerm);
+    model.addAttribute("noResults", pageSize);
+  }
+  
+  private long checkForEmptyResults() {
+    if (getResultPagesCount() < 1) {
+      return 1;
     }
-
-    private long checkForEmptyResults(){
-      if (getResultPagesCount() < 1){
-        return 1;
-      }
-      return getResultPagesCount();
-    }
+    return getResultPagesCount();
+  }
 }
