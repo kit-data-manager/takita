@@ -25,16 +25,9 @@ public class EditorStubController {
   
   private final IEditorStubService editorStubService;
   
-  private final ISearchIndexService searchIndexService;
-  private final IAnnotationStoreAccessService annotationStoreAccessService;
-  
   @Autowired
-  public EditorStubController(IEditorStubService editorStubService,
-                              ISearchIndexService searchIndexService,
-                              IAnnotationStoreAccessService accessService) {
+  public EditorStubController(IEditorStubService editorStubService) {
     this.editorStubService = editorStubService;
-    this.searchIndexService = searchIndexService;
-    this.annotationStoreAccessService = accessService;
   }
   
   @RequestMapping
@@ -232,7 +225,7 @@ public class EditorStubController {
     try {
       JSONObject json = new JSONObject(jsonString);
       String id = json.getString("id");
-      String rawJson = editorStubService.getManuscriptJson(id).toString();
+      String rawJson = editorStubService.getManuscriptJson(id).toString(2).replace("\\/", "/");
       model.addAttribute("rawJson", rawJson);
     } catch (JSONException | InterruptedException | IOException e) {
       return "redirect:/error/" + e.getMessage();
@@ -258,7 +251,7 @@ public class EditorStubController {
     try {
       JSONObject json = new JSONObject(jsonString);
       String id = json.getString("id");
-      String rawJson = editorStubService.getPageJson(id).toString();
+      String rawJson = editorStubService.getPageJson(id).toString(2).replace("\\/", "/");
       model.addAttribute("rawJson", rawJson);
     } catch (JSONException | InterruptedException | IOException e) {
       return "redirect:/error/" + e.getMessage();
@@ -271,7 +264,7 @@ public class EditorStubController {
     try {
       JSONObject json = new JSONObject(jsonString);
       String id = json.getString("id");
-      String rawJson = editorStubService.getAnnotationJson(id).toString();
+      String rawJson = editorStubService.getAnnotationJson(id).toString(2).replace("\\/", "/");
       model.addAttribute("rawJson", rawJson);
     } catch (JSONException | InterruptedException | IOException e) {
       return "redirect:/error/" + e.getMessage();

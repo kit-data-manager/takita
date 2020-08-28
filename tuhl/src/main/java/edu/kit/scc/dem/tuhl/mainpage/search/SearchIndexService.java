@@ -631,7 +631,7 @@ public class SearchIndexService implements ISearchIndexService {
   @Override
   public JSONObject getRawManuscriptJson(String manuscriptId)
       throws InterruptedException, IOException, JSONException {
-    return accessService.getRawAnnotationJson(manuscriptId);
+    return accessService.getRawManuscriptJson(manuscriptId);
   }
 
   /**
