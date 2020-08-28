@@ -21,12 +21,7 @@ import java.text.ParseException;
 import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDateTime;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import org.apache.lucene.search.join.ScoreMode;
 import org.elasticsearch.action.ActionListener;
@@ -417,12 +412,13 @@ public class SearchIndexService implements ISearchIndexService {
    *
    * @param id text card identifier as String
    * @return TextCard
+   * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
    */
   @Override
   public TextCard getTextCardById(String id) throws NoSuchIndexEntryException {
     Query query = new NativeSearchQueryBuilder()
         .withQuery(matchQuery("pages.annotations.textCards.id.keyword", id)).build();
-  
+
     SearchHits<Manuscript> manuscriptForPage = elasticsearchRestTemplate.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
 
@@ -444,7 +440,7 @@ public class SearchIndexService implements ISearchIndexService {
         }
       }
     }
-    throw new NoSuchIndexEntryException("There was no matching tag in the found manuscript");
+    throw new NoSuchIndexEntryException("There was no matching text card in the found manuscript");
   }
 
   /**
@@ -452,6 +448,7 @@ public class SearchIndexService implements ISearchIndexService {
    *
    * @param id id of a tag
    * @return corresponding tag
+   * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
    */
   @Override
   public Tag getTagById(String id) throws NoSuchIndexEntryException {
@@ -465,7 +462,7 @@ public class SearchIndexService implements ISearchIndexService {
     if (manuscriptForPage.hasSearchHits()) {
       manuscript = manuscriptForPage.getSearchHit(0).getContent();
     } else {
-      throw new NoSuchIndexEntryException("No such tag card.");
+      throw new NoSuchIndexEntryException("No such tag.");
     }
 
     for (Page page : manuscript.getPages()) {
@@ -484,20 +481,38 @@ public class SearchIndexService implements ISearchIndexService {
    * Updates a body in the search index.
    *
    * @param body updated Body
+   * @return updated body with new ID
    * @throws IOException if an error occurs while sending/receiving http request to annotation store
    * @throws InterruptedException if http request is interrupted
+   * @throws JSONException when the object couldn't be parsed to JSON
+   * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
    */
   @Override
-  public void updateBody(Body body) throws IOException, InterruptedException, JSONException,
+  public Body updateBody(Body body) throws IOException, InterruptedException, JSONException,
       NoSuchIndexEntryException {
-    Annotation updatedAnnotation = getAnnotationByBodyId(body.getId());
+    Annotation annotation = getAnnotationByBodyId(body.getId());
     if (body.getPurpose() == Motivation.TAGGING) {
-      updatedAnnotation.addTag((Tag) body);
+      annotation.addTag((Tag) body);
     } else {
-      updatedAnnotation.addTextCard((TextCard) body);
+      annotation.addTextCard((TextCard) body);
     }
 
-    updateAnnotation(updatedAnnotation);
+    Annotation updatedAnnotation = updateAnnotation(annotation);
+
+    List<Body> allBodies = new ArrayList<>();
+    allBodies.addAll(updatedAnnotation.getTags());
+    allBodies.addAll(updatedAnnotation.getTextCards());
+    for (Body newBody : allBodies) {
+      if (newBody.getCreated() != null &&
+          newBody.getCreated().equals(body.getCreated()) &&
+          newBody.getCreators().containsAll(body.getCreators()) &&
+          newBody.getPurpose() == body.getPurpose() &&
+          newBody.getTitle().equals(body.getTitle()) &&
+          newBody.getValue().equals(body.getValue())) {
+        return newBody;
+      }
+    }
+    throw new NoSuchIndexEntryException("No body like this was found in the index.");
   }
 
   /**
@@ -612,7 +627,7 @@ public class SearchIndexService implements ISearchIndexService {
         return page;
       }
     }
-    throw new NoSuchIndexEntryException("The page with the id \" + id + \" could not be found");
+    throw new NoSuchIndexEntryException("The page with the id " + pageId + " could not be found");
   }
 
   /**

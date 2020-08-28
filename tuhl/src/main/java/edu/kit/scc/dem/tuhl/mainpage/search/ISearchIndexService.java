@@ -150,12 +150,13 @@ public interface ISearchIndexService {
    * Updates a body in the search index.
    *
    * @param body updated Body
+   * @return updated body with new ID
    * @throws IOException if an error occurs while sending/receiving http request to annotation store
    * @throws InterruptedException if http request is interrupted
    * @throws JSONException when the object couldn't be parsed to JSON
    * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
    */
-  void updateBody(Body body) throws IOException, InterruptedException, JSONException,
+  Body updateBody(Body body) throws IOException, InterruptedException, JSONException,
       NoSuchIndexEntryException;
 
   /**

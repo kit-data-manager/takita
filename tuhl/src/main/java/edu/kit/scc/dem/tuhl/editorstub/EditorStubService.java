@@ -323,13 +323,15 @@ public class EditorStubService implements IEditorStubService {
       updatedTextCard.setPurpose(stringToMotivation(purpose));
     }
 
+    TextCard newTextCard;
     try {
-      searchIndexService.updateBody(updatedTextCard);
+       newTextCard = (TextCard) searchIndexService.updateBody(updatedTextCard);
     } catch (JSONException e) {
+      newTextCard  = new TextCard("No TextCard");
       e.printStackTrace();
     }
 
-    return searchIndexService.getTextCardById(textCardId);
+    return newTextCard;
   }
 
   /**
