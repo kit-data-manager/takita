@@ -159,6 +159,13 @@
                 },
                 dataType: 'text',
                 data: JSON.stringify(data),
+                success: function (responseData) {
+                    if(responseData === "error"){
+                        /*<![CDATA[*/
+                        location.href = "/error/" + [[${errorMessage}]];
+                        /*]]>*/
+                    }
+                }
             });
         },
         persistence:{

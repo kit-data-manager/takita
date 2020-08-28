@@ -32,6 +32,7 @@ public class AssistanceController {
    *                          Injected with Springs dependency injection system
    *                          indicated by @autowired annotation.
    */
+
   @Autowired
   public AssistanceController(IAssistanceService assistanceService) {
     this.assistanceService = assistanceService;
@@ -60,29 +61,35 @@ public class AssistanceController {
     return assistanceService.getLang();
   }
 
+
   /**
    * Handles http get when the checkbox saveFilterConfig is checked.
    *
    * @return placeholder
    */
+  /*
   @GetMapping("/safeFilterConfig")
   @ResponseBody
-  public String saveFilterConfigSetting(Model model) {
+  public String saveFilterConfigSetting() {
     assistanceService.toggleSaveFilter();
     return "placeholder";
   }
+
+   */
 
   /**
    * Handles http get when the checkbox saveTableConfig is checked.
    *
    * @return placeholder
    */
+  /*
   @GetMapping("/saveTableConfigSetting")
   @ResponseBody
   public String saveTableConfigSetting(Model model) {
     assistanceService.toggleSaveTable(model);
     return "placeholder";
   }
+  */
 
   /**
    * Handles http POST request to save table column configuration.
@@ -112,7 +119,6 @@ public class AssistanceController {
   public String saveTableSort(@RequestBody String sort, Model model) {
 
     assistanceService.setTableSort(sort, model);
-
     return "placeholder";
   }
 
@@ -127,9 +133,8 @@ public class AssistanceController {
   @ResponseBody
   public String saveTablePage(@RequestBody String pageInfo, Model model) {
 
-    JSONObject obj = null;
     try {
-      obj = new JSONObject(pageInfo);
+      JSONObject obj = new JSONObject(pageInfo);
 
       int pageSize = Integer.parseInt(obj.get("paginationSize").toString());
 
@@ -138,10 +143,12 @@ public class AssistanceController {
 
       assistanceService.getCurrentUser().setCurrentPage(currentPage);
       assistanceService.setTablePage(pageSize, model);
+      return "placeholder";
     } catch (JSONException e) {
-      e.printStackTrace();
+      model.addAttribute("errorMessage", e.getMessage());
+      return "error";
     }
-    return "placeholder";
+
   }
 
 
