@@ -101,16 +101,18 @@ public class TableViewController {
     tableViewService.setSortField(column);
     tableViewService.search();
     mainPageService.update(model);
-
+    try {
     JSONArray data = tableViewService.getData();
     JSONObject newData = new JSONObject();
-    try {
+
       newData.put("last_page", tableViewService.getNumberOfResultsPages());
       newData.put("data", data);
+      return newData.toString();
     } catch (JSONException e) {
-      e.printStackTrace();
+      model.addAttribute("errorMessage", e.getMessage());
+      return"error";
     }
-    return newData.toString();
+
   }
 
   // not sure if needed anymore
@@ -136,7 +138,7 @@ public class TableViewController {
     return newData.toString();
   }
 
-   */
+
 
   @RequestMapping(value = "/getData")
   @ResponseBody
@@ -144,7 +146,7 @@ public class TableViewController {
     mainPageService.update(model);
     return tableViewService.getData().toString();
   }
-
+*/
   /**
    * Handles GET request to set table to first Page.
    *

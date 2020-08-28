@@ -184,6 +184,15 @@
         pagination:"remote",
         movableColumns: true, //enable user movable columns
         ajaxURL:"/tableview/sort", //set url for ajax request
+        ajaxResponse:function(url, params, response){
+            if(response === "error"){
+                /*<![CDATA[*/
+                location.href = "/error/" + [[${errorMessage}]];
+                /*]]>*/
+            }
+            return response; //return the response data to tabulator
+        },
+
         ajaxSorting:true,
         columnHeaderSortMulti:false,
         /*<![CDATA[*/
