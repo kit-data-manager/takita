@@ -87,6 +87,7 @@ public class FilterService implements IFilterService {
   
   /**
    * Gets filters currently in use.
+   *
    * @return list of currently used filters
    */
   @Override
@@ -96,6 +97,7 @@ public class FilterService implements IFilterService {
   
   /**
    * Sets filters currently in use.
+   *
    * @param currentFilters to set
    */
   @Override
@@ -105,6 +107,7 @@ public class FilterService implements IFilterService {
   
   /**
    * Gets the map  of possible filters.
+   *
    * @return list of possible filters
    */
   @Override
@@ -114,6 +117,7 @@ public class FilterService implements IFilterService {
   
   /**
    * Adds filters to the list of currently used filters.
+   *
    * @param fields new filters to add indicated by their fields
    */
   @Override
@@ -125,6 +129,7 @@ public class FilterService implements IFilterService {
   
   /**
    * Removes a filter from the list of currently used filters.
+   *
    * @param field of the filter to remove
    */
   @Override

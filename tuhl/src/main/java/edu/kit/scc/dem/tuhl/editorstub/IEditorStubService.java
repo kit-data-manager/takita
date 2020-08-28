@@ -2,12 +2,9 @@ package edu.kit.scc.dem.tuhl.editorstub;
 
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.model.Annotation;
-import edu.kit.scc.dem.tuhl.model.Color;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import java.io.IOException;
-import java.util.List;
-
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 /**

@@ -1,40 +1,57 @@
 package edu.kit.scc.dem.tuhl.editorstub;
 
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
-import edu.kit.scc.dem.tuhl.dataaccess.IAnnotationStoreAccessService;
-import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
+import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.io.IOException;
-import java.sql.Date;
-import java.time.Instant;
-import java.util.Calendar;
-import java.util.List;
-
+/**
+ * Controls the interaction with the user interface concerning the interaction with
+ * the databases and provides the api endpoints for those functionalities.
+ * Delegates the tasks to the corresponding business logic in an IEditorStubService instance.
+ */
 @Controller
 @RequestMapping("/editor_stub")
 public class EditorStubController {
   
   private final IEditorStubService editorStubService;
-  
+
+  /**
+   * Constructor for EditorStubController, initializes instances of used beans.
+   *
+   * @param editorStubService instance of IEditorStubService
+   */
   @Autowired
   public EditorStubController(IEditorStubService editorStubService) {
     this.editorStubService = editorStubService;
   }
-  
+
+  /**
+   * Initializes editor stub.
+   *
+   * @return editor stub HTML
+   */
   @RequestMapping
   public String init() {
     return "editor_stub";
   }
-  
+
+  /**
+   * Delegates the task to create an annotation to IEditorStubService.
+   *
+   * @param jsonString holds the values for specifying the added annotation
+   * @param model the holder for model attributes. Used to pass attributes back to the view
+   * @return the name of the html file to display
+   */
   @PostMapping("/create_annotation")
   public String createAnnotation(@RequestBody String jsonString, Model model) {
     try {
@@ -50,7 +67,14 @@ public class EditorStubController {
     }
     return "editor_stub :: annotationViewer";
   }
-  
+
+  /**
+   * Delegates the task to read an annotation to IEditorStubService.
+   *
+   * @param jsonString holds the values for specifying the annotation to read
+   * @param model the holder for model attributes. Used to pass attributes back to the view
+   * @return the name of the html file to display
+   */
   @PostMapping("/read_annotation")
   public String readAnnotation(@RequestBody String jsonString, Model model) {
     try {
@@ -63,7 +87,14 @@ public class EditorStubController {
     }
     return "editor_stub :: annotationViewer";
   }
-  
+
+  /**
+   * Delegates the task to update an annotation to IEditorStubService.
+   *
+   * @param jsonString holds the values for specifying the updated annotation
+   * @param model the holder for model attributes. Used to pass attributes back to the view
+   * @return the name of the html file to display
+   */
   @PostMapping("/update_annotation")
   public String updateAnnotation(@RequestBody String jsonString, Model model) {
     try {
@@ -72,14 +103,22 @@ public class EditorStubController {
       String color = json.getString("color");
       String svgCode = json.getString("svgCode");
       String motivation = json.getString("motivation");
-      Annotation annotation = editorStubService.updateAnnotation(annoId, color, svgCode, motivation);
+      Annotation annotation = editorStubService
+          .updateAnnotation(annoId, color, svgCode, motivation);
       model.addAttribute("annotation", annotation);
     } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
       return "redirect:/error/" + e.getMessage();
     }
     return "editor_stub :: annotationViewer";
   }
-  
+
+  /**
+   * Delegates the task to validate an annotation to IEditorStubService.
+   *
+   * @param jsonString holds the values for specifying the validated annotation
+   * @param model the holder for model attributes. Used to pass attributes back to the view
+   * @return the name of the html file to display
+   */
   @PostMapping("/validate_annotation")
   public String validateAnnotation(@RequestBody String jsonString, Model model) {
     try {
@@ -92,7 +131,14 @@ public class EditorStubController {
     }
     return "editor_stub :: annotationViewer";
   }
-  
+
+  /**
+   * Delegates the task to delete an annotation to IEditorStubService.
+   *
+   * @param jsonString holds the values for specifying the deleted annotation
+   * @param model the holder for model attributes. Used to pass attributes back to the view
+   * @return the name of the html file to display
+   */
   @PostMapping("/delete_annotation")
   public String deleteAnnotation(@RequestBody String jsonString, Model model) {
     try {
@@ -105,7 +151,14 @@ public class EditorStubController {
     }
     return "editor_stub :: annotationViewer";
   }
-  
+
+  /**
+   * Delegates the task to create a text card to IEditorStubService.
+   *
+   * @param jsonString holds the values for specifying the added text card
+   * @param model the holder for model attributes. Used to pass attributes back to the view
+   * @return the name of the html file to display
+   */
   @PostMapping("/create_card")
   public String createTextCard(@RequestBody String jsonString, Model model) {
     try {
@@ -121,7 +174,14 @@ public class EditorStubController {
     }
     return "editor_stub :: bodyViewer";
   }
-  
+
+  /**
+   * Delegates the task to read a text card to IEditorStubService.
+   *
+   * @param jsonString holds the values for specifying the text card to be read
+   * @param model the holder for model attributes. Used to pass attributes back to the view
+   * @return the name of the html file to display
+   */
   @PostMapping("/read_card")
   public String readCard(@RequestBody String jsonString, Model model) {
     try {
@@ -134,7 +194,14 @@ public class EditorStubController {
     }
     return "editor_stub :: bodyViewer";
   }
-  
+
+  /**
+   * Delegates the task to update a text card to IEditorStubService.
+   *
+   * @param jsonString holds the values for specifying the updated text card
+   * @param model the holder for model attributes. Used to pass attributes back to the view
+   * @return the name of the html file to display
+   */
   @PostMapping("/update_card")
   public String updateTextCard(@RequestBody String jsonString, Model model) {
     try {
@@ -150,7 +217,14 @@ public class EditorStubController {
     }
     return "editor_stub :: bodyViewer";
   }
-  
+
+  /**
+   * Delegates the task to delete a text card to IEditorStubService.
+   *
+   * @param jsonString holds the values for specifying the deleted text card
+   * @param model the holder for model attributes. Used to pass attributes back to the view
+   * @return the name of the html file to display
+   */
   @PostMapping("/delete_card")
   public String deleteTextCard(@RequestBody String jsonString, Model model) {
     try {
@@ -163,7 +237,14 @@ public class EditorStubController {
     }
     return "editor_stub :: bodyViewer";
   }
-  
+
+  /**
+   * Delegates the task to create a tag to IEditorStubService.
+   *
+   * @param jsonString holds the values for specifying the added tag
+   * @param model the holder for model attributes. Used to pass attributes back to the view
+   * @return the name of the html file to display
+   */
   @PostMapping("/create_tag")
   public String createTag(@RequestBody String jsonString, Model model) {
     try {
@@ -178,7 +259,14 @@ public class EditorStubController {
     }
     return "editor_stub :: bodyViewer";
   }
-  
+
+  /**
+   * Delegates the task to read a tag to IEditorStubService.
+   *
+   * @param jsonString holds the values for specifying the tag to be read
+   * @param model the holder for model attributes. Used to pass attributes back to the view
+   * @return the name of the html file to display
+   */
   @PostMapping("/read_tag")
   public String readTag(@RequestBody String jsonString, Model model) {
     try {
@@ -191,7 +279,14 @@ public class EditorStubController {
     }
     return "editor_stub :: bodyViewer";
   }
-  
+
+  /**
+   * Delegates the task to update a tag to IEditorStubService.
+   *
+   * @param jsonString holds the values for specifying the updated tag
+   * @param model the holder for model attributes. Used to pass attributes back to the view
+   * @return the name of the html file to display
+   */
   @PostMapping("/update_tag")
   public String updateTag(@RequestBody String jsonString, Model model) {
     try {
@@ -206,7 +301,14 @@ public class EditorStubController {
     }
     return "editor_stub :: bodyViewer";
   }
-  
+
+  /**
+   * Delegates the task to delete a tag to IEditorStubService.
+   *
+   * @param jsonString holds the values for specifying the deleted tag
+   * @param model the holder for model attributes. Used to pass attributes back to the view
+   * @return the name of the html file to display
+   */
   @PostMapping("/delete_tag")
   public String deleteTag(@RequestBody String jsonString, Model model) {
     try {
@@ -219,7 +321,14 @@ public class EditorStubController {
     }
     return "editor_stub :: bodyViewer";
   }
-  
+
+  /**
+   * Delegates the task to get the raw JSON file to a manuscript to IEditorStubService.
+   *
+   * @param jsonString holds the values for specifying the manuscript in question
+   * @param model the holder for model attributes. Used to pass attributes back to the view
+   * @return the name of the html file to display
+   */
   @PostMapping("/raw_manuscript_json")
   public String getManuscriptJson(@RequestBody String jsonString, Model model) {
     try {
@@ -232,7 +341,14 @@ public class EditorStubController {
     }
     return "editor_stub :: rawJsonViewer";
   }
-  
+
+  /**
+   * Delegates the task to get the raw XML file to a manuscript to IEditorStubService.
+   *
+   * @param jsonString holds the values for specifying the manuscript in question
+   * @param model the holder for model attributes. Used to pass attributes back to the view
+   * @return the name of the html file to display
+   */
   @PostMapping("/raw_manuscript_xml")
   public String getManuscriptXml(@RequestBody String jsonString, Model model) {
     try {
@@ -245,7 +361,14 @@ public class EditorStubController {
     }
     return "editor_stub :: rawXmlViewer";
   }
-  
+
+  /**
+   * Delegates the task to get the raw JSON file to a page to IEditorStubService.
+   *
+   * @param jsonString holds the values for specifying the page in question
+   * @param model the holder for model attributes. Used to pass attributes back to the view
+   * @return the name of the html file to display
+   */
   @PostMapping("/raw_page_json")
   public String getPageJson(@RequestBody String jsonString, Model model) {
     try {
@@ -258,7 +381,14 @@ public class EditorStubController {
     }
     return "editor_stub :: rawJsonViewer";
   }
-  
+
+  /**
+   * Delegates the task to get the raw JSON file to an annotation to IEditorStubService.
+   *
+   * @param jsonString holds the values for specifying the annotation in question
+   * @param model the holder for model attributes. Used to pass attributes back to the view
+   * @return the name of the html file to display
+   */
   @PostMapping("/raw_annotation_json")
   public String getAnnotationJson(@RequestBody String jsonString, Model model) {
     try {

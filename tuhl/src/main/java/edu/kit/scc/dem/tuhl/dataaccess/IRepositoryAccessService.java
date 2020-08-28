@@ -66,7 +66,8 @@ public interface IRepositoryAccessService {
    * @throws IOException if an error occurs while sending or receiving
    * @throws InterruptedException if the get request is interrupted
    */
-  List<JSONObject> getAllManuscripts(int numberManuscripts) throws IOException, InterruptedException, JSONException;
+  List<JSONObject> getAllManuscripts(int numberManuscripts)
+      throws IOException, InterruptedException, JSONException;
 
   /**
    * Gets all manuscripts in the repository modified after a certain time.

@@ -5,7 +5,6 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-
 import org.apache.http.protocol.HTTP;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
@@ -40,7 +39,8 @@ class HttpRequestHelper {
           HttpResponse.BodyHandlers.ofString());
   }
 
-  public HttpResponse<String> postManuscript(String url, JSONObject requestBody) throws IOException, InterruptedException {
+  public HttpResponse<String> postManuscript(String url, JSONObject requestBody)
+      throws IOException, InterruptedException {
     HttpRequest request = HttpRequest.newBuilder()
         .uri(URI.create(url))
         .header(HTTP.CONTENT_TYPE, "application/json")

@@ -214,7 +214,7 @@ public class SearchService implements ISearchService {
   }
   
   /**
-   * Set the search term.
+   * Sets the search term.
    *
    * @param searchTerm the search term to set
    */

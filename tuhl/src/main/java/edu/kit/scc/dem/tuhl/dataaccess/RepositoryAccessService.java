@@ -125,7 +125,8 @@ public class RepositoryAccessService implements IRepositoryAccessService {
     typeGeneral.put(RepositoryStrings.TYPE_GENERAL.getName(), RepositoryStrings.TEXT.getName());
     resourceType.put(RepositoryStrings.RESOURCE_TYPE.getName(), typeGeneral);
 
-    HttpResponse<String> pageResponse = httpRequestHelper.postManuscript(nextUri + pageSize, resourceType);
+    HttpResponse<String> pageResponse = httpRequestHelper.postManuscript(
+        nextUri + pageSize, resourceType);
     Optional<String> link;
   
     boolean findNextLink;
@@ -138,12 +139,12 @@ public class RepositoryAccessService implements IRepositoryAccessService {
       for (int i = 0; i < responseBodyJson.length(); i++) {
         JSONObject resource = responseBodyJson.getJSONObject(i);
         //Adds all resources which are manuscripts and not pages to the list
-          manuscriptsJson.add(resource);
+        manuscriptsJson.add(resource);
 
-          // Check if number of required manuscripts already reached
-          if (numberManuscripts != -1 && manuscriptsJson.size() >= numberManuscripts) {
-            return manuscriptsJson;
-          }
+        // Check if number of required manuscripts already reached
+        if (numberManuscripts != -1 && manuscriptsJson.size() >= numberManuscripts) {
+          return manuscriptsJson;
+        }
       }
       if (link.isPresent()) {
         //Extracts next link from response header
@@ -153,7 +154,8 @@ public class RepositoryAccessService implements IRepositoryAccessService {
           nextUri = matcher.group(1);
 
           //Workaround for bug in the repository; inserts missing "/"
-          //nextUri = new StringBuilder(nextUri).insert(nextUri.indexOf(PAGE_STRING), "/").toString();
+          //nextUri = new
+          // StringBuilder(nextUri).insert(nextUri.indexOf(PAGE_STRING), "/").toString();
 
           //Workaround for bug in repository
           pageCounter++;

@@ -229,14 +229,16 @@ public class SearchIndexService implements ISearchIndexService {
   }
   
   //CRUD Annotation
-  
+
   /**
    * Adds an annotation to the search index.
    *
-   * @param annotation new Annotation
+   * @param annotation new annotation
    * @return added annotation
    * @throws IOException if an error occurs while sending/receiving http request to annotation store
    * @throws InterruptedException if http request is interrupted
+   * @throws JSONException when the object couldn't be parsed to JSON
+   * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
    */
   @Override
   public Annotation addAnnotation(Annotation annotation) throws InterruptedException, IOException,
@@ -256,12 +258,13 @@ public class SearchIndexService implements ISearchIndexService {
     
     return newAnnotation;
   }
-  
+
   /**
    * Gets an annotation by its unique annotation identifier from the search index.
    *
    * @param id annotation identifier as String
    * @return Annotation
+   * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
    */
   @Override
   public Annotation getAnnotationById(String id) throws NoSuchIndexEntryException {
@@ -284,14 +287,16 @@ public class SearchIndexService implements ISearchIndexService {
     }
     throw new NoSuchIndexEntryException("Could not find Annotation with id: " + id);
   }
-  
+
   /**
    * Updates an annotation in the search index.
    *
-   * @param annotation updated annotation
+   * @param annotation updated Annotation
    * @return updated annotation
    * @throws IOException if an error occurs while sending/receiving http request to annotation store
    * @throws InterruptedException if http request is interrupted
+   * @throws JSONException when the object couldn't be parsed to JSON
+   * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
    */
   @Override
   public Annotation updateAnnotation(Annotation annotation)
@@ -320,7 +325,7 @@ public class SearchIndexService implements ISearchIndexService {
     manuscriptRepository.save(manuscriptHit.get());
     return newAnnotation;
   }
-  
+
   /**
    * Validates an annotation in the search index and notifies the dataaccess package.
    *
@@ -328,6 +333,8 @@ public class SearchIndexService implements ISearchIndexService {
    * @return validated annotation
    * @throws IOException if an error occurs while sending/receiving http request to annotation store
    * @throws InterruptedException if http request is interrupted
+   * @throws JSONException when the object couldn't be parsed to JSON
+   * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
    */
   @Override
   public Annotation validateAnnotation(Annotation annotation)
@@ -356,13 +363,15 @@ public class SearchIndexService implements ISearchIndexService {
     }
     return validatedAnnotation;
   }
-  
+
   /**
    * Deletes an annotation by its unique annotation identifier from the search index.
    *
    * @param id annotation identifier as String
    * @throws IOException if an error occurs while sending/receiving http request to annotation store
    * @throws InterruptedException if http request is interrupted
+   * @throws JSONException when the object couldn't be parsed to JSON
+   * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
    */
   @Override
   public void deleteAnnotationById(String id) throws IOException, InterruptedException,
@@ -392,7 +401,7 @@ public class SearchIndexService implements ISearchIndexService {
   }
   
   //CRUD TextCard
-  
+
   /**
    * Adds a body to an annotation in the search index.
    *
@@ -453,7 +462,7 @@ public class SearchIndexService implements ISearchIndexService {
     }
     throw new NoSuchIndexEntryException("There was no matching text card in the found manuscript");
   }
-  
+
   /**
    * Gets the tag of an annotation by its ID.
    *
@@ -512,13 +521,15 @@ public class SearchIndexService implements ISearchIndexService {
     
     return findBodyInAnnotation(body, updatedAnnotation);
   }
-  
+
   /**
    * Deletes a body entity from the search index by its unique identifier.
    *
    * @param id body identifier as String
    * @throws IOException if an error occurs while sending/receiving http request to annotation store
    * @throws InterruptedException if http request is interrupted
+   * @throws JSONException when the object couldn't be parsed to JSON
+   * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
    */
   @Override
   public void deleteBodyById(String id) throws IOException, InterruptedException,
@@ -578,12 +589,13 @@ public class SearchIndexService implements ISearchIndexService {
   }
   
   // Getters
-  
+
   /**
    * Gets a manuscript from the search index by its unique identifier.
    *
    * @param id manuscript identifier as String
    * @return Manuscript
+   * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
    */
   @Override
   public Manuscript getManuscriptById(String id) throws NoSuchIndexEntryException {
@@ -593,12 +605,13 @@ public class SearchIndexService implements ISearchIndexService {
     }
     throw new NoSuchIndexEntryException("No matching manuscript found.");
   }
-  
+
   /**
    * Gets a page from the search index by its unique identifier.
    *
    * @param id page identifier as String
    * @return Page
+   * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
    */
   @Override
   public Page getPageById(String id) throws NoSuchIndexEntryException {
@@ -627,59 +640,69 @@ public class SearchIndexService implements ISearchIndexService {
     }
     throw new NoSuchIndexEntryException("The page with the id " + pageId + " could not be found");
   }
-  
+
   /**
    * Gets the JSON metadata of a manuscript as the raw JSON String.
    *
    * @param manuscriptId the id of the manuscript
    * @return the raw JSON as a String
+   * @throws IOException if an error occurs while sending/receiving http request to annotation store
+   * @throws InterruptedException if http request is interrupted
    */
   @Override
   public JSONObject getRawManuscriptJson(String manuscriptId)
       throws InterruptedException, IOException, JSONException {
     return accessService.getRawManuscriptJson(manuscriptId);
   }
-  
+
   /**
    * Gets the JSON metadata of a page as the raw JSON String.
    *
    * @param pageId the id of the page
    * @return the raw JSON as a String
+   * @throws IOException if an error occurs while sending/receiving http request to annotation store
+   * @throws InterruptedException if http request is interrupted
+   * @throws JSONException when the object couldn't be parsed to JSON
    */
   @Override
   public JSONObject getRawPageJson(String pageId)
       throws InterruptedException, IOException, JSONException {
     return accessService.getRawPageJson(pageId);
   }
-  
+
   /**
    * Gets the JSON metadata of an annotation as the raw JSON String.
    *
    * @param annotationId the id of the annotation
    * @return the raw JSON as a String
+   * @throws IOException if an error occurs while sending/receiving http request to annotation store
+   * @throws InterruptedException if http request is interrupted
+   * @throws JSONException when the object couldn't be parsed to JSON
    */
   @Override
   public JSONObject getRawAnnotationJson(String annotationId)
       throws InterruptedException, IOException, JSONException {
     return accessService.getRawAnnotationJson(annotationId);
   }
-  
+
   /**
-   * Gets the XML metadata given in the TEI standard of a manuscript as the raw XML String.
+   * Gets the XML metadata of a manuscript as the raw XML String.
    *
    * @param manuscriptId the id of the manuscript
    * @return the raw xml as a String
+   * @throws IOException if an error occurs while sending/receiving http request to annotation store
+   * @throws InterruptedException if http request is interrupted
    */
   @Override
   public String getRawManuscriptXml(String manuscriptId) throws IOException, InterruptedException {
     return accessService.getRawManuscriptXml(manuscriptId);
   }
-  
+
   /**
    * Starts the update cycle of the search index with the specified parameters.
    *
    * @param updateIndexDayInterval the interval of the update
-   * @param updateIndexHour        the hour of day at which the update is performed
+   * @param updateIndexHour the hour of the day at which the update is performed
    */
   @Override
   public void startIndexUpdateCycle(int updateIndexDayInterval, int updateIndexHour) {

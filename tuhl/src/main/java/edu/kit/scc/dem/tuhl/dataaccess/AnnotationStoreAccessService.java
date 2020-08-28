@@ -61,8 +61,9 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
           + "rg/2001/XMLSchema#> SELECT ?anno {GRAPH ?g {?anno oa:hasTarget/oa:hasSource <",
       Charset.defaultCharset());
 
-  private static final String SPARQL_QUERY_ANNOTATION_BY_PAGE_2 = URLEncoder.encode("> . FILTER NOT EXISTS {"
-      + " ?anno <http://dem.scc.kit.edu/wapserv/ns#deleted> \"true\"^^xsd:boolean} } }", Charset.defaultCharset());
+  private static final String SPARQL_QUERY_ANNOTATION_BY_PAGE_2 = URLEncoder.encode("> . "
+      + "FILTER NOT EXISTS { ?anno <http://dem.scc.kit.edu/wapserv/ns#deleted> \"true\"^^"
+      + "xsd:boolean} } }", Charset.defaultCharset());
 
   /**
    * Constructor for AnnotationStoreAccess, initializes HttpRequestHelper.
@@ -88,8 +89,8 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
 
     String deinterpretationeId;
     if (deinterpretationeAnnotation.has(AnnotationStoreStrings.ID.getName())) {
-       deinterpretationeId = deinterpretationeAnnotation
-          .getString(AnnotationStoreStrings.ID.getName());
+      deinterpretationeId = deinterpretationeAnnotation
+        .getString(AnnotationStoreStrings.ID.getName());
     } else {
       throw new JSONException("There was a problem with the annotation");
     }
@@ -326,15 +327,18 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
 
     // put in deinterpretatione and add via and canonical fields if anno is already in validated
     if (jsonAnnotation.has(AnnotationStoreStrings.CANONICAL.getName())) {
-      JSONObject deInterpretationeAnnotation = getAnnotationById(jsonAnnotation.getString(AnnotationStoreStrings.CANONICAL.getName()));
+      JSONObject deInterpretationeAnnotation = getAnnotationById(jsonAnnotation.getString(
+          AnnotationStoreStrings.CANONICAL.getName()));
       JSONObject deInterpretationeJson = new JSONObject(jsonAnnotation.toString());
       deInterpretationeJson.remove(AnnotationStoreStrings.CANONICAL.getName());
       if (!deInterpretationeAnnotation.has(AnnotationStoreStrings.VIA.getName())) {
         deInterpretationeJson.remove(AnnotationStoreStrings.VIA.getName());
       }
-      deInterpretationeJson.put(AnnotationStoreStrings.ID.getName(), deInterpretationeAnnotation.getString(AnnotationStoreStrings.ID.getName()));
+      deInterpretationeJson.put(AnnotationStoreStrings.ID.getName(), deInterpretationeAnnotation
+          .getString(AnnotationStoreStrings.ID.getName()));
       httpRequestHelper.put(deInterpretationeAnnotation.get(AnnotationStoreStrings
-          .ID.getName()).toString(), deInterpretationeJson, deInterpretationeAnnotation.getString(AnnotationStoreStrings.ETAG.getName()));
+          .ID.getName()).toString(), deInterpretationeJson, deInterpretationeAnnotation.getString(
+              AnnotationStoreStrings.ETAG.getName()));
     }
     HttpResponse<String> response = httpRequestHelper.put(annotationId, jsonAnnotation, etag);
 

@@ -345,7 +345,8 @@ public class AccessService implements IAccessService {
   @Override
   public Annotation addAnnotation(Annotation annotation, String pageNumber)
       throws JSONException, IOException, InterruptedException {
-    JSONObject response = annotationStoreAccessService.addAnnotation(buildJsonFromAnnotation(annotation, pageNumber));
+    JSONObject response = annotationStoreAccessService
+        .addAnnotation(buildJsonFromAnnotation(annotation, pageNumber));
     return buildAnnotationFromJson(response);
   }
 
@@ -541,7 +542,8 @@ public class AccessService implements IAccessService {
         annotation.setIsAlgorithmAnnotation(true);
       } else {
         if (jsonAnnotation.getJSONObject(AnnotationStoreStrings.CREATOR.getName())
-            .getString(AnnotationStoreStrings.TYPE.getName()).equals(AnnotationStoreStrings.PERSON.getName())) {
+            .getString(AnnotationStoreStrings.TYPE.getName()).equals(
+                AnnotationStoreStrings.PERSON.getName())) {
           creatorList.add(jsonAnnotation.getJSONObject(AnnotationStoreStrings.CREATOR.getName())
               .getString(AnnotationStoreStrings.NAME.getName()));
         }
@@ -635,9 +637,10 @@ public class AccessService implements IAccessService {
         tags.add((Tag) thisBody);
       } else {
         thisBody = new TextCard(UUID.randomUUID().toString());
-        if (thisJson.has(AnnotationStoreStrings.PURPOSE.getName()) &&
-            buildMotivation(thisJson.getString(AnnotationStoreStrings.PURPOSE.getName())) != null) {
-          thisBody.setPurpose(buildMotivation(thisJson.getString(AnnotationStoreStrings.PURPOSE.getName())));
+        if (thisJson.has(AnnotationStoreStrings.PURPOSE.getName()) && buildMotivation(
+            thisJson.getString(AnnotationStoreStrings.PURPOSE.getName())) != null) {
+          thisBody.setPurpose(buildMotivation(thisJson.getString(
+              AnnotationStoreStrings.PURPOSE.getName())));
         }
         textCards.add((TextCard) thisBody);
       }
@@ -659,11 +662,13 @@ public class AccessService implements IAccessService {
                   AnnotationStoreStrings.NAME.getName()));
             }
           }
-        } else if (thisJson.getString(AnnotationStoreStrings.CREATOR.getName()).startsWith(ALGORITHM_CREATOR_PREFIX)) {
+        } else if (thisJson.getString(AnnotationStoreStrings.CREATOR.getName())
+            .startsWith(ALGORITHM_CREATOR_PREFIX)) {
           creatorsList.add(thisJson.getString(AnnotationStoreStrings.CREATOR.getName()));
         } else {
           if (thisJson.getJSONObject(AnnotationStoreStrings.CREATOR.getName())
-              .getString(AnnotationStoreStrings.TYPE.getName()).equals(AnnotationStoreStrings.PERSON.getName())) {
+              .getString(AnnotationStoreStrings.TYPE.getName()).equals(
+                  AnnotationStoreStrings.PERSON.getName())) {
             creatorsList.add(thisJson.getJSONObject(AnnotationStoreStrings.CREATOR.getName())
                 .getString(AnnotationStoreStrings.NAME.getName()));
           }
@@ -693,12 +698,14 @@ public class AccessService implements IAccessService {
       throws JSONException, IOException, InterruptedException {
     JSONObject jsonAnnotation;
     if (annotation.getId() != null && !annotation.getId().trim().equals("")) {
-       jsonAnnotation = annotationStoreAccessService.getAnnotationById(annotation.getId());
-       jsonAnnotation.put(AnnotationStoreStrings.ID.getName(), annotation.getId());
+      jsonAnnotation = annotationStoreAccessService.getAnnotationById(annotation.getId());
+      jsonAnnotation.put(AnnotationStoreStrings.ID.getName(), annotation.getId());
     } else {
       jsonAnnotation = new JSONObject();
-      jsonAnnotation.put(AnnotationStoreStrings.CONTEXT.getName(), AnnotationStoreStrings.URL_JSONID.getName());
-      jsonAnnotation.put(AnnotationStoreStrings.TYPE.getName(), AnnotationStoreStrings.ANNOTATION.getName());
+      jsonAnnotation.put(AnnotationStoreStrings.CONTEXT.getName(),
+          AnnotationStoreStrings.URL_JSONID.getName());
+      jsonAnnotation.put(AnnotationStoreStrings.TYPE.getName(),
+          AnnotationStoreStrings.ANNOTATION.getName());
     }
 
     if (jsonAnnotation.has(AnnotationStoreStrings.ETAG.getName())) {
@@ -723,7 +730,8 @@ public class AccessService implements IAccessService {
     }
 
     if (annotation.getTextCards() != null && annotation.getTags() != null) {
-      if (annotation.getTextCards().size() + annotation.getTags().size() == 1 && annotation.getColor() == null) {
+      if (annotation.getTextCards().size() + annotation.getTags().size() == 1
+          && annotation.getColor() == null) {
         jsonAnnotation.put(AnnotationStoreStrings.BODY.getName(), buildJsonFromBody(annotation));
       } else {
         jsonAnnotation.put(AnnotationStoreStrings.BODY.getName(), buildJsonFromBodies(annotation));
@@ -733,14 +741,16 @@ public class AccessService implements IAccessService {
           boolean hasColor = false;
           for (int i = 0; i < bodyArray.length(); i++) {
             if (bodyArray.getJSONObject(i).has(AnnotationStoreStrings.DC_SUBJECT.getName())) {
-              bodyArray.getJSONObject(i).put(AnnotationStoreStrings.DC_SUBJECT.getName(), putColor(annotation.getColor()));
+              bodyArray.getJSONObject(i).put(AnnotationStoreStrings.DC_SUBJECT.getName(),
+                  putColor(annotation.getColor()));
               buildCreator(annotation, bodyArray.getJSONObject(i));
               hasColor = true;
             }
           }
           if (!hasColor) {
             JSONObject colorBody = new JSONObject();
-            colorBody.put(AnnotationStoreStrings.DC_SUBJECT.getName(), putColor(annotation.getColor()));
+            colorBody.put(AnnotationStoreStrings.DC_SUBJECT.getName(),
+                putColor(annotation.getColor()));
             buildCreator(annotation, colorBody);
             jsonAnnotation.getJSONArray(AnnotationStoreStrings.BODY.getName()).put(colorBody);
           }
@@ -751,22 +761,24 @@ public class AccessService implements IAccessService {
     JSONObject target = new JSONObject();
     JSONObject selector = new JSONObject();
     if (jsonAnnotation.has(AnnotationStoreStrings.TARGET.getName())) {
-       target = jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName());
-       if (target.has(AnnotationStoreStrings.SELECTOR.getName())) {
-         selector = target.getJSONObject(AnnotationStoreStrings.SELECTOR.getName());
-       }
+      target = jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName());
+      if (target.has(AnnotationStoreStrings.SELECTOR.getName())) {
+        selector = target.getJSONObject(AnnotationStoreStrings.SELECTOR.getName());
+      }
     }
 
     // in form <svg><code></svg>
     if (annotation.getSvgCode() != null && !annotation.getSvgCode().trim().equals("")) {
-      selector.put(AnnotationStoreStrings.TYPE.getName(), AnnotationStoreStrings.SVG_SELECTOR.getName());
+      selector.put(AnnotationStoreStrings.TYPE.getName(),
+          AnnotationStoreStrings.SVG_SELECTOR.getName());
       selector.put(AnnotationStoreStrings.VALUE.getName(), annotation.getSvgCode());
       target.put(AnnotationStoreStrings.SELECTOR.getName(), selector);
     }
 
     // source is url of page image
     if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
-      target.put(AnnotationStoreStrings.TYPE.getName(), AnnotationStoreStrings.SPECIFIC_RESOURCE.getName());
+      target.put(AnnotationStoreStrings.TYPE.getName(),
+          AnnotationStoreStrings.SPECIFIC_RESOURCE.getName());
       target.put(AnnotationStoreStrings.SOURCE.getName(), baseUrl + staticPath
           + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
           + RepositoryAccessService.MASTER_JPG);
@@ -774,7 +786,8 @@ public class AccessService implements IAccessService {
     jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), target);
 
     if (annotation.getMotivation() != null) {
-      jsonAnnotation.put(AnnotationStoreStrings.MOTIVATION.getName(), annotation.getMotivation().getName());
+      jsonAnnotation.put(AnnotationStoreStrings.MOTIVATION.getName(),
+          annotation.getMotivation().getName());
     }
 
     if (annotation.getVia() != null && !annotation.getVia().equals("")) {
@@ -830,7 +843,7 @@ public class AccessService implements IAccessService {
       for (TextCard textCard : annotation.getTextCards()) {
         JSONObject jsonTextCard = new JSONObject();
         if (textCard.getFullJson() != null) {
-           jsonTextCard = textCard.getFullJson();
+          jsonTextCard = textCard.getFullJson();
         } else {
           textCard.setFullJson(jsonTextCard);
         }
@@ -855,7 +868,8 @@ public class AccessService implements IAccessService {
               IAnnotationStoreAccessService.TIMESTAMP_FORMAT_MILLIS.format(textCard.getModified()));
         }
         if (textCard.getPurpose() != null) {
-          jsonTextCard.put(AnnotationStoreStrings.PURPOSE.getName(), textCard.getPurpose().getName());
+          jsonTextCard.put(AnnotationStoreStrings.PURPOSE.getName(),
+              textCard.getPurpose().getName());
         }
 
         jsonBodies.put(jsonTextCard);
@@ -865,7 +879,7 @@ public class AccessService implements IAccessService {
       for (Tag tag : annotation.getTags()) {
         JSONObject jsonTag = new JSONObject();
         if (tag.getFullJson() != null) {
-         jsonTag = tag.getFullJson();
+          jsonTag = tag.getFullJson();
         } else {
           tag.setFullJson(jsonTag);
         }
@@ -901,7 +915,8 @@ public class AccessService implements IAccessService {
   private void buildCreator(Annotation annotation, JSONObject jsonAnnotation) throws JSONException {
     if (jsonAnnotation.has(AnnotationStoreStrings.CREATOR.getName())) {
       boolean containsCreator = false;
-      if (!annotation.getIsAlgorithmAnnotation() && isJsonArray(jsonAnnotation.getString(AnnotationStoreStrings.CREATOR.getName()))) {
+      if (!annotation.getIsAlgorithmAnnotation() && isJsonArray(jsonAnnotation.getString(
+          AnnotationStoreStrings.CREATOR.getName()))) {
         JSONArray creators = jsonAnnotation.getJSONArray(AnnotationStoreStrings.CREATOR.getName());
         for (int i = 0; i < creators.length(); i++) {
           for (String newCreator : annotation.getCreators()) {
@@ -914,7 +929,8 @@ public class AccessService implements IAccessService {
         if (!containsCreator) {
           for (String creator : annotation.getCreators()) {
             JSONObject person = new JSONObject();
-            person.put(AnnotationStoreStrings.TYPE.getName(), AnnotationStoreStrings.PERSON.getName());
+            person.put(AnnotationStoreStrings.TYPE.getName(),
+                AnnotationStoreStrings.PERSON.getName());
             person.put(AnnotationStoreStrings.NAME.getName(), creator);
             creators.put(person);
           }
@@ -923,8 +939,10 @@ public class AccessService implements IAccessService {
 
       } else {
         JSONObject oldCreator;
-        if (jsonAnnotation.getString(AnnotationStoreStrings.CREATOR.getName()).startsWith(ALGORITHM_CREATOR_PREFIX)) {
-          oldCreator = new JSONObject(jsonAnnotation.getString(AnnotationStoreStrings.CREATOR.getName()));
+        if (jsonAnnotation.getString(AnnotationStoreStrings.CREATOR.getName())
+            .startsWith(ALGORITHM_CREATOR_PREFIX)) {
+          oldCreator = new JSONObject(jsonAnnotation.getString(
+              AnnotationStoreStrings.CREATOR.getName()));
         } else {
           oldCreator = jsonAnnotation.getJSONObject(
               AnnotationStoreStrings.CREATOR.getName());
@@ -947,14 +965,16 @@ public class AccessService implements IAccessService {
         JSONArray creators = new JSONArray();
         for (String thisCreator : annotation.getCreators()) {
           JSONObject newCreator = new JSONObject();
-          newCreator.put(AnnotationStoreStrings.TYPE.getName(), AnnotationStoreStrings.PERSON.getName());
+          newCreator.put(AnnotationStoreStrings.TYPE.getName(),
+              AnnotationStoreStrings.PERSON.getName());
           newCreator.put(AnnotationStoreStrings.NAME.getName(), thisCreator);
           creators.put(newCreator);
         }
         jsonAnnotation.put(AnnotationStoreStrings.CREATOR.getName(), creators);
       } else {
         JSONObject newCreator = new JSONObject();
-        newCreator.put(AnnotationStoreStrings.TYPE.getName(), AnnotationStoreStrings.PERSON.getName());
+        newCreator.put(AnnotationStoreStrings.TYPE.getName(),
+            AnnotationStoreStrings.PERSON.getName());
         newCreator.put(AnnotationStoreStrings.NAME.getName(), annotation.getCreators().get(0));
         jsonAnnotation.put(AnnotationStoreStrings.CREATOR.getName(), newCreator);
       }
@@ -970,8 +990,8 @@ public class AccessService implements IAccessService {
       modelObject = tag;
     }
 
-    if (jsonObject.has(AnnotationStoreStrings.CREATOR.getName()) &&
-    isJsonArray(jsonObject.getString(AnnotationStoreStrings.CREATOR.getName()))) {
+    if (jsonObject.has(AnnotationStoreStrings.CREATOR.getName())
+        && isJsonArray(jsonObject.getString(AnnotationStoreStrings.CREATOR.getName()))) {
       JSONArray creators = jsonObject.getJSONArray(AnnotationStoreStrings.CREATOR.getName());
       boolean containsCreator = false;
       for (int i = 0; i < creators.length(); i++) {
@@ -998,8 +1018,8 @@ public class AccessService implements IAccessService {
       }
       JSONArray newCreators = new JSONArray();
       for (String newCreator : modelObject.getCreators()) {
-        if (!creator.has(AnnotationStoreStrings.CREATOR.getName()) ||
-        !creator.getString(AnnotationStoreStrings.NAME.getName()).equals(newCreator)) {
+        if (!creator.has(AnnotationStoreStrings.CREATOR.getName())
+            || !creator.getString(AnnotationStoreStrings.NAME.getName()).equals(newCreator)) {
           JSONObject person = new JSONObject();
           person.put(AnnotationStoreStrings.TYPE.getName(),
               AnnotationStoreStrings.PERSON.getName());

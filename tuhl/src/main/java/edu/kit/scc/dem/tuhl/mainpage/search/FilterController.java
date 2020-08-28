@@ -29,6 +29,7 @@ public class FilterController {
   
   /**
    * Constructor for the FilterController to autowire required instances.
+   *
    * @param filterService instance of the business logic for filters. Injected with Springs
    *                      dependency injection system indicated by @autowired annotation.
    */

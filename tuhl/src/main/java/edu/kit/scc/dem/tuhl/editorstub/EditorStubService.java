@@ -325,7 +325,7 @@ public class EditorStubService implements IEditorStubService {
 
     TextCard newTextCard;
     try {
-       newTextCard = (TextCard) searchIndexService.updateBody(updatedTextCard);
+      newTextCard = (TextCard) searchIndexService.updateBody(updatedTextCard);
     } catch (JSONException e) {
       newTextCard  = new TextCard("No TextCard");
       e.printStackTrace();
