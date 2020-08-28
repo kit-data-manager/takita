@@ -15,9 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.annotation.SessionScope;
 
-
-
-
 /**
  * Implementation of ContentView Service for type TableView.
  * Has specific methods for TableView Content, such as get Thumbnails,
@@ -28,16 +25,16 @@ import org.springframework.web.context.annotation.SessionScope;
 @SessionScope
 @Service
 public class TableViewService implements IContentViewService {
-
+  
   private static final String TYPE = "tableView";
-
+  
   private final ISearchIndexService searchIndexService;
   private final ISearchService searchService;
   private final IAssistanceService assistanceService;
   private int currentPage;
   private boolean sortAsc;
-  private String sortField; //als enum?
-
+  private String sortField;
+  
   /**
    * Constructor for the Table View Service to autowire required instances.
    *
@@ -58,29 +55,27 @@ public class TableViewService implements IContentViewService {
     this.sortField = "id";
     this.currentPage = 1;
   }
-
-
+  
+  
   /**
    * Trigger search.
    *
    * @return List of Manuscripts
    */
   public List<Manuscript> search() {
-    List<Manuscript> results = searchService.search(currentPage, sortField, sortAsc);
-    return results;
+    return searchService.search(currentPage, sortField, sortAsc);
   }
-
+  
   /**
    * Gets search Results from Search Service.
    *
    * @return List of Manuscripts
    */
   public List<Manuscript> getResults() {
-    List<Manuscript> results = searchService.getResults();
-    return results;
+    return searchService.getResults();
   }
-
-
+  
+  
   /**
    * Gets Type of content view.
    *
@@ -90,7 +85,7 @@ public class TableViewService implements IContentViewService {
   public String getType() {
     return TYPE;
   }
-
+  
   /**
    * gets current page number.
    *
@@ -99,7 +94,7 @@ public class TableViewService implements IContentViewService {
   public int getCurrentPage() {
     return currentPage;
   }
-
+  
   /**
    * Sets current page number.
    *
@@ -109,7 +104,7 @@ public class TableViewService implements IContentViewService {
     assistanceService.getCurrentUser().setCurrentPage(currentPage);
     this.currentPage = currentPage;
   }
-
+  
   /**
    * Get SortAsc boolean.
    *
@@ -118,7 +113,7 @@ public class TableViewService implements IContentViewService {
   public boolean isSortAsc() {
     return sortAsc;
   }
-
+  
   /**
    * Sets sortAsc boolean.
    *
@@ -127,7 +122,7 @@ public class TableViewService implements IContentViewService {
   public void setSortAsc(boolean sortAsc) {
     this.sortAsc = sortAsc;
   }
-
+  
   /**
    * Gets sortField.
    *
@@ -136,7 +131,7 @@ public class TableViewService implements IContentViewService {
   public String getSortField() {
     return sortField;
   }
-
+  
   /**
    * Sets sortField.
    *
@@ -145,7 +140,7 @@ public class TableViewService implements IContentViewService {
   public void setSortField(String sortField) {
     this.sortField = sortField;
   }
-
+  
   /**
    * Gets all Pages of a Manuscript from searchIndexService.
    *
@@ -157,18 +152,18 @@ public class TableViewService implements IContentViewService {
   public List<Page> getPages(String manuscriptId) throws NoSuchIndexEntryException {
     return searchIndexService.getManuscriptById(manuscriptId).getPages();
   }
-
+  
   /**
-   * Gets first Page of Manuscript.
+   * Gets the id of the first Page of the Manuscript with the specified id.
    *
    * @param manId of manuscript
-   * @return first page
+   * @return the id of the first page
    * @throws NoSuchIndexEntryException when there is no manuscript with this ID in the search index
    */
   public String getFirstPage(String manId) throws NoSuchIndexEntryException {
     return searchIndexService.getManuscriptById(manId).getPages().get(0).getId();
   }
-
+  
   /**
    * Update Model with everything from tableViewService.
    *
@@ -184,52 +179,46 @@ public class TableViewService implements IContentViewService {
     }
     model.addAttribute("currentPage", getCurrentPage());
   }
-
+  
   public void setNumberOfResults(int noResults) {
     searchService.setPageSize(noResults);
   }
-
+  
   public long getNumberOfResultsPages() {
     return searchService.getResultPagesCount();
   }
-
+  
   /**
    * Gets results and formats them in JSON Array for table to read.
    *
    * @return table data as JSONArray
    */
-  public JSONArray getData() {
-
-
+  public JSONArray getData() throws JSONException {
     JSONArray data = new JSONArray();
-    try {
-      for (Manuscript man : getResults()) {
-        JSONArray thumbnails = new JSONArray();
-        for (Page pg : man.getPages()) {
-          JSONObject obj = new JSONObject();
-          String thumb = pg.getThumbResourceUrl();
-          String id = pg.getId();
-          obj.put("thumb", thumb);
-          obj.put("id", id);
-          obj.put("pageNumber", pg.getPageNumber());
-          thumbnails.put(obj);
-        }
-        JSONObject row = new JSONObject();
-        row.put("id", man.getId());
-        row.put("title", man.getTitle());
-        row.put("publisher", man.getPublisher());
-        row.put("created", man.getCreated());
-        row.put("publicationYear", man.getPublicationYear());
-        row.put("hasAlgorithmAnnotations", man.hasAlgorithmAnnotations());
-        row.put("lastModified", man.getLastModified());
-        row.put("noPages", man.getNoPages());
-        row.put("thumbnails", thumbnails);
-
-        data.put(row);
-
+    for (Manuscript man : getResults()) {
+      JSONArray thumbnails = new JSONArray();
+      for (Page pg : man.getPages()) {
+        JSONObject obj = new JSONObject();
+        String thumb = pg.getThumbResourceUrl();
+        String id = pg.getId();
+        obj.put("thumb", thumb);
+        obj.put("id", id);
+        obj.put("pageNumber", pg.getPageNumber());
+        thumbnails.put(obj);
       }
-    } catch (JSONException e) {
-      e.printStackTrace();
+      
+      JSONObject row = new JSONObject();
+      row.put("id", man.getId());
+      row.put("title", man.getTitle());
+      row.put("publisher", man.getPublisher());
+      row.put("created", man.getCreated());
+      row.put("publicationYear", man.getPublicationYear());
+      row.put("hasAlgorithmAnnotations", man.hasAlgorithmAnnotations());
+      row.put("lastModified", man.getLastModified());
+      row.put("noPages", man.getNoPages());
+      row.put("thumbnails", thumbnails);
+      
+      data.put(row);
     }
     return data;
   }
