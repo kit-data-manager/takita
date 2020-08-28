@@ -30,6 +30,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import org.apache.lucene.search.join.ScoreMode;
+import org.elasticsearch.action.admin.indices.analyze.AnalyzeRequestBuilder;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -42,6 +43,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.data.elasticsearch.annotations.Setting;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.IndexOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -113,11 +115,8 @@ public class SearchIndexService implements ISearchIndexService {
     indexOp.putMapping(indexOp.createMapping(Annotation.class));
     indexOp.putMapping(indexOp.createMapping(Tag.class));
     indexOp.putMapping(indexOp.createMapping(TextCard.class));
-    
     List<Manuscript> allManuscripts = accessService.getAllManuscripts();
     
-    
-    boolean doIt;
     for (Manuscript m : allManuscripts) {
       logger.info("Finished. Indexing manuscript {}", m.getId());
       manuscriptRepository.save(m);

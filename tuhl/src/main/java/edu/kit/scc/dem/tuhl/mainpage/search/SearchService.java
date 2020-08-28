@@ -80,7 +80,7 @@ public class SearchService implements ISearchService {
    */
   @Override
   public List<Manuscript> search(int pageNumber, String sortField, boolean sortAsc) {
-    boolean exists = !elasticsearchRestTemplate.execute(client ->
+    boolean exists = elasticsearchRestTemplate.execute(client ->
         client.indices().exists(new GetIndexRequest(INDEX_NAME), RequestOptions.DEFAULT));
     if (!exists) {
       logger.error("The index does not exist. Please try to build it first.");
@@ -133,7 +133,6 @@ public class SearchService implements ISearchService {
     queryBuilder.withQuery(boolQuery);
     
     resultPagesCount = calculatePageCount(queryBuilder.build());
-    
     //Perform the search
     return performRequest(queryBuilder.build(), pageNumber, sortField, sortAsc);
   }
