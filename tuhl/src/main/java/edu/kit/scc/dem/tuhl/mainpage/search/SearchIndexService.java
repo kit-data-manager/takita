@@ -425,12 +425,17 @@ public class SearchIndexService implements ISearchIndexService {
   
     SearchHits<Manuscript> manuscriptForPage = elasticsearchRestTemplate.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
+
+    Manuscript manuscript;
+    if (manuscriptForPage.hasSearchHits()) {
+      manuscript = manuscriptForPage.getSearchHit(0).getContent();
+    } else {
+      throw new NoSuchIndexEntryException("No such text card.");
+    }
   
-    Manuscript man = manuscriptForPage.getSearchHit(0).getContent();
-  
-    for (Page page : man.getPages()) {
+    for (Page page : manuscript.getPages()) {
       if (page.getResourceType() == ResourceType.IMAGE) {
-        for (Annotation annotation : ((ImagePage) page).getAnnotations()) {
+        for (Annotation annotation : page.getAnnotations()) {
           for (TextCard card : annotation.getTextCards()) {
             if (card.getId().equals(id)) {
               return card;
@@ -456,15 +461,18 @@ public class SearchIndexService implements ISearchIndexService {
     SearchHits<Manuscript> manuscriptForPage = elasticsearchRestTemplate.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
     
-    Manuscript man = manuscriptForPage.getSearchHit(0).getContent();
+    Manuscript manuscript;
+    if (manuscriptForPage.hasSearchHits()) {
+      manuscript = manuscriptForPage.getSearchHit(0).getContent();
+    } else {
+      throw new NoSuchIndexEntryException("No such tag card.");
+    }
 
-    for (Page page : man.getPages()) {
-      if (page.getResourceType() == ResourceType.IMAGE) {
-        for (Annotation annotation : ((ImagePage) page).getAnnotations()) {
-          for (Tag tag : annotation.getTags()) {
-            if (tag.getId().equals(id)) {
-              return tag;
-            }
+    for (Page page : manuscript.getPages()) {
+      for (Annotation annotation : page.getAnnotations()) {
+        for (Tag tag : annotation.getTags()) {
+          if (tag.getId().equals(id)) {
+            return tag;
           }
         }
       }
@@ -483,7 +491,7 @@ public class SearchIndexService implements ISearchIndexService {
   public void updateBody(Body body) throws IOException, InterruptedException, JSONException,
       NoSuchIndexEntryException {
     Annotation updatedAnnotation = getAnnotationByBodyId(body.getId());
-    if (body.getPurpose().equals("tagging")) {
+    if (body.getPurpose() == Motivation.TAGGING) {
       updatedAnnotation.addTag((Tag) body);
     } else {
       updatedAnnotation.addTextCard((TextCard) body);
@@ -503,11 +511,11 @@ public class SearchIndexService implements ISearchIndexService {
   public void deleteBodyById(String id) throws IOException, InterruptedException,
       JSONException, NoSuchIndexEntryException {
     Annotation updatedAnnotation = getAnnotationByBodyId(id);
-    Body b = getBodyFromAnnotationAndId(updatedAnnotation, id);
-    if (b.getPurpose().equals("tagging")) {
-      updatedAnnotation.getTags().remove(b);
+    Body body = getBodyFromAnnotationAndId(updatedAnnotation, id);
+    if (body.getPurpose() == Motivation.TAGGING) {
+      updatedAnnotation.getTags().remove(body);
     } else {
-      updatedAnnotation.getTextCards().remove(b);
+      updatedAnnotation.getTextCards().remove(body);
     }
     updateAnnotation(updatedAnnotation);
   }
@@ -523,18 +531,16 @@ public class SearchIndexService implements ISearchIndexService {
     SearchHits<Manuscript> searchHits = elasticsearchRestTemplate.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
     
-    for (Page p : searchHits.getSearchHit(0).getContent().getPages()) {
-      if (p.getResourceType().equals(ResourceType.IMAGE)) {
-        for (Annotation a : ((ImagePage) p).getAnnotations()) {
-          for (Body b : a.getTextCards()) {
-            if (b.getId().equals(bodyId)) {
-              return a;
-            }
+    for (Page page : searchHits.getSearchHit(0).getContent().getPages()) {
+      for (Annotation annotation : page.getAnnotations()) {
+        for (Body body : annotation.getTextCards()) {
+          if (body.getId().equals(bodyId)) {
+            return annotation;
           }
-          for (Body b : a.getTags()) {
-            if (b.getId().equals(bodyId)) {
-              return a;
-            }
+        }
+        for (Body body : annotation.getTags()) {
+          if (body.getId().equals(bodyId)) {
+            return annotation;
           }
         }
       }
@@ -545,14 +551,14 @@ public class SearchIndexService implements ISearchIndexService {
   private Body getBodyFromAnnotationAndId(Annotation annotation, String bodyId)
       throws NoSuchIndexEntryException {
 
-    for (Body b : annotation.getTags()) {
-      if (b.getId().equals(bodyId)) {
-        return b;
+    for (Body body : annotation.getTags()) {
+      if (body.getId().equals(bodyId)) {
+        return body;
       }
     }
-    for (Body b : annotation.getTextCards()) {
-      if (b.getId().equals(bodyId)) {
-        return b;
+    for (Body body : annotation.getTextCards()) {
+      if (body.getId().equals(bodyId)) {
+        return body;
       }
     }
     throw new NoSuchIndexEntryException("Could not find Body with id: " + bodyId);
@@ -591,9 +597,9 @@ public class SearchIndexService implements ISearchIndexService {
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
     
     if (manuscripts.hasSearchHits()) {
-      for (Page p : manuscripts.getSearchHit(0).getContent().getPages()) {
-        if (p.getId().equals(id)) {
-          return p;
+      for (Page page : manuscripts.getSearchHit(0).getContent().getPages()) {
+        if (page.getId().equals(id)) {
+          return page;
         }
       }
     }
@@ -601,9 +607,9 @@ public class SearchIndexService implements ISearchIndexService {
   }
 
   private Page getPageById(String pageId, Manuscript manuscript) throws NoSuchIndexEntryException {
-    for (Page p : manuscript.getPages()) {
-      if (p.getId().equals(pageId)) {
-        return p;
+    for (Page page : manuscript.getPages()) {
+      if (page.getId().equals(pageId)) {
+        return page;
       }
     }
     throw new NoSuchIndexEntryException("The page with the id \" + id + \" could not be found");

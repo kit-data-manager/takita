@@ -319,7 +319,7 @@ public class EditorStubService implements IEditorStubService {
       updatedTextCard.setValue(value);
     }
 
-    if (purpose != null && stringToMotivation(purpose) != null) {
+    if (purpose != null && !purpose.trim().equals("")) {
       updatedTextCard.setPurpose(stringToMotivation(purpose));
     }
 
@@ -518,33 +518,33 @@ public class EditorStubService implements IEditorStubService {
   }
 
   private Motivation stringToMotivation(String stringMotivation) {
-    if (Motivation.ASSESSING.getName().equals(stringMotivation)) {
+    if (Motivation.ASSESSING.toString().equals(stringMotivation)) {
       return Motivation.ASSESSING;
-    } else if (Motivation.BOOKMARKING.getName().equals(stringMotivation)) {
+    } else if (Motivation.BOOKMARKING.toString().equals(stringMotivation)) {
       return Motivation.BOOKMARKING;
-    } else if (Motivation.CLASSIFYING.getName().equals(stringMotivation)) {
+    } else if (Motivation.CLASSIFYING.toString().equals(stringMotivation)) {
       return Motivation.CLASSIFYING;
-    } else if (Motivation.COMMENTING.getName().equals(stringMotivation)) {
+    } else if (Motivation.COMMENTING.toString().equals(stringMotivation)) {
       return Motivation.COMMENTING;
-    } else if (Motivation.DESCRIBING.getName().equals(stringMotivation)) {
+    } else if (Motivation.DESCRIBING.toString().equals(stringMotivation)) {
       return Motivation.DESCRIBING;
-    } else if (Motivation.EDITING.getName().equals(stringMotivation)) {
+    } else if (Motivation.EDITING.toString().equals(stringMotivation)) {
       return Motivation.EDITING;
-    } else if (Motivation.HIGHLIGHTING.getName().equals(stringMotivation)) {
+    } else if (Motivation.HIGHLIGHTING.toString().equals(stringMotivation)) {
       return Motivation.HIGHLIGHTING;
-    } else if (Motivation.IDENTIFYING.getName().equals(stringMotivation)) {
+    } else if (Motivation.IDENTIFYING.toString().equals(stringMotivation)) {
       return Motivation.IDENTIFYING;
-    } else if (Motivation.LINKING.getName().equals(stringMotivation)) {
+    } else if (Motivation.LINKING.toString().equals(stringMotivation)) {
       return Motivation.LINKING;
-    } else if (Motivation.MODERATING.getName().equals(stringMotivation)) {
+    } else if (Motivation.MODERATING.toString().equals(stringMotivation)) {
       return Motivation.MODERATING;
-    } else if (Motivation.QUESTIONING.getName().equals(stringMotivation)) {
+    } else if (Motivation.QUESTIONING.toString().equals(stringMotivation)) {
       return Motivation.QUESTIONING;
-    } else if (Motivation.REPLYING.getName().equals(stringMotivation)) {
+    } else if (Motivation.REPLYING.toString().equals(stringMotivation)) {
       return Motivation.REPLYING;
-    } else if (Motivation.TAGGING.getName().equals(stringMotivation)) {
+    } else if (Motivation.TAGGING.toString().equals(stringMotivation)) {
       return Motivation.TAGGING;
     }
-    return null;
+    throw new IllegalArgumentException("Purpose couldn't be parsed.");
   }
 }

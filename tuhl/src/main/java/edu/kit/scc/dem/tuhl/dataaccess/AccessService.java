@@ -384,7 +384,6 @@ public class AccessService implements IAccessService {
       throws JSONException, IOException, InterruptedException {
     JSONObject updatedAnnotation = annotationStoreAccessService.updateAnnotation(annotation.getId(),
         buildJsonFromAnnotation(annotation, pageNumber), annotation.getEtag());
-    System.out.println("updatedAnnotation etag " + updatedAnnotation.getString("etag"));
     return buildAnnotationFromJson(updatedAnnotation);
   }
 
@@ -811,7 +810,7 @@ public class AccessService implements IAccessService {
           IAnnotationStoreAccessService.TIMESTAMP_FORMAT_MILLIS.format(thisBody.getCreated()));
     }
     if (thisBody.getPurpose() != null) {
-      jsonBody.put(AnnotationStoreStrings.PURPOSE.getName(), thisBody.getPurpose());
+      jsonBody.put(AnnotationStoreStrings.PURPOSE.getName(), thisBody.getPurpose().getName());
     }
     if (thisBody.getValue() != null) {
       jsonBody.put(AnnotationStoreStrings.VALUE.getName(), thisBody.getValue());
@@ -829,7 +828,6 @@ public class AccessService implements IAccessService {
     if (annotation.getTextCards().size() >= 1) {
       for (TextCard textCard : annotation.getTextCards()) {
         JSONObject jsonTextCard = new JSONObject();
-        System.out.println("textcard " + textCard);
         if (textCard.getFullJson() != null) {
            jsonTextCard = textCard.getFullJson();
         } else {
@@ -856,7 +854,7 @@ public class AccessService implements IAccessService {
               IAnnotationStoreAccessService.TIMESTAMP_FORMAT_MILLIS.format(textCard.getModified()));
         }
         if (textCard.getPurpose() != null) {
-          jsonTextCard.put(AnnotationStoreStrings.PURPOSE.getName(), textCard.getPurpose());
+          jsonTextCard.put(AnnotationStoreStrings.PURPOSE.getName(), textCard.getPurpose().getName());
         }
 
         jsonBodies.put(jsonTextCard);
@@ -891,7 +889,7 @@ public class AccessService implements IAccessService {
               IAnnotationStoreAccessService.TIMESTAMP_FORMAT_MILLIS.format(tag.getCreated()));
         }
         if (tag.getPurpose() != null) {
-          jsonTag.put(AnnotationStoreStrings.PURPOSE.getName(), tag.getPurpose());
+          jsonTag.put(AnnotationStoreStrings.PURPOSE.getName(), tag.getPurpose().getName());
         }
         jsonBodies.put(jsonTag);
       }
@@ -923,8 +921,13 @@ public class AccessService implements IAccessService {
         }
 
       } else {
-        JSONObject oldCreator = jsonAnnotation.getJSONObject(
-            AnnotationStoreStrings.CREATOR.getName());
+        JSONObject oldCreator;
+        if (jsonAnnotation.getString(AnnotationStoreStrings.CREATOR.getName()).startsWith(ALGORITHM_CREATOR_PREFIX)) {
+          oldCreator = new JSONObject(jsonAnnotation.getString(AnnotationStoreStrings.CREATOR.getName()));
+        } else {
+          oldCreator = jsonAnnotation.getJSONObject(
+              AnnotationStoreStrings.CREATOR.getName());
+        }
         JSONArray newCreators = new JSONArray();
         newCreators.put(oldCreator);
         for (String newCreator : annotation.getCreators()) {

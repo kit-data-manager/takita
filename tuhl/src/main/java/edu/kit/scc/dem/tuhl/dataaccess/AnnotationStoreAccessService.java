@@ -86,8 +86,13 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
     JSONObject deinterpretationeAnnotation = new JSONObject(httpRequestHelper
         .postAnnotations(urlPrefix + DEINTERPRETATIONE_URL, jsonAnnotation).body());
 
-    String deinterpretationeId = deinterpretationeAnnotation
-        .getString(AnnotationStoreStrings.ID.getName());
+    String deinterpretationeId;
+    if (deinterpretationeAnnotation.has(AnnotationStoreStrings.ID.getName())) {
+       deinterpretationeId = deinterpretationeAnnotation
+          .getString(AnnotationStoreStrings.ID.getName());
+    } else {
+      throw new JSONException("There was a problem with the annotation");
+    }
 
     jsonAnnotation.put(AnnotationStoreStrings.VIA.getName(), deinterpretationeId);
     jsonAnnotation.put(AnnotationStoreStrings.CANONICAL.getName(), deinterpretationeId);
@@ -332,8 +337,6 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
           .ID.getName()).toString(), deInterpretationeJson, deInterpretationeAnnotation.getString(AnnotationStoreStrings.ETAG.getName()));
     }
     HttpResponse<String> response = httpRequestHelper.put(annotationId, jsonAnnotation, etag);
-    System.out.println("response " + response);
-    System.out.println("response headers " + response.headers());
 
     if (!response.headers().allValues(AnnotationStoreStrings.ETAG.getName()).isEmpty()) {
       String newEtag = response.headers().allValues(AnnotationStoreStrings.ETAG.getName())
