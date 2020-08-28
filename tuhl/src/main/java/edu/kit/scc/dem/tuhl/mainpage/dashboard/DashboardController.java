@@ -41,16 +41,6 @@ public class DashboardController {
   }
 
   /**
-   * Get mapping to display content view.
-   *
-   * @return redirect
-   */
-  @GetMapping("/contentview")
-  public String showContentView() {
-    return dashboardService.getRedirect();
-  }
-
-  /**
    * handles http get request for chosen content view.
    *
    * @param contentView that is chosen
@@ -59,6 +49,6 @@ public class DashboardController {
   @GetMapping("/contentview/{view}")
   public String getContentView(@PathVariable("view") String contentView) {
     dashboardService.setCurrentContentView(contentView);
-    return "redirect:/dashboard/contentview";
+    return dashboardService.getRedirect();
   }
 }
