@@ -391,11 +391,14 @@ public class SearchIndexService implements ISearchIndexService {
    * Adds a body to an annotation in the search index.
    *
    * @param body new Body
+   * @return added Body with new ID
    * @throws IOException if an error occurs while sending/receiving http request to annotation store
    * @throws InterruptedException if http request is interrupted
+   * @throws JSONException when the object couldn't be parsed to JSON
+   * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
    */
   @Override
-  public void addBody(Body body) throws IOException, InterruptedException, JSONException,
+  public Body addBody(Body body) throws IOException, InterruptedException, JSONException,
       NoSuchIndexEntryException {
     Annotation updatedAnnotation = getAnnotationById(body.getAnnotationId());
     if (body.getPurpose() == Motivation.TAGGING) {
@@ -404,7 +407,9 @@ public class SearchIndexService implements ISearchIndexService {
       updatedAnnotation.addTextCard((TextCard) body);
     }
 
-    updateAnnotation(updatedAnnotation);
+    updatedAnnotation = updateAnnotation(updatedAnnotation);
+
+    return findBodyInAnnotation(body, updatedAnnotation);
   }
 
   /**
@@ -499,20 +504,7 @@ public class SearchIndexService implements ISearchIndexService {
 
     Annotation updatedAnnotation = updateAnnotation(annotation);
 
-    List<Body> allBodies = new ArrayList<>();
-    allBodies.addAll(updatedAnnotation.getTags());
-    allBodies.addAll(updatedAnnotation.getTextCards());
-    for (Body newBody : allBodies) {
-      if (newBody.getCreated() != null &&
-          newBody.getCreated().equals(body.getCreated()) &&
-          newBody.getCreators().containsAll(body.getCreators()) &&
-          newBody.getPurpose() == body.getPurpose() &&
-          newBody.getTitle().equals(body.getTitle()) &&
-          newBody.getValue().equals(body.getValue())) {
-        return newBody;
-      }
-    }
-    throw new NoSuchIndexEntryException("No body like this was found in the index.");
+    return findBodyInAnnotation(body, updatedAnnotation);
   }
 
   /**
@@ -710,5 +702,22 @@ public class SearchIndexService implements ISearchIndexService {
         TimeUnit.MILLISECONDS.convert(updateIndexDayInterval, TimeUnit.DAYS));
     logger.info("Scheduled index update cycle at the {}th hour of day every {} days",
         updateIndexHour, updateIndexDayInterval);
+  }
+
+  private Body findBodyInAnnotation(Body body, Annotation annotation) throws NoSuchIndexEntryException {
+    List<Body> allBodies = new ArrayList<>();
+    allBodies.addAll(annotation.getTags());
+    allBodies.addAll(annotation.getTextCards());
+    for (Body newBody : allBodies) {
+      if (newBody.getCreated() != null &&
+          newBody.getCreated().equals(body.getCreated()) &&
+          newBody.getCreators().containsAll(body.getCreators()) &&
+          newBody.getPurpose() == body.getPurpose() &&
+          newBody.getTitle().equals(body.getTitle()) &&
+          newBody.getValue().equals(body.getValue())) {
+        return newBody;
+      }
+    }
+    throw new NoSuchIndexEntryException("No body like this was found in the index.");
   }
 }

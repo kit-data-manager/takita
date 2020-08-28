@@ -85,7 +85,6 @@ class HttpRequestHelper {
    */
   public HttpResponse<String> put(String url, JSONObject requestBody, String etag)
       throws IOException, InterruptedException {
-    System.out.println("etag " + etag);
     HttpRequest request = HttpRequest.newBuilder()
         .uri(URI.create(url))
         .header(HTTP.CONTENT_TYPE, "application/ld+json;profile=\"http://www.w3.org/ns/anno.jsonld\"")

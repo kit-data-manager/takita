@@ -641,6 +641,7 @@ public class AccessService implements IAccessService {
         }
         textCards.add((TextCard) thisBody);
       }
+
       thisBody.setAnnotationId(annotation.getId());
       thisBody.setFullJson(thisJson);
 
@@ -873,7 +874,7 @@ public class AccessService implements IAccessService {
           jsonTag.put(AnnotationStoreStrings.DC_TITLE.getName(), tag.getTitle());
         }
 
-        if (tag.getCreators().isEmpty()) {
+        if (!tag.getCreators().isEmpty()) {
           buildCreatorsFromBodies(jsonTag, null, tag);
         }
 

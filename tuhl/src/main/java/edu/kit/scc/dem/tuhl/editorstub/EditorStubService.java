@@ -224,7 +224,7 @@ public class EditorStubService implements IEditorStubService {
       newTextCard.setPurpose(stringToMotivation(purpose));
     }
     try {
-      searchIndexService.addBody(newTextCard);
+      newTextCard = (TextCard) searchIndexService.addBody(newTextCard);
     } catch (JSONException e) {
       e.printStackTrace();
     }
@@ -261,7 +261,7 @@ public class EditorStubService implements IEditorStubService {
     }
 
     try {
-      searchIndexService.addBody(newTag);
+      newTag = (Tag) searchIndexService.addBody(newTag);
     } catch (JSONException e) {
       e.printStackTrace();
     }
@@ -363,11 +363,11 @@ public class EditorStubService implements IEditorStubService {
     }
 
     try {
-      searchIndexService.updateBody(updatedTag);
+      updatedTag = (Tag) searchIndexService.updateBody(updatedTag);
     } catch (JSONException e) {
       e.printStackTrace();
     }
-    return searchIndexService.getTagById(tagId);
+    return updatedTag;
 
   }
 
