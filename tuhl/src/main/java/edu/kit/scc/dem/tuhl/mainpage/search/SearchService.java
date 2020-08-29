@@ -172,7 +172,6 @@ public class SearchService implements ISearchService {
     List<Manuscript> searchResults = new ArrayList<>();
     for (SearchHit hit : hits.getHits()) {
       Map<String, Object> manuscriptMap = hit.getSourceAsMap();
-      
       Manuscript m = new Manuscript(
           (String) manuscriptMap.get("id"),
           new Date((Long) manuscriptMap.get("created")),

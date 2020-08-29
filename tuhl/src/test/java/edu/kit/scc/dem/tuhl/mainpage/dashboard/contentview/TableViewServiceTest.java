@@ -112,22 +112,22 @@ class TableViewServiceTest {
     Model mockedModel = Mockito.mock(Model.class);
     Mockito.when(mockedModel.addAttribute(Mockito.eq("results"), Mockito.any(List.class)))
         .thenAnswer(invocation -> {
-          assertEquals(invocation.getArgument(1), tableViewService.getResults());
+          assertEquals(tableViewService.getResults(), invocation.getArgument(1));
           return mockedModel;
         });
     Mockito.when(mockedModel.addAttribute(Mockito.eq("sortField"), Mockito.anyString()))
         .thenAnswer(invocation -> {
-          assertEquals(invocation.getArgument(1), tableViewService.getSortField());
+          assertEquals(tableViewService.getSortField(), invocation.getArgument(1));
           return mockedModel;
         });
     Mockito.when(mockedModel.addAttribute(Mockito.eq("order"), Mockito.anyString()))
         .thenAnswer(invocation -> {
-          assertEquals(invocation.getArgument(1), tableViewService.isSortAsc() ? "asc" : "desc");
+          assertEquals(tableViewService.isSortAsc() ? "asc" : "desc", invocation.getArgument(1));
           return mockedModel;
         });
     Mockito.when(mockedModel.addAttribute(Mockito.eq("currentPage"), Mockito.anyInt()))
         .thenAnswer(invocation -> {
-          assertEquals((Integer) invocation.getArgument(1), tableViewService.getCurrentPage());
+          assertEquals(tableViewService.getCurrentPage(), (Integer) invocation.getArgument(1));
           return mockedModel;
         });
     
