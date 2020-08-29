@@ -15,34 +15,7 @@ public interface IUser {
    * @return name
    */
   String getName();
-
-  /**
-   * Gets saveTable boolean.
-   *
-   * @return if SaveTable is true
-   */
-  boolean isSaveTable();
-
-  /**
-   * Sets saveTable boolean.
-   *
-   * @param bool to be set
-   */
-  void setSaveTable(boolean bool);
-
-  /**
-   * Gets saveFilter boolean.
-   *
-   * @return if SaveFilter is true
-   */
-  boolean isSaveFilter();
-
-  /**
-   * Set saveFilter boolean.
-   *
-   * @param bool to be set
-   */
-  void setSaveFilter(boolean bool);
+  
 
   /**
    * Gets saved Filters.

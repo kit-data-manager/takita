@@ -31,8 +31,6 @@ public class User implements IUser {
   @Id
   private String name;
 
-  private boolean saveTable;
-  private boolean saveFilter;
   private boolean checkThumbs;
   private int currentPage;
   private int pageSize;
@@ -61,8 +59,6 @@ public class User implements IUser {
    */
   public User(String name) {
     this.name = name;
-    this.saveTable = false;
-    this.saveFilter = false;
     this.checkThumbs = false;
     this.currentPage = 1;
     this.pageSize = 10;
@@ -72,15 +68,12 @@ public class User implements IUser {
   }
 
   User(int currentPage, String columns, String matchFilter, String rangeFilter,
-       boolean saveTable, boolean saveFilter, boolean checkThumbs,
-       String name, int pageSize, String lang, String sort) {
+       boolean checkThumbs, String name, int pageSize, String lang, String sort) {
     this.currentPage = currentPage;
     this.columns = columns;
 
     this.matchFilter = matchFilter;
     this.rangeFilter = rangeFilter;
-    this.saveTable = saveTable;
-    this.saveFilter = saveFilter;
     this.checkThumbs = checkThumbs;
     this.name = name;
     this.pageSize = pageSize;
@@ -96,43 +89,6 @@ public class User implements IUser {
   public String getName() {
     return this.name;
   }
-
-  /**
-   * Gets SaveTable boolean.
-   *
-   * @return if saveTable is true
-   */
-  public boolean isSaveTable() {
-    return saveTable;
-  }
-
-  /**
-   * Sets saveTable boolean.
-   *
-   * @param saveTable bool to be set
-   */
-  public void setSaveTable(boolean saveTable) {
-    this.saveTable = saveTable;
-  }
-
-  /**
-   * Gets saveFilter boolean.
-   *
-   * @return if saveFilter is true
-   */
-  public boolean isSaveFilter() {
-    return saveFilter;
-  }
-
-  /**
-   * Sets saveFilter boolean.
-   *
-   * @param saveFilters bool to be set
-   */
-  public void setSaveFilter(boolean saveFilters) {
-    this.saveFilter = saveFilters;
-  }
-
 
   /**
    * Gets all saved match filters as String.
