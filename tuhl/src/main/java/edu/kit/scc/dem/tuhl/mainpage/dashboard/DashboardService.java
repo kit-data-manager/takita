@@ -37,19 +37,19 @@ public class DashboardService implements IDashboardService {
   
   private Map<String, String> readAvailableViews() throws IOException, JSONException {
     JSONArray availableViewsJson =
-        new JSONArray(readFromFile("/availableViews.json"));
+        new JSONArray(readFromFile());
   
-    Map<String, String> availableContentViews = new HashMap<>();
+    Map<String, String> contentViews = new HashMap<>();
     for (int i = 0; i < availableViewsJson.length(); i++) {
       String viewId = availableViewsJson.getJSONObject(i).getString("id");
-      availableContentViews.put(viewId, messages.getString(VIEW_PREFIX + viewId));
+      contentViews.put(viewId, messages.getString(VIEW_PREFIX + viewId));
     }
-    return availableContentViews;
+    return contentViews;
   }
   
-  private String readFromFile(String filename)
+  private String readFromFile()
       throws IOException {
-    InputStream is = getClass().getResourceAsStream(filename);
+    InputStream is = getClass().getResourceAsStream("/availableViews.json");
     InputStreamReader isr = new InputStreamReader(is);
     BufferedReader br = new BufferedReader(isr);
     StringBuilder sb = new StringBuilder();
