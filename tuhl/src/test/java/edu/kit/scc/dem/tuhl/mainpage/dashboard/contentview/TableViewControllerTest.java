@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.ui.Model;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -39,6 +40,8 @@ class TableViewControllerTest {
         .andExpect(status().isOk())
         .andExpect(view().name("table_view.html :: tableView"))
         .andDo(MockMvcResultHandlers.print());
+
+    Mockito.verify(mockedMainPageService).update(Mockito.any(Model.class));
   }
 
   @Test
@@ -57,6 +60,7 @@ class TableViewControllerTest {
     this.mockMvc.perform(get("/tableview/getFirstPage/" + wrongManId))
         .andExpect(status().isOk())
         .andExpect(content().string("error"))
+        .andExpect(model().attributeExists("errorMessage"))
         .andDo(MockMvcResultHandlers.print());
 
 
@@ -73,6 +77,14 @@ class TableViewControllerTest {
         .andExpect(status().isOk())
         .andDo(MockMvcResultHandlers.print());
 
+    Mockito.verify(mockedTableViewService).setCurrentPage(1);
+    Mockito.verify(mockedTableViewService).setNumberOfResults(10);
+    Mockito.verify(mockedTableViewService).setSortAsc(true);
+    Mockito.verify(mockedTableViewService).setSortField("id");
+    Mockito.verify(mockedTableViewService).search();
+    Mockito.verify(mockedMainPageService).update(Mockito.any(Model.class));
+
+
   }
 
   @Test
@@ -82,6 +94,8 @@ class TableViewControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().string("placeholder"))
         .andDo(MockMvcResultHandlers.print());
+
+    Mockito.verify(mockedTableViewService).setCurrentPage(1);
   }
 
 }
