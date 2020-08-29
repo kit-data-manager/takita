@@ -12,8 +12,6 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -123,7 +121,7 @@ public class EditorStubService implements IEditorStubService {
     }
     updatedAnnotation.setModified(Date.from(Instant.now()));
 
-    if (color != null) {
+    if (color != null && !color.trim().equals("")) {
       updatedAnnotation.setColor(stringToColor(color));
     } else {
       updatedAnnotation.setColor(Color.DEFAULT);
@@ -162,11 +160,11 @@ public class EditorStubService implements IEditorStubService {
     annotation.setModified(Date.from(Instant.now()));
     annotation.addCreator(assistanceService.getCurrentUser().getName());
     try {
-      return searchIndexService.validateAnnotation(annotation);
+      annotation = searchIndexService.validateAnnotation(annotation);
     } catch (JSONException e) {
       e.printStackTrace();
     }
-    return null;
+    return annotation;
   }
 
   /**
@@ -306,7 +304,7 @@ public class EditorStubService implements IEditorStubService {
   public TextCard updateTextCard(String textCardId, String title, String value, String purpose)
       throws InterruptedException, NoSuchIndexEntryException, IOException {
     TextCard updatedTextCard = searchIndexService.getTextCardById(textCardId);
-    if (updatedTextCard.getCreators().contains(assistanceService.getCurrentUser().getName())) {
+    if (!updatedTextCard.getCreators().contains(assistanceService.getCurrentUser().getName())) {
       updatedTextCard.addCreator(assistanceService.getCurrentUser().getName());
     }
     updatedTextCard.setModified(Date.from(Instant.now()));
@@ -349,7 +347,7 @@ public class EditorStubService implements IEditorStubService {
   public Tag updateTag(String tagId, String title, String value)
       throws NoSuchIndexEntryException, InterruptedException, IOException {
     Tag updatedTag = searchIndexService.getTagById(tagId);
-    if (updatedTag.getCreators().contains(assistanceService.getCurrentUser().getName())) {
+    if (!updatedTag.getCreators().contains(assistanceService.getCurrentUser().getName())) {
       updatedTag.addCreator(assistanceService.getCurrentUser().getName());
     }
     updatedTag.setModified(Date.from(Instant.now()));
