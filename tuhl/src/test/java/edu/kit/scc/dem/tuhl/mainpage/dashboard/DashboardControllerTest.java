@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @WebMvcTest(DashboardController.class)
-public class DashboardControllerTest {
+class DashboardControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
@@ -26,7 +26,7 @@ public class DashboardControllerTest {
 
 
   @Test
-  public void testShowDashboard() throws Exception {
+  void testShowDashboard() throws Exception {
     this.mockMvc.perform(get("/dashboard"))
         .andExpect(status().isOk())
         .andExpect(view().name("dashboard.html :: dashboard"))
@@ -34,7 +34,7 @@ public class DashboardControllerTest {
   }
 
   @Test
-  public void testContentView() throws Exception {
+  void testContentView() throws Exception {
     Mockito.when(mockedDashboardService.getRedirect()).thenReturn("redirect:/tableview");
 
     this.mockMvc.perform(get("/dashboard/contentview/tableview"))

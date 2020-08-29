@@ -14,7 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
 
 @WebMvcTest(MainPageController.class)
-public class MainPageControllerTest {
+class MainPageControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
@@ -25,7 +25,7 @@ public class MainPageControllerTest {
   private ISearchIndexService mockedSearchIndexService;
 
   @Test
-  public void testInit() throws Exception {
+  void testInit() throws Exception {
 
     ControllerTestHelper.mockUpdateModel(mockedMainPageService);
 

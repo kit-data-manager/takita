@@ -10,13 +10,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(AssistanceController.class)
-public class AssistanceControllerTest {
+class AssistanceControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
@@ -28,7 +27,7 @@ public class AssistanceControllerTest {
 
 
   @Test
-  public void testHelpCall() throws Exception {
+  void testHelpCall() throws Exception {
     this.mockMvc.perform(get("/assistance/help"))
         .andExpect(status().isOk())
         .andExpect(view().name("help"))
@@ -36,14 +35,14 @@ public class AssistanceControllerTest {
   }
 
   @Test
-  public void testPseudonym() throws Exception {
+  void testPseudonym() throws Exception {
     this.mockMvc.perform(get("/assistance/Test Pseudonym"))
         .andExpect(status().isOk())
         .andDo(MockMvcResultHandlers.print());
   }
 
   @Test
-  public void testSaveTablecolumns() throws Exception {
+  void testSaveTablecolumns() throws Exception {
     String col = "[{\"hozAlign\":\"center\",\"resizable\":false,\"frozen\":true,\"headerSort\":false,\"width\":41},{\"field\":\"id\",\"title\":\"ID\",\"width\":347},{\"field\":\"title\",\"title\":\"Title\",\"head";
     this.mockMvc.perform(post("/assistance/saveTablecolumns").contentType(MediaType.APPLICATION_JSON).content(col))
         .andExpect(status().isOk())
@@ -52,7 +51,7 @@ public class AssistanceControllerTest {
   }
 
   @Test
-  public void testSaveTablesort() throws Exception {
+  void testSaveTablesort() throws Exception {
     String col = "[{\"column\":\"id\",\"dir\":\"asc\"}]";
     this.mockMvc.perform(post("/assistance/saveTablesort").contentType(MediaType.APPLICATION_JSON).content(col))
         .andExpect(status().isOk())
@@ -62,7 +61,7 @@ public class AssistanceControllerTest {
 
 
   @Test
-  public void testSaveTablepage() throws Exception {
+  void testSaveTablepage() throws Exception {
 
     User mockedUser = Mockito.mock(User.class);
     Mockito.when(assistanceService.getCurrentUser()).thenReturn(mockedUser);
@@ -81,7 +80,7 @@ public class AssistanceControllerTest {
   }
 
   @Test
-  public void testToggleCheckThumbs() throws Exception {
+  void testToggleCheckThumbs() throws Exception {
     this.mockMvc.perform(get("/assistance/toggleCheckThumbs"))
         .andExpect(status().isOk())
         .andExpect(content().string("placeholder"))
@@ -89,7 +88,7 @@ public class AssistanceControllerTest {
   }
 
   @Test
-  public void testSetLanguage() throws Exception {
+  void testSetLanguage() throws Exception {
     this.mockMvc.perform(get("/assistance/lang/testLanguage"))
         .andExpect(status().isOk())
         .andExpect(content().string("placeholder"))
