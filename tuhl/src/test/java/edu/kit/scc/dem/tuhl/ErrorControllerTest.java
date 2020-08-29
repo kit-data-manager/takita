@@ -27,7 +27,6 @@ class ErrorControllerTest {
 
   @Test
   void testHandleError() throws Exception {
-
     this.mockMvc.perform(get("/error"))
         .andExpect(status().isOk())
         .andExpect(view().name("error"))

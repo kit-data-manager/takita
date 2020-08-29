@@ -60,9 +60,7 @@ class TableViewControllerTest {
     this.mockMvc.perform(get("/tableview/getFirstPage/" + wrongManId))
         .andExpect(status().isOk())
         .andExpect(content().string("error"))
-        .andExpect(model().attributeExists("errorMessage"))
         .andDo(MockMvcResultHandlers.print());
-
 
   }
 

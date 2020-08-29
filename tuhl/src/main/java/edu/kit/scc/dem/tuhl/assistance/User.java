@@ -198,15 +198,10 @@ public class User {
    *
    * @return page configuration
    */
-  public String getPage() {
+  public String getPage() throws JSONException {
     JSONObject obj = new JSONObject();
-    try {
       obj.put("paginationSize", pageSize);
-
       obj.put("paginationInitialPage", 1);
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
     return obj.toString();
   }
 
