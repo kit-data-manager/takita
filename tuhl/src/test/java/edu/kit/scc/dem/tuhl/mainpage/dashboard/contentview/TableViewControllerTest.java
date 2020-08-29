@@ -1,0 +1,93 @@
+package edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview;
+
+import edu.kit.scc.dem.tuhl.ControllerTestHelper;
+import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
+import edu.kit.scc.dem.tuhl.assistance.AssistanceController;
+import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
+import edu.kit.scc.dem.tuhl.mainpage.IMainPageService;
+import edu.kit.scc.dem.tuhl.mainpage.dashboard.IDashboardService;
+import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+
+@WebMvcTest(TableViewController.class)
+class TableViewControllerTest {
+
+  @Autowired
+  private MockMvc mockMvc;
+
+  @MockBean
+  private TableViewService mockedTableViewService;
+  @MockBean
+  private IMainPageService mockedMainPageService;
+  @MockBean
+  private IDashboardService mockedDashboardService;
+  @MockBean
+  private ISearchIndexService mockedSearchIndexService;
+
+  @Test
+  void testShowContentView() throws Exception {
+    ControllerTestHelper.mockUpdateModel(mockedMainPageService);
+
+    this.mockMvc.perform(get("/tableview"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("table_view.html :: tableView"))
+        .andDo(MockMvcResultHandlers.print());
+  }
+
+  @Test
+  void testGetFirstPage() throws Exception {
+    String manId = "manId";
+    Mockito.when(mockedTableViewService.getFirstPage(manId)).thenReturn("pageId");
+
+    String wrongManId = "wrongManId";
+    Mockito.when(mockedTableViewService.getFirstPage(wrongManId)).thenThrow(new NoSuchIndexEntryException("I am an exception message"));
+
+    this.mockMvc.perform(get("/tableview/getFirstPage/" + manId))
+        .andExpect(status().isOk())
+        .andExpect(content().string("pageId"))
+        .andDo(MockMvcResultHandlers.print());
+
+    this.mockMvc.perform(get("/tableview/getFirstPage/" + wrongManId))
+        .andExpect(status().isOk())
+        .andExpect(content().string("error"))
+        .andDo(MockMvcResultHandlers.print());
+
+
+  }
+
+  @Test
+  void testGetSorted() throws Exception {
+
+    this.mockMvc.perform(get("/tableview/sort")
+        .param("page", "1")
+        .param("size", "10")
+        .param("sorters[0][field]", "id")
+        .param("sorters[0][dir]", "asc"))
+        .andExpect(status().isOk())
+        .andDo(MockMvcResultHandlers.print());
+
+  }
+
+  @Test
+  void testSetFirstPage() throws Exception {
+
+    this.mockMvc.perform(get("/tableview/getFirst"))
+        .andExpect(status().isOk())
+        .andExpect(content().string("placeholder"))
+        .andDo(MockMvcResultHandlers.print());
+  }
+
+}

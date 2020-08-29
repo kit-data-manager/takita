@@ -115,38 +115,6 @@ public class TableViewController {
 
   }
 
-  // not sure if needed anymore
-
-  /*
-  @RequestMapping(value = "/sort", params = {"page", "size"})
-  @ResponseBody
-  public String getPage(@RequestParam("page") int pageNo, @RequestParam("size") int size,
-                         Model model) {
-    tableViewService.setCurrentPage(pageNo);
-    tableViewService.setNumberOfResults(size);
-    tableViewService.search();
-    mainPageService.update(model);
-
-    JSONArray data = tableViewService.getData();
-    JSONObject newData = new JSONObject();
-    try {
-      newData.put("last_page", tableViewService.getNumberOfResultsPages());
-      newData.put("data", data);
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-    return newData.toString();
-  }
-
-
-
-  @RequestMapping(value = "/getData")
-  @ResponseBody
-  public String getPage(Model model) {
-    mainPageService.update(model);
-    return tableViewService.getData().toString();
-  }
-*/
   /**
    * Handles GET request to set table to first Page.
    *
@@ -154,7 +122,7 @@ public class TableViewController {
    */
   @GetMapping("/getFirst")
   @ResponseBody
-  public String getFirstPage() {
+  public String setFirstPage() {
     tableViewService.setCurrentPage(1);
     return "placeholder";
   }
