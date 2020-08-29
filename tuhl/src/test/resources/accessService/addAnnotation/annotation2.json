@@ -7,55 +7,14 @@
     "type" : "Person",
     "name" : "M. K."
   }, {
+    "type" : "Person",
+    "name" : "Elizabeth Bennet"
+  }, {
     "type" : "Software",
     "name" : "Akita"
   } ],
   "modified" : "2019-07-04T07:05:57Z",
   "body" : [ {
-    "type" : "TextualBody",
-    "creator" : [ {
-      "type" : "Software",
-      "name" : "Akita"
-    }, {
-      "type" : "Person",
-      "name" : "M. K."
-    } ],
-    "value" : "Questionable text block",
-    "purpose" : "questioning"
-  }, {
-    "type" : "TextualBody",
-    "creator" : [ {
-      "type" : "Software",
-      "name" : "Akita"
-    }, {
-      "type" : "Person",
-      "name" : "M. K."
-    } ],
-    "value" : "Questionable text block",
-    "purpose" : "questioning"
-  }, {
-    "type" : "TextualBody",
-    "creator" : [ {
-      "type" : "Software",
-      "name" : "Akita"
-    }, {
-      "type" : "Person",
-      "name" : "M. K."
-    } ],
-    "value" : "Questionable text block",
-    "purpose" : "questioning"
-  }, {
-    "type" : "TextualBody",
-    "creator" : [ {
-      "type" : "Software",
-      "name" : "Akita"
-    }, {
-      "type" : "Person",
-      "name" : "M. K."
-    } ],
-    "value" : "Questionable text block",
-    "purpose" : "questioning"
-  }, {
     "type" : "TextualBody",
     "creator" : [ {
       "type" : "Software",
@@ -75,17 +34,6 @@
       "type" : "Software",
       "name" : "Akita"
     } ]
-  }, {
-    "type" : "TextualBody",
-    "creator" : [ {
-      "type" : "Software",
-      "name" : "Akita"
-    }, {
-      "type" : "Person",
-      "name" : "M. K."
-    } ],
-    "value" : "Questionable text block",
-    "purpose" : "questioning"
   } ],
   "target" : {
     "type" : "SpecificResource",

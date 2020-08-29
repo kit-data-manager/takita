@@ -24,61 +24,6 @@
   }, {
     "type" : "TextualBody",
     "creator" : [ {
-      "type" : "Person",
-      "name" : "M. K."
-    }, {
-      "type" : "Software",
-      "name" : "Akita"
-    } ],
-    "value" : "Questionable text block",
-    "purpose" : "questioning"
-  }, {
-    "type" : "TextualBody",
-    "creator" : [ {
-      "type" : "Software",
-      "name" : "Akita"
-    }, {
-      "type" : "Person",
-      "name" : "M. K."
-    } ],
-    "value" : "Questionable text block",
-    "purpose" : "questioning"
-  }, {
-    "type" : "TextualBody",
-    "creator" : [ {
-      "type" : "Software",
-      "name" : "Akita"
-    }, {
-      "type" : "Person",
-      "name" : "M. K."
-    } ],
-    "value" : "Questionable text block",
-    "purpose" : "questioning"
-  }, {
-    "type" : "TextualBody",
-    "creator" : [ {
-      "type" : "Person",
-      "name" : "M. K."
-    }, {
-      "type" : "Software",
-      "name" : "Akita"
-    } ],
-    "value" : "Questionable text block",
-    "purpose" : "questioning"
-  }, {
-    "type" : "TextualBody",
-    "creator" : [ {
-      "type" : "Software",
-      "name" : "Akita"
-    }, {
-      "type" : "Person",
-      "name" : "M. K."
-    } ],
-    "value" : "Questionable text block",
-    "purpose" : "questioning"
-  }, {
-    "type" : "TextualBody",
-    "creator" : [ {
       "type" : "Software",
       "name" : "Akita"
     }, {

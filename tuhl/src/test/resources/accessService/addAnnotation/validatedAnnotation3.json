@@ -10,20 +10,9 @@
     "type" : "Software",
     "name" : "Akita"
   } ],
-  "modified" : "2019-07-04T07:03:03Z",
+  "modified" : "2019-07-04T07:03:03.000Z",
   "canonical" : "http://sampleannoserver.edu/wap/a04/deinterpretatione/1749ce9c-a79a-4929-8299-edc9c0388fcc",
-  "body" : [{
-    "type" : "TextualBody",
-    "creator" : [ {
-      "type" : "Person",
-      "name" : "M. K."
-    }, {
-      "type" : "Software",
-      "name" : "Akita"
-    } ],
-    "value" : "Questionable text block",
-    "purpose" : "questioning"
-  }, {
+  "body" : {
     "type" : "TextualBody",
     "creator" : [ {
       "type" : "Person",
@@ -34,7 +23,7 @@
     } ],
     "value" : "Questionable tag",
     "purpose" : "tagging"
-  }],
+  },
   "target" : {
     "type" : "SpecificResource",
     "selector" : {

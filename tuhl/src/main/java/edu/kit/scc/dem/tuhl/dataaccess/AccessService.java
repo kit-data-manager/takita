@@ -839,7 +839,7 @@ public class AccessService implements IAccessService {
       throws JSONException {
     JSONArray jsonBodies = new JSONArray();
 
-    if (annotation.getTextCards().size() >= 1) {
+    if (!annotation.getTextCards().isEmpty()) {
       for (TextCard textCard : annotation.getTextCards()) {
         JSONObject jsonTextCard = new JSONObject();
         if (textCard.getFullJson() != null) {
@@ -875,7 +875,7 @@ public class AccessService implements IAccessService {
         jsonBodies.put(jsonTextCard);
       }
     }
-    if (annotation.getTags().size() >= 1) {
+    if (!annotation.getTags().isEmpty()) {
       for (Tag tag : annotation.getTags()) {
         JSONObject jsonTag = new JSONObject();
         if (tag.getFullJson() != null) {
