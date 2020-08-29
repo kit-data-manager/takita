@@ -25,8 +25,10 @@ public class Manuscript {
   
   private final Date created;
   
+  @Field(type = FieldType.Keyword)
   private final String title;
   
+  @Field(type = FieldType.Keyword)
   private final String publisher;
   
   private final int publicationYear;
