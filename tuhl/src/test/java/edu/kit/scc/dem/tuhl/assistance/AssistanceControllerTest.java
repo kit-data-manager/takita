@@ -9,6 +9,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.ui.Model;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -36,9 +37,14 @@ class AssistanceControllerTest {
 
   @Test
   void testPseudonym() throws Exception {
-    this.mockMvc.perform(get("/assistance/Test Pseudonym"))
+    String pseudonym = "Test Pseudonym";
+    this.mockMvc.perform(get("/assistance/" + pseudonym))
         .andExpect(status().isOk())
         .andDo(MockMvcResultHandlers.print());
+    Mockito.verify(assistanceService).changeUser(Mockito.eq(pseudonym), Mockito.any(Model.class));
+    Mockito.verify(assistanceService).getLang();
+
+
   }
 
   @Test
@@ -48,6 +54,8 @@ class AssistanceControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().string("placeholder"))
         .andDo(MockMvcResultHandlers.print());
+    Mockito.verify(assistanceService).setTableConfig(Mockito.eq(col), Mockito.any(Model.class));
+
   }
 
   @Test
@@ -57,6 +65,8 @@ class AssistanceControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().string("placeholder"))
         .andDo(MockMvcResultHandlers.print());
+
+    Mockito.verify(assistanceService).setTableSort(Mockito.eq(col), Mockito.any(Model.class));
   }
 
 
@@ -77,6 +87,9 @@ class AssistanceControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().string("error"))
         .andDo(MockMvcResultHandlers.print());
+
+    Mockito.verify(assistanceService).setTablePage(Mockito.eq(10), Mockito.any(Model.class));
+    Mockito.verify(mockedUser).setCurrentPage(1);
   }
 
   @Test
@@ -85,14 +98,20 @@ class AssistanceControllerTest {
         .andExpect(status().isOk())
         .andExpect(content().string("placeholder"))
         .andDo(MockMvcResultHandlers.print());
+
+    Mockito.verify(assistanceService).toggleCheckThumbs();
   }
 
   @Test
   void testSetLanguage() throws Exception {
-    this.mockMvc.perform(get("/assistance/lang/testLanguage"))
+    String language = "Test Language";
+
+    this.mockMvc.perform(get("/assistance/lang/" + language))
         .andExpect(status().isOk())
         .andExpect(content().string("placeholder"))
         .andDo(MockMvcResultHandlers.print());
+
+    Mockito.verify(assistanceService).setLanguage(Mockito.eq(language), Mockito.any(Model.class));
   }
 
 
