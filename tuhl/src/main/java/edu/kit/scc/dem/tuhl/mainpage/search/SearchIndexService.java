@@ -302,26 +302,25 @@ public class SearchIndexService implements ISearchIndexService {
       throws IOException, InterruptedException, JSONException, NoSuchIndexEntryException {
     // update annotation in data access, data access adds some information
     // to annotation only data access needs
-    
     Page page = getPageById(annotation.getPageId());
     Annotation newAnnotation = accessService.updateAnnotation(annotation, page.getPageNumber());
     
     // update annotation in index by first deleting manuscript and later adding updated one
     Optional<Manuscript> manuscriptHit =
         manuscriptRepository.findById(page.getManuscriptId());
-    
-    Page updatedPage = getPageById(annotation.getPageId(), manuscriptHit.get());
-    Annotation annoToRemove = new Annotation();
-    for (Annotation anno : updatedPage.getAnnotations()) {
-      if (anno.getId() == null) {
-        annoToRemove = anno;
-      } else if (anno.getId().equals(annotation.getId())) {
-        annoToRemove = anno;
+
+    if (manuscriptHit.isPresent()) {
+      Page updatedPage = getPageById(annotation.getPageId(), manuscriptHit.get());
+      Annotation annoToRemove = new Annotation();
+      for (Annotation anno : updatedPage.getAnnotations()) {
+        if (anno.getId() == null || anno.getId().equals(annotation.getId())) {
+          annoToRemove = anno;
+        }
       }
+      updatedPage.getAnnotations().remove(annoToRemove);
+      updatedPage.getAnnotations().add(newAnnotation);
+      manuscriptRepository.save(manuscriptHit.get());
     }
-    updatedPage.getAnnotations().remove(annoToRemove);
-    updatedPage.getAnnotations().add(newAnnotation);
-    manuscriptRepository.save(manuscriptHit.get());
     return newAnnotation;
   }
 
@@ -349,9 +348,7 @@ public class SearchIndexService implements ISearchIndexService {
       Page updatedPage = getPageById(annotation.getPageId(), manuscriptHit.get());
       Annotation annoToRemove = new Annotation();
       for (Annotation anno : updatedPage.getAnnotations()) {
-        if (anno.getId() == null) {
-          annoToRemove = anno;
-        } else if (anno.getId().equals(annotation.getId())) {
+        if (anno.getId() == null || anno.getId().equals(annotation.getId())) {
           annoToRemove = anno;
         }
       }
@@ -384,13 +381,10 @@ public class SearchIndexService implements ISearchIndexService {
     Page page = getPageById(annotation.getPageId());
     Optional<Manuscript> manuscriptHit = manuscriptRepository.findById(page.getManuscriptId());
     if (manuscriptHit.isPresent()) {
-      
       Page updatedPage = getPageById(annotation.getPageId(), manuscriptHit.get());
       Annotation annoToRemove = new Annotation();
       for (Annotation anno : updatedPage.getAnnotations()) {
-        if (anno.getId() == null) {
-          annoToRemove = anno;
-        } else if (anno.getId().equals(id)) {
+        if (anno.getId() == null || anno.getId().equals(id)) {
           annoToRemove = anno;
         }
       }
@@ -620,7 +614,7 @@ public class SearchIndexService implements ISearchIndexService {
     
     SearchHits<Manuscript> manuscripts = elasticsearchRestTemplate.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
-    
+
     if (manuscripts.hasSearchHits()) {
       for (Page page : manuscripts.getSearchHit(0).getContent().getPages()) {
         if (page.getId().equals(id)) {
