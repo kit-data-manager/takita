@@ -50,59 +50,45 @@ public class TuhlApplication implements ApplicationRunner, WebMvcConfigurer {
    */
   @Override
   public void run(ApplicationArguments args) {
-    logger.info("Application started with command-line arguments: {}",
-        Arrays.toString(args.getSourceArgs()));
+    String argString = Arrays.toString(args.getSourceArgs());
+    logger.info("Application started with command-line arguments: {}", argString);
     logger.info("NonOptionArgs: {}", args.getNonOptionArgs());
     logger.info("OptionNames: {}", args.getOptionNames());
     handleArguments(args);
   }
   
   private void handleArguments(ApplicationArguments args) {
-    if (args.getNonOptionArgs().contains("buildDevIndex")) {
-      try {
+    try {
+      if (args.getNonOptionArgs().contains("buildDevIndex")) {
         searchIndexService.buildSmallIndex();
-      } catch (InterruptedException | IOException | JSONException e) {
-        logger.error(e.getMessage());
       }
-    }
-    
-    if (args.getNonOptionArgs().contains("updateIndex")) {
-      try {
+  
+      if (args.getNonOptionArgs().contains("updateIndex")) {
         searchIndexService.updateIndex();
-      } catch (InterruptedException | IOException | JSONException e) {
-        logger.error(e.getMessage());
       }
-    }
-  
-    if (args.getNonOptionArgs().contains("scheduleIndex")) {
-      int updateIndexDayInterval = 1;
-      int updateIndexHour = 3;
-    
-      if (args.getOptionNames().contains("dayInterval")) {
-        try {
-          updateIndexDayInterval = Integer.parseInt(args.getOptionValues("dayInterval").get(0));
-        } catch (NumberFormatException e) {
-          logger.error(e.getMessage());
-        }
       
-      }
-      if (args.getOptionNames().contains("hour")) {
-        try {
-          updateIndexHour = Integer.parseInt(args.getOptionValues("hour").get(0));
-        } catch (NumberFormatException e) {
-          logger.error(e.getMessage());
-        }
-      }
-      searchIndexService.startIndexUpdateCycle(updateIndexDayInterval, updateIndexHour);
-    }
+      if (args.getNonOptionArgs().contains("scheduleIndex")) {
+        int updateIndexDayInterval = 1;
+        int updateIndexHour = 3;
   
-    if (args.getNonOptionArgs().contains("buildIndex")) {
-      try {
-        searchIndexService.buildIndex();
-      } catch (InterruptedException | IOException | JSONException e) {
-        logger.error("Index could not be build: {}", e.getMessage());
-        e.printStackTrace();
+        if (args.getOptionNames().contains("dayInterval")) {
+          updateIndexDayInterval = Integer.parseInt(args.getOptionValues("dayInterval").get(0));
+        }
+        if (args.getOptionNames().contains("hour")) {
+          updateIndexHour = Integer.parseInt(args.getOptionValues("hour").get(0));
+        }
+        searchIndexService.startIndexUpdateCycle(updateIndexDayInterval, updateIndexHour);
       }
+  
+      if (args.getNonOptionArgs().contains("buildIndex")) {
+        searchIndexService.buildIndex();
+      }
+      
+    } catch (InterruptedException e) {
+      logger.error(e.getMessage());
+      Thread.currentThread().interrupt();
+    } catch (IOException | JSONException e) {
+      logger.error(e.getMessage());
     }
   }
 
