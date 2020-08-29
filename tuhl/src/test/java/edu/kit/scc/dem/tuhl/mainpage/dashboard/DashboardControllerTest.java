@@ -9,9 +9,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(DashboardController.class)
 class DashboardControllerTest {
@@ -30,6 +30,7 @@ class DashboardControllerTest {
     this.mockMvc.perform(get("/dashboard"))
         .andExpect(status().isOk())
         .andExpect(view().name("dashboard.html :: dashboard"))
+        .andExpect(model().attributeExists("availableViews"))
         .andDo(MockMvcResultHandlers.print());
   }
 
@@ -40,6 +41,7 @@ class DashboardControllerTest {
     this.mockMvc.perform(get("/dashboard/contentview/tableview"))
         .andExpect(status().is3xxRedirection())
         .andDo(MockMvcResultHandlers.print());
+    Mockito.verify(mockedDashboardService).setCurrentContentView(Mockito.eq("tableview"));
   }
 
 }
