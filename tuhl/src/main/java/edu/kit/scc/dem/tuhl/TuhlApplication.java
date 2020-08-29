@@ -55,6 +55,7 @@ public class TuhlApplication implements ApplicationRunner, WebMvcConfigurer {
     logger.info("NonOptionArgs: {}", args.getNonOptionArgs());
     logger.info("OptionNames: {}", args.getOptionNames());
     handleArguments(args);
+    
   }
   
   private void handleArguments(ApplicationArguments args) {

@@ -30,7 +30,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import org.apache.lucene.search.join.ScoreMode;
-import org.elasticsearch.action.admin.indices.analyze.AnalyzeRequestBuilder;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
@@ -43,7 +42,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
-import org.springframework.data.elasticsearch.annotations.Setting;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.IndexOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -108,15 +106,11 @@ public class SearchIndexService implements ISearchIndexService {
             RequestOptions.DEFAULT));
     
     logger.info("Building new index. This may take a while.");
-    IndexOperations indexOp = elasticsearchRestTemplate.indexOps(Manuscript.class);
-    indexOp.putMapping(indexOp.createMapping(Manuscript.class));
-    indexOp.putMapping(indexOp.createMapping(ImagePage.class));
-    indexOp.putMapping(indexOp.createMapping(TextPage.class));
-    indexOp.putMapping(indexOp.createMapping(Annotation.class));
-    indexOp.putMapping(indexOp.createMapping(Tag.class));
-    indexOp.putMapping(indexOp.createMapping(TextCard.class));
-    List<Manuscript> allManuscripts = accessService.getAllManuscripts();
     
+    IndexOperations indexOp = elasticsearchRestTemplate.indexOps(Manuscript.class);
+    createMappings(indexOp);
+    
+    List<Manuscript> allManuscripts = accessService.getAllManuscripts();
     for (Manuscript m : allManuscripts) {
       logger.info("Finished. Indexing manuscript {}", m.getId());
       manuscriptRepository.save(m);
@@ -206,13 +200,9 @@ public class SearchIndexService implements ISearchIndexService {
             RequestOptions.DEFAULT));
     
     logger.info("Building new small index.");
+  
     IndexOperations indexOp = elasticsearchRestTemplate.indexOps(Manuscript.class);
-    indexOp.putMapping(indexOp.createMapping(Manuscript.class));
-    indexOp.putMapping(indexOp.createMapping(ImagePage.class));
-    indexOp.putMapping(indexOp.createMapping(TextPage.class));
-    indexOp.putMapping(indexOp.createMapping(Annotation.class));
-    indexOp.putMapping(indexOp.createMapping(Tag.class));
-    indexOp.putMapping(indexOp.createMapping(TextCard.class));
+    createMappings(indexOp);
     
     List<Manuscript> allManuscripts = accessService.getFewManuscripts();
     logger.info("Indexing Manuscripts.");
@@ -225,6 +215,15 @@ public class SearchIndexService implements ISearchIndexService {
     Duration duration = Duration.between(startBuild, LocalDateTime.now());
     logger.info("Finished limited index build in {} minutes and {} seconds", duration.toMinutes(),
         duration.getSeconds() % 60);
+  }
+  
+  private void createMappings(IndexOperations indexOp) {
+    indexOp.putMapping(indexOp.createMapping(Manuscript.class));
+    indexOp.putMapping(indexOp.createMapping(ImagePage.class));
+    indexOp.putMapping(indexOp.createMapping(TextPage.class));
+    indexOp.putMapping(indexOp.createMapping(Annotation.class));
+    indexOp.putMapping(indexOp.createMapping(Tag.class));
+    indexOp.putMapping(indexOp.createMapping(TextCard.class));
   }
   
   //CRUD Annotation
@@ -305,22 +304,8 @@ public class SearchIndexService implements ISearchIndexService {
     Page page = getPageById(annotation.getPageId());
     Annotation newAnnotation = accessService.updateAnnotation(annotation, page.getPageNumber());
     
-    // update annotation in index by first deleting manuscript and later adding updated one
-    Optional<Manuscript> manuscriptHit =
-        manuscriptRepository.findById(page.getManuscriptId());
-
-    if (manuscriptHit.isPresent()) {
-      Page updatedPage = getPageById(annotation.getPageId(), manuscriptHit.get());
-      Annotation annoToRemove = new Annotation();
-      for (Annotation anno : updatedPage.getAnnotations()) {
-        if (anno.getId() == null || anno.getId().equals(annotation.getId())) {
-          annoToRemove = anno;
-        }
-      }
-      updatedPage.getAnnotations().remove(annoToRemove);
-      updatedPage.getAnnotations().add(newAnnotation);
-      manuscriptRepository.save(manuscriptHit.get());
-    }
+    applyChangedAnnotation(page, annotation, newAnnotation);
+    
     return newAnnotation;
   }
 
@@ -342,8 +327,16 @@ public class SearchIndexService implements ISearchIndexService {
     Annotation validatedAnnotation = accessService.validateAnnotation(annotation,
         page.getPageNumber());
     
-    Optional<Manuscript> manuscriptHit = manuscriptRepository.findById(page.getManuscriptId());
+    applyChangedAnnotation(page, annotation, validatedAnnotation);
     
+    return validatedAnnotation;
+  }
+  
+  private void applyChangedAnnotation(Page page, Annotation annotation,
+                                      Annotation changedAnnotation)
+      throws NoSuchIndexEntryException {
+    Optional<Manuscript> manuscriptHit = manuscriptRepository.findById(page.getManuscriptId());
+  
     if (manuscriptHit.isPresent()) {
       Page updatedPage = getPageById(annotation.getPageId(), manuscriptHit.get());
       Annotation annoToRemove = new Annotation();
@@ -353,11 +346,10 @@ public class SearchIndexService implements ISearchIndexService {
         }
       }
       updatedPage.getAnnotations().remove(annoToRemove);
-      updatedPage.getAnnotations().add(validatedAnnotation);
-      
+      updatedPage.getAnnotations().add(changedAnnotation);
+    
       manuscriptRepository.save(manuscriptHit.get());
     }
-    return validatedAnnotation;
   }
 
   /**
@@ -442,6 +434,11 @@ public class SearchIndexService implements ISearchIndexService {
       throw new NoSuchIndexEntryException("No such text card.");
     }
     
+    return findTextCardInManuscriptById(manuscript, id);
+  }
+  
+  private TextCard findTextCardInManuscriptById(Manuscript manuscript, String id)
+      throws NoSuchIndexEntryException {
     for (Page page : manuscript.getPages()) {
       if (page.getResourceType() == ResourceType.IMAGE) {
         for (Annotation annotation : page.getAnnotations()) {
@@ -537,7 +534,7 @@ public class SearchIndexService implements ISearchIndexService {
     updateAnnotation(updatedAnnotation);
   }
   
-  private Annotation getAnnotationByBodyId(String bodyId) {
+  private Annotation getAnnotationByBodyId(String bodyId) throws NoSuchIndexEntryException {
     Query query =
         new NativeSearchQueryBuilder().withQuery(boolQuery()
             .should(matchQuery("pages.annotations.tags.id.keyword", bodyId))
@@ -550,19 +547,27 @@ public class SearchIndexService implements ISearchIndexService {
     
     for (Page page : searchHits.getSearchHit(0).getContent().getPages()) {
       for (Annotation annotation : page.getAnnotations()) {
-        for (Body body : annotation.getTextCards()) {
-          if (body.getId().equals(bodyId)) {
-            return annotation;
-          }
-        }
-        for (Body body : annotation.getTags()) {
-          if (body.getId().equals(bodyId)) {
-            return annotation;
-          }
+        if (isBodyInAnnotations(annotation, bodyId)) {
+          return annotation;
         }
       }
     }
-    throw new IllegalArgumentException("Could not find Annotation with id: " + bodyId);
+    throw new NoSuchIndexEntryException("Could not find Annotation containing body with id: "
+        + bodyId);
+  }
+  
+  private boolean isBodyInAnnotations(Annotation annotation, String bodyId) {
+    for (Body body : annotation.getTextCards()) {
+      if (body.getId().equals(bodyId)) {
+        return true;
+      }
+    }
+    for (Body body : annotation.getTags()) {
+      if (body.getId().equals(bodyId)) {
+        return true;
+      }
+    }
+    return false;
   }
   
   private Body getBodyFromAnnotationAndId(Annotation annotation, String bodyId)
@@ -715,7 +720,11 @@ public class SearchIndexService implements ISearchIndexService {
           public void run() {
             try {
               updateIndex();
-            } catch (InterruptedException | JSONException | IOException e) {
+            } catch (InterruptedException e) {
+              logger.error("Could not update the index {}", e.getMessage());
+              Thread.currentThread().interrupt();
+              e.printStackTrace();
+            } catch (JSONException | IOException e) {
               logger.error("Could not update the index {}", e.getMessage());
               e.printStackTrace();
             }
