@@ -7,6 +7,8 @@ import edu.kit.scc.dem.tuhl.model.filter.Filter;
 import edu.kit.scc.dem.tuhl.model.page.ImagePage;
 import edu.kit.scc.dem.tuhl.model.page.Page;
 import edu.kit.scc.dem.tuhl.model.page.TextPage;
+
+import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,6 +17,7 @@ import org.elasticsearch.action.search.SearchAction;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.RequestOptions;
+import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.indices.GetIndexRequest;
 import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -80,8 +83,15 @@ public class SearchService implements ISearchService {
    */
   @Override
   public List<Manuscript> search(int pageNumber, String sortField, boolean sortAsc) {
-    boolean exists = elasticsearchRestTemplate.execute(client ->
-        client.indices().exists(new GetIndexRequest(INDEX_NAME), RequestOptions.DEFAULT));
+    
+    //Cannot use lambda because of reflection in test class
+    boolean exists = elasticsearchRestTemplate.execute(
+        new ElasticsearchRestTemplate.ClientCallback<Boolean>() {
+      @Override
+      public Boolean doWithClient(RestHighLevelClient client) throws IOException {
+        return client.indices().exists(new GetIndexRequest(INDEX_NAME), RequestOptions.DEFAULT);
+      }
+    });
     if (!exists) {
       logger.error("The index does not exist. Please try to build it first.");
     }
