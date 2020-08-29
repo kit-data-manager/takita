@@ -3,15 +3,18 @@ package edu.kit.scc.dem.tuhl;
 
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
+import javax.servlet.http.HttpServletRequest;
+
+import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(ErrorController.class)
 class ErrorControllerTest {
@@ -24,6 +27,7 @@ class ErrorControllerTest {
 
   @Test
   void testHandleError() throws Exception {
+
     this.mockMvc.perform(get("/error"))
         .andExpect(status().isOk())
         .andExpect(view().name("error"))
@@ -32,8 +36,10 @@ class ErrorControllerTest {
 
   @Test
   void testHandleErrorWithMsg() throws Exception {
-    this.mockMvc.perform(get("/error/Error Message.."))
+    String message = "Error Message ...";
+    this.mockMvc.perform(get("/error/" + message))
         .andExpect(status().isOk())
+        .andExpect(model().attribute("errorMessage", equalTo(message)))
         .andDo(MockMvcResultHandlers.print());
   }
 
