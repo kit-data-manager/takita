@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -166,13 +167,10 @@ class AccessServiceTest {
     expectedTextCard.setPurpose(Motivation.QUESTIONING);
     expectedTextCard.setFullJson(new JSONObject("{\n" +
         "    \"type\" : \"TextualBody\",\n" +
-        "    \"creator\" : [ {\n" +
+        "    \"creator\" : {\n" +
         "      \"type\" : \"Person\",\n" +
         "      \"name\" : \"M. K.\"\n" +
-        "    }, {\n" +
-        "      \"type\" : \"Software\",\n" +
-        "      \"name\" : \"Akita\"\n" +
-        "    } ],\n" +
+        "    },\n" +
         "    \"value\" : \"Questionable text block\",\n" +
         "    \"purpose\" : \"questioning\"\n" +
         "  }"));
@@ -238,6 +236,8 @@ class AccessServiceTest {
     Tag expectedTag = new Tag(UUID.randomUUID().toString());
     expectedTag.setCreators(creatorList);
     expectedTag.setValue("Questionable tag");
+    expectedTag.setCreated(dateFormatMillis.parse("2019-07-04T07:03:03.000Z"));
+    expectedTag.setModified(dateFormatMillis.parse("2019-07-04T07:03:03.000Z"));
     expectedTag.setPurpose(Motivation.TAGGING);
     expectedTag.setFullJson(new JSONObject("{\n" +
         "    \"type\" : \"TextualBody\",\n" +
@@ -458,11 +458,11 @@ class AccessServiceTest {
     annotation1.setCreated(dateFormat.parse("2018-02-06T11:06:01Z"));
     annotation1.setCreators(creatorAlgorithm);
     annotation1.setModified(dateFormat.parse("2019-05-08T10:59:38Z"));
-    annotation1.setColor(Color.TEXT_REGION);
+    annotation1.setColor(Color.CUSTOM_REGION);
     annotation1.setIsAlgorithmAnnotation(true);
     annotation1.setPageId(page1.getId());
     annotation1.setSvgCode("<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"0\" y=\"3307\" width=\"587\" height=\"1047\"/></svg>");
-    annotation1.setMotivation(Motivation.DESCRIBING);
+    annotation1.setMotivation(Motivation.TAGGING);
     annotation1.setVia("http://sampleannoserver.edu/wap/w3c/aea27124-b3be-417a-a3f3-ce9803f9afb4/0073d61a-5d3a-49c7-bffd-2cc0ae0d8443");
 
     Annotation annotation2 = new Annotation();
@@ -470,11 +470,11 @@ class AccessServiceTest {
     annotation2.setCreated(dateFormat.parse("2018-02-09T18:31:07Z"));
     annotation2.setCreators(creatorAlgorithm);
     annotation2.setModified(dateFormat.parse("2019-05-08T10:59:34Z"));
-    annotation2.setColor(Color.TEXT_REGION);
+    annotation2.setColor(Color.NOISE_REGION);
     annotation2.setIsAlgorithmAnnotation(true);
     annotation2.setPageId(page2.getId());
     annotation2.setSvgCode("<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"2140\" y=\"3170\" width=\"200\" height=\"205\"/></svg>");
-    annotation2.setMotivation(Motivation.DESCRIBING);
+    annotation2.setMotivation(Motivation.REPLYING);
     annotation2.setVia("http://sampleannoserver.edu/wap/w3c/aea27124-b3be-417a-a3f3-ce9803f9afb4/00053422-d1b4-417d-b659-a294facb6485");
 
     Annotation annotation3 = new Annotation();
@@ -483,11 +483,11 @@ class AccessServiceTest {
     annotation3.setCreators(creatorList);
     annotation3.setModified(dateFormat.parse("2019-07-04T09:25:56Z"));
     annotation3.setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/471a5c9c-25a5-4485-a213-7b51221dba9b");
-    annotation3.setColor(Color.PAGE_REGION);
+    annotation3.setColor(Color.DEFAULT);
     annotation3.setIsAlgorithmAnnotation(false);
     annotation3.setPageId(page3.getId());
     annotation3.setSvgCode("<svg><rect x=\"245\" y=\"-2\" width=\"3070\" height=\"4690\"/></svg>");
-    annotation3.setMotivation(Motivation.DESCRIBING);
+    annotation3.setMotivation(Motivation.MODERATING);
     annotation3.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/471a5c9c-25a5-4485-a213-7b51221dba9b");
 
     Annotation annotation4 = new Annotation();
@@ -500,7 +500,7 @@ class AccessServiceTest {
     annotation4.setIsAlgorithmAnnotation(false);
     annotation4.setPageId(page3.getId());
     annotation4.setSvgCode("<svg><rect x=\"214\" y=\"73\" width=\"3008\" height=\"4467\"/></svg>");
-    annotation4.setMotivation(Motivation.DESCRIBING);
+    annotation4.setMotivation(Motivation.IDENTIFYING);
     annotation4.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/c6c83ff9-3b68-4965-9e7a-359abad3eb9d");
 
     TextCard textCard1 = new TextCard("0");
@@ -701,11 +701,11 @@ class AccessServiceTest {
     annotation1.setCreated(dateFormat.parse("2018-02-06T11:06:01Z"));
     annotation1.setCreators(creatorAlgorithm);
     annotation1.setModified(dateFormat.parse("2019-05-08T10:59:38Z"));
-    annotation1.setColor(Color.TEXT_REGION);
+    annotation1.setColor(Color.CUSTOM_REGION);
     annotation1.setIsAlgorithmAnnotation(true);
     annotation1.setPageId("5172f6cb-78c6-403d-b6eb-64d7738c76aa");
     annotation1.setSvgCode("<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"0\" y=\"3307\" width=\"587\" height=\"1047\"/></svg>");
-    annotation1.setMotivation(Motivation.DESCRIBING);
+    annotation1.setMotivation(Motivation.TAGGING);
     annotation1.setVia("http://sampleannoserver.edu/wap/w3c/aea27124-b3be-417a-a3f3-ce9803f9afb4/0073d61a-5d3a-49c7-bffd-2cc0ae0d8443");
 
     Annotation annotation2 = new Annotation();
@@ -713,11 +713,11 @@ class AccessServiceTest {
     annotation2.setCreated(dateFormat.parse("2018-02-09T18:31:07Z"));
     annotation2.setCreators(creatorAlgorithm);
     annotation2.setModified(dateFormat.parse("2019-03-11T14:09:50Z"));
-    annotation2.setColor(Color.TEXT_REGION);
+    annotation2.setColor(Color.NOISE_REGION);
     annotation2.setIsAlgorithmAnnotation(true);
     annotation2.setPageId("3f3bf25b-e0b9-48a9-b344-20630f733f8b");
     annotation2.setSvgCode("<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"2140\" y=\"3170\" width=\"200\" height=\"205\"/></svg>");
-    annotation2.setMotivation(Motivation.DESCRIBING);
+    annotation2.setMotivation(Motivation.REPLYING);
     annotation2.setVia("http://sampleannoserver.edu/wap/w3c/aea27124-b3be-417a-a3f3-ce9803f9afb4/00053422-d1b4-417d-b659-a294facb6485");
 
     Annotation annotation3 = new Annotation();
@@ -726,11 +726,11 @@ class AccessServiceTest {
     annotation3.setCreators(creatorList);
     annotation3.setModified(dateFormat.parse("2019-07-04T09:25:56Z"));
     annotation3.setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/471a5c9c-25a5-4485-a213-7b51221dba9b");
-    annotation3.setColor(Color.PAGE_REGION);
+    annotation3.setColor(Color.DEFAULT);
     annotation3.setIsAlgorithmAnnotation(false);
     annotation3.setPageId("f68e307b-c41b-412a-a2e2-60418fbbef27");
     annotation3.setSvgCode("<svg><rect x=\"245\" y=\"-2\" width=\"3070\" height=\"4690\"/></svg>");
-    annotation3.setMotivation(Motivation.DESCRIBING);
+    annotation3.setMotivation(Motivation.MODERATING);
     annotation3.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/471a5c9c-25a5-4485-a213-7b51221dba9b");
 
     Annotation annotation4 = new Annotation();
@@ -743,7 +743,7 @@ class AccessServiceTest {
     annotation4.setIsAlgorithmAnnotation(false);
     annotation4.setPageId("f68e307b-c41b-412a-a2e2-60418fbbef27");
     annotation4.setSvgCode("<svg><rect x=\"214\" y=\"73\" width=\"3008\" height=\"4467\"/></svg>");
-    annotation4.setMotivation(Motivation.DESCRIBING);
+    annotation4.setMotivation(Motivation.IDENTIFYING);
     annotation4.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/c6c83ff9-3b68-4965-9e7a-359abad3eb9d");
 
     TextCard textCard1 = new TextCard("0");

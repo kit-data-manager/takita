@@ -9,7 +9,7 @@
   ],
   "format": "xsd:string",
   "dc:identifier": "r13",
-  "dc:subject": "TextRegion",
+  "dc:subject": "CustomRegion",
   "dc:title": "VPOS",
   "creator": "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
   "http://qudt.org/vocab/unit": "cm",

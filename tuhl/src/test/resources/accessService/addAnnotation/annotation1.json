@@ -3,24 +3,18 @@
   "id" : "http://sampleannoserver.edu/wap/a04/validated/bb43925c-9903-43f6-92c4-0b3ed4b1d3d9",
   "type" : "Annotation",
   "created" : "2019-07-04T06:57:35.961Z",
-  "creator" : [ {
+  "creator" : {
     "type" : "Person",
     "name" : "M. K."
-  }, {
-    "type" : "Software",
-    "name" : "Akita"
-  } ],
+  },
   "modified" : "2019-07-04T07:03:03Z",
   "canonical" : "http://sampleannoserver.edu/wap/a04/deinterpretatione/1749ce9c-a79a-4929-8299-edc9c0388fcc",
-  "body" : [{
+  "body" : [ {
     "type" : "TextualBody",
-    "creator" : [ {
+    "creator" : {
       "type" : "Person",
       "name" : "M. K."
-    }, {
-      "type" : "Software",
-      "name" : "Akita"
-    } ],
+    },
     "value" : "Questionable text block",
     "purpose" : "questioning"
   }, {

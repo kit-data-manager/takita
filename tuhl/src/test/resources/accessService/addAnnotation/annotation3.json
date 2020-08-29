@@ -9,6 +9,7 @@
   "modified" : "2019-07-04T07:03:03.000Z",
   "body" : {
     "type" : "TextualBody",
+    "created" : "2019-07-04T07:03:03.000Z",
     "creator" : [ {
       "type" : "Person",
       "name" : "M. K."
@@ -17,6 +18,7 @@
       "name" : "Akita"
     } ],
     "value" : "Questionable tag",
+    "modified" : "2019-07-04T07:03:03.000Z",
     "purpose" : "tagging"
   },
   "target" : {

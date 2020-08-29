@@ -42,6 +42,6 @@
     },
     "source": "http://samplerepo.edu/api/v1/dataresources/f68e307b-c41b-412a-a2e2-60418fbbef27/data/083r.master.jpg"
   },
-  "motivation": "describing",
+  "motivation": "identifying",
   "via": "http://sampleannoserver.edu/wap/a04/deinterpretatione/c6c83ff9-3b68-4965-9e7a-359abad3eb9d"
 }

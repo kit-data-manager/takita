@@ -17,7 +17,7 @@
   "canonical": "http://sampleannoserver.edu/wap/a04/deinterpretatione/471a5c9c-25a5-4485-a213-7b51221dba9b",
   "body": [
     {
-      "dc:subject": "PageRegion",
+      "dc:subject": "Default",
       "creator": [
         {
           "type": "Person",
@@ -38,6 +38,6 @@
     },
     "source": "http://samplerepo.edu/api/v1/dataresources/f68e307b-c41b-412a-a2e2-60418fbbef27/data/033r.master.jpg"
   },
-  "motivation": "describing",
+  "motivation": "moderating",
   "via": "http://sampleannoserver.edu/wap/a04/deinterpretatione/471a5c9c-25a5-4485-a213-7b51221dba9b"
 }
