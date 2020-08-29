@@ -12,10 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
-
-
-
 /**
  * Controller to handle help menu requests and User data requests.
  */
@@ -60,36 +56,6 @@ public class AssistanceController {
     assistanceService.changeUser(pseudonym, model);
     return assistanceService.getLang();
   }
-
-
-  /**
-   * Handles http get when the checkbox saveFilterConfig is checked.
-   *
-   * @return placeholder
-   */
-  /*
-  @GetMapping("/safeFilterConfig")
-  @ResponseBody
-  public String saveFilterConfigSetting() {
-    assistanceService.toggleSaveFilter();
-    return "placeholder";
-  }
-
-   */
-
-  /**
-   * Handles http get when the checkbox saveTableConfig is checked.
-   *
-   * @return placeholder
-   */
-  /*
-  @GetMapping("/saveTableConfigSetting")
-  @ResponseBody
-  public String saveTableConfigSetting(Model model) {
-    assistanceService.toggleSaveTable(model);
-    return "placeholder";
-  }
-  */
 
   /**
    * Handles http POST request to save table column configuration.

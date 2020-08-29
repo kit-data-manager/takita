@@ -1,18 +1,17 @@
 package edu.kit.scc.dem.tuhl.assistance;
 
 import edu.kit.scc.dem.tuhl.mainpage.IMainPageService;
-import edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.TableViewService;
 import edu.kit.scc.dem.tuhl.mainpage.search.IFilterService;
 import edu.kit.scc.dem.tuhl.model.filter.Filter;
 import edu.kit.scc.dem.tuhl.model.filter.FilterConfigurationHolder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.annotation.SessionScope;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 
 /**
