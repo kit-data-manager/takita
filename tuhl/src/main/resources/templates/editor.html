@@ -54,7 +54,7 @@
                         <tbody>
                         <tr>
                             <td th:text="#{col_name.created}"> </td>
-                            <td th:text="${currentManuscript.id}"> </td>
+                            <td th:text="${currentManuscript.created}"> </td>
                         </tr>
                         <tr>
                             <td th:text="#{col_name.lastModified}"> </td>
@@ -102,7 +102,8 @@
                                     <p class="m-0"
                                        th:text="${textCard.purpose}"> </p>
                                 </div>
-                                <div class="col-auto align-self-center">
+                                <div class="col-auto align-self-center"
+                                     th:if="${!textCard.creators.isEmpty()}">
                                     <p class="m-0 text-right" th:text="${textCard.creators[0]}"> </p>
                                 </div>
                             </div>
