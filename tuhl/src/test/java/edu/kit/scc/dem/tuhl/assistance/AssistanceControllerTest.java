@@ -64,7 +64,7 @@ public class AssistanceControllerTest {
   @Test
   public void testSaveTablepage() throws Exception {
 
-    IUser mockedUser = Mockito.mock(IUser.class);
+    User mockedUser = Mockito.mock(User.class);
     Mockito.when(assistanceService.getCurrentUser()).thenReturn(mockedUser);
 
     String col = "{\"paginationSize\":10,\"paginationInitialPage\":1}";

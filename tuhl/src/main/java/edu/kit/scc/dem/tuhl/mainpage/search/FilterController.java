@@ -1,7 +1,7 @@
 package edu.kit.scc.dem.tuhl.mainpage.search;
 
 import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
-import edu.kit.scc.dem.tuhl.assistance.IUser;
+import edu.kit.scc.dem.tuhl.assistance.User;
 import edu.kit.scc.dem.tuhl.mainpage.IMainPageService;
 import edu.kit.scc.dem.tuhl.model.filter.FilterConfigurationHolder;
 import edu.kit.scc.dem.tuhl.model.filter.FilterSelection;
@@ -96,14 +96,8 @@ public class FilterController {
   public String applyFilters(@ModelAttribute("filterConfiguration")
                                    FilterConfigurationHolder filterConfigurationHolder) {
     filterService.applyConfiguration(filterConfigurationHolder);
-    IUser user = assistanceService.getCurrentUser();
-    if (user.isSaveFilter()) {
-      assistanceService.getCurrentUser().setFilter(filterService.getCurrentFilters());
-      assistanceService.updateUser();
-
-      System.out.println(filterService.getCurrentFilters());
-    }
-
+    assistanceService.getCurrentUser().setFilter(filterService.getCurrentFilters());
+    assistanceService.updateUser();
     return "redirect:/";
   }
 

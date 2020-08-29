@@ -2,7 +2,7 @@ package edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview;
 
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
-import edu.kit.scc.dem.tuhl.assistance.IUser;
+import edu.kit.scc.dem.tuhl.assistance.User;
 import edu.kit.scc.dem.tuhl.dataaccess.IRepositoryAccessService;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchService;
@@ -56,7 +56,7 @@ class TableViewServiceTest {
   
   @Test
   void setCurrentPage() {
-    IUser mockedUser = Mockito.mock(IUser.class);
+    User mockedUser = Mockito.mock(User.class);
     
     Mockito.doAnswer(invocation -> {
       assertEquals(42, (Integer) invocation.getArgument(0));

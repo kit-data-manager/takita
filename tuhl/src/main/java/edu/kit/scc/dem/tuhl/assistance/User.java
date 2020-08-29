@@ -26,7 +26,7 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
  * Provides methods to modify settings.
  */
 @Entity
-public class User implements IUser {
+public class User {
 
   @Id
   private String name;
@@ -65,20 +65,6 @@ public class User implements IUser {
     this.lang = "en";
     this.sort = "[{\"column\":\"id\",\"dir\":\"asc\"}]";
     setFilter(new ArrayList<>());
-  }
-
-  User(int currentPage, String columns, String matchFilter, String rangeFilter,
-       boolean checkThumbs, String name, int pageSize, String lang, String sort) {
-    this.currentPage = currentPage;
-    this.columns = columns;
-
-    this.matchFilter = matchFilter;
-    this.rangeFilter = rangeFilter;
-    this.checkThumbs = checkThumbs;
-    this.name = name;
-    this.pageSize = pageSize;
-    this.lang = lang;
-    this.sort = sort;
   }
 
   /**

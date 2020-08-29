@@ -11,26 +11,19 @@ import org.springframework.ui.Model;
 public interface IAssistanceService {
 
   /**
-   * Gets help display.
-   *
-   * @return html file name containing help display
-   */
-  String getHelp();
-
-  /**
    * Gets User from Database by its pseudonym.
    *
    * @param pseudonym of User that should be returned
    * @return User which ID is the given pseudonym
    */
-  IUser getUserByPseudonym(String pseudonym);
+  User getUserByPseudonym(String pseudonym);
 
   /**
    * Gets Pseudonym of current User.
    *
    * @return pseudonym
    */
-  IUser getCurrentUser();
+  User getCurrentUser();
 
   /**
    * Changes User.
@@ -38,16 +31,6 @@ public interface IAssistanceService {
    * @param pseudonym of new User
    */
   void changeUser(String pseudonym, Model model);
-
-  /**
-   * toggles saveFilter boolean of current User.
-   */
-  void toggleSaveFilter();
-
-  /**
-   * toggles saveTable boolean of current User.
-   */
-  void toggleSaveTable(Model model);
 
   /**
    * Updates currentUser in Repo.
