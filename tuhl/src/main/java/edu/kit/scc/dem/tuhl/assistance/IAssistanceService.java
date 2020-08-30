@@ -29,6 +29,7 @@ public interface IAssistanceService {
    * Changes User.
    *
    * @param pseudonym of new User
+   * @param model   the holder for model attributes, used to pass attributes back to the view
    */
   void changeUser(String pseudonym, Model model);
 

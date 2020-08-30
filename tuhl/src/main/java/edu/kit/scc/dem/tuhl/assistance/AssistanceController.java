@@ -50,6 +50,7 @@ public class AssistanceController {
    * Handles http post when a pseudonym is entered.
    *
    * @param pseudonym which is entered
+   * @param model   the holder for model attributes, used to pass attributes back to the view
    * @return html file name to display pseudonym
    */
   @GetMapping("/{pseudonym}")

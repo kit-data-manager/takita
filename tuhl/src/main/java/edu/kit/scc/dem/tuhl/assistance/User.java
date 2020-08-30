@@ -229,6 +229,7 @@ public class User {
    * Gets saved page configuration.
    *
    * @return page configuration
+   * @throws JSONException if the json containing the data is invalid
    */
   public String getPage() throws JSONException {
     JSONObject obj = new JSONObject();
