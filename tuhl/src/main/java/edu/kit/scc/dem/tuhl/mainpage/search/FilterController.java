@@ -1,7 +1,6 @@
 package edu.kit.scc.dem.tuhl.mainpage.search;
 
 import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
-import edu.kit.scc.dem.tuhl.assistance.User;
 import edu.kit.scc.dem.tuhl.mainpage.IMainPageService;
 import edu.kit.scc.dem.tuhl.model.filter.FilterConfigurationHolder;
 import edu.kit.scc.dem.tuhl.model.filter.FilterSelection;
@@ -23,6 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/filter")
 public class FilterController {
   
+  private static final String FRAGMENT_FILTER_SELECTION = "filter_selection :: filterSelection";
   private final IFilterService filterService;
   private final IAssistanceService assistanceService;
   private final IMainPageService mainPageService;
@@ -53,7 +53,7 @@ public class FilterController {
   public String addFilters(@RequestBody FilterSelection filterSelection, Model model) {
     filterService.addToCurrentFilters(filterSelection.getFields());
     mainPageService.update(model);
-    return "filter_selection :: filterSelection";
+    return FRAGMENT_FILTER_SELECTION;
   }
   
   /**
@@ -68,7 +68,7 @@ public class FilterController {
   public String removeFilter(@RequestBody String filterField, Model model) {
     filterService.removeFromCurrentFilters(filterField);
     mainPageService.update(model);
-    return "filter_selection :: filterSelection";
+    return FRAGMENT_FILTER_SELECTION;
   }
   
   /**
@@ -82,7 +82,7 @@ public class FilterController {
   public String clearFilters(Model model) {
     filterService.clearCurrentFilters();
     mainPageService.update(model);
-    return "filter_selection :: filterSelection";
+    return FRAGMENT_FILTER_SELECTION;
   }
   
   /**
