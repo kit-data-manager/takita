@@ -23,20 +23,37 @@
 </head>
 <body class="container-fluid p-0">
 <div id="editor" th:fragment="editor">
-  <div class="row mx-auto pr-3 bg-light">
+  <div class="row mx-auto py-2 bg-light justify-content-between">
     <div class="col-auto align-self-center">
       <button class="btn btn-primary" onclick="goHome()" th:text="#{buttons.back}"> </button>
     </div>
-    <!--
     <div class="col-4 p-6 my-1 align-self-center"
-         th:insert="header.html :: header"></div>-->
+         th:insert="header.html :: header"></div>
   </div>
 
   <div class="row">
     <div class="col" style="overflow-y: scroll; height: 94vh">
+
+
+      <div class="row mx-auto accordion" id="createAnnotation">
+        <div class="row mx-auto">
+          <div class="card">
+            <div class="card-header" type="button" data-toggle="collapse" data-target="#createA">
+              <label class="text-left display-4" th:text="#{label.anno_create}"> </label>
+            </div>
+            <div class="collapse" id="createA">
+              <div class="card-body">
+                <div th:include="editor_stub :: createAnnotation"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
       <div class="row mx-auto">
         <div class="col" th:fragment="createAnnotation">
-          <label class="text-left display-4" th:text="#{label.anno_create}"> </label>
           <form onsubmit="createAnnotation(event)">
             <div class="form-group">
               <label th:text="#{att_name.pageId}"> </label>
@@ -62,7 +79,9 @@
                         th:text="${motivation.getName()}"></option>
               </select>
             </div>
-            <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}"> </button>
+            <div class="card-body">
+              <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}"> </button>
+            </div>
           </form>
         </div>
       </div>
@@ -358,7 +377,7 @@
         <label th:text="#{prompt.nothing_here}"> </label>
       </div>
       <div th:if="${annotation != null}">
-        <label th:text="#{label.anno}"> </label>
+        <h5 th:text="#{label.anno}"> </h5>
         <table class="table">
           <tbody>
           <tr>
@@ -446,7 +465,6 @@
           </div>
         </div>
 
-
       </div>
     </div>
 
@@ -455,8 +473,8 @@
         <label th:text="#{prompt.nothing_here}"> </label>
       </div>
       <div th:if="${body != null}">
-        <label th:if="${body.purpose != 'tagging'}" th:text="#{label.textCard}"> </label>
-        <label th:if="${body.purpose == 'tagging'}" th:text="#{label.tag}"> </label>
+        <h5 th:if="${body.purpose != 'tagging'}" th:text="#{label.textCard}"> </h5>
+        <h5 th:if="${body.purpose == 'tagging'}" th:text="#{label.tag}"> </h5>
         <table class="table">
           <tbody>
           <tr>
@@ -505,7 +523,7 @@
         <label th:text="#{prompt.nothing_here}"> </label>
       </div>
       <div th:if="${rawJson != null}">
-        <label th:text="#{label.rawJson}"> </label>
+        <h5 th:text="#{label.rawJson}"> </h5>
         <label th:text="${rawJson}"> </label>
       </div>
     </div>
@@ -515,7 +533,7 @@
         <label th:text="#{prompt.nothing_here}"> </label>
       </div>
       <div th:if="${rawXml != null}">
-        <label th:text="#{label.rawXml}"> </label>
+        <h5 th:text="#{label.rawXml}"> </h5>
         <label th:text="${rawXml}"> </label>
       </div>
     </div>

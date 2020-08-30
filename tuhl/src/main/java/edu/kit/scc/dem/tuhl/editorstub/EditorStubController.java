@@ -1,6 +1,7 @@
 package edu.kit.scc.dem.tuhl.editorstub;
 
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
+import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
@@ -35,7 +36,9 @@ public class EditorStubController {
   private static final String ANNO_ID_STRING = "annoId";
   private static final String ID_STRING = "id";
   private static final String BODY_STRING = "body";
+  
   private final IEditorStubService editorStubService;
+  private final IAssistanceService assistanceService;
 
   /**
    * Constructor for EditorStubController, initializes instances of used beans.
@@ -43,17 +46,21 @@ public class EditorStubController {
    * @param editorStubService instance of IEditorStubService
    */
   @Autowired
-  public EditorStubController(IEditorStubService editorStubService) {
+  public EditorStubController(IEditorStubService editorStubService,
+                              IAssistanceService assistanceService) {
     this.editorStubService = editorStubService;
+    this.assistanceService = assistanceService;
   }
 
   /**
    * Initializes editor stub.
    *
+   * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return editor stub HTML
    */
   @RequestMapping
-  public String init() {
+  public String init(Model model) {
+    assistanceService.updateModel(model);
     return "editor_stub";
   }
 
@@ -74,6 +81,7 @@ public class EditorStubController {
       String motivation = json.getString("motivation");
       Annotation annotation = editorStubService.addAnnotation(pageId, color, svgCode, motivation);
       model.addAttribute(ANNOTATION_STRING, annotation);
+      assistanceService.updateModel(model);
     } catch (JSONException | IOException | NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     } catch (InterruptedException e) {
@@ -97,6 +105,7 @@ public class EditorStubController {
       String id = json.getString(ID_STRING);
       Annotation annotation = editorStubService.getAnnotation(id);
       model.addAttribute(ANNOTATION_STRING, annotation);
+      assistanceService.updateModel(model);
     } catch (JSONException | NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     }
@@ -121,6 +130,7 @@ public class EditorStubController {
       Annotation annotation = editorStubService
           .updateAnnotation(annoId, color, svgCode, motivation);
       model.addAttribute(ANNOTATION_STRING, annotation);
+      assistanceService.updateModel(model);
     } catch (JSONException | IOException | NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     } catch (InterruptedException e) {
@@ -144,6 +154,7 @@ public class EditorStubController {
       String annoId = json.getString(ANNO_ID_STRING);
       Annotation annotation = editorStubService.validateAnnotation(annoId);
       model.addAttribute(ANNOTATION_STRING, annotation);
+      assistanceService.updateModel(model);
     } catch (JSONException | IOException | NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     } catch (InterruptedException e) {
@@ -167,6 +178,7 @@ public class EditorStubController {
       String annoId = json.getString(ANNO_ID_STRING);
       Annotation annotation = editorStubService.deleteAnnotation(annoId);
       model.addAttribute(ANNOTATION_STRING, annotation);
+      assistanceService.updateModel(model);
     } catch (JSONException | IOException | NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     } catch (InterruptedException e) {
@@ -193,6 +205,7 @@ public class EditorStubController {
       String purpose = json.getString("purpose");
       TextCard textCard = editorStubService.addTextCard(annoId, title, value, purpose);
       model.addAttribute(BODY_STRING, textCard);
+      assistanceService.updateModel(model);
     } catch (JSONException | IOException | NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     } catch (InterruptedException e) {
@@ -216,6 +229,7 @@ public class EditorStubController {
       String id = json.getString(ID_STRING);
       TextCard textCard = editorStubService.getTextCard(id);
       model.addAttribute(BODY_STRING, textCard);
+      assistanceService.updateModel(model);
     } catch (JSONException | NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     }
@@ -239,6 +253,7 @@ public class EditorStubController {
       String purpose = json.getString("purpose");
       TextCard textCard = editorStubService.updateTextCard(id, title, value, purpose);
       model.addAttribute(BODY_STRING, textCard);
+      assistanceService.updateModel(model);
     } catch (JSONException | IOException | NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     } catch (InterruptedException e) {
@@ -262,6 +277,7 @@ public class EditorStubController {
       String id = json.getString(ID_STRING);
       TextCard textCard = editorStubService.deleteTextCard(id);
       model.addAttribute(BODY_STRING, textCard);
+      assistanceService.updateModel(model);
     } catch (JSONException | IOException | NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     } catch (InterruptedException e) {
@@ -287,6 +303,7 @@ public class EditorStubController {
       String value = json.getString(VALUE_STRING);
       Tag tag = editorStubService.addTag(annoId, title, value);
       model.addAttribute(BODY_STRING, tag);
+      assistanceService.updateModel(model);
     } catch (JSONException | IOException | NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     } catch (InterruptedException e) {
@@ -310,6 +327,7 @@ public class EditorStubController {
       String id = json.getString(ID_STRING);
       Tag tag = editorStubService.getTag(id);
       model.addAttribute(BODY_STRING, tag);
+      assistanceService.updateModel(model);
     } catch (JSONException | NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     }
@@ -332,6 +350,7 @@ public class EditorStubController {
       String value = json.getString(VALUE_STRING);
       Tag tag = editorStubService.updateTag(id, title, value);
       model.addAttribute(BODY_STRING, tag);
+      assistanceService.updateModel(model);
     } catch (JSONException | IOException | NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     } catch (InterruptedException e) {
@@ -355,6 +374,7 @@ public class EditorStubController {
       String id = json.getString(ID_STRING);
       Tag tag = editorStubService.deleteTag(id);
       model.addAttribute(BODY_STRING, tag);
+      assistanceService.updateModel(model);
     } catch (JSONException | IOException | NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     } catch (InterruptedException e) {
@@ -378,6 +398,7 @@ public class EditorStubController {
       String id = json.getString(ID_STRING);
       String rawJson = editorStubService.getManuscriptJson(id).toString(2).replace("\\/", "/");
       model.addAttribute(RAW_JSON_STRING, rawJson);
+      assistanceService.updateModel(model);
     } catch (JSONException | IOException e) {
       return REDIRECT_ERROR + e.getMessage();
     } catch (InterruptedException e) {
@@ -401,6 +422,7 @@ public class EditorStubController {
       String id = json.getString(ID_STRING);
       String rawXml = editorStubService.getManuscriptXml(id);
       model.addAttribute(RAW_JSON_STRING, rawXml);
+      assistanceService.updateModel(model);
     } catch (JSONException | IOException e) {
       return REDIRECT_ERROR + e.getMessage();
     } catch (InterruptedException e) {
@@ -424,6 +446,7 @@ public class EditorStubController {
       String id = json.getString(ID_STRING);
       String rawJson = editorStubService.getPageJson(id).toString(2).replace("\\/", "/");
       model.addAttribute(RAW_JSON_STRING, rawJson);
+      assistanceService.updateModel(model);
     } catch (JSONException | IOException e) {
       return REDIRECT_ERROR + e.getMessage();
     } catch (InterruptedException e) {
@@ -450,6 +473,7 @@ public class EditorStubController {
           .toString(2)
           .replace("\\/", "/");
       model.addAttribute(RAW_JSON_STRING, rawJson);
+      assistanceService.updateModel(model);
     } catch (JSONException | IOException e) {
       return REDIRECT_ERROR + e.getMessage();
     } catch (InterruptedException e) {
