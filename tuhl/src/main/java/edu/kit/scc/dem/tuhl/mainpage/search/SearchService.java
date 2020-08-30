@@ -7,7 +7,6 @@ import edu.kit.scc.dem.tuhl.model.filter.Filter;
 import edu.kit.scc.dem.tuhl.model.page.ImagePage;
 import edu.kit.scc.dem.tuhl.model.page.Page;
 import edu.kit.scc.dem.tuhl.model.page.TextPage;
-
 import java.io.IOException;
 import java.sql.Date;
 import java.util.ArrayList;
@@ -87,11 +86,11 @@ public class SearchService implements ISearchService {
     //Cannot use lambda because of reflection in test class
     boolean exists = elasticsearchRestTemplate.execute(
         new ElasticsearchRestTemplate.ClientCallback<Boolean>() {
-      @Override
-      public Boolean doWithClient(RestHighLevelClient client) throws IOException {
-        return client.indices().exists(new GetIndexRequest(INDEX_NAME), RequestOptions.DEFAULT);
-      }
-    });
+        @Override
+        public Boolean doWithClient(RestHighLevelClient client) throws IOException {
+          return client.indices().exists(new GetIndexRequest(INDEX_NAME), RequestOptions.DEFAULT);
+        }
+      });
     if (!exists) {
       logger.error("The index does not exist. Please try to build it first.");
     }
