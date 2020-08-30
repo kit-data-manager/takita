@@ -4,7 +4,6 @@ import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
-import java.awt.Image;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;

@@ -215,7 +215,8 @@ public class RepositoryAccessService implements IRepositoryAccessService {
 
   private boolean isAfterFromString(String manuscriptDateString, Date isAfterDate)
       throws ParseException {
-    Date manuscriptDate = IRepositoryAccessService.TIMESTAMP_FORMAT.parse(manuscriptDateString);
+    Date manuscriptDate = TimeStampFormats.TIMESTAMP_FORMAT_REPO.getDateFormat()
+        .parse(manuscriptDateString);
     return manuscriptDate.after(isAfterDate);
   }
 

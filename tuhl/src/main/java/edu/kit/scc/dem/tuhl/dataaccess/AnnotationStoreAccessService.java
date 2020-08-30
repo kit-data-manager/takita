@@ -265,7 +265,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
       throws JSONException, IOException, InterruptedException {
     logger.info("Getting all annotations modified after {}.", timestamp);
 
-    String date = IAnnotationStoreAccessService.TIMESTAMP_FORMAT_MILLIS.format(timestamp);
+    String date = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat().format(timestamp);
 
     //Sparql query to get only the annotations modified after date
     HttpResponse<String> response = httpRequestHelper.get(sparqlQueryUrlPrefix

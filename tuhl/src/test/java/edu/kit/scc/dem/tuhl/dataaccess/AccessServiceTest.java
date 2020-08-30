@@ -77,7 +77,7 @@ class AccessServiceTest {
   @Test
   void getAllManuscriptsModifiedAfter() throws InterruptedException, ParseException, JSONException, IOException, NoSuchIndexEntryException {
     List<Manuscript> expectedManuscripts = buildMocksAndExpectedManuscripts();
-    DateFormat dateFormatMillis = IAnnotationStoreAccessService.TIMESTAMP_FORMAT_MILLIS;
+    DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat();
     Date timestamp = dateFormatMillis.parse("2019-03-10T14:13:45.000Z");
 
     List<JSONObject> jsonAnnotations = new ArrayList<>();
@@ -143,8 +143,8 @@ class AccessServiceTest {
   
   @Test
   void addAnnotation1() throws IOException, JSONException, InterruptedException, ParseException, NoSuchIndexEntryException {
-    DateFormat dateFormat = IAnnotationStoreAccessService.TIMESTAMP_FORMAT;
-    DateFormat dateFormatMillis = IAnnotationStoreAccessService.TIMESTAMP_FORMAT_MILLIS;
+    DateFormat dateFormat = TimeStampFormats.TIMESTAMP_FORMAT_ANNO.getDateFormat();
+    DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat();
     List<String> creatorList = new ArrayList<>();
     creatorList.add("M. K.");
 
@@ -217,8 +217,8 @@ class AccessServiceTest {
 
   @Test
   void addAnnotation2() throws IOException, JSONException, InterruptedException, ParseException, NoSuchIndexEntryException {
-    DateFormat dateFormat = IAnnotationStoreAccessService.TIMESTAMP_FORMAT;
-    DateFormat dateFormatMillis = IAnnotationStoreAccessService.TIMESTAMP_FORMAT_MILLIS;
+    DateFormat dateFormat = TimeStampFormats.TIMESTAMP_FORMAT_ANNO.getDateFormat();
+    DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat();
     List<String> creatorList = new ArrayList<>();
     creatorList.add("M. K.");
 
@@ -278,7 +278,7 @@ class AccessServiceTest {
   
   @Test
   void validateAnnotation() throws IOException, ParseException, JSONException, InterruptedException, NoSuchIndexEntryException {
-    DateFormat dateFormat = IAnnotationStoreAccessService.TIMESTAMP_FORMAT;
+    DateFormat dateFormat = TimeStampFormats.TIMESTAMP_FORMAT_ANNO.getDateFormat();
 
     JSONObject jsonAnnotation2 = new JSONObject(readStringFromRelativePath("addAnnotation/annotation2.json"));
     JSONObject validatedJsonAnnotation2 = new JSONObject((readStringFromRelativePath("addAnnotation/validatedAnnotation2.json")));
@@ -399,8 +399,8 @@ class AccessServiceTest {
     annotationsJson.add(annotationJson3);
     annotationsJson.add(annotationJson4);
 
-    DateFormat dateFormat = IRepositoryAccessService.TIMESTAMP_FORMAT;
-    DateFormat dateFormatMillis = IRepositoryAccessService.TIMESTAMP_FORMAT_MILLIS;
+    DateFormat dateFormat = TimeStampFormats.TIMESTAMP_FORMAT_REPO.getDateFormat();
+    DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_REPO.getDateFormat();
 
     ImagePage page1 = new ImagePage(
         "5172f6cb-78c6-403d-b6eb-64d7738c76aa",
@@ -561,7 +561,7 @@ class AccessServiceTest {
     Mockito.when(mockedRepositoryAccessService.getAllManuscripts(2))
         .thenReturn(manuscriptsJson);
     Mockito.when(mockedRepositoryAccessService.getManuscriptsModifiedAfter(
-        IRepositoryAccessService.TIMESTAMP_FORMAT.parse("2019-03-10T14:13:45Z")))
+        TimeStampFormats.TIMESTAMP_FORMAT_REPO.getDateFormat().parse("2019-03-10T14:13:45Z")))
         .thenReturn(manuscriptsJson);
     Mockito.when(mockedRepositoryAccessService.getManuscriptById(manuscript1.getId()))
         .thenReturn(manuscriptJson1);
@@ -632,8 +632,8 @@ class AccessServiceTest {
     annotationsJson.add(annotationJson3);
     annotationsJson.add(annotationJson4);
 
-    DateFormat dateFormat = IRepositoryAccessService.TIMESTAMP_FORMAT;
-    DateFormat dateFormatMillis = IRepositoryAccessService.TIMESTAMP_FORMAT_MILLIS;
+    DateFormat dateFormat = TimeStampFormats.TIMESTAMP_FORMAT_REPO.getDateFormat();
+    DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_REPO.getDateFormat();
 
     ImagePage page1 = new ImagePage(
         "3b868555-f0ac-4de7-abbc-5c14c0742dbf",
@@ -1006,8 +1006,8 @@ class AccessServiceTest {
   }
 
   private List<Annotation> buildAnnotations() throws ParseException, NoSuchIndexEntryException, JSONException {
-    DateFormat dateFormat = IAnnotationStoreAccessService.TIMESTAMP_FORMAT;
-    DateFormat dateFormatMillis = IAnnotationStoreAccessService.TIMESTAMP_FORMAT_MILLIS;
+    DateFormat dateFormat = TimeStampFormats.TIMESTAMP_FORMAT_ANNO.getDateFormat();
+    DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat();
     List<String> creatorList = new ArrayList<>();
     creatorList.add("M. K.");
     creatorList.add("Elizabeth Bennet");

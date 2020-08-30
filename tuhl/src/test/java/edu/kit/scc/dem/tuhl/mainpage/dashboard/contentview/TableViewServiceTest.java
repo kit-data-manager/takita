@@ -4,6 +4,7 @@ import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
 import edu.kit.scc.dem.tuhl.assistance.User;
 import edu.kit.scc.dem.tuhl.dataaccess.IRepositoryAccessService;
+import edu.kit.scc.dem.tuhl.dataaccess.TimeStampFormats;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchService;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
@@ -140,7 +141,7 @@ class TableViewServiceTest {
   }
   
   List<Manuscript> prepareMockResults() throws ParseException {
-    DateFormat dateFormat = IRepositoryAccessService.TIMESTAMP_FORMAT;
+    DateFormat dateFormat = TimeStampFormats.TIMESTAMP_FORMAT_REPO.getDateFormat();
     ImagePage page1 = new ImagePage(
         "5172f6cb-78c6-403d-b6eb-64d7738c76aa",
         "076v",

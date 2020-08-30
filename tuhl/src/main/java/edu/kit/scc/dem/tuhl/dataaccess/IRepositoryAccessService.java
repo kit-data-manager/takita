@@ -1,9 +1,7 @@
 package edu.kit.scc.dem.tuhl.dataaccess;
 
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
@@ -15,12 +13,6 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
  * Interface for class RepositoryAccessService, contains logic for accessing the repository.
  */
 public interface IRepositoryAccessService {
-
-  /**
-   * Format of the timestamps in the repository.
-   */
-  DateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-  DateFormat TIMESTAMP_FORMAT_MILLIS = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
   /**
    * Gets a manuscript from the repository by its unique manuscript identifier.

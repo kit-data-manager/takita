@@ -3,6 +3,7 @@ package edu.kit.scc.dem.tuhl.mainpage.search;
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.dataaccess.IAccessService;
 import edu.kit.scc.dem.tuhl.dataaccess.IAnnotationStoreAccessService;
+import edu.kit.scc.dem.tuhl.dataaccess.TimeStampFormats;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
 import edu.kit.scc.dem.tuhl.model.Motivation;
@@ -363,7 +364,7 @@ class SearchIndexServiceTest {
   }
 
   private List<Manuscript> initManuscriptList() throws ParseException {
-    DateFormat dateFormatMillis = IAnnotationStoreAccessService.TIMESTAMP_FORMAT_MILLIS;
+    DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat();
     List<Manuscript> manuscripts = new ArrayList<>();
 
     Manuscript manuscript1 = new Manuscript(

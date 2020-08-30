@@ -299,7 +299,7 @@ class AnnotationStoreAccessServiceTest {
         "1749ce9c-a79a-4929-8299-edc9c0388fcc")).thenReturn(mockedAnnotation2);
 
     List<JSONObject> actual = annotationStoreAccessService.getAnnotationsModifiedAfter(
-        IAnnotationStoreAccessService.TIMESTAMP_FORMAT.parse("2019-05-08T10:59:35Z"));
+        TimeStampFormats.TIMESTAMP_FORMAT_ANNO.getDateFormat().parse("2019-05-08T10:59:35Z"));
 
     List<JSONObject> expected = new ArrayList<>();
     expected.add(new JSONObject(readStringFromRelativePath("getAllAnnotationsModifiedAfter/annotation1.json")));

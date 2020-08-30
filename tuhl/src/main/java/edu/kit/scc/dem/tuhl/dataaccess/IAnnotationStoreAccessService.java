@@ -12,8 +12,7 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
  * Interface for class AnnotationStoreAccess, contains logic for accessing the annotation database.
  */
 public interface IAnnotationStoreAccessService {
-  DateFormat TIMESTAMP_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-  DateFormat TIMESTAMP_FORMAT_MILLIS = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
 
   /**
    * Adds an annotation to the annotation store.

@@ -147,9 +147,10 @@ public class AccessService implements IAccessService {
               && dateJson.has(RepositoryStrings.VALUE.getName())) {
             String dateString = dateJson.getString((RepositoryStrings.VALUE.getName()));
             if (dateString.contains(".")) {
-              date = IRepositoryAccessService.TIMESTAMP_FORMAT_MILLIS.parse(dateString);
+              date = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_REPO.getDateFormat()
+                  .parse(dateString);
             } else {
-              date = IRepositoryAccessService.TIMESTAMP_FORMAT.parse(dateString);
+              date = TimeStampFormats.TIMESTAMP_FORMAT_REPO.getDateFormat().parse(dateString);
             }
             break;
           }
@@ -666,7 +667,8 @@ public class AccessService implements IAccessService {
     //put created date
     if (annotation.getCreated() != null) {
       jsonAnnotation.put(AnnotationStoreStrings.CREATED.getName(),
-          IAnnotationStoreAccessService.TIMESTAMP_FORMAT_MILLIS.format(annotation.getCreated()));
+          TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat()
+              .format(annotation.getCreated()));
     }
 
     //put creators
@@ -677,7 +679,8 @@ public class AccessService implements IAccessService {
     //put modified date
     if (annotation.getModified() != null) {
       jsonAnnotation.put(AnnotationStoreStrings.MODIFIED.getName(),
-          IAnnotationStoreAccessService.TIMESTAMP_FORMAT_MILLIS.format(annotation.getModified()));
+          TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat()
+              .format(annotation.getModified()));
     }
     
     //put canonical
@@ -809,11 +812,11 @@ public class AccessService implements IAccessService {
     
     if (body.getCreated() != null) {
       jsonBody.put(AnnotationStoreStrings.CREATED.getName(),
-          IAnnotationStoreAccessService.TIMESTAMP_FORMAT_MILLIS.format(body.getCreated()));
+          TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat().format(body.getCreated()));
     }
     if (body.getModified() != null) {
       jsonBody.put(AnnotationStoreStrings.MODIFIED.getName(),
-          IAnnotationStoreAccessService.TIMESTAMP_FORMAT_MILLIS.format(body.getCreated()));
+          TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat().format(body.getCreated()));
     }
     if (body.getPurpose() != null) {
       jsonBody.put(AnnotationStoreStrings.PURPOSE.getName(), body.getPurpose().getName());
@@ -1074,9 +1077,9 @@ public class AccessService implements IAccessService {
         dateString = json.getString(type);
         //Parse the right date to a Date Object.
         if (dateString.contains(".")) {
-          date = IAnnotationStoreAccessService.TIMESTAMP_FORMAT_MILLIS.parse(dateString);
+          date = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat().parse(dateString);
         } else {
-          date = IAnnotationStoreAccessService.TIMESTAMP_FORMAT.parse(dateString);
+          date = TimeStampFormats.TIMESTAMP_FORMAT_ANNO.getDateFormat().parse(dateString);
         }
       }
     } catch (ParseException | JSONException e) {
