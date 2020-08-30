@@ -1,1 +1,1 @@
-<http://samplerepo.edu/api/v1/dataresources/search?page=1&size=99>; rel="last"
+<http://samplerepo.edu/api/v1/dataresources/search?page=1&size=100>; rel="last"
