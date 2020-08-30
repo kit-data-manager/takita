@@ -69,9 +69,13 @@ public class SearchIndexService implements ISearchIndexService {
   /**
    * Constructor for the SearchIndexService to autowire required instances.
    *
-   * @param accessService instance of the business logic for database access.
-   *                      Injected with Springs dependency injection system
-   *                      indicated by @autowired annotation.
+   * @param accessService instance of the business logic for database access. Injected with
+   *                      Springs dependency injection system indicated by @autowired annotation.
+   * @param manuscriptRepository instance of the manuscript repository. Injected with Springs
+   *                             dependency injection system indicated by @autowired annotation.
+   * @param elasticsearchRestTemplate instance of the elasticsearch rest template. Injected with
+   *                                  Springs dependency injection system indicated by @autowired
+   *                                  annotation.
    */
   @Autowired
   public SearchIndexService(IAccessService accessService,

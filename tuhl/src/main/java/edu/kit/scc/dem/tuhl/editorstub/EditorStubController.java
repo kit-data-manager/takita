@@ -45,6 +45,7 @@ public class EditorStubController {
    * Constructor for EditorStubController, initializes instances of used beans.
    *
    * @param editorStubService instance of IEditorStubService
+   * @param assistanceService instance of IAssistanceService
    */
   @Autowired
   public EditorStubController(IEditorStubService editorStubService,

@@ -182,6 +182,7 @@ public abstract class Body {
    * Gets the full JSONObject containing the body.
    *
    * @return text card as JSONObject
+   * @throws JSONException if the JSON from the annotation store could not be parsed to a JSONObject
    */
   public JSONObject getFullJson() throws JSONException {
     if (fullJson != null) {

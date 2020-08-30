@@ -63,6 +63,9 @@ public class SearchService implements ISearchService {
    *
    * @param filterService instance of the business logic for filters. Injected with Springs
    *                      dependency injection system indicated by @autowired annotation.
+   * @param elasticsearchRestTemplate instance of the elasticsearch rest template. Injected with
+   *                                  Springs dependency injection system indicated by @autowired
+   *                                  annotation.
    */
   @Autowired
   public SearchService(IFilterService filterService,

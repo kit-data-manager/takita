@@ -30,6 +30,8 @@ public class TableViewController {
    *
    * @param tableViewService instance of the business logic for the table view. Injected with
    *                         Springs dependency injection system indicated by @autowired annotation.
+   * @param mainPageService instance of the business logic for the main page. Injected with
+   *                        Springs dependency injection system indicated by @autowired annotation.
    */
   @Autowired
   public TableViewController(TableViewService tableViewService, IMainPageService mainPageService) {
@@ -79,7 +81,7 @@ public class TableViewController {
    * @param pageNo current pageNo
    * @param size   current page size
    * @param model  the holder for model attributes, used to pass attributes back to the view
-   * @return
+   * @return the sorted data in json format
    */
   @RequestMapping(value = "/sort", params = {"sorters[0][field]",
       "sorters[0][dir]", "page", "size"})

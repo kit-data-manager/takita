@@ -29,7 +29,10 @@ public abstract class Page {
    * Constructor for Page, only sets Id.
    *
    * @param id to be set, only id String and not link
+   * @param resourceType the resourceType of the page
+   * @param pageNumber the identifier of the page
    * @param created the date the page was created
+   * @param resourceUrl the url that points at the resource
    */
   public Page(String id, ResourceType resourceType, String pageNumber,
               Date created, String resourceUrl) {

@@ -24,15 +24,16 @@ public class MainPageService implements IMainPageService {
    * Constructor for the Main Page Service to autowire required instances.
    * *
    *
-   * @param assistanceService instance of the logic for assistance.
-   *                          Injected with Springs dependency injection system
-   *                          indicated by @autowired annotation.
-   * @param filterService     instance of the logic for filter.
-   *                          Injected with Springs dependency injection system
-   *                          indicated by @autowired annotation.
-   * @param dashboardService  instance of the logic for dashboard.
-   *                          Injected with Springs dependency injection system
-   *                          indicated by @autowired annotation.
+   * @param assistanceService instance of the logic for assistance. Injected with Springs dependency
+   *                          injection system indicated by @autowired annotation.
+   * @param filterService instance of the logic for filter. Injected with Springs dependency
+   *                      injection system indicated by @autowired annotation.
+   * @param dashboardService instance of the logic for dashboard. Injected with Springs
+   *                         dependency injection system indicated by @autowired annotation.
+   * @param searchService instance of the logic for search service. Injected with Springs
+   *                      dependency injection system indicated by @autowired annotation.
+   * @param tableViewService instance of the logic for table view service. Injected with Springs
+   *                         dependency injection system indicated by @autowired annotation.
    */
   @Autowired
   public MainPageService(IAssistanceService assistanceService, IFilterService filterService,

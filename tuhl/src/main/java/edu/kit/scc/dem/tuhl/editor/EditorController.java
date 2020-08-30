@@ -141,12 +141,18 @@ public class EditorController {
    * @return the name of the html file to display
    */
   @PostMapping("/add/textcard")
-  public String addTextCard(@ModelAttribute("textCard") TextCard textCard)
-      throws NoSuchIndexEntryException, InterruptedException, JSONException, IOException {
-    editorService.addTextCard(textCard.getValue(), textCard.getPurpose().getName(),
-        textCard.getTitle());
-    logger.info("Textkarte hinzugefügt");
-    return "editor";
+  public String addTextCard(@ModelAttribute("textCard") TextCard textCard) {
+    try {
+      editorService.addTextCard(textCard.getValue(), textCard.getPurpose().getName(),
+          textCard.getTitle());
+      logger.info("Textkarte hinzugefügt");
+      return "editor";
+    } catch (IOException | JSONException | NoSuchIndexEntryException e) {
+      return "redirect:/error/" + e.getMessage();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return "redirect:/error/" + e.getMessage();
+    }
   }
   
   /**

@@ -43,6 +43,8 @@ public interface IAccessService {
    * @throws JSONException if an error occurs while parsing json
    * @throws IOException if an error occurs while sending or receiving http request
    * @throws ParseException if an error occurs while parsing the date
+   * @throws NoSuchIndexEntryException if there is a problem finding a modified manuscript in the
+   * index
    */
   List<Manuscript> getAllManuscriptsModifiedAfter(Date timestamp)
       throws InterruptedException, JSONException, IOException,

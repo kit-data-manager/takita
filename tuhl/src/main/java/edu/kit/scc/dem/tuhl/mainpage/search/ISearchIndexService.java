@@ -199,6 +199,8 @@ public interface ISearchIndexService {
    * @return the raw JSON as a String
    * @throws IOException if an error occurs while sending/receiving http request to annotation store
    * @throws InterruptedException if http request is interrupted
+   * @throws JSONException if the manuscript data provided by the repository could not be parsed
+   * to json
    */
   JSONObject getRawManuscriptJson(String manuscriptId)
       throws InterruptedException, IOException, JSONException;

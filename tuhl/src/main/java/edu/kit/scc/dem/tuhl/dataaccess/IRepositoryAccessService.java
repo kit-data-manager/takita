@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+
+import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -69,6 +71,7 @@ public interface IRepositoryAccessService {
    * @throws JSONException if the response body could not be parsed to JSON
    * @throws IOException if an error occurs while sending or receiving
    * @throws InterruptedException if the get request is interrupted
+   * @throws ParseException if there is a problem while parsing the data to a JSONObject
    */
   List<JSONObject> getManuscriptsModifiedAfter(Date timestamp)
       throws InterruptedException, JSONException, IOException, ParseException;

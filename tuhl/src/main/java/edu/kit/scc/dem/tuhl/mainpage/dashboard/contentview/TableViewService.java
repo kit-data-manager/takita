@@ -195,6 +195,7 @@ public class TableViewService implements IContentViewService {
    * Gets results and formats them in JSON Array for table to read.
    *
    * @return table data as JSONArray
+   * @throws JSONException if the data could not be parsed to a JSONObject
    */
   public JSONArray getData() throws JSONException {
     JSONArray data = new JSONArray();

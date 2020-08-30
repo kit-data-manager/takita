@@ -34,6 +34,14 @@ public class FilterController {
    *
    * @param filterService instance of the business logic for filters. Injected with Springs
    *                      dependency injection system indicated by @autowired annotation.
+   * @param assistanceService instance of the business logic of the assistance service. Injected
+   *                          with Springs dependency injection system indicated by @autowired
+   *                          annotation.
+   * @param mainPageService instance of the business logic of the main page. Injected with Springs
+   *                        dependency injection system indicated by @autowired annotation.
+   *
+   * @param tableViewService instance of the business logic of the table view. Injected with Springs
+   *                         dependency injection system indicated by @autowired annotation.
    */
   @Autowired
   public FilterController(IFilterService filterService, IAssistanceService assistanceService,

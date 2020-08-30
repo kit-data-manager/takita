@@ -80,6 +80,8 @@ public interface IEditorStubService {
    *
    * @param id of the text card
    * @return text card in question
+   * @throws NoSuchIndexEntryException when the annotation containing the text card could not be
+   * found in the index
    */
   TextCard getTextCard(String id) throws NoSuchIndexEntryException;
 
@@ -88,6 +90,8 @@ public interface IEditorStubService {
    *
    * @param id of the tag
    * @return tag in question
+   * @throws NoSuchIndexEntryException when the annotation containing the tag could not be found
+   * in the index
    */
   Tag getTag(String id) throws NoSuchIndexEntryException;
 
