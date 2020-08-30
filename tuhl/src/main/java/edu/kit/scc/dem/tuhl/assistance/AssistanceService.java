@@ -180,4 +180,16 @@ public class AssistanceService implements IAssistanceService {
   public String getLang() {
     return currentUser.getLang();
   }
+
+  public void addRow(String row){
+    List<String> currentRows = currentUser.getRows();
+    currentRows.add(row);
+    currentUser.setRows(currentRows);
+  }
+
+  public void removeRow(String row){
+    List<String> currentRows = currentUser.getRows();
+    currentRows.remove(row);
+    currentUser.setRows(currentRows);
+  }
 }

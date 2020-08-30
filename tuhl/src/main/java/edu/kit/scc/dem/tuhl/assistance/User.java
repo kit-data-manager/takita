@@ -40,6 +40,8 @@ public class User {
   @Lob
   private String columns;
 
+  @Lob
+  private String rows;
 
   @Lob
   private String matchFilter;
@@ -64,6 +66,7 @@ public class User {
     this.pageSize = 10;
     this.lang = "en";
     this.sort = "[{\"column\":\"id\",\"dir\":\"asc\"}]";
+    clearRows();
     setFilter(new ArrayList<>());
   }
 
@@ -92,6 +95,22 @@ public class User {
    */
   public String getRangeFilter() {
     return rangeFilter;
+  }
+
+  public List<String> getRows(){
+    Type rowType = TypeToken.getParameterized(ArrayList.class, String.class).getType();
+    List<String> rowList = new Gson().fromJson(this.rows, rowType);
+    return rowList;
+  }
+
+  public void setRows(List<String> rowList){
+    this.rows = new GsonBuilder().create().toJson(rowList);
+  }
+
+  private void clearRows(){
+    List<String> list = new ArrayList<>();
+    list.add("def");
+    this.rows = new GsonBuilder().create().toJson(list);
   }
 
   /**
@@ -156,6 +175,7 @@ public class User {
    * @param currentPage to be set
    */
   public void setCurrentPage(int currentPage) {
+    clearRows();
     this.currentPage = currentPage;
   }
 

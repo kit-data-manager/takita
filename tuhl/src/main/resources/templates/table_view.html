@@ -270,63 +270,80 @@
 
 
 
-
+    /*<![CDATA[*/
     function showThumbs(){
         if(document.getElementById("thumbnails").checked) {
             window.table.getRows().forEach(function (row) {
                 showThumbnails(row);
             });
+        } else {
+            [[${user.getRows()}]].forEach(function(manId, i){
+                window.table.getRows().forEach(function(row){
+                    if(row.getData().id === [[${user.getRows()}]][i]){
+                        showThumbnails(row);
+                    }
+                })
+
+            });
+
+
+
+
         }
     }
-
+    /*]]>*/
 
     function showThumbnails(row){
-        let thumbnails = row.getData().thumbnails;
-        let id = row.getData().id;
-        let holder = document.createElement('div');
-        holder.style.display = 'block';
-        holder.setAttribute('id', 'holder' + id)
-        let cardBody = document.createElement('div');
-        cardBody.setAttribute('class', 'card card-body no-wrap');
-        let outerRow = document.createElement('div');
-        outerRow.setAttribute('class', 'row');
-        thumbnails.forEach(function(item, index){
-            let col = document.createElement('div');
-            col.setAttribute('class', 'mx-1 col-auto');
+        $.get( "/assistance/addRow/" + row.getData().id, function( data ) {
+            let thumbnails = row.getData().thumbnails;
+            let id = row.getData().id;
+            let holder = document.createElement('div');
+            holder.style.display = 'block';
+            holder.setAttribute('id', 'holder' + id)
+            let cardBody = document.createElement('div');
+            cardBody.setAttribute('class', 'card card-body no-wrap');
+            let outerRow = document.createElement('div');
+            outerRow.setAttribute('class', 'row');
+            thumbnails.forEach(function (item, index) {
+                let col = document.createElement('div');
+                col.setAttribute('class', 'mx-1 col-auto');
                 let imgRow = document.createElement('div');
                 imgRow.setAttribute('class', 'row');
-                    let imgCol = document.createElement('div');
-                    imgCol.setAttribute('class', 'col');
-                        let img = document.createElement('img');
-                        img.setAttribute('class', 'img-thumbnail');
-                        img.setAttribute('src', item.thumb);
-                    imgCol.appendChild(img);
+                let imgCol = document.createElement('div');
+                imgCol.setAttribute('class', 'col');
+                let img = document.createElement('img');
+                img.setAttribute('class', 'img-thumbnail');
+                img.setAttribute('src', item.thumb);
+                imgCol.appendChild(img);
                 imgRow.appendChild(imgCol);
                 let subtitleRow = document.createElement('div');
                 subtitleRow.setAttribute('class', 'row mb-2 mt-1 justify-content-center');
-                    let link = document.createElement('a');
-                    link.setAttribute('class', 'btn-sm btn-secondary col-auto')
-                    link.setAttribute('href','/editor/' + item.id);
-                        let icon = document.createElement('i');
-                        icon.setAttribute('class', 'fa fa-pencil');
-                    link.appendChild(icon);
-                    let label = document.createElement('label');
-                    label.setAttribute('class', 'col-auto m-0');
-                    label.innerText = item.pageNumber;
+                let link = document.createElement('a');
+                link.setAttribute('class', 'btn-sm btn-secondary col-auto')
+                link.setAttribute('href', '/editor/' + item.id);
+                let icon = document.createElement('i');
+                icon.setAttribute('class', 'fa fa-pencil');
+                link.appendChild(icon);
+                let label = document.createElement('label');
+                label.setAttribute('class', 'col-auto m-0');
+                label.innerText = item.pageNumber;
                 subtitleRow.appendChild(link);
                 subtitleRow.appendChild(label);
-            col.appendChild(imgRow);
-            col.appendChild(subtitleRow);
-            outerRow.appendChild(col);
-        })
-        cardBody.appendChild(outerRow);
-        holder.appendChild(cardBody);
-        row.getElement().appendChild(holder);
+                col.appendChild(imgRow);
+                col.appendChild(subtitleRow);
+                outerRow.appendChild(col);
+            })
+            cardBody.appendChild(outerRow);
+            holder.appendChild(cardBody);
+            row.getElement().appendChild(holder);
+        });
     }
 
     function hideThumbnails(row) {
-        let id = row.getData().id;
-        document.getElementById('holder' + id).remove();
+        $.get( "/assistance/removeRow/" + row.getData().id, function( data ) {
+            let id = row.getData().id;
+            document.getElementById('holder' + id).remove();
+        });
     }
 
 

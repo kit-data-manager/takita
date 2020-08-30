@@ -145,4 +145,28 @@ public class AssistanceController {
     return PLACEHOLDER;
   }
 
+  /**
+   * Handles http request to save selected language of current User.
+   *
+   * @return placeholder
+   */
+  @GetMapping("/addRow/{row}")
+  @ResponseBody
+  public String setRow(@PathVariable("row") String row, Model model) {
+    assistanceService.addRow(row);
+    return PLACEHOLDER;
+  }
+
+  /**
+   * Handles http request to save selected language of current User.
+   *
+   * @return placeholder
+   */
+  @GetMapping("/removeRow/{row}")
+  @ResponseBody
+  public String removeRow(@PathVariable("row") String row, Model model) {
+    assistanceService.removeRow(row);
+    return PLACEHOLDER;
+  }
+
 }

@@ -88,4 +88,8 @@ public interface IAssistanceService {
    * @param model the holder for model attributes, used to pass attributes back to the view
    */
   void setTableSort(String sort, Model model);
+
+  void addRow(String row);
+
+  void removeRow(String row);
 }
