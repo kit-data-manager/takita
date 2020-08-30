@@ -1,10 +1,9 @@
 package edu.kit.scc.dem.tuhl.model.body;
 
+import edu.kit.scc.dem.tuhl.model.Motivation;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import edu.kit.scc.dem.tuhl.model.Motivation;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 

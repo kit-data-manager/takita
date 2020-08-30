@@ -22,23 +22,34 @@ public enum Color {
   DEFAULT("#00edff", "Default");
   
 
-  private final String color;
+  private final String colorHex;
   private final String name;
 
   /**
    * Constructor for color.
+   *
    * @param color of color
    */
   Color(String color, String name) {
-    this.color = color;
+    this.colorHex = color;
     this.name = name;
   }
 
   /**
    * Gets the lower case name of a color.
+   *
    * @return String name
    */
   public String getName() {
     return name;
+  }
+
+  /**
+   * Gets the color of a Color as hexadecimal value.
+   *
+   * @return string color as hex
+   */
+  public String getColorHex() {
+    return colorHex;
   }
 }

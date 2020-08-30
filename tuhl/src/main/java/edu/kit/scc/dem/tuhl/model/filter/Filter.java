@@ -8,11 +8,6 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
  */
 public interface Filter {
   /**
-   * Type of filter from enum FilterType.
-   */
-  FilterType TYPE = FilterType.UNDEFINED;
-
-  /**
    * Gets the field specifying which attribute the filter searches.
    *
    * @return field as String

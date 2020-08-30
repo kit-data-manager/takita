@@ -5,7 +5,7 @@ import edu.kit.scc.dem.tuhl.model.Motivation;
 public class Tag extends Body {
 
   /**
-   * Constructor for Tag, only sets Id.
+   * Constructor for Tag.
    *
    * @param id to be set
    */

@@ -13,7 +13,9 @@ public class TextPage extends Page {
    * Constructor for the text page.
    *
    * @param id the id of the page
+   * @param pageNumber number of the page
    * @param created the date the page was created
+   * @param resourceUrl URL of the resource of the page
    */
   public TextPage(String id, String pageNumber, Date created, String resourceUrl) {
     super(id, ResourceType.TEXT, pageNumber, created, resourceUrl);
