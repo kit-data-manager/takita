@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import org.slf4j.Logger;
@@ -101,11 +102,8 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
     HttpResponse<String> response = httpRequestHelper.postAnnotations(urlPrefix
         + VALIDATED_URL, jsonAnnotation);
     JSONObject validatedAnnotation = new JSONObject(response.body());
-    String etag = response.headers().allValues(AnnotationStoreStrings.ETAG.getName())
-        .get(response.headers()
-        .allValues(AnnotationStoreStrings.ETAG.getName()).size() - 1);
-
-    jsonAnnotation.put(AnnotationStoreStrings.ETAG.getName(), etag);
+    putEtag(response, jsonAnnotation);
+    
     jsonAnnotation.put(AnnotationStoreStrings.ID.getName(),
         validatedAnnotation.getString(AnnotationStoreStrings.ID.getName()));
     return jsonAnnotation;
@@ -172,36 +170,11 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   public List<JSONObject> getAllAnnotations()
       throws IOException, InterruptedException, JSONException {
     logger.info("Getting all annotations.");
-    List<JSONObject> annotationsJson = new ArrayList<>();
+  
+    //get validated annotations
+    List<JSONObject> annotationsJson = new ArrayList<>(getValidatedAnnotations());
 
-    String nextUri = urlPrefix + VALIDATED_URL + FIRST_PAGE;
-    JSONObject annotationList;
-    HttpResponse<String> response;
-
-    do {
-      response = httpRequestHelper.get(nextUri);
-      annotationList = new JSONObject(response.body());
-
-      //Extracts annotations from response and adds them to the list
-      JSONArray items;
-      if (annotationList.has(AnnotationStoreStrings.ITEMS.getName())) {
-        items = annotationList.getJSONArray(AnnotationStoreStrings.ITEMS.getName());
-      } else {
-        logger.error("There are no annotations to be got.");
-        return null;
-      }
-
-      for (int i = 0; i < items.length(); i++) {
-        annotationsJson.add(getAnnotationById(items.getString(i)));
-      }
-
-      if (annotationList.has(AnnotationStoreStrings.NEXT.getName())) {
-        nextUri = annotationList.get(AnnotationStoreStrings.NEXT.getName()).toString();
-      }
-
-      // Repeat while there is a next page given by a link in the response
-    } while (annotationList.has(AnnotationStoreStrings.NEXT.getName()));
-
+    //obtain canonical ids
     List<String> canonicalIds = new ArrayList<>();
     for (JSONObject validatedAnnotation : annotationsJson) {
       if (validatedAnnotation.has(AnnotationStoreStrings.CANONICAL.getName())) {
@@ -209,33 +182,73 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
       }
     }
     
-    nextUri = urlPrefix + DEINTERPRETATIONE_URL + FIRST_PAGE;
-
-    List<JSONObject> deInterpretationeAnnotations = new ArrayList<>();
-
+    //get deInterpretatione annotations
+    annotationsJson.addAll(getDeInterpretationeAnnotations(canonicalIds));
+    
+    return annotationsJson;
+  }
+  
+  private List<JSONObject> getValidatedAnnotations()
+      throws JSONException, IOException, InterruptedException {
+    List<JSONObject> annotationsJson = new ArrayList<>();
+    
+    String nextUri = urlPrefix + VALIDATED_URL + FIRST_PAGE;
+    HttpResponse<String> response;
+    JSONObject annotationList;
     do {
       response = httpRequestHelper.get(nextUri);
       annotationList = new JSONObject(response.body());
-
+    
+      //Extracts annotations from response and adds them to the list
+      JSONArray items;
+      if (annotationList.has(AnnotationStoreStrings.ITEMS.getName())) {
+        items = annotationList.getJSONArray(AnnotationStoreStrings.ITEMS.getName());
+      } else {
+        logger.error("There are no annotations to be got.");
+        return Collections.emptyList();
+      }
+    
+      for (int i = 0; i < items.length(); i++) {
+        annotationsJson.add(getAnnotationById(items.getString(i)));
+      }
+    
+      if (annotationList.has(AnnotationStoreStrings.NEXT.getName())) {
+        nextUri = annotationList.get(AnnotationStoreStrings.NEXT.getName()).toString();
+      }
+    
+      // Repeat while there is a next page given by a link in the response
+    } while (annotationList.has(AnnotationStoreStrings.NEXT.getName()));
+    return annotationsJson;
+  }
+  
+  private List<JSONObject> getDeInterpretationeAnnotations(List<String> canonicalIds)
+      throws JSONException, IOException, InterruptedException {
+    List<JSONObject> deInterpretationeAnnotations = new ArrayList<>();
+  
+    String nextUri = urlPrefix + DEINTERPRETATIONE_URL + FIRST_PAGE;
+    HttpResponse<String> response;
+    JSONObject annotationList;
+    do {
+      response = httpRequestHelper.get(nextUri);
+      annotationList = new JSONObject(response.body());
+    
       //Extracts annotations from response and adds them to the list
       JSONArray items = annotationList.getJSONArray(AnnotationStoreStrings.ITEMS.getName());
-
+    
       for (int i = 0; i < items.length(); i++) {
         JSONObject item = getAnnotationById(items.getString(i));
         if (!canonicalIds.contains(item.getString(AnnotationStoreStrings.ID.getName()))) {
           deInterpretationeAnnotations.add(item);
         }
       }
-
+    
       if (annotationList.has(AnnotationStoreStrings.NEXT.getName())) {
         nextUri = annotationList.get(AnnotationStoreStrings.NEXT.getName()).toString();
       }
-
+    
       // Repeat while there is a next page given by a link in the response
     } while (annotationList.has(AnnotationStoreStrings.NEXT.getName()));
-
-    annotationsJson.addAll(deInterpretationeAnnotations);
-    return annotationsJson;
+    return deInterpretationeAnnotations;
   }
 
   /**
@@ -250,7 +263,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   @Override
   public List<JSONObject> getAnnotationsModifiedAfter(Date timestamp)
       throws JSONException, IOException, InterruptedException {
-    logger.info("Getting all annotations modified after {}.", timestamp.toString());
+    logger.info("Getting all annotations modified after {}.", timestamp);
 
     String date = IAnnotationStoreAccessService.TIMESTAMP_FORMAT_MILLIS.format(timestamp);
 
@@ -298,15 +311,11 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
     jsonAnnotation.remove(AnnotationStoreStrings.ID.getName());
     HttpResponse<String> response = httpRequestHelper.postAnnotations(urlPrefix
         + VALIDATED_URL, jsonAnnotation);
-
+  
     JSONObject result = new JSONObject(response.body());
-
-    if (!response.headers().allValues(AnnotationStoreStrings.ETAG.getName()).isEmpty()) {
-      String newEtag = response.headers().allValues(AnnotationStoreStrings.ETAG.getName())
-          .get(response.headers()
-              .allValues(AnnotationStoreStrings.ETAG.getName()).size() - 1);
-      result.put(AnnotationStoreStrings.ETAG.getName(), newEtag);
-    }
+  
+    putEtag(response, result);
+    
     return result;
   }
 
@@ -341,15 +350,20 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
               AnnotationStoreStrings.ETAG.getName()));
     }
     HttpResponse<String> response = httpRequestHelper.put(annotationId, jsonAnnotation, etag);
-
+    
+    putEtag(response, jsonAnnotation);
+    
+    return jsonAnnotation;
+  }
+  
+  private void putEtag(HttpResponse<String> response, JSONObject jsonAnnotation)
+      throws JSONException {
     if (!response.headers().allValues(AnnotationStoreStrings.ETAG.getName()).isEmpty()) {
       String newEtag = response.headers().allValues(AnnotationStoreStrings.ETAG.getName())
           .get(response.headers()
               .allValues(AnnotationStoreStrings.ETAG.getName()).size() - 1);
       jsonAnnotation.put(AnnotationStoreStrings.ETAG.getName(), newEtag);
     }
-
-    return jsonAnnotation;
   }
 
   /**
