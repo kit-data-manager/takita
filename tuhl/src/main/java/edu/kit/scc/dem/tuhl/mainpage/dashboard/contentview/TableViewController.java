@@ -1,9 +1,7 @@
 package edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview;
 
-
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.mainpage.IMainPageService;
-import edu.kit.scc.dem.tuhl.mainpage.dashboard.IDashboardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -97,15 +95,15 @@ public class TableViewController {
     tableViewService.search();
     mainPageService.update(model);
     try {
-    JSONArray data = tableViewService.getData();
-    JSONObject newData = new JSONObject();
+      JSONArray data = tableViewService.getData();
+      JSONObject newData = new JSONObject();
 
       newData.put("last_page", tableViewService.getNumberOfResultsPages());
       newData.put("data", data);
       return newData.toString();
     } catch (JSONException e) {
       model.addAttribute("errorMessage", e.getMessage());
-      return"error";
+      return "error";
     }
 
   }

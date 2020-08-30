@@ -44,6 +44,9 @@ public class TableViewService implements IContentViewService {
    * @param searchService      instance of the logic for search.
    *                           Injected with Springs dependency injection system
    *                           indicated by @autowired annotation.
+   * @param assistanceService  instance of the logic for user management.
+   *                           Injected with Springs dependency injection system
+   *                           indicated by @autowired annotation.
    */
   @Autowired
   public TableViewService(ISearchIndexService searchIndexService, ISearchService searchService,
