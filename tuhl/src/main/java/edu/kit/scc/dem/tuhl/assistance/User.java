@@ -200,8 +200,8 @@ public class User {
    */
   public String getPage() throws JSONException {
     JSONObject obj = new JSONObject();
-      obj.put("paginationSize", pageSize);
-      obj.put("paginationInitialPage", 1);
+    obj.put("paginationSize", pageSize);
+    obj.put("paginationInitialPage", 1);
     return obj.toString();
   }
 

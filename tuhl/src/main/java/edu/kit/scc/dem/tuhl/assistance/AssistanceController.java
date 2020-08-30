@@ -21,6 +21,8 @@ public class AssistanceController {
 
   private final IAssistanceService assistanceService;
 
+  private static final String PLACEHOLDER = "placeholder";
+
   /**
    * Constructor for the Assistance Controller to autowire required instances.
    *
@@ -70,7 +72,7 @@ public class AssistanceController {
 
     assistanceService.setTableConfig(columns, model);
 
-    return "placeholder";
+    return PLACEHOLDER;
   }
 
   /**
@@ -85,7 +87,7 @@ public class AssistanceController {
   public String saveTableSort(@RequestBody String sort, Model model) {
 
     assistanceService.setTableSort(sort, model);
-    return "placeholder";
+    return PLACEHOLDER;
   }
 
   /**
@@ -109,7 +111,7 @@ public class AssistanceController {
 
       assistanceService.getCurrentUser().setCurrentPage(currentPage);
       assistanceService.setTablePage(pageSize, model);
-      return "placeholder";
+      return PLACEHOLDER;
     } catch (JSONException e) {
       model.addAttribute("errorMessage", e.getMessage());
       return "error";
@@ -127,7 +129,7 @@ public class AssistanceController {
   @ResponseBody
   public String toggleCheckThumbs() {
     assistanceService.toggleCheckThumbs();
-    return "placeholder";
+    return PLACEHOLDER;
   }
 
   /**
@@ -140,7 +142,7 @@ public class AssistanceController {
   public String setLanguage(@PathVariable("lang") String lang, Model model) {
 
     assistanceService.setLanguage(lang, model);
-    return "placeholder";
+    return PLACEHOLDER;
   }
 
 }
