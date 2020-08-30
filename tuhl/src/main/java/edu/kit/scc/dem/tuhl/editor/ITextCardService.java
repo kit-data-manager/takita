@@ -54,7 +54,8 @@ public interface ITextCardService {
    * @throws IOException when http request to database has errors
    * @throws NoSuchIndexEntryException when there is no annotation with this ID in the search index
    */
-  void modifyPurpose(String textCardId, String purpose) throws InterruptedException, JSONException, IOException, NoSuchIndexEntryException;
+  void modifyPurpose(String textCardId, String purpose)
+      throws InterruptedException, JSONException, IOException, NoSuchIndexEntryException;
 
   /**
    * Deletes the text card with the ID.
@@ -65,7 +66,8 @@ public interface ITextCardService {
    * @throws IOException when http request to database has errors
    * @throws NoSuchIndexEntryException when there is no annotation with this ID in the search index
    */
-  void deleteTextCard(String textCardID) throws InterruptedException, JSONException, IOException, NoSuchIndexEntryException;
+  void deleteTextCard(String textCardID)
+      throws InterruptedException, JSONException, IOException, NoSuchIndexEntryException;
 
   /**
    * Gets all text cards that contain to an annotation.

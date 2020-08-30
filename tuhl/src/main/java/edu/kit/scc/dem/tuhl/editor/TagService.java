@@ -7,8 +7,11 @@ import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import java.io.IOException;
 import java.time.Instant;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.stereotype.Service;
@@ -87,7 +90,8 @@ public class TagService implements ITagService {
    * @throws NoSuchIndexEntryException when there is no annotation with this id in search index
    */
   @Override
-  public void updateTag(String tagValue, String tagId) throws NoSuchIndexEntryException, InterruptedException, JSONException, IOException {
+  public void updateTag(String tagValue, String tagId)
+      throws NoSuchIndexEntryException, InterruptedException, JSONException, IOException {
     Tag tag = searchIndexService.getTagById(tagId);
     tag.setValue(tagValue);
     if (!tag.getCreators().contains(assistanceService.getCurrentUser().getName())) {

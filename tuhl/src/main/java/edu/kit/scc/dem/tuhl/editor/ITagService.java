@@ -1,9 +1,8 @@
 package edu.kit.scc.dem.tuhl.editor;
 
+import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import java.io.IOException;
 import java.util.List;
-
-import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.stereotype.Service;
 
@@ -34,7 +33,8 @@ public interface ITagService {
    * @throws IOException when http request to database has errors
    * @throws NoSuchIndexEntryException when there is no annotation with this id in search index
    */
-  void addTag(String tagValue, String annotationId) throws InterruptedException, JSONException, IOException, NoSuchIndexEntryException;
+  void addTag(String tagValue, String annotationId)
+      throws InterruptedException, JSONException, IOException, NoSuchIndexEntryException;
 
   /**
    * Updates a tag to an annotation.
@@ -46,7 +46,8 @@ public interface ITagService {
    * @throws IOException when http request to database has errors
    * @throws NoSuchIndexEntryException when there is no annotation with this id in search index
    */
-  void updateTag(String tagValue, String tagId) throws NoSuchIndexEntryException, InterruptedException, JSONException, IOException;
+  void updateTag(String tagValue, String tagId)
+      throws NoSuchIndexEntryException, InterruptedException, JSONException, IOException;
 
   /**
    * Deletes a tag from an annotation.
@@ -57,5 +58,6 @@ public interface ITagService {
    * @throws IOException when http request to database has errors
    * @throws NoSuchIndexEntryException when there is no tag with this id in search index
    */
-  void deleteTag(String tagId) throws InterruptedException, JSONException, IOException, NoSuchIndexEntryException;
+  void deleteTag(String tagId)
+      throws InterruptedException, JSONException, IOException, NoSuchIndexEntryException;
 }

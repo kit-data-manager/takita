@@ -50,33 +50,38 @@ public interface IEditorService {
    * @param svg   svg of the annotation
    * @param color color of the annotation
    */
-  void addAnnotation(String svg, Color color, String motivation) throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException;
+  void addAnnotation(String svg, Color color, String motivation)
+      throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException;
 
   /**
    * Changes the color of the currently selected annotation.
    *
    * @param color new color of the annotation
    */
-  void updateColor(Color color) throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException;
+  void updateColor(Color color) throws InterruptedException, IOException,
+      JSONException, NoSuchIndexEntryException;
 
   /**
    * Changes the SVG-code of the currently selected annotation.
    *
    * @param svg modified SVG-code of the annotation
    */
-  void updateSvg(String svg) throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException;
+  void updateSvg(String svg) throws InterruptedException, IOException,
+      JSONException, NoSuchIndexEntryException;
 
   /**
    * Changes the motivation of an annotation, that is set per default.
    *
    * @param motivation motivation of the annotation
    */
-  void updateMotivation(String motivation) throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException;
+  void updateMotivation(String motivation) throws InterruptedException,
+      IOException, JSONException, NoSuchIndexEntryException;
 
   /**
    * Deletes the currently selected annotation.
    */
-  void deleteAnnotation() throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException;
+  void deleteAnnotation() throws InterruptedException, IOException,
+      JSONException, NoSuchIndexEntryException;
 
   /**
    * Adds a text card to the currently selected annotation.
@@ -85,21 +90,24 @@ public interface IEditorService {
    * @param purpose purpose of the text card
    * @param title title of the text card
    */
-  void addTextCard(String text, String purpose, String title) throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException;
+  void addTextCard(String text, String purpose, String title)
+      throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException;
 
   /**
    * updates the text of the currently selected text card.
    *
    * @param text new text of the text card
    */
-  void updateTextCard(String text) throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException;
+  void updateTextCard(String text) throws InterruptedException, IOException,
+      JSONException, NoSuchIndexEntryException;
 
   /**
    * updates the purpose of the currently selected text card.
    *
    * @param purpose new purpose of the text card
    */
-  void updatePurpose(String purpose) throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException;
+  void updatePurpose(String purpose) throws InterruptedException, IOException,
+      JSONException, NoSuchIndexEntryException;
 
   /**
    * displays all metadata of the current page.
@@ -112,21 +120,23 @@ public interface IEditorService {
    */
   String displayRawMetadata() throws InterruptedException, JSONException, IOException;
 
-  JSONObject getPageJSON() throws InterruptedException, IOException, JSONException;
+  JSONObject getPageJson() throws InterruptedException, IOException, JSONException;
 
   /**
    * adds a tag to the currently selected annotation.
    *
    * @param tag tag that should be added to an annotation
    */
-  void addTag(String tag) throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException;
+  void addTag(String tag) throws InterruptedException, IOException, JSONException,
+      NoSuchIndexEntryException;
 
   /**
    * deletes a tag from an annotation.
    *
    * @param tag tag that should be deleted
    */
-  void deleteTag(String tag) throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException;
+  void deleteTag(String tag) throws InterruptedException, IOException, JSONException,
+      NoSuchIndexEntryException;
 
   /**
    * gets all tags that are possible for an annotation.
@@ -156,9 +166,11 @@ public interface IEditorService {
    *
    * @param right true, if the annotation is alright, false if the annotation is wrong
    */
-  void validateAnnotation(boolean right) throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException;
+  void validateAnnotation(boolean right) throws InterruptedException,
+      IOException, JSONException, NoSuchIndexEntryException;
 
-  String getPageResource(String pageId, String pageNumber, ResourceType resourceType) throws NoSuchIndexEntryException;
+  String getPageResource(String pageId, String pageNumber, ResourceType resourceType)
+      throws NoSuchIndexEntryException;
 
   /**
    * Gets the currently displaied Annotation.

@@ -31,6 +31,8 @@ public class EditorService implements IEditorService {
   private TextCard currentTextCard;
   private List<TextCard> textCards;
 
+  private static final String NOT_IMPLEMENTED = "not implemented";
+
   private final ISearchIndexService searchIndexService;
   private final IAnnotationService annotationService;
   private final ITagService tagService;
@@ -63,7 +65,7 @@ public class EditorService implements IEditorService {
    */
   @Override
   public void init(String pageId) {
-
+    throw new UnsupportedOperationException(NOT_IMPLEMENTED);
   }
 
   /**
@@ -87,7 +89,7 @@ public class EditorService implements IEditorService {
    */
   @Override
   public void changeVisibility(int annotationNumber, Boolean visibility) {
-
+    throw new UnsupportedOperationException(NOT_IMPLEMENTED);
   }
 
   /**
@@ -228,7 +230,7 @@ public class EditorService implements IEditorService {
    */
   @Override
   public void displayMetadata() {
-
+    throw new UnsupportedOperationException(NOT_IMPLEMENTED);
   }
 
   /**
@@ -270,7 +272,7 @@ public class EditorService implements IEditorService {
    * @throws JSONException when parsing the object to JSON throw error
    */
   @Override
-  public JSONObject getPageJSON() throws InterruptedException, IOException, JSONException {
+  public JSONObject getPageJson() throws InterruptedException, IOException, JSONException {
     return searchIndexService.getRawPageJson(currentPage.getId());
   }
 
@@ -313,7 +315,7 @@ public class EditorService implements IEditorService {
   @Override
   public String[] getAllTags() throws NoSuchIndexEntryException {
     List<String> listOfTags = tagService.getTags(currentAnnotation.getId());
-    return (String[]) listOfTags.toArray();
+    return listOfTags.toArray(new String[0]);
   }
 
   /**
@@ -325,7 +327,7 @@ public class EditorService implements IEditorService {
    */
   @Override
   public void algorithmLayer(boolean algorithmLayer) {
-
+    throw new UnsupportedOperationException(NOT_IMPLEMENTED);
   }
 
   /**

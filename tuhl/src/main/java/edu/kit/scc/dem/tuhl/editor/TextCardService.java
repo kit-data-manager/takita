@@ -17,7 +17,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.SessionScope;
 
 /**
- * TextCardService class implements ITextCardService, is responsible for adding, updating and removing text cards.
+ * TextCardService class implements ITextCardService,
+ * is responsible for adding, updating and removing text cards.
  */
 @Service
 @SessionScope

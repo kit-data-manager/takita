@@ -1,10 +1,11 @@
 package edu.kit.scc.dem.tuhl.editor;
 
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
-import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Color;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import java.io.IOException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.stereotype.Controller;
@@ -24,6 +25,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/editor")
 public class EditorController {
   private final IEditorService editorService;
+
+  private static final String NOT_IMPLEMENTED = "not implemented";
+
+  private static final Logger logger = LoggerFactory.getLogger(EditorController.class);
 
   @Autowired
   public EditorController(IEditorService editorService) {
@@ -75,7 +80,7 @@ public class EditorController {
   @GetMapping("/visibility")
   public String changeVisibility(@RequestParam("annotationNumber") int annotationNumber,
                                  @RequestParam("visibility") Boolean visibility, Model model) {
-    throw new AssertionError("not implemented");
+    throw new AssertionError(NOT_IMPLEMENTED);
   }
 
   /**
@@ -89,7 +94,7 @@ public class EditorController {
   @PostMapping("/add/annotation")
   public String addAnnotation(@RequestParam("svg") String svg, @RequestParam("color") Color color,
                               Model model) {
-    throw new AssertionError("not implemented");
+    throw new AssertionError(NOT_IMPLEMENTED);
   }
 
   /**
@@ -103,7 +108,7 @@ public class EditorController {
   @GetMapping("/change/annotation")
   public String updateAnnotation(@RequestParam("svg") String svg,
                                  @RequestParam("color") Color color, Model model) {
-    throw new AssertionError("not implemented");
+    throw new AssertionError(NOT_IMPLEMENTED);
   }
 
   /**
@@ -115,7 +120,7 @@ public class EditorController {
    */
   @GetMapping("/change/annotation/motivation")
   public String updateMotivation(@RequestParam("motivation") String motivation, Model model) {
-    throw new AssertionError("not implemented");
+    throw new AssertionError(NOT_IMPLEMENTED);
   }
 
   /**
@@ -126,7 +131,7 @@ public class EditorController {
    */
   @GetMapping("/delete/annotation")
   public String deleteAnnotation(Model model) {
-    throw new AssertionError("not implemented");
+    throw new AssertionError(NOT_IMPLEMENTED);
   }
 
   /**
@@ -138,9 +143,9 @@ public class EditorController {
   @PostMapping("/add/textcard")
   public String addTextCard(@ModelAttribute("textCard") TextCard textCard)
       throws NoSuchIndexEntryException, InterruptedException, JSONException, IOException {
-    editorService.addTextCard(textCard.getValue(), textCard.getPurpose().getName(), textCard.getTitle());
-    System.out.println("Textkarte hinzugefügt" + textCard.getPurpose() + textCard.getValue()
-            + textCard.getTitle());
+    editorService.addTextCard(textCard.getValue(), textCard.getPurpose().getName(),
+        textCard.getTitle());
+    logger.info("Textkarte hinzugefügt");
     return "editor";
   }
   
@@ -171,7 +176,7 @@ public class EditorController {
    */
   @GetMapping("/change/textcard/text")
   public String updateTextCard(@RequestParam("text") String text, Model model) {
-    throw new AssertionError("not implemented");
+    throw new AssertionError(NOT_IMPLEMENTED);
   }
 
   /**
@@ -183,7 +188,7 @@ public class EditorController {
    */
   @PostMapping("/change/textcard/purpose")
   public String changePurpose(@RequestParam("purpose") String purpose, Model model) {
-    throw new AssertionError("not implemented");
+    throw new AssertionError(NOT_IMPLEMENTED);
   }
 
   /**
@@ -194,7 +199,7 @@ public class EditorController {
    */
   @PostMapping("/allmetadata")
   public String getAllMetadata(Model model) {
-    throw new AssertionError("not implemented");
+    throw new AssertionError(NOT_IMPLEMENTED);
   }
 
   /**
@@ -205,7 +210,7 @@ public class EditorController {
    */
   @PostMapping("/rawmetadata")
   public String getRawMetadata(Model model) {
-    throw new AssertionError("not implemented");
+    throw new AssertionError(NOT_IMPLEMENTED);
   }
 
   /**
@@ -216,7 +221,7 @@ public class EditorController {
    */
   @PostMapping("/change/metadata")
   public String changeDisplayedMetadata(Model model) {
-    throw new AssertionError("not implemented");
+    throw new AssertionError(NOT_IMPLEMENTED);
   }
 
   /**
@@ -228,7 +233,7 @@ public class EditorController {
    */
   @PostMapping("/add/tag")
   public String addTag(@RequestParam("tag") String tag, Model model) {
-    throw new AssertionError("not implemented");
+    throw new AssertionError(NOT_IMPLEMENTED);
   }
 
   /**
@@ -240,7 +245,7 @@ public class EditorController {
    */
   @PostMapping("/add/tagtovocabulary")
   public String addTagToVocabulary(@RequestParam("tag") String tag, Model model) {
-    throw new AssertionError("not implemented");
+    throw new AssertionError(NOT_IMPLEMENTED);
   }
 
   /**
@@ -252,7 +257,7 @@ public class EditorController {
    */
   @PostMapping("/delete/tag")
   public String deleteTag(@RequestParam("tag") String tag, Model model) {
-    throw new AssertionError("not implemented");
+    throw new AssertionError(NOT_IMPLEMENTED);
   }
 
   /**
@@ -263,7 +268,7 @@ public class EditorController {
    */
   @PostMapping("/get/allTags")
   public String getAllTags(Model model) {
-    throw new AssertionError("not implemented");
+    throw new AssertionError(NOT_IMPLEMENTED);
   }
 
   /**
@@ -278,7 +283,7 @@ public class EditorController {
   @PostMapping("/algorithmlayer")
   public String algorithmLayer(@RequestParam("algorithmlayer") Boolean algorithmLayer,
                                Model model) {
-    throw new AssertionError("not implemented");
+    throw new AssertionError(NOT_IMPLEMENTED);
   }
 
   /**
@@ -289,6 +294,6 @@ public class EditorController {
    * @return the name of the html file to display
    */
   public String validateAnnotation(@RequestParam("right") Boolean right, Model model) {
-    throw new AssertionError("not implemented");
+    throw new AssertionError(NOT_IMPLEMENTED);
   }
 }
