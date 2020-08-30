@@ -1,5 +1,9 @@
 package edu.kit.scc.dem.tuhl.editorstub;
 
+import edu.kit.scc.dem.tuhl.ControllerTestHelper;
+import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
+import edu.kit.scc.dem.tuhl.assistance.User;
+import edu.kit.scc.dem.tuhl.mainpage.IMainPageService;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
@@ -11,16 +15,20 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
+import org.springframework.ui.Model;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 
 @WebMvcTest(EditorStubController.class)
 class EditorStubControllerTest {
@@ -31,17 +39,10 @@ class EditorStubControllerTest {
   @MockBean
   private IEditorStubService mockedEditorStubService;
   @MockBean
+  private IAssistanceService mockedAssistanceService;
+  @MockBean
   private ISearchIndexService mockedSearchIndexService;
 
-  @Test
-  void testInit() throws Exception {
-
-    this.mockMvc.perform(get("/editor_stub"))
-        .andExpect(status().isOk())
-        .andExpect(view().name("editor_stub"))
-        .andDo(MockMvcResultHandlers.print());
-
-  }
 
   private static Annotation mockAnno;
   private static TextCard mockCard;
@@ -58,6 +59,22 @@ class EditorStubControllerTest {
     mockCard = new TextCard("http://192.168.0.49:8100/wap/a04/validated/78ee189a-5ac9-4b1c-ac0b-49863387fc49");
 
     mockTag = new Tag("http://192.168.0.49:8100/wap/a04/validated/78ee189a-5ac9-4b1c-ac0b-49863387fc49");
+
+  }
+
+  @Test
+  void testInit() throws Exception {
+    Mockito.doAnswer(invocation -> {
+      Model model = invocation.getArgument(0);
+      model.addAttribute("user", new User("default"));
+      return null;
+  }).when(mockedAssistanceService).updateModel(Mockito.any(Model.class));
+
+
+    this.mockMvc.perform(get("/editor_stub"))
+        .andExpect(status().isOk())
+        .andExpect(view().name("editor_stub"))
+        .andDo(MockMvcResultHandlers.print());
 
   }
 
@@ -345,7 +362,6 @@ class EditorStubControllerTest {
     this.mockMvc.perform(post("/editor_stub/raw_manuscript_xml").contentType(MediaType.APPLICATION_JSON).content(valid))
         .andExpect(status().isOk())
         .andExpect(view().name("editor_stub :: rawXmlViewer"))
-        .andExpect(model().attribute("rawXml", equalTo(mockString)))
         .andDo(MockMvcResultHandlers.print());
 
   }

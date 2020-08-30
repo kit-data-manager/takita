@@ -4,6 +4,7 @@ import edu.kit.scc.dem.tuhl.ControllerTestHelper;
 import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
 import edu.kit.scc.dem.tuhl.assistance.User;
 import edu.kit.scc.dem.tuhl.mainpage.IMainPageService;
+import edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.TableViewService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,8 @@ class FilterControllerTest {
 
   @MockBean
   private IFilterService mockedFilterService;
+  @MockBean
+  private TableViewService mockedTableViewService;
   @MockBean
   private IMainPageService mockedMainPageService;
   @MockBean
