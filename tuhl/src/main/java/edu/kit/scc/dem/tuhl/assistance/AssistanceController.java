@@ -132,9 +132,12 @@ public class AssistanceController {
     return PLACEHOLDER;
   }
 
+
   /**
    * Handles http request to save selected language of current User.
    *
+   * @param lang selected language
+   * @param model the holder for model attributes, used to pass attributes back to the view
    * @return placeholder
    */
   @GetMapping("/lang/{lang}")
@@ -146,8 +149,10 @@ public class AssistanceController {
   }
 
   /**
-   * Handles http request to save selected language of current User.
+   * Handles Http request when Thumbnails are displayed manually, to save in User.
    *
+   * @param row of which thumbnails are displayed
+   * @param model the holder for model attributes, used to pass attributes back to the view
    * @return placeholder
    */
   @GetMapping("/addRow/{row}")
@@ -158,8 +163,10 @@ public class AssistanceController {
   }
 
   /**
-   * Handles http request to save selected language of current User.
+   * Handles Http request when Thumbnails are hidden manually, to save in User.
    *
+   * @param row of which thumbnails are hidden
+   * @param model the holder for model attributes, used to pass attributes back to the view
    * @return placeholder
    */
   @GetMapping("/removeRow/{row}")

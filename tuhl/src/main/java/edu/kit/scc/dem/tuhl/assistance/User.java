@@ -97,15 +97,28 @@ public class User {
     return rangeFilter;
   }
 
+  /**
+   * Gets rows of displayed thumbnails.
+   *
+   * @return list of rows
+   */
   public List<String> getRows(){
     Type rowType = TypeToken.getParameterized(ArrayList.class, String.class).getType();
     return new Gson().fromJson(this.rows, rowType);
   }
 
+  /**
+   * Sets rows of displayed thumbnails.
+   *
+   * @param rowList list of rows
+   */
   public void setRows(List<String> rowList){
     this.rows = new GsonBuilder().create().toJson(rowList);
   }
 
+  /**
+   * Resets rows of displayed thumbnails.
+   */
   private void clearRows(){
     List<String> list = new ArrayList<>();
     list.add("def");

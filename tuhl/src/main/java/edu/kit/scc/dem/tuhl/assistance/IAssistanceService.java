@@ -89,7 +89,17 @@ public interface IAssistanceService {
    */
   void setTableSort(String sort, Model model);
 
+  /**
+   * Adds Row of which thumbnails are displayed to current user.
+   *
+   * @param row to be added
+   */
   void addRow(String row);
 
+  /**
+   * Removes Row of which thumbnails are displayed from current user.
+   *
+   * @param row to be removed
+   */
   void removeRow(String row);
 }

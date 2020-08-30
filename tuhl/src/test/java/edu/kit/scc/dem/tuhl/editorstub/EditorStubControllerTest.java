@@ -1,9 +1,7 @@
 package edu.kit.scc.dem.tuhl.editorstub;
 
-import edu.kit.scc.dem.tuhl.ControllerTestHelper;
 import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
 import edu.kit.scc.dem.tuhl.assistance.User;
-import edu.kit.scc.dem.tuhl.mainpage.IMainPageService;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
@@ -15,9 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
@@ -49,7 +45,7 @@ class EditorStubControllerTest {
   private static Tag mockTag;
 
   @BeforeAll
-  static void init(){
+  static void init() {
     mockAnno = new Annotation();
     mockAnno.setId("2c01883b-5aae-4867-b0f2-06fbb093f61e");
     mockAnno.setColor(Color.TEXT_REGION);
@@ -68,7 +64,7 @@ class EditorStubControllerTest {
       Model model = invocation.getArgument(0);
       model.addAttribute("user", new User("default"));
       return null;
-  }).when(mockedAssistanceService).updateModel(Mockito.any(Model.class));
+    }).when(mockedAssistanceService).updateModel(Mockito.any(Model.class));
 
 
     this.mockMvc.perform(get("/editor_stub"))
@@ -119,7 +115,7 @@ class EditorStubControllerTest {
   @Test
   void testUpdateAnnotation() throws Exception {
 
-    Mockito.when(mockedEditorStubService.updateAnnotation("http://192.168.0.49:8100/wap/a04/validated/78ee189a-5ac9-4b1c-ac0b-49863387fc49",  "TEXT_REGION","", "BOOKMARKING"  )).thenReturn(mockAnno);
+    Mockito.when(mockedEditorStubService.updateAnnotation("http://192.168.0.49:8100/wap/a04/validated/78ee189a-5ac9-4b1c-ac0b-49863387fc49", "TEXT_REGION", "", "BOOKMARKING")).thenReturn(mockAnno);
 
 
     String invalid = "{}";
@@ -352,7 +348,7 @@ class EditorStubControllerTest {
 
     String mockString = "ManuscriptXml";
     Mockito.when(mockedEditorStubService.getManuscriptXml("000073cd-c425-4214-9648-b380ff20c61a")).thenReturn(mockString);
-    
+
     String invalid = "{}";
     this.mockMvc.perform(post("/editor_stub/raw_manuscript_xml").contentType(MediaType.APPLICATION_JSON).content(invalid))
         .andExpect(status().is3xxRedirection())

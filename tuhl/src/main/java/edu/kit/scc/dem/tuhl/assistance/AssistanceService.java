@@ -68,10 +68,12 @@ public class AssistanceService implements IAssistanceService {
     return currentUser;
   }
   
+
   /**
    * Changes current User.
    *
    * @param pseudonym of new User
+   * @param model the holder for model attributes, used to pass attributes back to the view
    */
   @Override
   public void changeUser(String pseudonym, Model model) {
@@ -181,12 +183,23 @@ public class AssistanceService implements IAssistanceService {
     return currentUser.getLang();
   }
 
+
+  /**
+   * Adds Row of which thumbnails are displayed to current user.
+   *
+   * @param row to be added
+   */
   public void addRow(String row){
     List<String> currentRows = currentUser.getRows();
     currentRows.add(row);
     currentUser.setRows(currentRows);
   }
 
+  /**
+   * Removes Row of which thumbnails are displayed from current user.
+   *
+   * @param row to be removed
+   */
   public void removeRow(String row){
     List<String> currentRows = currentUser.getRows();
     currentRows.remove(row);
