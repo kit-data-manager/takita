@@ -25,11 +25,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class EditorStubController {
   
   private static final String REDIRECT_ERROR = "redirect:/error/";
-  private static final String FRAGMENT_ANNOTATION_VIEWER
+  public static final String FRAGMENT_ANNOTATION_VIEWER
       = "editor_stub_fragments :: annotationViewer";
-  private static final String FRAGMENT_BODY_VIEWER = "editor_stub_fragments :: bodyViewer";
-  private static final String FRAGMENT_RAW_JSON_VIEWER = "editor_stub_fragments :: rawJsonViewer";
-  private static final String FRAGMENT_RAW_XML_VIEWER = "editor_stub_fragments :: rawXmlViewer";
+  public static final String FRAGMENT_BODY_VIEWER = "editor_stub_fragments :: bodyViewer";
+  public static final String FRAGMENT_RAW_JSON_VIEWER = "editor_stub_fragments :: rawJsonViewer";
+  public static final String FRAGMENT_RAW_XML_VIEWER = "editor_stub_fragments :: rawXmlViewer";
   private static final String ANNOTATION_STRING = "annotation";
   private static final String RAW_JSON_STRING = "rawJson";
   private static final String TITLE_STRING = "title";
