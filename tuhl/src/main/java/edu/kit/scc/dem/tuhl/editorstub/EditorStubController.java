@@ -23,6 +23,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/editor_stub")
 public class EditorStubController {
   
+  private static final String REDIRECT_ERROR = "redirect:/error/";
+  private static final String FRAGMENT_ANNOTATION_VIEWER = "editor_stub :: annotationViewer";
+  private static final String FRAGMENT_BODY_VIEWER = "editor_stub :: bodyViewer";
+  private static final String FRAGMENT_RAW_JSON_VIEWER = "editor_stub :: rawJsonViewer";
+  private static final String FRAGMENT_RAW_XML_VIEWER = "editor_stub :: rawXmlViewer";
+  private static final String ANNOTATION_STRING = "annotation";
+  private static final String RAW_JSON_STRING = "rawJson";
+  private static final String TITLE_STRING = "title";
+  private static final String VALUE_STRING = "value";
+  private static final String ANNO_ID_STRING = "annoId";
+  private static final String ID_STRING = "id";
+  private static final String BODY_STRING = "body";
   private final IEditorStubService editorStubService;
 
   /**
@@ -61,11 +73,14 @@ public class EditorStubController {
       String svgCode = json.getString("svgCode");
       String motivation = json.getString("motivation");
       Annotation annotation = editorStubService.addAnnotation(pageId, color, svgCode, motivation);
-      model.addAttribute("annotation", annotation);
-    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
-      return "redirect:/error/" + e.getMessage();
+      model.addAttribute(ANNOTATION_STRING, annotation);
+    } catch (JSONException | IOException | NoSuchIndexEntryException e) {
+      return REDIRECT_ERROR + e.getMessage();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return REDIRECT_ERROR + e.getMessage();
     }
-    return "editor_stub :: annotationViewer";
+    return FRAGMENT_ANNOTATION_VIEWER;
   }
 
   /**
@@ -79,13 +94,13 @@ public class EditorStubController {
   public String readAnnotation(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
-      String id = json.getString("id");
+      String id = json.getString(ID_STRING);
       Annotation annotation = editorStubService.getAnnotation(id);
-      model.addAttribute("annotation", annotation);
+      model.addAttribute(ANNOTATION_STRING, annotation);
     } catch (JSONException | NoSuchIndexEntryException e) {
-      return "redirect:/error/" + e.getMessage();
+      return REDIRECT_ERROR + e.getMessage();
     }
-    return "editor_stub :: annotationViewer";
+    return FRAGMENT_ANNOTATION_VIEWER;
   }
 
   /**
@@ -99,17 +114,20 @@ public class EditorStubController {
   public String updateAnnotation(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
-      String annoId = json.getString("annoId");
+      String annoId = json.getString(ANNO_ID_STRING);
       String color = json.getString("color");
       String svgCode = json.getString("svgCode");
       String motivation = json.getString("motivation");
       Annotation annotation = editorStubService
           .updateAnnotation(annoId, color, svgCode, motivation);
-      model.addAttribute("annotation", annotation);
-    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
-      return "redirect:/error/" + e.getMessage();
+      model.addAttribute(ANNOTATION_STRING, annotation);
+    } catch (JSONException | IOException | NoSuchIndexEntryException e) {
+      return REDIRECT_ERROR + e.getMessage();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return REDIRECT_ERROR + e.getMessage();
     }
-    return "editor_stub :: annotationViewer";
+    return FRAGMENT_ANNOTATION_VIEWER;
   }
 
   /**
@@ -123,13 +141,16 @@ public class EditorStubController {
   public String validateAnnotation(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
-      String annoId = json.getString("annoId");
+      String annoId = json.getString(ANNO_ID_STRING);
       Annotation annotation = editorStubService.validateAnnotation(annoId);
-      model.addAttribute("annotation", annotation);
-    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
-      return "redirect:/error/" + e.getMessage();
+      model.addAttribute(ANNOTATION_STRING, annotation);
+    } catch (JSONException | IOException | NoSuchIndexEntryException e) {
+      return REDIRECT_ERROR + e.getMessage();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return REDIRECT_ERROR + e.getMessage();
     }
-    return "editor_stub :: annotationViewer";
+    return FRAGMENT_ANNOTATION_VIEWER;
   }
 
   /**
@@ -143,13 +164,16 @@ public class EditorStubController {
   public String deleteAnnotation(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
-      String annoId = json.getString("annoId");
+      String annoId = json.getString(ANNO_ID_STRING);
       Annotation annotation = editorStubService.deleteAnnotation(annoId);
-      model.addAttribute("annotation", annotation);
-    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
-      return "redirect:/error/" + e.getMessage();
+      model.addAttribute(ANNOTATION_STRING, annotation);
+    } catch (JSONException | IOException | NoSuchIndexEntryException e) {
+      return REDIRECT_ERROR + e.getMessage();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return REDIRECT_ERROR + e.getMessage();
     }
-    return "editor_stub :: annotationViewer";
+    return FRAGMENT_ANNOTATION_VIEWER;
   }
 
   /**
@@ -163,16 +187,19 @@ public class EditorStubController {
   public String createTextCard(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
-      String annoId = json.getString("annoId");
-      String title = json.getString("title");
-      String value = json.getString("value");
+      String annoId = json.getString(ANNO_ID_STRING);
+      String title = json.getString(TITLE_STRING);
+      String value = json.getString(VALUE_STRING);
       String purpose = json.getString("purpose");
       TextCard textCard = editorStubService.addTextCard(annoId, title, value, purpose);
-      model.addAttribute("body", textCard);
-    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
-      return "redirect:/error/" + e.getMessage();
+      model.addAttribute(BODY_STRING, textCard);
+    } catch (JSONException | IOException | NoSuchIndexEntryException e) {
+      return REDIRECT_ERROR + e.getMessage();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return REDIRECT_ERROR + e.getMessage();
     }
-    return "editor_stub :: bodyViewer";
+    return FRAGMENT_BODY_VIEWER;
   }
 
   /**
@@ -186,13 +213,13 @@ public class EditorStubController {
   public String readCard(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
-      String id = json.getString("id");
+      String id = json.getString(ID_STRING);
       TextCard textCard = editorStubService.getTextCard(id);
-      model.addAttribute("body", textCard);
+      model.addAttribute(BODY_STRING, textCard);
     } catch (JSONException | NoSuchIndexEntryException e) {
-      return "redirect:/error/" + e.getMessage();
+      return REDIRECT_ERROR + e.getMessage();
     }
-    return "editor_stub :: bodyViewer";
+    return FRAGMENT_BODY_VIEWER;
   }
 
   /**
@@ -206,16 +233,19 @@ public class EditorStubController {
   public String updateTextCard(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
-      String id = json.getString("id");
-      String title = json.getString("title");
-      String value = json.getString("value");
+      String id = json.getString(ID_STRING);
+      String title = json.getString(TITLE_STRING);
+      String value = json.getString(VALUE_STRING);
       String purpose = json.getString("purpose");
       TextCard textCard = editorStubService.updateTextCard(id, title, value, purpose);
-      model.addAttribute("body", textCard);
-    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
-      return "redirect:/error/" + e.getMessage();
+      model.addAttribute(BODY_STRING, textCard);
+    } catch (JSONException | IOException | NoSuchIndexEntryException e) {
+      return REDIRECT_ERROR + e.getMessage();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return REDIRECT_ERROR + e.getMessage();
     }
-    return "editor_stub :: bodyViewer";
+    return FRAGMENT_BODY_VIEWER;
   }
 
   /**
@@ -229,13 +259,16 @@ public class EditorStubController {
   public String deleteTextCard(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
-      String id = json.getString("id");
+      String id = json.getString(ID_STRING);
       TextCard textCard = editorStubService.deleteTextCard(id);
-      model.addAttribute("body", textCard);
-    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
-      return "redirect:/error/" + e.getMessage();
+      model.addAttribute(BODY_STRING, textCard);
+    } catch (JSONException | IOException | NoSuchIndexEntryException e) {
+      return REDIRECT_ERROR + e.getMessage();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return REDIRECT_ERROR + e.getMessage();
     }
-    return "editor_stub :: bodyViewer";
+    return FRAGMENT_BODY_VIEWER;
   }
 
   /**
@@ -249,15 +282,18 @@ public class EditorStubController {
   public String createTag(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
-      String annoId = json.getString("annoId");
-      String title = json.getString("title");
-      String value = json.getString("value");
+      String annoId = json.getString(ANNO_ID_STRING);
+      String title = json.getString(TITLE_STRING);
+      String value = json.getString(VALUE_STRING);
       Tag tag = editorStubService.addTag(annoId, title, value);
-      model.addAttribute("body", tag);
-    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
-      return "redirect:/error/" + e.getMessage();
+      model.addAttribute(BODY_STRING, tag);
+    } catch (JSONException | IOException | NoSuchIndexEntryException e) {
+      return REDIRECT_ERROR + e.getMessage();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return REDIRECT_ERROR + e.getMessage();
     }
-    return "editor_stub :: bodyViewer";
+    return FRAGMENT_BODY_VIEWER;
   }
 
   /**
@@ -271,13 +307,13 @@ public class EditorStubController {
   public String readTag(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
-      String id = json.getString("id");
+      String id = json.getString(ID_STRING);
       Tag tag = editorStubService.getTag(id);
-      model.addAttribute("body", tag);
+      model.addAttribute(BODY_STRING, tag);
     } catch (JSONException | NoSuchIndexEntryException e) {
-      return "redirect:/error/" + e.getMessage();
+      return REDIRECT_ERROR + e.getMessage();
     }
-    return "editor_stub :: bodyViewer";
+    return FRAGMENT_BODY_VIEWER;
   }
 
   /**
@@ -291,15 +327,18 @@ public class EditorStubController {
   public String updateTag(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
-      String id = json.getString("id");
-      String title = json.getString("title");
-      String value = json.getString("value");
+      String id = json.getString(ID_STRING);
+      String title = json.getString(TITLE_STRING);
+      String value = json.getString(VALUE_STRING);
       Tag tag = editorStubService.updateTag(id, title, value);
-      model.addAttribute("body", tag);
-    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
-      return "redirect:/error/" + e.getMessage();
+      model.addAttribute(BODY_STRING, tag);
+    } catch (JSONException | IOException | NoSuchIndexEntryException e) {
+      return REDIRECT_ERROR + e.getMessage();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return REDIRECT_ERROR + e.getMessage();
     }
-    return "editor_stub :: bodyViewer";
+    return FRAGMENT_BODY_VIEWER;
   }
 
   /**
@@ -313,13 +352,16 @@ public class EditorStubController {
   public String deleteTag(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
-      String id = json.getString("id");
+      String id = json.getString(ID_STRING);
       Tag tag = editorStubService.deleteTag(id);
-      model.addAttribute("body", tag);
-    } catch (JSONException | InterruptedException | IOException | NoSuchIndexEntryException e) {
-      return "redirect:/error/" + e.getMessage();
+      model.addAttribute(BODY_STRING, tag);
+    } catch (JSONException | IOException | NoSuchIndexEntryException e) {
+      return REDIRECT_ERROR + e.getMessage();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return REDIRECT_ERROR + e.getMessage();
     }
-    return "editor_stub :: bodyViewer";
+    return FRAGMENT_BODY_VIEWER;
   }
 
   /**
@@ -333,13 +375,16 @@ public class EditorStubController {
   public String getManuscriptJson(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
-      String id = json.getString("id");
+      String id = json.getString(ID_STRING);
       String rawJson = editorStubService.getManuscriptJson(id).toString(2).replace("\\/", "/");
-      model.addAttribute("rawJson", rawJson);
-    } catch (JSONException | InterruptedException | IOException e) {
-      return "redirect:/error/" + e.getMessage();
+      model.addAttribute(RAW_JSON_STRING, rawJson);
+    } catch (JSONException | IOException e) {
+      return REDIRECT_ERROR + e.getMessage();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return REDIRECT_ERROR + e.getMessage();
     }
-    return "editor_stub :: rawJsonViewer";
+    return FRAGMENT_RAW_JSON_VIEWER;
   }
 
   /**
@@ -353,13 +398,16 @@ public class EditorStubController {
   public String getManuscriptXml(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
-      String id = json.getString("id");
+      String id = json.getString(ID_STRING);
       String rawXml = editorStubService.getManuscriptXml(id);
-      model.addAttribute("rawXml", rawXml);
-    } catch (JSONException | InterruptedException | IOException e) {
-      return "redirect:/error/" + e.getMessage();
+      model.addAttribute(RAW_JSON_STRING, rawXml);
+    } catch (JSONException | IOException e) {
+      return REDIRECT_ERROR + e.getMessage();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return REDIRECT_ERROR + e.getMessage();
     }
-    return "editor_stub :: rawXmlViewer";
+    return FRAGMENT_RAW_XML_VIEWER;
   }
 
   /**
@@ -373,13 +421,16 @@ public class EditorStubController {
   public String getPageJson(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
-      String id = json.getString("id");
+      String id = json.getString(ID_STRING);
       String rawJson = editorStubService.getPageJson(id).toString(2).replace("\\/", "/");
-      model.addAttribute("rawJson", rawJson);
-    } catch (JSONException | InterruptedException | IOException e) {
-      return "redirect:/error/" + e.getMessage();
+      model.addAttribute(RAW_JSON_STRING, rawJson);
+    } catch (JSONException | IOException e) {
+      return REDIRECT_ERROR + e.getMessage();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return REDIRECT_ERROR + e.getMessage();
     }
-    return "editor_stub :: rawJsonViewer";
+    return FRAGMENT_RAW_JSON_VIEWER;
   }
 
   /**
@@ -393,12 +444,18 @@ public class EditorStubController {
   public String getAnnotationJson(@RequestBody String jsonString, Model model) {
     try {
       JSONObject json = new JSONObject(jsonString);
-      String id = json.getString("id");
-      String rawJson = editorStubService.getAnnotationJson(id).toString(2).replace("\\/", "/");
-      model.addAttribute("rawJson", rawJson);
-    } catch (JSONException | InterruptedException | IOException e) {
-      return "redirect:/error/" + e.getMessage();
+      String id = json.getString(ID_STRING);
+      String rawJson = editorStubService
+          .getAnnotationJson(id)
+          .toString(2)
+          .replace("\\/", "/");
+      model.addAttribute(RAW_JSON_STRING, rawJson);
+    } catch (JSONException | IOException e) {
+      return REDIRECT_ERROR + e.getMessage();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return REDIRECT_ERROR + e.getMessage();
     }
-    return "editor_stub :: rawJsonViewer";
+    return FRAGMENT_RAW_JSON_VIEWER;
   }
 }
