@@ -99,8 +99,7 @@ public class User {
 
   public List<String> getRows(){
     Type rowType = TypeToken.getParameterized(ArrayList.class, String.class).getType();
-    List<String> rowList = new Gson().fromJson(this.rows, rowType);
-    return rowList;
+    return new Gson().fromJson(this.rows, rowType);
   }
 
   public void setRows(List<String> rowList){
