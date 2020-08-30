@@ -24,22 +24,17 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping("/tableview")
 public class TableViewController {
 
-  private final IDashboardService dashboardService;
   private final TableViewService tableViewService;
   private final IMainPageService mainPageService;
 
   /**
    * Constructor for the TableViewController to autowire required instances.
    *
-   * @param dashboardService instance of the business logic for the dashboard. Injected with
-   *                         Springs dependency injection system indicated by @autowired annotation.
    * @param tableViewService instance of the business logic for the table view. Injected with
    *                         Springs dependency injection system indicated by @autowired annotation.
    */
   @Autowired
-  public TableViewController(IDashboardService dashboardService,
-                             TableViewService tableViewService, IMainPageService mainPageService) {
-    this.dashboardService = dashboardService;
+  public TableViewController(TableViewService tableViewService, IMainPageService mainPageService) {
     this.tableViewService = tableViewService;
     this.mainPageService = mainPageService;
   }

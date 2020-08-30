@@ -1,6 +1,5 @@
 package edu.kit.scc.dem.tuhl.model.page;
 
-import edu.kit.scc.dem.tuhl.dataaccess.RepositoryAccessService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import java.util.Date;
 import java.util.List;

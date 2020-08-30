@@ -1,8 +1,6 @@
 package edu.kit.scc.dem.tuhl.dataaccess;
 
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import org.springframework.boot.configurationprocessor.json.JSONException;
