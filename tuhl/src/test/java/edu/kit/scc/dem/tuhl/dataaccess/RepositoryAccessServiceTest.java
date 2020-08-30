@@ -200,14 +200,16 @@ class RepositoryAccessServiceTest {
 
     //Define mock response to get requests
     Mockito.when(mockedRequestHelper
-        .postManuscript(Mockito.eq("http://samplerepo.edu/api/v1/dataresources/search?page=0&size=99"), Mockito.any(JSONObject.class)))
+        .postManuscript(Mockito.eq("http://samplerepo.edu/api/v1/dataresources/search?page=0&size=100"),
+            Mockito.any(JSONObject.class)))
         .thenAnswer(invocation -> {
           JSONObject jsonObject = invocation.getArgument(1);
           assertEquals(resourceType.getString(RepositoryStrings.RESOURCE_TYPE.getName()), jsonObject.getString(RepositoryStrings.RESOURCE_TYPE.getName()));
           return mockedResponsePage1;
         });
     Mockito.when(mockedRequestHelper
-        .postManuscript(Mockito.eq("http://samplerepo.edu/api/v1/dataresources/search?page=1&size=99"), Mockito.any(JSONObject.class)))
+        .postManuscript(Mockito.eq("http://samplerepo.edu/api/v1/dataresources/search?page=1&size=100"),
+            Mockito.any(JSONObject.class)))
         .thenAnswer(invocation -> {
           JSONObject jsonObject = invocation.getArgument(1);
           assertEquals(resourceType.getString(RepositoryStrings.RESOURCE_TYPE.getName()), jsonObject.getString(RepositoryStrings.RESOURCE_TYPE.getName()));
