@@ -2,6 +2,7 @@ package edu.kit.scc.dem.tuhl.mainpage.search;
 
 import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
 import edu.kit.scc.dem.tuhl.mainpage.IMainPageService;
+import edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.TableViewService;
 import edu.kit.scc.dem.tuhl.model.filter.FilterConfigurationHolder;
 import edu.kit.scc.dem.tuhl.model.filter.FilterSelection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +27,7 @@ public class FilterController {
   private final IFilterService filterService;
   private final IAssistanceService assistanceService;
   private final IMainPageService mainPageService;
+  private final TableViewService tableViewService;
   
   /**
    * Constructor for the FilterController to autowire required instances.
@@ -35,10 +37,11 @@ public class FilterController {
    */
   @Autowired
   public FilterController(IFilterService filterService, IAssistanceService assistanceService,
-                          IMainPageService mainPageService) {
+                          IMainPageService mainPageService, TableViewService tableViewService) {
     this.filterService = filterService;
     this.assistanceService = assistanceService;
     this.mainPageService = mainPageService;
+    this.tableViewService = tableViewService;
   }
   
   /**
@@ -82,6 +85,7 @@ public class FilterController {
   public String clearFilters(Model model) {
     filterService.clearCurrentFilters();
     mainPageService.update(model);
+    tableViewService.setCurrentPage(1);
     return FRAGMENT_FILTER_SELECTION;
   }
   
@@ -98,6 +102,7 @@ public class FilterController {
     filterService.applyConfiguration(filterConfigurationHolder);
     assistanceService.getCurrentUser().setFilter(filterService.getCurrentFilters());
     assistanceService.updateUser();
+    tableViewService.setCurrentPage(1);
     return "redirect:/";
   }
 
