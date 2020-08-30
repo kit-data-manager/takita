@@ -64,3 +64,7 @@ Set a custom ip for the elasticsearch server. The default ip is localhost.
 
 * `--elasticsearch.port=<myPort>`  
 Set a custom port for the elasticsearch server. The default port is 9200.
+
+##### User Repository
+* `--spring.datasource.url = <myUrl>
+Set a custom source url for user repository. The default source url is jdbc:h2:file:~/db/userdb
