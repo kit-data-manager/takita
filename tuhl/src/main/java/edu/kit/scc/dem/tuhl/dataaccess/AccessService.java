@@ -1107,9 +1107,11 @@ public class AccessService implements IAccessService {
   }
   
   private Motivation stringToMotivation(String stringMotivation) {
+    /* See Motivation enum
     if (Motivation.ASSESSING.getName().equals(stringMotivation)) {
       return Motivation.ASSESSING;
-    } else if (Motivation.BOOKMARKING.getName().equals(stringMotivation)) {
+    } else*/
+    if (Motivation.BOOKMARKING.getName().equals(stringMotivation)) {
       return Motivation.BOOKMARKING;
     } else if (Motivation.CLASSIFYING.getName().equals(stringMotivation)) {
       return Motivation.CLASSIFYING;

@@ -1,7 +1,8 @@
 package edu.kit.scc.dem.tuhl.model;
 
 public enum Motivation {
-  ASSESSING("assessing"),
+  //assessing doesn't yet work with the WADM
+  //ASSESSING("assessing"),
   BOOKMARKING("bookmarking"),
   CLASSIFYING("classifying"),
   COMMENTING("commenting"),

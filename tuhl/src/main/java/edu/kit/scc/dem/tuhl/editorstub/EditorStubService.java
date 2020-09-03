@@ -518,9 +518,11 @@ public class EditorStubService implements IEditorStubService {
   }
 
   private Motivation stringToMotivation(String stringMotivation) {
+    /* See Motivation enum
     if (Motivation.ASSESSING.toString().equals(stringMotivation)) {
       return Motivation.ASSESSING;
-    } else if (Motivation.BOOKMARKING.toString().equals(stringMotivation)) {
+    } else */
+    if (Motivation.BOOKMARKING.toString().equals(stringMotivation)) {
       return Motivation.BOOKMARKING;
     } else if (Motivation.CLASSIFYING.toString().equals(stringMotivation)) {
       return Motivation.CLASSIFYING;
