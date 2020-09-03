@@ -55,8 +55,7 @@ public class MatchFilter implements Filter {
     if (!values.isEmpty() && !values.get(0).trim().equals("")) {
       NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
       for (String v: values) {
-        queryBuilder.withQuery(matchQuery(field, v)
-            .fuzziness(Fuzziness.AUTO));
+        queryBuilder.withQuery(matchQuery(field, v));
       }
       this.query = queryBuilder.build();
     }  else {
