@@ -51,12 +51,16 @@
         window.cols = [
             {
                 formatter:function(cell, formatterParams, onRendered){
-                    window.idd = cell.getRow().getData().id;
-                return "<button class='btn-sm btn-secondary m-1 row' onclick='callEditor(window.idd)'><i class='fa fa-pencil'></i></button>";},
+                return "<i class='fa fa-pencil'></i>";},
                 hozAlign:"center",
                 resizable: false,
                 frozen: true,
                 headerSort: false,
+                cellClick:function(e, cell){
+                    manId = cell.getRow().getData().id;
+                    callEditor(manId);
+                },
+
             },
             {
                 title: [[#{col_name.id}]],
