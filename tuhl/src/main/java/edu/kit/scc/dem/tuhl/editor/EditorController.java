@@ -27,13 +27,19 @@ public class EditorController {
   private final IEditorService editorService;
 
   private static final String NOT_IMPLEMENTED = "not implemented";
+  private static final String REDIRECT_ERROR = "redirect:/error/";
 
   private static final Logger logger = LoggerFactory.getLogger(EditorController.class);
 
+
+  /**
+   * Constructor, initializes instances of used interfaces.
+   *
+   * @param editorService instance of IEditorService
+   */
   @Autowired
   public EditorController(IEditorService editorService) {
     this.editorService = editorService;
-
   }
   
   /**
@@ -44,12 +50,7 @@ public class EditorController {
    */
   @GetMapping
   public String editor(Model model) {
-    if (editorService.getCurrentPage() != null) {
-      editorService.updateModel(model);
-      return "editor";
-    } else {
-      return "redirect:/error";
-    }
+      throw new AssertionError(NOT_IMPLEMENTED);
   }
 
   /**
@@ -61,20 +62,19 @@ public class EditorController {
   @GetMapping("/{pageId}")
   public String selectPage(@PathVariable ("pageId") String pageId) {
     try {
-      editorService.changePage(pageId);
+      editorService.selectPage(pageId);
     } catch (NoSuchIndexEntryException e) {
-      return "redirect:/error/" + e.getMessage();
+      return REDIRECT_ERROR + e.getMessage();
     }
-    return "redirect:/editor";
+    return REDIRECT_ERROR;
   }
 
   /**
    * Changes the visibility of a selected annotation on the displayed page.
    *
    * @param annotationNumber Number of the annotation in the editor
-   * @param visibility       true, if the annotation should be visible, false else
-   * @param model            the holder for model attributes. Used to pass attributes back to the
-   *                         view
+   * @param visibility true, if the annotation should be visible, false else
+   * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
    */
   @GetMapping("/visibility")
@@ -86,7 +86,7 @@ public class EditorController {
   /**
    * Adds a new annotation to the database.
    *
-   * @param svg   svg of the annotation, that should be added to the page
+   * @param svg svg of the annotation, that should be added to the page
    * @param color color of the annotation, that should be added
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
@@ -98,28 +98,30 @@ public class EditorController {
   }
 
   /**
+   * Endpoint to change the currently selected annotation.
+   *
+   * @param annotationId the id of the annotation
+   * @param model the holder for model attributes. Used to pass attributes back to the view
+   * @return a string to indicate the redirect
+   */
+  @PostMapping("/select")
+  public String selectAnnotation(@RequestBody String annotationId, Model model) {
+    throw new AssertionError(NOT_IMPLEMENTED);
+  }
+
+  /**
    * Updates a parameter of an annotation like the color or the SVG form of it.
    *
-   * @param svg   updated svg of the annotation
+   * @param svg updated svg of the annotation
    * @param color updated color of the annotation
+   * @param motivation updated motivation of the annotation
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
    */
   @GetMapping("/change/annotation")
   public String updateAnnotation(@RequestParam("svg") String svg,
-                                 @RequestParam("color") Color color, Model model) {
-    throw new AssertionError(NOT_IMPLEMENTED);
-  }
-
-  /**
-   * Updates the motivation of an Annotation, creating an Annotation it is set per default.
-   *
-   * @param motivation new motivation of an annotation
-   * @param model the holder for model attributes. Used to pass attributes back to the view
-   * @return the name of the html file to display
-   */
-  @GetMapping("/change/annotation/motivation")
-  public String updateMotivation(@RequestParam("motivation") String motivation, Model model) {
+                                 @RequestParam("color") Color color,
+                                 @RequestParam("motivation") String motivation, Model model) {
     throw new AssertionError(NOT_IMPLEMENTED);
   }
 
@@ -142,63 +144,25 @@ public class EditorController {
    */
   @PostMapping("/add/textcard")
   public String addTextCard(@ModelAttribute("textCard") TextCard textCard) {
-    try {
-      editorService.addTextCard(textCard.getValue(), textCard.getPurpose().getName(),
-          textCard.getTitle());
-      logger.info("Textkarte hinzugefügt");
-      return "editor";
-    } catch (IOException | JSONException | NoSuchIndexEntryException e) {
-      return "redirect:/error/" + e.getMessage();
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      return "redirect:/error/" + e.getMessage();
-    }
+    throw new AssertionError(NOT_IMPLEMENTED);
   }
-  
-  /**
-   * Endpoint to change the currently selected annotation.
-   *
-   * @param annotationId the id of the annotation
-   * @param model the holder for model attributes. Used to pass attributes back to the view
-   * @return a string to indicate the redirect
-   */
-  @PostMapping("/select")
-  public String selectAnnotation(@RequestBody String annotationId, Model model) {
-    try {
-      editorService.selectAnnotation(annotationId);
-      editorService.updateModel(model);
-      return "editor :: editor";
-    } catch (NoSuchIndexEntryException e) {
-      return "redirect:/error/" + e.getMessage();
-    }
-  }
-  
+
   /**
    * Saves the made changes of the currently displayed text card.
    *
-   * @param text  changed text of the textcard
+   * @param text  changed text of the text card
+   * @param purpose new purpose of the text card
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
    */
-  @GetMapping("/change/textcard/text")
-  public String updateTextCard(@RequestParam("text") String text, Model model) {
+  @GetMapping("/change/textcard")
+  public String updateTextCard(@RequestParam("text") String text,
+                               @RequestParam("purpose") String purpose, Model model) {
     throw new AssertionError(NOT_IMPLEMENTED);
   }
 
   /**
-   * changes the purpose of a text card when the user wants to change it.
-   *
-   * @param purpose new purpose of the textcard
-   * @param model   the holder for model attributes. Used to pass attributes back to the view
-   * @return the name of the html file to display
-   */
-  @PostMapping("/change/textcard/purpose")
-  public String changePurpose(@RequestParam("purpose") String purpose, Model model) {
-    throw new AssertionError(NOT_IMPLEMENTED);
-  }
-
-  /**
-   * displays all the available metadata of the currently displayed page in a sorted way.
+   * Displays all the available metadata of the currently displayed page in a sorted way.
    *
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
@@ -209,7 +173,7 @@ public class EditorController {
   }
 
   /**
-   * displays all the available metadata of the currently displayed page as a raw JSON.
+   * Displays all the available metadata of the currently displayed page as a raw JSON.
    *
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
@@ -220,7 +184,7 @@ public class EditorController {
   }
 
   /**
-   * changes the metadata that are displayed for the user in the editor.
+   * Changes the metadata that are displayed for the user in the editor.
    *
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
@@ -243,21 +207,9 @@ public class EditorController {
   }
 
   /**
-   * Adds a tag to the tag-vocabulary.
+   * Deletes a tag from an annotation.
    *
-   * @param tag   tag that should be added to the vocabulary
-   * @param model the holder for model attributes. Used to pass attributes back to the view
-   * @return the name of the html file to display
-   */
-  @PostMapping("/add/tagtovocabulary")
-  public String addTagToVocabulary(@RequestParam("tag") String tag, Model model) {
-    throw new AssertionError(NOT_IMPLEMENTED);
-  }
-
-  /**
-   * Deletes a tag from the vocabulary.
-   *
-   * @param tag   Tag, that should be deleted
+   * @param tag tag, that should be deleted
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
    */
@@ -278,28 +230,21 @@ public class EditorController {
   }
 
   /**
-   * Checks out the algorithm layer.
-   *
-   * @param algorithmLayer true, if it should be changed to altorithm layer, false if it should
-   *                       be changed to user layer
-   * @param model          the holder for model attributes. Used to pass attributes back to the
-   *                       view
-   * @return the name of the html file to display
-   */
-  @PostMapping("/algorithmlayer")
-  public String algorithmLayer(@RequestParam("algorithmlayer") Boolean algorithmLayer,
-                               Model model) {
-    throw new AssertionError(NOT_IMPLEMENTED);
-  }
-
-  /**
    * Validates an Annotation made by an algorithm.
    *
-   * @param right true, if the annotation is allright, false if the annotation is wrong
+   * @param validated true, if the annotation is validated, false if the annotation is rejected
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
    */
-  public String validateAnnotation(@RequestParam("right") Boolean right, Model model) {
-    throw new AssertionError(NOT_IMPLEMENTED);
+  public String validateAnnotation(@RequestParam("validated") String validated, Model model) {
+    try {
+      editorService.validateAnnotation(validated);
+    } catch (IOException | NoSuchIndexEntryException e) {
+      return REDIRECT_ERROR + e.getMessage();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return REDIRECT_ERROR + e.getMessage();
+    }
+    return "editor";
   }
 }

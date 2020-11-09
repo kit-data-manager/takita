@@ -68,7 +68,7 @@ class EditorStubServiceTest {
 
   @Test
   void addAnnotation2() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
-    Annotation annotation = buildMockAnnotation(Color.TEXT_REGION, Motivation.ASSESSING);
+    Annotation annotation = buildMockAnnotation(Color.TEXT_REGION, Motivation.MODERATING);
 
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
@@ -426,7 +426,7 @@ class EditorStubServiceTest {
 
   @Test
   void getTextCard() throws NoSuchIndexEntryException, JSONException, org.json.JSONException {
-    TextCard textCard = buildMockTextCard(Motivation.ASSESSING);
+    TextCard textCard = buildMockTextCard(Motivation.BOOKMARKING);
 
     Mockito.when(mockedSearchIndexService.getTextCardById(textCard.getId())).thenReturn(textCard);
 

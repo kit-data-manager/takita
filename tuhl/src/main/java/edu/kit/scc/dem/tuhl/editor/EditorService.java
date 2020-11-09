@@ -6,11 +6,20 @@ import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
+import edu.kit.scc.dem.tuhl.model.Motivation;
+import edu.kit.scc.dem.tuhl.model.body.Body;
+import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import edu.kit.scc.dem.tuhl.model.page.Page;
 import edu.kit.scc.dem.tuhl.model.page.ResourceType;
 import java.io.IOException;
+import java.time.Instant;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -25,409 +34,547 @@ import org.springframework.web.context.annotation.SessionScope;
 public class EditorService implements IEditorService {
   private Manuscript currentManuscript;
   private Page currentPage;
-  private List<Page> pagesInSlider;
   private Annotation currentAnnotation;
-  private List<Annotation> annotationsOnPage;
-  private TextCard currentTextCard;
-  private List<TextCard> textCards;
+  private Body currentBody;
 
   private static final String NOT_IMPLEMENTED = "not implemented";
 
-  private final ISearchIndexService searchIndexService;
-  private final IAnnotationService annotationService;
-  private final ITagService tagService;
-  private final ITextCardService textCardService;
   private final IAssistanceService assistanceService;
+  private final ISearchIndexService searchIndexService;
 
   /**
    * Constructor, initializes instances of used interfaces.
    *
+   * @param assistanceService instance of IAssistanceService
    * @param searchIndexService instance of ISearchIndexService
-   * @param annotationService instance of IAnnotationService
-   * @param tagService instance of ITagService
-   * @param textCardService instance of ITextCardService
-   * @param assistanceService instance of assistanceService
    */
-  public EditorService(ISearchIndexService searchIndexService, IAnnotationService annotationService,
-                       ITagService tagService,
-                       ITextCardService textCardService, IAssistanceService assistanceService) {
-    this.textCardService = textCardService;
-    this.searchIndexService = searchIndexService;
-    this.annotationService = annotationService;
-    this.tagService = tagService;
+  @Autowired
+  public EditorService(IAssistanceService assistanceService,
+                           ISearchIndexService searchIndexService) {
     this.assistanceService = assistanceService;
+    this.searchIndexService = searchIndexService;
   }
 
   /**
-   * Initializes the editor view of the page with a specific page Id.
+   * Adds an annotation to the search index and the database.
    *
-   * @param pageId Id of the page that should be displayed
-   */
-  @Override
-  public void init(String pageId) {
-    throw new UnsupportedOperationException(NOT_IMPLEMENTED);
-  }
-
-  /**
-   * Changes the displayed page.
-   *
-   * @param pageId Identifier of the page that should be displayed
-   * @throws NoSuchIndexEntryException when there is no page with given ID in the search index
-   */
-  @Override
-  public void changePage(String pageId) throws NoSuchIndexEntryException {
-    currentPage = searchIndexService.getPageById(pageId);
-    currentManuscript = searchIndexService.getManuscriptById(currentPage.getManuscriptId());
-    currentTextCard = null;
-  }
-
-  /**
-   * Makes an Annotation visible or invisible on the page.
-   *
-   * @param annotationNumber internal number of the annotation
-   * @param visibility true, if the annotation should be visible, false if not
-   */
-  @Override
-  public void changeVisibility(int annotationNumber, Boolean visibility) {
-    throw new UnsupportedOperationException(NOT_IMPLEMENTED);
-  }
-
-  /**
-   * gets all text cards of an Annotation.
-   *
-   * @param annotationId ID of the Annotation witch text cards should be given
-   * @throws NoSuchIndexEntryException when there is no annotation with given ID in the search index
-   */
-  @Override
-  public void selectAnnotation(String annotationId) throws NoSuchIndexEntryException {
-    currentAnnotation = annotationService.getAnnotationById(annotationId);
-  }
-
-  /**
-   * Adds an Annotation to the page, that is opened in the editor.
-   *
-   * @param svg svg of the annotation as String
-   * @param color color of the annotation as Color
-   * @param motivation motivation of the annotation as String
-   * @throws InterruptedException when saving to the database is interrupted
-   * @throws IOException when http request to database has errors
-   * @throws JSONException when parsing the object to JSON throw error
-   * @throws NoSuchIndexEntryException when there is no object with given ID in the search index
-   */
-  @Override
-  public void addAnnotation(String svg, Color color, String motivation)
-      throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException {
-    annotationService.createAnnotation(color, svg, motivation, currentPage.getId());
-  }
-
-  /**
-   * Changes the color of the currently selected annotation.
-   *
-   * @param color new color of the annotation
-   * @throws InterruptedException when saving to the database is interrupted
-   * @throws IOException when http request to database has errors
-   * @throws JSONException when parsing the object to JSON throw error
-   * @throws NoSuchIndexEntryException when there is no object with given ID in the search index
-   */
-  @Override
-  public void updateColor(Color color) throws InterruptedException, IOException,
-      JSONException, NoSuchIndexEntryException {
-    annotationService.modifyAnnotation(currentAnnotation.getSvgCode(), color,
-            currentAnnotation.getId());
-  }
-
-  /**
-   * Changes the SVG-code of the currently selected annotation.
-   *
-   * @param svg modified SVG-code of the annotation
-   * @throws InterruptedException when saving to the database is interrupted
-   * @throws IOException when http request to database has errors
-   * @throws JSONException when parsing the object to JSON throw error
-   * @throws NoSuchIndexEntryException when there is no object with given ID in the search index
-   */
-  @Override
-  public void updateSvg(String svg) throws InterruptedException, IOException,
-      JSONException, NoSuchIndexEntryException {
-    annotationService.modifyAnnotation(svg, currentAnnotation.getId());
-  }
-
-  /**
-   * Changes the motivation of an annotation, that is set per default.
-   *
+   * @param pageId ID of the page on which the annotation is located
+   * @param color color of the annotation
+   * @param svgCode svg code of the shape of the annotation
    * @param motivation motivation of the annotation
-   * @throws InterruptedException when saving to the database is interrupted
-   * @throws IOException when http request to database has errors
-   * @throws JSONException when parsing the object to JSON throw error
-   * @throws NoSuchIndexEntryException when there is no object with given ID in the search index
+   * @return the added annotation
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws NoSuchIndexEntryException when there is no such page in the index
+   * @throws IOException when the http request to database was faulty
    */
   @Override
-  public void updateMotivation(String motivation)
-      throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException {
-    annotationService.modifyMotivation(motivation, currentAnnotation.getId());
+  public Annotation addAnnotation(String pageId, String color, String svgCode, String motivation)
+      throws InterruptedException, NoSuchIndexEntryException, IOException {
+    Annotation newAnnotation = new Annotation();
+    newAnnotation.setPageId(pageId);
+    newAnnotation.setCreators(Collections.singletonList(
+        assistanceService.getCurrentUser().getName()));
+    newAnnotation.setCreated(Date.from(Instant.now()));
+    newAnnotation.setModified(Date.from(Instant.now()));
+
+    if (color != null) {
+      newAnnotation.setColor(stringToColor(color));
+    } else {
+      newAnnotation.setColor(Color.DEFAULT);
+    }
+
+    if (svgCode != null && !svgCode.trim().equals("")) {
+      newAnnotation.setSvgCode(svgCode);
+    }
+
+    if (motivation != null && stringToMotivation(motivation) != null) {
+      newAnnotation.setMotivation(stringToMotivation(motivation));
+    }
+
+    try {
+      newAnnotation = searchIndexService.addAnnotation(newAnnotation);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return newAnnotation;
   }
 
   /**
-   * Deletes the currently selected annotation.
-   * @throws InterruptedException when saving to the database is interrupted
-   * @throws IOException when http request to database has errors
-   * @throws JSONException when parsing the object to JSON throw error
-   * @throws NoSuchIndexEntryException when there is no object with given ID in the search index
-   */
-  @Override
-  public void deleteAnnotation() throws InterruptedException, IOException,
-      JSONException, NoSuchIndexEntryException {
-    searchIndexService.deleteAnnotationById(currentAnnotation.getId());
-  }
-
-  /**
-   * Adds a text card to the currently selected annotation.
+   * Gets an annotation from the searchIndexService by its ID.
    *
-   * @param text text of the text card
-   * @param purpose purpose of the text card
-   * @throws NoSuchIndexEntryException when there is no object with given ID in the search index
-   * @throws InterruptedException when saving to the database is interrupted
-   * @throws IOException when http request to database has errors
-   * @throws JSONException when parsing the object to JSON throw error
+   * @param annotationId ID of annotation
+   * @return requested annotation
+   * @throws NoSuchIndexEntryException when there is no annotation like this in the index
    */
   @Override
-  public void addTextCard(String text, String purpose, String title)
-      throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException {
-    textCardService.createTextCard(currentAnnotation.getId(), text, purpose, title);
+  public Annotation getAnnotation(String annotationId) throws NoSuchIndexEntryException {
+    return searchIndexService.getAnnotationById(annotationId);
   }
 
   /**
-   * Updates the text of the currently selected text card.
+   * Updates an annotation in the search index and the database.
    *
-   * @param text new text of the text card
-   * @throws InterruptedException when saving to the database is interrupted
-   * @throws IOException when http request to database has errors
-   * @throws JSONException when parsing the object to JSON throw error
-   * @throws NoSuchIndexEntryException when there is no object with given ID in the search index
+   * @param annotationId ID of the annotation to update
+   * @param color new color of the annotation
+   * @param svgCode new svg code of the annotation
+   * @param motivation new motivation of the annotation
+   * @return updated annotation
+   * @throws NoSuchIndexEntryException when there is no such annotation in the index
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
    */
   @Override
-  public void updateTextCard(String text) throws InterruptedException, IOException,
-      JSONException, NoSuchIndexEntryException {
-    textCardService.modifyTextCard(currentAnnotation.getId(), currentTextCard.getId(), text);
+  public Annotation updateAnnotation(String annotationId, String color,
+                                     String svgCode, String motivation)
+      throws NoSuchIndexEntryException, InterruptedException, IOException {
+    Annotation updatedAnnotation = searchIndexService.getAnnotationById(annotationId);
+    if (!updatedAnnotation.getCreators().contains(assistanceService
+        .getCurrentUser().getName())) {
+      updatedAnnotation.addCreator(assistanceService.getCurrentUser().getName());
+    }
+    updatedAnnotation.setModified(Date.from(Instant.now()));
+
+    if (color != null && !color.trim().equals("")) {
+      updatedAnnotation.setColor(stringToColor(color));
+    } else {
+      updatedAnnotation.setColor(Color.DEFAULT);
+    }
+
+    if (svgCode != null && !svgCode.trim().equals("")) {
+      updatedAnnotation.setSvgCode(svgCode);
+    }
+
+    if (motivation != null && stringToMotivation(motivation) != null) {
+      updatedAnnotation.setMotivation(stringToMotivation(motivation));
+    }
+
+    try {
+      updatedAnnotation = searchIndexService.updateAnnotation(updatedAnnotation);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return updatedAnnotation;
   }
 
   /**
-   * updates the purpose of the currently selected text card.
+   * Validates an annotation in the search index and the database.
    *
+   * @param annotationId ID of the annotation to be validated
+   * @return validated annotation
+   * @throws NoSuchIndexEntryException when there is no such annotation in the index
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
+   */
+  @Override
+  public Annotation validateAnnotation(String annotationId)
+      throws NoSuchIndexEntryException, InterruptedException, IOException {
+    Annotation annotation = searchIndexService.getAnnotationById(annotationId);
+    annotation.setModified(Date.from(Instant.now()));
+    annotation.addCreator(assistanceService.getCurrentUser().getName());
+    try {
+      annotation = searchIndexService.validateAnnotation(annotation);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return annotation;
+  }
+
+  /**
+   * Deletes an annotation from the search index and the database.
+   *
+   * @param annotationId of the annotation to delete
+   * @return deleted annotation
+   * @throws NoSuchIndexEntryException when there is no such annotation in the index
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
+   */
+  @Override
+  public Annotation deleteAnnotation(String annotationId)
+      throws NoSuchIndexEntryException, InterruptedException, IOException {
+    Annotation deletedAnnotation = searchIndexService.getAnnotationById(annotationId);
+    try {
+      searchIndexService.deleteAnnotationById(annotationId);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return deletedAnnotation;
+  }
+
+  /**
+   * Adds a text card to an annotation in the search index and the database.
+   *
+   * @param annotationId of the annotation to which the text card belongs
+   * @param title of the text card
+   * @param value of the text card
+   * @param purpose of the text card
+   * @return added text card
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws NoSuchIndexEntryException when there is no such annotation in the index
+   * @throws IOException when the http request to database was faulty
+   */
+  @Override
+  public TextCard addTextCard(String annotationId, String title, String value, String purpose)
+      throws InterruptedException, NoSuchIndexEntryException, IOException {
+    TextCard newTextCard = new TextCard(UUID.randomUUID().toString());
+    newTextCard.setAnnotationId(annotationId);
+    newTextCard.setCreators(Collections.singletonList(
+        assistanceService.getCurrentUser().getName()));
+    newTextCard.setCreated(Date.from(Instant.now()));
+    newTextCard.setModified(Date.from(Instant.now()));
+
+    if (title != null && !title.trim().equals("")) {
+      newTextCard.setTitle(title);
+    }
+
+    if (value != null && !value.trim().equals("")) {
+      newTextCard.setValue(value);
+    }
+
+    if (purpose != null && stringToMotivation(purpose) != null) {
+      newTextCard.setPurpose(stringToMotivation(purpose));
+    }
+    try {
+      newTextCard = (TextCard) searchIndexService.addBody(newTextCard);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return newTextCard;
+  }
+
+  /**
+   * Adds a tag to an annotation in the search index and the database.
+   *
+   * @param annotationId of the annotation to which the tag belongs
+   * @param title of the tag
+   * @param value of the tag
+   * @return added tag
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws NoSuchIndexEntryException when there is no such annotation in the index
+   * @throws IOException when the http request to database was faulty
+   */
+  @Override
+  public Tag addTag(String annotationId, String title, String value)
+      throws InterruptedException, NoSuchIndexEntryException, IOException {
+    Tag newTag = new Tag(UUID.randomUUID().toString());
+    newTag.setAnnotationId(annotationId);
+    newTag.setCreators(Collections.singletonList(assistanceService.getCurrentUser().getName()));
+    newTag.setCreated(Date.from(Instant.now()));
+    newTag.setModified(Date.from(Instant.now()));
+
+    if (title != null && !title.trim().equals("")) {
+      newTag.setTitle(title);
+    }
+
+    if (value != null && !value.trim().equals("")) {
+      newTag.setValue(value);
+    }
+
+    try {
+      newTag = (Tag) searchIndexService.addBody(newTag);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return newTag;
+  }
+
+  /**
+   * Gets a text card from the search index.
+   *
+   * @param id of the text card
+   * @return text card in question
+   */
+  @Override
+  public TextCard getTextCard(String id) throws NoSuchIndexEntryException {
+    return searchIndexService.getTextCardById(id);
+  }
+
+  /**
+   * Gets a tag from the search index.
+   *
+   * @param id of the tag
+   * @return tag in question
+   */
+  @Override
+  public Tag getTag(String id) throws NoSuchIndexEntryException {
+    return searchIndexService.getTagById(id);
+  }
+
+  /**
+   * Updates a text card in the search index and the database.
+   *
+   * @param textCardId of the text card which should be updated
+   * @param title new title of the text card
+   * @param value new value of the text card
    * @param purpose new purpose of the text card
-   * @throws InterruptedException when saving to the database is interrupted
-   * @throws IOException when http request to database has errors
-   * @throws JSONException when parsing the object to JSON throw error
-   * @throws NoSuchIndexEntryException when there is no object with given ID in the search index
+   * @return updated text card
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws NoSuchIndexEntryException when there is no such text card in the index
+   * @throws IOException when the http request to database was faulty
    */
   @Override
-  public void updatePurpose(String purpose)
-      throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException {
-    textCardService.modifyPurpose(currentTextCard.getId(), purpose);
+  public TextCard updateTextCard(String textCardId, String title, String value, String purpose)
+      throws InterruptedException, NoSuchIndexEntryException, IOException {
+    TextCard updatedTextCard = searchIndexService.getTextCardById(textCardId);
+    if (!updatedTextCard.getCreators().contains(assistanceService.getCurrentUser().getName())) {
+      updatedTextCard.addCreator(assistanceService.getCurrentUser().getName());
+    }
+    updatedTextCard.setModified(Date.from(Instant.now()));
+
+    if (title != null && !title.trim().equals("")) {
+      updatedTextCard.setTitle(title);
+    }
+
+    if (value != null && !value.trim().equals("")) {
+      updatedTextCard.setValue(value);
+    }
+
+    if (purpose != null && !purpose.trim().equals("")) {
+      updatedTextCard.setPurpose(stringToMotivation(purpose));
+    }
+
+    TextCard newTextCard;
+    try {
+      newTextCard = (TextCard) searchIndexService.updateBody(updatedTextCard);
+    } catch (JSONException e) {
+      newTextCard  = new TextCard("No TextCard");
+      e.printStackTrace();
+    }
+
+    return newTextCard;
   }
 
   /**
-   * Displays all metadata of the current page.
-   */
-  @Override
-  public void displayMetadata() {
-    throw new UnsupportedOperationException(NOT_IMPLEMENTED);
-  }
-
-  /**
-   * Displays a JSON of the metadata of the current page.
+   * Updates a tag in the search index and the database.
    *
-   * @return String with the raw JSON data
-   * @throws InterruptedException when saving to the database is interrupted
-   * @throws JSONException when parsing the object to JSON throw error
-   * @throws IOException when http request to database has errors
+   * @param tagId of the tag which should be updated
+   * @param title new title of the tag
+   * @param value new value of the tag
+   * @return updated tag
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws NoSuchIndexEntryException when there is no such tag in the index
+   * @throws IOException when the http request to database was faulty
    */
   @Override
-  public String displayRawMetadata() throws InterruptedException, JSONException, IOException {
-    String currentMetadata = "The raw JSON: \n \n";
-    if (currentManuscript != null) {
-      currentMetadata = currentMetadata
-              + "JSON of The Manuscript"
-                      +  searchIndexService.getRawManuscriptJson(
-                          currentManuscript.getId()).toString();
+  public Tag updateTag(String tagId, String title, String value)
+      throws NoSuchIndexEntryException, InterruptedException, IOException {
+    Tag updatedTag = searchIndexService.getTagById(tagId);
+    if (!updatedTag.getCreators().contains(assistanceService.getCurrentUser().getName())) {
+      updatedTag.addCreator(assistanceService.getCurrentUser().getName());
     }
-    if (currentPage != null) {
-      currentMetadata =
-              currentMetadata + "JSON of The Page: /n"
-                      + searchIndexService.getRawPageJson(currentPage.getId()).toString();
+    updatedTag.setModified(Date.from(Instant.now()));
+
+    if (title != null && !title.trim().equals("")) {
+      updatedTag.setTitle(title);
     }
 
-    if (currentAnnotation != null) {
-      currentMetadata = currentMetadata
-          + searchIndexService.getRawAnnotationJson(currentAnnotation.getId()).toString();
+    if (value != null && !value.trim().equals("")) {
+      updatedTag.setValue(value);
     }
-    return currentMetadata;
+
+    try {
+      updatedTag = (Tag) searchIndexService.updateBody(updatedTag);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return updatedTag;
+
+  }
+
+  /**
+   * Deletes a text card in the search index and the database.
+   *
+   * @param textCardId of the text card which should be deleted
+   * @return deleted text card
+   * @throws NoSuchIndexEntryException when there is no such text card in the index
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
+   */
+  @Override
+  public TextCard deleteTextCard(String textCardId)
+      throws NoSuchIndexEntryException, InterruptedException, IOException {
+    TextCard deletedTextCard = searchIndexService.getTextCardById(textCardId);
+    try {
+      searchIndexService.deleteBodyById(textCardId);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return deletedTextCard;
+  }
+
+  /**
+   * Deletes a tag in the search index and the database.
+   *
+   * @param tagId of the tag which should be deleted
+   * @return deleted tag
+   * @throws NoSuchIndexEntryException when there is no such tag in the index
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
+   */
+  @Override
+  public Tag deleteTag(String tagId)
+      throws InterruptedException, NoSuchIndexEntryException, IOException {
+    Tag deletedTag = searchIndexService.getTagById(tagId);
+    try {
+      searchIndexService.deleteBodyById(tagId);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return deletedTag;
+  }
+
+  /**
+   * Gets the raw JSON of a manuscript.
+   *
+   * @param manuscriptId of the manuscript to which the raw JSON should be gotten
+   * @return manuscript as JSONObject
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
+   */
+  @Override
+  public JSONObject getManuscriptJson(String manuscriptId)
+      throws InterruptedException, IOException {
+    try {
+      return searchIndexService.getRawManuscriptJson(manuscriptId);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  /**
+   * Gets the raw XML of a manuscript.
+   *
+   * @param manuscriptId of the manuscript to which the raw XML should be gotten
+   * @return manuscript as XML as String
+   * @throws IOException when the http request to database was faulty
+   * @throws InterruptedException when the http request to database is interrupted
+   */
+  @Override
+  public String getManuscriptXml(String manuscriptId) throws IOException, InterruptedException {
+    return searchIndexService.getRawManuscriptXml(manuscriptId);
   }
 
   /**
    * Gets the raw JSON of a page.
    *
-   * @return JSONObject raw page
-   * @throws InterruptedException when saving to the database is interrupted
-   * @throws IOException when http request to database has errors
-   * @throws JSONException when parsing the object to JSON throw error
+   * @param pageId of the page to which the raw JSON should be gotten
+   * @return page as JSONObject
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
    */
   @Override
-  public JSONObject getPageJson() throws InterruptedException, IOException, JSONException {
-    return searchIndexService.getRawPageJson(currentPage.getId());
+  public JSONObject getPageJson(String pageId)
+      throws InterruptedException, IOException {
+    try {
+      return searchIndexService.getRawPageJson(pageId);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
   /**
-   * adds a tag to the currently selected annotation.
+   * Gets the raw JSON of an annotation.
    *
-   * @param tag tag that should be added to an annotation
-   * @throws InterruptedException when saving to the database is interrupted
-   * @throws IOException when http request to database has errors
-   * @throws JSONException when parsing the object to JSON throw error
-   * @throws NoSuchIndexEntryException when there is no object with given ID in the search index
+   * @param annotationId of the annotation to which the raw JSON should be gotten
+   * @return annotation as JSONObject
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
    */
   @Override
-  public void addTag(String tag) throws InterruptedException, IOException,
-      JSONException, NoSuchIndexEntryException {
-    tagService.addTag(tag, currentAnnotation.getId());
+  public JSONObject getAnnotationJson(String annotationId)
+      throws InterruptedException, IOException {
+    try {
+      return searchIndexService.getRawAnnotationJson(annotationId);
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
-  /**
-   * Deletes a tag from an annotation.
-   *
-   * @param tagId ID of tag that should be deleted
-   * @throws InterruptedException when saving to the database is interrupted
-   * @throws IOException when http request to database has errors
-   * @throws JSONException when parsing the object to JSON throw error
-   * @throws NoSuchIndexEntryException when there is no object with given ID in the search index
-   */
   @Override
-  public void deleteTag(String tagId) throws InterruptedException, IOException,
-      JSONException, NoSuchIndexEntryException {
-    tagService.deleteTag(tagId);
+  public void selectPage(String pageId) throws NoSuchIndexEntryException {
+    currentPage = searchIndexService.getPageById(pageId);
   }
 
-  /**
-   * gets all tags that are possible for an annotation.
-   *
-   * @return all possible tags
-   * @throws NoSuchIndexEntryException when there is no object with given ID in the search index
-   */
   @Override
-  public String[] getAllTags() throws NoSuchIndexEntryException {
-    List<String> listOfTags = tagService.getTags(currentAnnotation.getId());
-    return listOfTags.toArray(new String[0]);
+  public void selectAnnotation(String annoId) throws NoSuchIndexEntryException {
+    currentAnnotation = searchIndexService.getAnnotationById(annoId);
   }
 
-  /**
-   * Changes the current layer to Algorithm-layer, where the user can validate annotation made by
-   * an algorithm or to user layer, where an user can make or edit its own annotations.
-   *
-   * @param algorithmLayer true if it should change to algorithm-layer, false if it should change
-   *                       to userLayer
-   */
   @Override
-  public void algorithmLayer(boolean algorithmLayer) {
-    throw new UnsupportedOperationException(NOT_IMPLEMENTED);
+  public void selectBody(String bodyId) {
+    currentBody = sea
   }
 
-  /**
-   * Validates an Annotation made by an algorithm.
-   *
-   * @param right true, if the annotation is alright, false if the annotation is wrong
-   * @throws InterruptedException when saving to the database is interrupted
-   * @throws IOException when http request to database has errors
-   * @throws JSONException when parsing the object to JSON throw error
-   * @throws NoSuchIndexEntryException when there is no object with given ID in the search index
-   */
-  @Override
-  public void validateAnnotation(boolean right)
-      throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException {
-    annotationService.validateAnnotation(currentAnnotation.getId(), right);
+  private Color stringToColor(String stringColor) {
+    if (Color.TEXT_REGION.toString().equals(stringColor)) {
+      return Color.TEXT_REGION;
+    } else if (Color.IMAGE_REGION.toString().equals(stringColor)) {
+      return Color.IMAGE_REGION;
+    } else if (Color.PAGE_REGION.toString().equals(stringColor)) {
+      return Color.PAGE_REGION;
+    } else if (Color.LINE_DRAWING_REGION.toString().equals(stringColor)) {
+      return Color.LINE_DRAWING_REGION;
+    } else if (Color.GRAPHIC_REGION.toString().equals(stringColor)) {
+      return Color.GRAPHIC_REGION;
+    } else if (Color.TABLE_REGION.toString().equals(stringColor)) {
+      return Color.TABLE_REGION;
+    } else if (Color.CHART_REGION.toString().equals(stringColor)) {
+      return Color.CHART_REGION;
+    } else if (Color.SEPARATOR_REGION.toString().equals(stringColor)) {
+      return Color.SEPARATOR_REGION;
+    } else if (Color.MATHS_REGION.toString().equals(stringColor)) {
+      return Color.MATHS_REGION;
+    } else if (Color.CHEM_REGION.toString().equals(stringColor)) {
+      return Color.CHEM_REGION;
+    } else if (Color.MUSIC_REGION.toString().equals(stringColor)) {
+      return Color.MUSIC_REGION;
+    } else if (Color.ADVERT_REGION.toString().equals(stringColor)) {
+      return Color.ADVERT_REGION;
+    } else if (Color.NOISE_REGION.toString().equals(stringColor)) {
+      return Color.NOISE_REGION;
+    } else if (Color.UNKNOWN_REGION.toString().equals(stringColor)) {
+      return Color.UNKNOWN_REGION;
+    } else if (Color.CUSTOM_REGION.toString().equals(stringColor)) {
+      return Color.CUSTOM_REGION;
+    } else {
+      return Color.DEFAULT;
+    }
   }
 
-  /**
-   * Gets the Image or the Text, that should be displayed.
-   *
-   * @param pageId Identifier of the page that should be displayed
-   * @return Image or Text of the page
-   * @throws NoSuchIndexEntryException when there is no object with given ID in the search index
-   */
-  @Override
-  public String getPageResource(String pageId, String pageNumber, ResourceType resourceType)
-      throws NoSuchIndexEntryException {
-    return searchIndexService.getPageById(pageId).getResourceUrl();
-  }
-
-  /**
-   * Gets the currently displayed Annotation.
-   *
-   * @return currentAnnotation
-   */
-  @Override
-  public Annotation getCurrentAnnotation() {
-    return currentAnnotation;
-  }
-
-  /**
-   * Gets the currently displayed Page.
-   *
-   * @return Page displayed
-   */
-  @Override
-  public Page getCurrentPage() {
-    return currentPage;
-  }
-
-  /**
-   * Gets the current annotations.
-   *
-   * @return list of annotations
-   */
-  @Override
-  public List<Annotation> getAnnotations() {
-    return annotationsOnPage;
-  }
-
-  /**
-   * Gets all pages of a manuscript.
-   *
-   * @return All Pages of a manuscript
-   */
-  @Override
-  public List<Page> getAllPages() {
-    return pagesInSlider;
-  }
-
-  /**
-   * Getter for the text cards-List.
-   *
-   * @return List of the text cards
-   */
-  @Override
-  public List<TextCard> getTextCards() {
-    return textCards;
-  }
-
-  /**
-   * Gets the current manuscript.
-   *
-   * @return current manuscript
-   */
-  @Override
-  public Manuscript getCurrentManuscript() {
-    return currentManuscript;
-  }
-
-  /**
-   * Updates the attributes of the model.
-   * @param model the holder for model attributes, used to pass attributes back to the view
-   */
-  @Override
-  public void updateModel(Model model) {
-    model.addAttribute("currentPage", getCurrentPage());
-    model.addAttribute("currentManuscript", getCurrentManuscript());
-    model.addAttribute("currentAnnotation", getCurrentAnnotation());
-    model.addAttribute("colors", Color.values());
-    model.addAttribute("user", assistanceService.getCurrentUser());
+  private Motivation stringToMotivation(String stringMotivation) {
+    /* See Motivation enum
+    if (Motivation.ASSESSING.toString().equals(stringMotivation)) {
+      return Motivation.ASSESSING;
+    } else */
+    if (Motivation.BOOKMARKING.toString().equals(stringMotivation)) {
+      return Motivation.BOOKMARKING;
+    } else if (Motivation.CLASSIFYING.toString().equals(stringMotivation)) {
+      return Motivation.CLASSIFYING;
+    } else if (Motivation.COMMENTING.toString().equals(stringMotivation)) {
+      return Motivation.COMMENTING;
+    } else if (Motivation.DESCRIBING.toString().equals(stringMotivation)) {
+      return Motivation.DESCRIBING;
+    } else if (Motivation.EDITING.toString().equals(stringMotivation)) {
+      return Motivation.EDITING;
+    } else if (Motivation.HIGHLIGHTING.toString().equals(stringMotivation)) {
+      return Motivation.HIGHLIGHTING;
+    } else if (Motivation.IDENTIFYING.toString().equals(stringMotivation)) {
+      return Motivation.IDENTIFYING;
+    } else if (Motivation.LINKING.toString().equals(stringMotivation)) {
+      return Motivation.LINKING;
+    } else if (Motivation.MODERATING.toString().equals(stringMotivation)) {
+      return Motivation.MODERATING;
+    } else if (Motivation.QUESTIONING.toString().equals(stringMotivation)) {
+      return Motivation.QUESTIONING;
+    } else if (Motivation.REPLYING.toString().equals(stringMotivation)) {
+      return Motivation.REPLYING;
+    } else if (Motivation.TAGGING.toString().equals(stringMotivation)) {
+      return Motivation.TAGGING;
+    }
+    throw new IllegalArgumentException("Purpose couldn't be parsed.");
   }
 }

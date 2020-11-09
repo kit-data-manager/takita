@@ -55,7 +55,7 @@ import org.springframework.stereotype.Service;
  * Class containing business logic for handling the search index.
  */
 @Service
-public class SearchIndexService implements ISearchIndexService {
+public class  SearchIndexService implements ISearchIndexService {
   
   private static final Logger logger = LoggerFactory.getLogger(SearchIndexService.class);
   public static final String INDEX_NAME = "search_index";

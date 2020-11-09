@@ -224,7 +224,7 @@ class SearchIndexServiceTest {
     body.setModified(Date.from(Instant.now()));
     body.setValue("value");
     body.setTitle("title");
-    body.setPurpose(Motivation.ASSESSING);
+    body.setPurpose(Motivation.DESCRIBING);
 
     Mockito.when(mockedAccessService.updateAnnotation(annotation, manuscriptList.get(0).getPages().get(0).getPageNumber()))
         .thenReturn(annotation);

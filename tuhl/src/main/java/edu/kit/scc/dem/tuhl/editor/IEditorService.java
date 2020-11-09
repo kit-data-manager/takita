@@ -4,6 +4,7 @@ import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
+import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import edu.kit.scc.dem.tuhl.model.page.Page;
 import edu.kit.scc.dem.tuhl.model.page.ResourceType;
@@ -21,174 +22,217 @@ import org.springframework.ui.Model;
 @Service
 public interface IEditorService {
   /**
-   * Initializes the editor view of the page with a specific page Id.
+   * Adds an annotation to the search index and the database.
    *
-   * @param pageId Id of the page that should be displayed
-   */
-  void init(String pageId);
-
-  /**
-   * Changes the displayed page.
-   *
-   * @param pageId Identifier of the page that should be displayed
-   */
-  void changePage(String pageId) throws NoSuchIndexEntryException;
-
-  /**
-   * Makes an Annotation visible or invisible on the page.
-   *
-   * @param annotationNumber internal number of the annotation
-   * @param visibility       true, if the annotation should be visible, false if not
-   */
-  void changeVisibility(int annotationNumber, Boolean visibility);
-
-  void selectAnnotation(String annotationId) throws NoSuchIndexEntryException;
-
-  /**
-   * adds an Annotation to the page, that is opened in the editor.
-   *
-   * @param svg   svg of the annotation
+   * @param pageId ID of the page on which the annotation is located
    * @param color color of the annotation
-   */
-  void addAnnotation(String svg, Color color, String motivation)
-      throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException;
-
-  /**
-   * Changes the color of the currently selected annotation.
-   *
-   * @param color new color of the annotation
-   */
-  void updateColor(Color color) throws InterruptedException, IOException,
-      JSONException, NoSuchIndexEntryException;
-
-  /**
-   * Changes the SVG-code of the currently selected annotation.
-   *
-   * @param svg modified SVG-code of the annotation
-   */
-  void updateSvg(String svg) throws InterruptedException, IOException,
-      JSONException, NoSuchIndexEntryException;
-
-  /**
-   * Changes the motivation of an annotation, that is set per default.
-   *
+   * @param svgCode svg code of the shape of the annotation
    * @param motivation motivation of the annotation
+   * @return the added annotation
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws NoSuchIndexEntryException when there is no such page in the index
+   * @throws IOException when the http request to database was faulty
    */
-  void updateMotivation(String motivation) throws InterruptedException,
-      IOException, JSONException, NoSuchIndexEntryException;
+  Annotation addAnnotation(String pageId, String color, String svgCode, String motivation)
+      throws InterruptedException, NoSuchIndexEntryException, IOException;
 
   /**
-   * Deletes the currently selected annotation.
-   */
-  void deleteAnnotation() throws InterruptedException, IOException,
-      JSONException, NoSuchIndexEntryException;
-
-  /**
-   * Adds a text card to the currently selected annotation.
+   * Gets an annotation from the searchIndexService by its ID.
    *
-   * @param text    text of the text card
-   * @param purpose purpose of the text card
-   * @param title title of the text card
+   * @param annotationId ID of annotation
+   * @return requested annotation
+   * @throws NoSuchIndexEntryException when there is no annotation like this in the index
    */
-  void addTextCard(String text, String purpose, String title)
-      throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException;
+  Annotation getAnnotation(String annotationId) throws NoSuchIndexEntryException;
 
   /**
-   * updates the text of the currently selected text card.
+   * Updates an annotation in the search index and the database.
    *
-   * @param text new text of the text card
+   * @param annotationId ID of the annotation to update
+   * @param color new color of the annotation
+   * @param svgCode new svg code of the annotation
+   * @param motivation new motivation of the annotation
+   * @return updated annotation
+   * @throws NoSuchIndexEntryException when there is no such annotation in the index
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
    */
-  void updateTextCard(String text) throws InterruptedException, IOException,
-      JSONException, NoSuchIndexEntryException;
+  Annotation updateAnnotation(String annotationId, String color, String svgCode, String motivation)
+      throws NoSuchIndexEntryException, InterruptedException, IOException;
 
   /**
-   * updates the purpose of the currently selected text card.
+   * Validates an annotation in the search index and the database.
    *
+   * @param annotationId ID of the annotation to be validated
+   * @return validated annotation
+   * @throws NoSuchIndexEntryException when there is no such annotation in the index
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
+   */
+  Annotation validateAnnotation(String annotationId)
+      throws NoSuchIndexEntryException, InterruptedException, IOException;
+
+  /**
+   * Deletes an annotation from the search index and the database.
+   *
+   * @param annotationId of the annotation to delete
+   * @return deleted annotation
+   * @throws NoSuchIndexEntryException when there is no such annotation in the index
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
+   */
+  Annotation deleteAnnotation(String annotationId)
+      throws NoSuchIndexEntryException, InterruptedException, IOException;
+
+  /**
+   * Gets a text card from the search index.
+   *
+   * @param id of the text card
+   * @return text card in question
+   * @throws NoSuchIndexEntryException when the annotation containing the text card could not be
+   * found in the index
+   */
+  TextCard getTextCard(String id) throws NoSuchIndexEntryException;
+
+  /**
+   * Gets a tag from the search index.
+   *
+   * @param id of the tag
+   * @return tag in question
+   * @throws NoSuchIndexEntryException when the annotation containing the tag could not be found
+   * in the index
+   */
+  Tag getTag(String id) throws NoSuchIndexEntryException;
+
+  /**
+   * Adds a text card to an annotation in the search index and the database.
+   *
+   * @param annotationId of the annotation to which the text card belongs
+   * @param title of the text card
+   * @param value of the text card
+   * @param purpose of the text card
+   * @return added text card
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws NoSuchIndexEntryException when there is no such annotation in the index
+   * @throws IOException when the http request to database was faulty
+   */
+  TextCard addTextCard(String annotationId, String title, String value, String purpose)
+      throws InterruptedException, NoSuchIndexEntryException, IOException;
+
+  /**
+   * Adds a tag to an annotation in the search index and the database.
+   *
+   * @param annotationId of the annotation to which the tag belongs
+   * @param title of the tag
+   * @param value of the tag
+   * @return added tag
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws NoSuchIndexEntryException when there is no such annotation in the index
+   * @throws IOException when the http request to database was faulty
+   */
+  Tag addTag(String annotationId, String title, String value)
+      throws InterruptedException, NoSuchIndexEntryException, IOException;
+
+  /**
+   * Updates a text card in the search index and the database.
+   *
+   * @param textCardId of the text card which should be updated
+   * @param title new title of the text card
+   * @param value new value of the text card
    * @param purpose new purpose of the text card
+   * @return updated text card
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws NoSuchIndexEntryException when there is no such text card in the index
+   * @throws IOException when the http request to database was faulty
    */
-  void updatePurpose(String purpose) throws InterruptedException, IOException,
-      JSONException, NoSuchIndexEntryException;
+  TextCard updateTextCard(String textCardId, String title, String value, String purpose)
+      throws InterruptedException, NoSuchIndexEntryException, IOException;
 
   /**
-   * displays all metadata of the current page.
-   */
-  void displayMetadata();
-
-  /**
-   * displays a JSON of the metadata of the current page.
-   * @return
-   */
-  String displayRawMetadata() throws InterruptedException, JSONException, IOException;
-
-  JSONObject getPageJson() throws InterruptedException, IOException, JSONException;
-
-  /**
-   * adds a tag to the currently selected annotation.
+   * Updates a tag in the search index and the database.
    *
-   * @param tag tag that should be added to an annotation
+   * @param tagId of the tag which should be updated
+   * @param title new title of the tag
+   * @param value new value of the tag
+   * @return updated tag
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws NoSuchIndexEntryException when there is no such tag in the index
+   * @throws IOException when the http request to database was faulty
    */
-  void addTag(String tag) throws InterruptedException, IOException, JSONException,
-      NoSuchIndexEntryException;
+  Tag updateTag(String tagId, String title, String value)
+      throws NoSuchIndexEntryException, InterruptedException, IOException;
 
   /**
-   * deletes a tag from an annotation.
+   * Deletes a text card in the search index and the database.
    *
-   * @param tag tag that should be deleted
+   * @param textCardId of the text card which should be deleted
+   * @return deleted text card
+   * @throws NoSuchIndexEntryException when there is no such text card in the index
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
    */
-  void deleteTag(String tag) throws InterruptedException, IOException, JSONException,
-      NoSuchIndexEntryException;
+  TextCard deleteTextCard(String textCardId)
+      throws NoSuchIndexEntryException, InterruptedException, IOException;
 
   /**
-   * gets all tags that are possible for an annotation.
+   * Deletes a tag in the search index and the database.
    *
-   * @return all possible tags
+   * @param tagId of the tag which should be deleted
+   * @return deleted tag
+   * @throws NoSuchIndexEntryException when there is no such tag in the index
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
    */
-  String[] getAllTags() throws NoSuchIndexEntryException;
-
+  Tag deleteTag(String tagId)
+      throws InterruptedException, NoSuchIndexEntryException, IOException;
 
   /**
-   * Returns all Pages, that the Manuscript has.
-   * @return pages of the Manuscript
-   */
-  List<Page> getAllPages();
-
-  /**
-   * Changes the current layer to Algorithm-layer, where the user can validate annotation made
-   * by an algorithm or to user layer, where an user can make or edit its own annotations.
+   * Gets the raw JSON of a manuscript.
    *
-   * @param algorithmLayer true if it should change to algorithm-layer, false if it should
-   *                       change to userLayer
+   * @param manuscriptId of the manuscript to which the raw JSON should be gotten
+   * @return manuscript as JSONObject
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
    */
-  void algorithmLayer(boolean algorithmLayer);
+  JSONObject getManuscriptJson(String manuscriptId)
+      throws InterruptedException, IOException;
 
   /**
-   * Validates an Annotation made by an algorithm.
+   * Gets the raw XML of a manuscript.
    *
-   * @param right true, if the annotation is alright, false if the annotation is wrong
+   * @param manuscriptId of the manuscript to which the raw XML should be gotten
+   * @return manuscript as XML as String
+   * @throws IOException when the http request to database was faulty
+   * @throws InterruptedException when the http request to database is interrupted
    */
-  void validateAnnotation(boolean right) throws InterruptedException,
-      IOException, JSONException, NoSuchIndexEntryException;
-
-  String getPageResource(String pageId, String pageNumber, ResourceType resourceType)
-      throws NoSuchIndexEntryException;
+  String getManuscriptXml(String manuscriptId)
+      throws IOException, InterruptedException;
 
   /**
-   * Gets the currently displaied Annotation.
-   * @return currentAnnotation
+   * Gets the raw JSON of a page.
+   *
+   * @param pageId of the page to which the raw JSON should be gotten
+   * @return page as JSONObject
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
    */
-  Annotation getCurrentAnnotation();
+  JSONObject getPageJson(String pageId)
+      throws InterruptedException, IOException;
 
   /**
-   * Gets the currently displaied Page.
-   * @return Page displaied
+   * Gets the raw JSON of an annotation.
+   *
+   * @param annotationId of the annotation to which the raw JSON should be gotten
+   * @return annotation as JSONObject
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
    */
-  Page getCurrentPage();
+  JSONObject getAnnotationJson(String annotationId)
+      throws InterruptedException, IOException;
 
-  List<Annotation> getAnnotations();
+  void selectPage(String pageId) throws NoSuchIndexEntryException;
 
-  List<TextCard> getTextCards();
-  
-  Manuscript getCurrentManuscript();
-  
-  void updateModel(Model model);
+  void selectAnnotation(String annoId) throws NoSuchIndexEntryException;
+
+  void selectBody(String bodyId);
 }
