@@ -234,5 +234,5 @@ public interface IEditorService {
 
   void selectAnnotation(String annoId) throws NoSuchIndexEntryException;
 
-  void selectBody(String bodyId);
+  void selectBody(String bodyId) throws NoSuchIndexEntryException;
 }

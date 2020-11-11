@@ -505,8 +505,10 @@ public class EditorService implements IEditorService {
   }
 
   @Override
-  public void selectBody(String bodyId) {
-    currentBody = sea
+  public void selectBody(String bodyId) throws NoSuchIndexEntryException {
+    if (currentAnnotation != null) {
+      currentBody = searchIndexService.getBodyFromAnnotationAndId(currentAnnotation, bodyId);
+    }
   }
 
   private Color stringToColor(String stringColor) {

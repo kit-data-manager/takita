@@ -245,5 +245,15 @@ public interface ISearchIndexService {
    * @param updateIndexHour the hour of day at which the update is performed
    */
   void startIndexUpdateCycle(int updateIndexDayInterval, int updateIndexHour);
+
+  /**
+   * Gets a body by going through given annotations bodies.
+   *
+   * @param annotation annotation to go through
+   * @param bodyId ID of searched for body
+   * @return body
+   * @throws NoSuchIndexEntryException when there is no body with this ID in the annotation
+   */
+  Body getBodyFromAnnotationAndId(Annotation annotation, String bodyId) throws NoSuchIndexEntryException;
 }
 
