@@ -511,6 +511,7 @@ public class EditorService implements IEditorService {
     }
   }
 
+  // TODO: auslagern in enum
   private Color stringToColor(String stringColor) {
     if (Color.TEXT_REGION.toString().equals(stringColor)) {
       return Color.TEXT_REGION;
