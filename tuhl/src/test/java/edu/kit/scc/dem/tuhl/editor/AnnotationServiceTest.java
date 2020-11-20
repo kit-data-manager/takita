@@ -11,24 +11,5 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 public class AnnotationServiceTest {
 
-   @Autowired
-  AnnotationService annotationService;
 
-
-
-  @BeforeEach
-  void init(){
-    MockitoAnnotations.initMocks(this);
-    //annotationService = new AnnotationService(accessService);
-  }
-
-  @Test
-  void createAnnotationFail (){
-    //assertThrows (NullPointerException.class, () -> annotationService.createAnnotation(null, null, null, null));
-  }
-
-  @Test
-  void createAnnotationTest (){
-    //annotationService.createAnnotation(Color.DEFAULT, );
-  }
 }
