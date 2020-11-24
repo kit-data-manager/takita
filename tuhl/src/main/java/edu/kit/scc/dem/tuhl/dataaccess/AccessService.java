@@ -42,6 +42,7 @@ public class AccessService implements IAccessService {
   private final IRepositoryAccessService repositoryAccessService;
   private ISearchIndexService searchIndexService;
   private AnnotationConverter annotationConverter;
+  private ManuscriptConverter manuscriptConverter;
 
   @Value("${repository.baseUrl}")
   private String baseUrl;
@@ -59,10 +60,12 @@ public class AccessService implements IAccessService {
   @Autowired
   public AccessService(IAnnotationStoreAccessService annotationStoreAccessService,
                        IRepositoryAccessService repositoryAccessService,
-                       AnnotationConverter annotationConverter) {
+                       AnnotationConverter annotationConverter,
+                       ManuscriptConverter manuscriptConverter) {
     this.annotationStoreAccessService = annotationStoreAccessService;
     this.repositoryAccessService = repositoryAccessService;
     this.annotationConverter = annotationConverter;
+    this.manuscriptConverter = manuscriptConverter;
   }
 
   /**
@@ -74,140 +77,7 @@ public class AccessService implements IAccessService {
     this.searchIndexService = searchIndexService;
   }
 
-  private Manuscript buildManuscriptFromJson(
-      JSONObject manuscriptJson, Map<String, List<Annotation>> sortedAnnotations)
-      throws JSONException, IOException, InterruptedException {
 
-    final String id = manuscriptJson.getString(RepositoryStrings.ID.getName());
-    //Sets attributes if they are specified in the json.
-    String publisher = null;
-    if (manuscriptJson.has(RepositoryStrings.PUBLISHER.getName())) {
-      publisher = manuscriptJson.getString(RepositoryStrings.PUBLISHER.getName());
-    }
-    int publicationYear = -1;
-    if (manuscriptJson.has(RepositoryStrings.PUBLICATION_YEAR.getName())) {
-      publicationYear = Integer.parseInt(manuscriptJson.getString(
-          RepositoryStrings.PUBLICATION_YEAR.getName()));
-    }
-    String title = null;
-    if (manuscriptJson.has(RepositoryStrings.TITLES.getName())) {
-      title = manuscriptJson.getJSONArray(RepositoryStrings.TITLES.getName()).getJSONObject(0)
-          .getString(RepositoryStrings.VALUE.getName());
-    }
-
-    Date created = extractDateFromJsonManuscript(manuscriptJson,
-        RepositoryStrings.CREATED.getName());
-    Date modified;
-    if (extractDateFromJsonManuscript(manuscriptJson,
-        RepositoryStrings.MODIFIED.getName()) != null) {
-      modified = extractDateFromJsonManuscript(manuscriptJson,
-          RepositoryStrings.MODIFIED.getName());
-    } else {
-      modified = created;
-    }
-
-    Manuscript manuscript = new Manuscript(id, created, title, publisher, publicationYear);
-    manuscript.setLastModified(modified);
-    
-    //Retrieves pages from the page assignment.
-    // Adds the pages after their creation to the manuscript.
-    JSONArray pageAssignments = repositoryAccessService
-        .getPageAssignmentForManuscriptId(manuscript.getId());
-    List<Page> pages = new ArrayList<>();
-    for (int i = 0; i < pageAssignments.length(); i++) {
-      JSONObject assignment = pageAssignments.getJSONObject(i);
-      JSONObject pageJson = repositoryAccessService.getPageById(assignment.getString(
-          RepositoryStrings.RESOURCE_ID.getName()));
-      String pageNumber = assignment.getString(RepositoryStrings.PAGE_ID.getName());
-      Page page;
-      if (sortedAnnotations == null) {
-        page = buildPageFromJson(pageJson, pageNumber, null);
-      } else {
-        page = buildPageFromJson(pageJson, pageNumber, sortedAnnotations);
-      }
-      page.setManuscriptId(manuscript.getId());
-      pages.add(page);
-    }
-
-    manuscript.setPages(pages);
-    return manuscript;
-  }
-
-  private Date extractDateFromJsonManuscript(JSONObject json, String type) {
-    Date date = null;
-    try {
-      //Extracts the dates array from the JSON
-      if (json.has(RepositoryStrings.DATES.getName())) {
-        JSONArray dates = json.getJSONArray(RepositoryStrings.DATES.getName());
-        for (int i = 0; i < dates.length(); i++) {
-          JSONObject dateJson = dates.getJSONObject(i);
-          //Checks for each date if it has the required type & parse the right date to a Date object
-          if (dateJson.has(RepositoryStrings.TYPE.getName())
-              && dateJson.getString(RepositoryStrings.TYPE.getName()).equals(type)
-              && dateJson.has(RepositoryStrings.VALUE.getName())) {
-            String dateString = dateJson.getString((RepositoryStrings.VALUE.getName()));
-            if (dateString.contains(".")) {
-              date = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_REPO.getDateFormat()
-                  .parse(dateString);
-            } else {
-              date = TimeStampFormats.TIMESTAMP_FORMAT_REPO.getDateFormat().parse(dateString);
-            }
-            break;
-          }
-        }
-      }
-    } catch (ParseException | JSONException e) {
-      e.printStackTrace();
-    }
-    return date;
-  }
-
-  /**
-   * Builds the page with the accompanying annotations from sortedAnnotations.
-   * If sortedAnnotations is null the annotations will be obtained by getAnnotationsByPage().
-   */
-  private Page buildPageFromJson(JSONObject pageJson, String pageNumber,
-                                 Map<String, List<Annotation>> sortedAnnotations)
-      throws JSONException, IOException, InterruptedException {
-    String id = pageJson.getString(RepositoryStrings.ID.getName());
-
-    Date created = extractDateFromJsonManuscript(pageJson, RepositoryStrings.CREATED.getName());
-    Date modified = extractDateFromJsonManuscript(pageJson, RepositoryStrings.MODIFIED.getName());
-
-    //Create the Page object depending on the resource type.
-    Page page;
-    String resourceTypeString = pageJson.getJSONObject(RepositoryStrings.RESOURCE_TYPE.getName())
-        .getString(RepositoryStrings.TYPE_GENERAL.getName());
-    
-    if (resourceTypeString.equals(RepositoryStrings.IMAGE.getName())) {
-      // URL to image of Page
-      String resourceUrl = baseUrl + staticPath + id
-          + RepositoryAccessService.DATA_PATH + pageNumber + RepositoryAccessService.MASTER_JPG;
-      String thumbResourceUrl = baseUrl + staticPath + id + RepositoryAccessService.DATA_PATH
-          + pageNumber + RepositoryAccessService.THUMB_JPG;
-
-      ImagePage imagePage = new ImagePage(id, pageNumber, created, resourceUrl, thumbResourceUrl);
-      if (sortedAnnotations == null) {
-        imagePage.setAnnotations(getAnnotationsByPage(imagePage));
-      } else {
-        imagePage.setAnnotations(sortedAnnotations.get(imagePage.getId()));
-      }
-      
-      page = imagePage;
-    } else if (resourceTypeString.equals(RepositoryStrings.TEXT.getName())) {
-
-      // Here comes the URL to the resource of the page
-      String resourceUrl = "";
-
-      page = new TextPage(id, pageNumber, created, resourceUrl);
-    } else {
-      throw new IllegalStateException("Unexpected value: " + resourceTypeString);
-    }
-
-    page.setLastModified(modified);
-
-    return page;
-  }
   
   /**
    * Gets all manuscripts from repository and fuses them with all annotations
@@ -227,7 +97,7 @@ public class AccessService implements IAccessService {
 
     logger.info("Getting all manuscripts.");
     for (JSONObject manuscriptJson : repositoryAccessService.getAllManuscripts(-1)) {
-      manuscripts.add(buildManuscriptFromJson(manuscriptJson, sortedAnnotations));
+      manuscripts.add(manuscriptConverter.buildManuscriptFromJson(manuscriptJson, sortedAnnotations));
     }
     return manuscripts;
   }
@@ -270,7 +140,7 @@ public class AccessService implements IAccessService {
     for (JSONObject manuscriptJson : repositoryAccessService
         .getManuscriptsModifiedAfter(timestamp)) {
 
-      Manuscript newManuscript = buildManuscriptFromJson(manuscriptJson, null);
+      Manuscript newManuscript = manuscriptConverter.buildManuscriptFromJson(manuscriptJson, null);
       if (!manuscripts.contains(newManuscript)) {
         manuscripts.add(newManuscript);
       }
@@ -294,7 +164,7 @@ public class AccessService implements IAccessService {
 
     List<Manuscript> reducedManuscripts = new ArrayList<>();
     for (JSONObject manuscript : manuscriptsJson) {
-      reducedManuscripts.add(buildManuscriptFromJson(manuscript, null));
+      reducedManuscripts.add(manuscriptConverter.buildManuscriptFromJson(manuscript, null));
     }
 
     return reducedManuscripts;

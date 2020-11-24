@@ -18,6 +18,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
             integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"
             th:src="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js}"></script>
+    <script src="js/editor.js"></script>
 </head>
 <body class="container-fluid p-0">
 <div id="editor" th:fragment="editor">
@@ -25,6 +26,7 @@
         <div class="col-auto align-self-center">
             <button class="btn btn-primary" onclick="goHome()" th:text="#{buttons.back}"> </button>
         </div>
+        <!-- table for metadata -->
         <div class="col-auto">
             <div class="row">
                 <div class="col-auto">
@@ -78,6 +80,7 @@
              th:insert="header.html :: header"></div>
     </div>
 
+    <!-- manuscript page -->
     <div class="row mx-auto">
         <div class="col-7 p-0 container-fluid px-5 pt-3">
             <div class="row scrollable mx-5">
@@ -87,8 +90,11 @@
                        th:if="${currentPage.resourceType != (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).IMAGE)}"
                        th:text="#{info.no_text_support}">
                 </label>
+                <!-- canvas for drawing -->
+                <canvas class="annotationCanvas"></canvas>
             </div>
         </div>
+        <!-- bodies and annotations -->
         <div class="col-5 p-0 container-fluid scrollable px-5 pt-3" style="height: 100vh">
             <div th:if="${currentAnnotation != null}">
                 <div th:each="tag : ${currentAnnotation.tags}">
@@ -185,31 +191,6 @@
     </div>
 </div>
 </body>
-<script>
-    function selectAnnotation(annoId) {
-        $.ajax({
-            type: 'POST',
-            url: '/editor/select',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            dataType: 'text',
-            data: annoId,
-            success: function (responseData) {
-                $('#editor').replaceWith(responseData);
-            }
-        });
-    }
-
-    function goHome() {
-        location.href="/"
-    }
-
-    function page(pageId) {
-        location.href="/editor/" + pageId;
-    }
-</script>
 
 </html>
 <style>
