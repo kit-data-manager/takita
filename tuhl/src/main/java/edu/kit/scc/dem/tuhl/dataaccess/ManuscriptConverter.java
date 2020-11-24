@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class ManuscriptConverter {
+class ManuscriptConverter {
 
   private IRepositoryAccessService repositoryAccessService;
   private IAnnotationStoreAccessService annotationStoreAccessService;
@@ -29,11 +29,10 @@ public class ManuscriptConverter {
   private String staticPath;
 
   public ManuscriptConverter(IRepositoryAccessService repositoryAccessService,
-                             IAnnotationStoreAccessService annotationStoreAccessService,
-                             AnnotationConverter annotationConverter) {
+                             IAnnotationStoreAccessService annotationStoreAccessService) {
     this.repositoryAccessService = repositoryAccessService;
     this.annotationStoreAccessService = annotationStoreAccessService;
-    this.annotationConverter = annotationConverter;
+    this.annotationConverter = new AnnotationConverter(annotationStoreAccessService);
   }
 
   public Manuscript buildManuscriptFromJson(

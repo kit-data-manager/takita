@@ -20,7 +20,7 @@ import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class AnnotationConverter {
+class AnnotationConverter {
 
   private IAnnotationStoreAccessService annotationStoreAccessService;
 

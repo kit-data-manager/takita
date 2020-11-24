@@ -3,15 +3,9 @@ package edu.kit.scc.dem.tuhl.dataaccess;
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
-import edu.kit.scc.dem.tuhl.model.Color;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
-import edu.kit.scc.dem.tuhl.model.Motivation;
-import edu.kit.scc.dem.tuhl.model.body.Body;
-import edu.kit.scc.dem.tuhl.model.body.Tag;
-import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import edu.kit.scc.dem.tuhl.model.page.ImagePage;
 import edu.kit.scc.dem.tuhl.model.page.Page;
-import edu.kit.scc.dem.tuhl.model.page.TextPage;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -19,14 +13,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -44,10 +34,6 @@ public class AccessService implements IAccessService {
   private AnnotationConverter annotationConverter;
   private ManuscriptConverter manuscriptConverter;
 
-  @Value("${repository.baseUrl}")
-  private String baseUrl;
-  @Value("${repository.staticPath}")
-  private String staticPath;
   @Value(("${devIndex.size}"))
   private int devIndexSize;
 
@@ -59,13 +45,11 @@ public class AccessService implements IAccessService {
    */
   @Autowired
   public AccessService(IAnnotationStoreAccessService annotationStoreAccessService,
-                       IRepositoryAccessService repositoryAccessService,
-                       AnnotationConverter annotationConverter,
-                       ManuscriptConverter manuscriptConverter) {
+                       IRepositoryAccessService repositoryAccessService) {
     this.annotationStoreAccessService = annotationStoreAccessService;
     this.repositoryAccessService = repositoryAccessService;
-    this.annotationConverter = annotationConverter;
-    this.manuscriptConverter = manuscriptConverter;
+    this.annotationConverter = new AnnotationConverter(annotationStoreAccessService);
+    this.manuscriptConverter = new ManuscriptConverter(repositoryAccessService, annotationStoreAccessService);
   }
 
   /**
@@ -76,8 +60,6 @@ public class AccessService implements IAccessService {
   public void setSearchIndexService(ISearchIndexService searchIndexService) {
     this.searchIndexService = searchIndexService;
   }
-
-
   
   /**
    * Gets all manuscripts from repository and fuses them with all annotations
