@@ -48,7 +48,7 @@ public class AccessService implements IAccessService {
                        IRepositoryAccessService repositoryAccessService) {
     this.annotationStoreAccessService = annotationStoreAccessService;
     this.repositoryAccessService = repositoryAccessService;
-    this.annotationConverter = new AnnotationConverter(annotationStoreAccessService);
+    this.annotationConverter = new AnnotationConverter(annotationStoreAccessService, repositoryAccessService);
     this.manuscriptConverter = new ManuscriptConverter(repositoryAccessService, annotationStoreAccessService);
   }
 

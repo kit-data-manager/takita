@@ -23,22 +23,21 @@ import java.util.regex.Pattern;
 class AnnotationConverter {
 
   private IAnnotationStoreAccessService annotationStoreAccessService;
+  private IRepositoryAccessService repositoryAccessService;
 
   private static final String ALGORITHM_CREATOR_PREFIX = "urn:uuid";
   private static final String SOURCE_PATTERN_STRING = "/dataresources/(.*?)/data/";
-
-  @Value("${repository.baseUrl}")
-  private String baseUrl;
-  @Value("${repository.staticPath}")
-  private String staticPath;
 
   /**
    * Constructor, initializes instances of used interfaces.
    *
    * @param annotationStoreAccessService instance of IAnnotationStoreAccessService
+   * @param repositoryAccessService instance of IRepositoryAccessService
    */
-  public AnnotationConverter(IAnnotationStoreAccessService annotationStoreAccessService) {
+  public AnnotationConverter(IAnnotationStoreAccessService annotationStoreAccessService,
+                             IRepositoryAccessService repositoryAccessService) {
     this.annotationStoreAccessService = annotationStoreAccessService;
+    this.repositoryAccessService = repositoryAccessService;
   }
 
   /**
@@ -405,7 +404,8 @@ class AnnotationConverter {
     if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
       target.put(AnnotationStoreStrings.TYPE.getName(),
           AnnotationStoreStrings.SPECIFIC_RESOURCE.getName());
-      target.put(AnnotationStoreStrings.SOURCE.getName(), baseUrl + staticPath
+      target.put(AnnotationStoreStrings.SOURCE.getName(), repositoryAccessService.getBaseUrl()
+          + repositoryAccessService.getStaticPath()
           + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
           + RepositoryAccessService.MASTER_JPG);
     }

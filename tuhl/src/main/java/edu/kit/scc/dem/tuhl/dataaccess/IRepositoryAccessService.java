@@ -85,4 +85,18 @@ public interface IRepositoryAccessService {
    * @throws InterruptedException if the get request is interrupted
    */
   String getXmlByManuscriptId(String manuscriptId) throws IOException, InterruptedException;
+
+  /**
+   * Gets base url for manuscript repository.
+   *
+   * @return base url String
+   */
+  String getBaseUrl();
+
+  /**
+   * Gets static path for manuscript store.
+   *
+   * @return static path String
+   */
+  String getStaticPath();
 }

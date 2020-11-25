@@ -234,4 +234,22 @@ public class RepositoryAccessService implements IRepositoryAccessService {
     return httpRequestHelper.get(baseUrl + staticPath + manuscriptId + DATA_PATH
         + MANUSCRIPT_METADATA_FILE).body();
   }
+
+  /**
+   * Gets base url for manuscript repository.
+   *
+   * @return base url String
+   */
+  public String getBaseUrl() {
+    return baseUrl;
+  }
+
+  /**
+   * Gets static path for manuscript store.
+   *
+   * @return static path String
+   */
+  public String getStaticPath() {
+    return staticPath;
+  }
 }

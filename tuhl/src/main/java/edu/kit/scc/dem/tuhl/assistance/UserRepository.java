@@ -7,6 +7,6 @@ import org.springframework.data.repository.CrudRepository;
  */
 public interface UserRepository extends CrudRepository<User, String> {
 //here you can create your own Queries, not necessary for us because the Queries
-// we need already exist through Spring data Jpa
+// we need already exist through Spring data JPA
 
 }

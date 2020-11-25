@@ -21,7 +21,7 @@ import org.springframework.web.context.annotation.SessionScope;
 @Service
 public class AssistanceService implements IAssistanceService {
   
-  private final UserRepository repo;
+  private final UserRepository userRepository;
   private User currentUser;
   private final IFilterService filterService;
   private final IMainPageService mainPageService;
@@ -39,7 +39,7 @@ public class AssistanceService implements IAssistanceService {
   @Autowired
   public AssistanceService(UserRepository repo, IFilterService filterService,
                            IMainPageService mainPageService) {
-    this.repo = repo;
+    this.userRepository = repo;
     this.filterService = filterService;
     this.mainPageService = mainPageService;
     this.currentUser = new User("default");
@@ -54,7 +54,7 @@ public class AssistanceService implements IAssistanceService {
    */
   @Override
   public User getUserByPseudonym(String pseudonym) {
-    Optional<User> user = repo.findById(pseudonym);
+    Optional<User> user = userRepository.findById(pseudonym);
     return user.orElseGet(() -> createNewUser(pseudonym));
   }
   
@@ -92,11 +92,11 @@ public class AssistanceService implements IAssistanceService {
   }
   
   /**
-   * toggles checkThumbs Setting and saves current table config if set to true.
+   * Toggles checkThumbs Setting and saves current table config if set to true.
    */
   @Override
   public void toggleCheckThumbs() {
-    currentUser.setCheckThumbs(!currentUser.isCheckThumbs());
+    currentUser.setCheckThumbNails(!currentUser.isCheckThumbNails());
     updateUser();
   }
   
@@ -105,14 +105,14 @@ public class AssistanceService implements IAssistanceService {
    */
   @Override
   public void updateUser() {
-    repo.save(currentUser);
+    userRepository.save(currentUser);
   }
   
   /**
    * Saves current Table config in current User and updates Model.
    *
    * @param columns table config
-   * @param model   the holder for model attributes, used to pass attributes back to the view
+   * @param model the holder for model attributes, used to pass attributes back to the view
    */
   public void setTableConfig(String columns, Model model) {
     if (!currentUser.getName().equals("default")) {
@@ -123,10 +123,10 @@ public class AssistanceService implements IAssistanceService {
   }
   
   /**
-   * Set number of Results shown on one Tableview Page for current User.
+   * Set number of Results shown on one Tableview Page for current user.
    *
    * @param pageSize selected number of Results
-   * @param model    the holder for model attributes, used to pass attributes back to the view
+   * @param model the holder for model attributes, used to pass attributes back to the view
    */
   public void setTablePage(int pageSize, Model model) {
     currentUser.setPageSize(pageSize);
@@ -136,9 +136,9 @@ public class AssistanceService implements IAssistanceService {
   
   
   /**
-   * Set sort that is selected for current User.
+   * Set sort that is selected for current user.
    *
-   * @param sort  selected Sort in JSON format
+   * @param sort selected Sort in JSON format
    * @param model the holder for model attributes, used to pass attributes back to the view
    */
   public void setTableSort(String sort, Model model) {
@@ -158,7 +158,7 @@ public class AssistanceService implements IAssistanceService {
   
   private User createNewUser(String pseudonym) {
     User user = new User(pseudonym);
-    repo.save(user);
+    userRepository.save(user);
     return user;
   }
   
@@ -169,7 +169,7 @@ public class AssistanceService implements IAssistanceService {
    * @param model the holder for model attributes, used to pass attributes back to the view
    */
   public void setLanguage(String lang, Model model) {
-    currentUser.setLang(lang);
+    currentUser.setLanguage(lang);
     updateUser();
     mainPageService.update(model);
   }
@@ -180,7 +180,7 @@ public class AssistanceService implements IAssistanceService {
    * @return language
    */
   public String getLang() {
-    return currentUser.getLang();
+    return currentUser.getLanguage();
   }
 
 

@@ -24,14 +24,11 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   
   private static final Logger logger = LoggerFactory.getLogger(AnnotationStoreAccessService.class);
   private final HttpRequestHelper httpRequestHelper;
+  private IRepositoryAccessService repositoryAccessService;
 
   @Value("${annotationStore.url}")
   private String urlPrefix;
 
-  @Value("${repository.baseUrl}")
-  private String repositoryBaseUrl;
-  @Value("${repository.staticPath}")
-  private String repositoryStaticPath;
   @Value("${sparqlQuery.urlPrefix}")
   private String sparqlQueryUrlPrefix;
 
@@ -67,10 +64,12 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
       + "xsd:boolean} } }", Charset.defaultCharset());
 
   /**
-   * Constructor for AnnotationStoreAccess, initializes HttpRequestHelper.
+   * Constructor for AnnotationStoreAccessService, initializes HttpRequestHelper and instance of used interface.
+   * @param repositoryAccessService Instance of IRepositoryAccessService
    */
-  public AnnotationStoreAccessService() {
+  public AnnotationStoreAccessService(IRepositoryAccessService repositoryAccessService) {
     httpRequestHelper = new HttpRequestHelper();
+    this.repositoryAccessService = repositoryAccessService;
   }
 
   /**
@@ -149,10 +148,10 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
       throws IOException, InterruptedException, JSONException {
     //Sparql query to get only the annotations modified after date
     HttpResponse<String> response = httpRequestHelper.get(sparqlQueryUrlPrefix
-        + SPARQL_QUERY_ANNOTATION_BY_PAGE_1 + URLEncoder.encode(repositoryBaseUrl
-        + repositoryStaticPath + pageId + RepositoryAccessService.DATA_PATH + pageNumber
-            + RepositoryAccessService.MASTER_JPG, Charset.defaultCharset())
-            + SPARQL_QUERY_ANNOTATION_BY_PAGE_2);
+        + SPARQL_QUERY_ANNOTATION_BY_PAGE_1 + URLEncoder.encode(repositoryAccessService.getBaseUrl()
+        + repositoryAccessService.getStaticPath()+ pageId + RepositoryAccessService.DATA_PATH + pageNumber
+        + RepositoryAccessService.MASTER_JPG, Charset.defaultCharset())
+        + SPARQL_QUERY_ANNOTATION_BY_PAGE_2);
 
     //Extracts annotations from response and adds them to the list
     return getAnnotationsFromXml(response.body());

@@ -31,10 +31,10 @@ public class User {
   @Id
   private String name;
 
-  private boolean checkThumbs;
+  private boolean checkThumbNails;
   private int currentPage;
   private int pageSize;
-  private String lang;
+  private String language;
   private String sort;
 
   @Lob
@@ -61,10 +61,10 @@ public class User {
    */
   public User(String name) {
     this.name = name;
-    this.checkThumbs = false;
+    this.checkThumbNails = false;
     this.currentPage = 1;
     this.pageSize = 10;
-    this.lang = "en";
+    this.language = "en";
     this.sort = "[{\"column\":\"id\",\"dir\":\"asc\"}]";
     clearRows();
     setFilter(new ArrayList<>());
@@ -132,12 +132,12 @@ public class User {
    */
   public List<Filter> getFilters() {
     Type rangeFilterType = TypeToken.getParameterized(ArrayList.class, RangeFilter.class).getType();
-    List<Filter> rangeFilterList = new Gson().fromJson(this.rangeFilter, rangeFilterType);
+    List<Filter> rangeFilters = new Gson().fromJson(this.rangeFilter, rangeFilterType);
     Type matchFilterType = TypeToken.getParameterized(ArrayList.class, MatchFilter.class).getType();
-    List<MatchFilter> matchFilterList = new Gson().fromJson(this.matchFilter, matchFilterType);
-    List<Filter> merged = new ArrayList<>(rangeFilterList);
-    merged.addAll(matchFilterList);
-    return merged;
+    List<MatchFilter> matchFilters = new Gson().fromJson(this.matchFilter, matchFilterType);
+    List<Filter> mergedFilters = new ArrayList<>(rangeFilters);
+    mergedFilters.addAll(matchFilters);
+    return mergedFilters;
   }
 
   /**
@@ -159,17 +159,17 @@ public class User {
    *
    * @return if checkThumb is true
    */
-  public boolean isCheckThumbs() {
-    return checkThumbs;
+  public boolean isCheckThumbNails() {
+    return checkThumbNails;
   }
 
   /**
    * Sets checkThumb boolean.
    *
-   * @param checkThumbs bool to be set
+   * @param checkThumbNails bool to be set
    */
-  public void setCheckThumbs(boolean checkThumbs) {
-    this.checkThumbs = checkThumbs;
+  public void setCheckThumbNails(boolean checkThumbNails) {
+    this.checkThumbNails = checkThumbNails;
   }
 
   /**
@@ -217,12 +217,12 @@ public class User {
     this.pageSize = pageSize;
   }
 
-  public String getLang() {
-    return lang;
+  public String getLanguage() {
+    return language;
   }
 
-  public void setLang(String lang) {
-    this.lang = lang;
+  public void setLanguage(String language) {
+    this.language = language;
   }
 
   /**
@@ -232,10 +232,10 @@ public class User {
    * @throws JSONException if the json containing the data is invalid
    */
   public String getPage() throws JSONException {
-    JSONObject obj = new JSONObject();
-    obj.put("paginationSize", pageSize);
-    obj.put("paginationInitialPage", 1);
-    return obj.toString();
+    JSONObject jsonObject = new JSONObject();
+    jsonObject.put("paginationSize", pageSize);
+    jsonObject.put("paginationInitialPage", 1);
+    return jsonObject.toString();
   }
 
   public String getSort() {

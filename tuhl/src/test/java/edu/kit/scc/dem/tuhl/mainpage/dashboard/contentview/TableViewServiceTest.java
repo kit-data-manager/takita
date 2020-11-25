@@ -3,7 +3,6 @@ package edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview;
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
 import edu.kit.scc.dem.tuhl.assistance.User;
-import edu.kit.scc.dem.tuhl.dataaccess.IRepositoryAccessService;
 import edu.kit.scc.dem.tuhl.dataaccess.TimeStampFormats;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchService;
@@ -99,7 +98,7 @@ class TableViewServiceTest {
     
     Mockito.when(mockedSearchService.search(tableViewService.getCurrentPage(),
         tableViewService.getSortField(),
-        tableViewService.isSortAsc()))
+        tableViewService.isSortAscending()))
         .thenReturn(results);
     
     assertEquals(tableViewService.search(), results);
@@ -123,7 +122,7 @@ class TableViewServiceTest {
         });
     Mockito.when(mockedModel.addAttribute(Mockito.eq("order"), Mockito.anyString()))
         .thenAnswer(invocation -> {
-          assertEquals(tableViewService.isSortAsc() ? "asc" : "desc", invocation.getArgument(1));
+          assertEquals(tableViewService.isSortAscending() ? "asc" : "desc", invocation.getArgument(1));
           return mockedModel;
         });
     Mockito.when(mockedModel.addAttribute(Mockito.eq("currentPage"), Mockito.anyInt()))
@@ -135,7 +134,7 @@ class TableViewServiceTest {
     tableViewService.updateModel(mockedModel);
     
     //Vary data to get into other cases
-    tableViewService.setSortAsc(true);
+    tableViewService.setSortAscending(true);
     tableViewService.setSortField("title");
     tableViewService.updateModel(mockedModel);
   }

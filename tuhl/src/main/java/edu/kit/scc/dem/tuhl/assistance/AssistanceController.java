@@ -50,7 +50,7 @@ public class AssistanceController {
    * Handles http post when a pseudonym is entered.
    *
    * @param pseudonym which is entered
-   * @param model   the holder for model attributes, used to pass attributes back to the view
+   * @param model the holder for model attributes, used to pass attributes back to the view
    * @return html file name to display pseudonym
    */
   @GetMapping("/{pseudonym}")
@@ -64,7 +64,7 @@ public class AssistanceController {
    * Handles http POST request to save table column configuration.
    *
    * @param columns table column config
-   * @param model   the holder for model attributes, used to pass attributes back to the view
+   * @param model the holder for model attributes, used to pass attributes back to the view
    * @return placeholder
    */
   @PostMapping("/saveTablecolumns")
@@ -79,7 +79,7 @@ public class AssistanceController {
   /**
    * Handles http POST request to save table sort configuration.
    *
-   * @param sort  table sort config
+   * @param sort table sort config
    * @param model the holder for model attributes, used to pass attributes back to the view
    * @return placeholder
    */
@@ -95,7 +95,7 @@ public class AssistanceController {
    * Handles http POST request to save table page configuration.
    *
    * @param pageInfo table page config
-   * @param model    the holder for model attributes, used to pass attributes back to the view
+   * @param model the holder for model attributes, used to pass attributes back to the view
    * @return placeholder
    */
   @PostMapping("/saveTablepage")

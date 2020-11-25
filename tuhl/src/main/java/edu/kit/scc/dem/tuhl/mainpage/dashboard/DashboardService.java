@@ -49,18 +49,18 @@ public class DashboardService implements IDashboardService {
   
   private String readFromFile()
       throws IOException {
-    InputStream is = getClass().getResourceAsStream("/availableViews.json");
-    InputStreamReader isr = new InputStreamReader(is);
-    BufferedReader br = new BufferedReader(isr);
-    StringBuilder sb = new StringBuilder();
+    InputStream inputStream = getClass().getResourceAsStream("/availableViews.json");
+    InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
+    BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+    StringBuilder stringBuilder = new StringBuilder();
     String line;
-    while ((line = br.readLine()) != null) {
-      sb.append(line);
+    while ((line = bufferedReader.readLine()) != null) {
+      stringBuilder.append(line);
     }
-    br.close();
-    isr.close();
-    is.close();
-    return sb.toString();
+    bufferedReader.close();
+    inputStreamReader.close();
+    inputStream.close();
+    return stringBuilder.toString();
   }
   
   private void updateAvailableViews() {

@@ -111,9 +111,9 @@ class AssistanceServiceTest {
   
   @Test
   void toggleCheckThumbs() {
-    boolean expected = !assistanceService.getCurrentUser().isCheckThumbs();
+    boolean expected = !assistanceService.getCurrentUser().isCheckThumbNails();
     assistanceService.toggleCheckThumbs();
-    assertEquals(expected, assistanceService.getCurrentUser().isCheckThumbs());
+    assertEquals(expected, assistanceService.getCurrentUser().isCheckThumbNails());
     verify(mockedUserRepository, VerificationModeFactory.atLeastOnce())
         .save(Mockito.any(User.class));
   }
@@ -150,7 +150,7 @@ class AssistanceServiceTest {
   void setLanguage() {
     String expectedLang = "en";
     assistanceService.setLanguage(expectedLang, null);
-    assertEquals(expectedLang, assistanceService.getCurrentUser().getLang());
+    assertEquals(expectedLang, assistanceService.getCurrentUser().getLanguage());
     assertEquals(expectedLang, assistanceService.getLang());
     verify(mockedUserRepository, VerificationModeFactory.atLeastOnce())
         .save(Mockito.any(User.class));

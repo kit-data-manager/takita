@@ -32,7 +32,7 @@ public class TableViewService implements IContentViewService {
   private final ISearchService searchService;
   private final IAssistanceService assistanceService;
   private int currentPage;
-  private boolean sortAsc;
+  private boolean sortAscending;
   private String sortField;
   
   /**
@@ -54,7 +54,7 @@ public class TableViewService implements IContentViewService {
     this.searchIndexService = searchIndexService;
     this.searchService = searchService;
     this.assistanceService = assistanceService;
-    this.sortAsc = false;
+    this.sortAscending = false;
     this.sortField = "id";
     this.currentPage = 1;
   }
@@ -66,7 +66,7 @@ public class TableViewService implements IContentViewService {
    * @return List of Manuscripts
    */
   public List<Manuscript> search() {
-    return searchService.search(currentPage, sortField, sortAsc);
+    return searchService.search(currentPage, sortField, sortAscending);
   }
   
   /**
@@ -113,17 +113,17 @@ public class TableViewService implements IContentViewService {
    *
    * @return if SortAsc is true
    */
-  public boolean isSortAsc() {
-    return sortAsc;
+  public boolean isSortAscending() {
+    return sortAscending;
   }
   
   /**
    * Sets sortAsc boolean.
    *
-   * @param sortAsc bool to be set
+   * @param sortAscending bool to be set
    */
-  public void setSortAsc(boolean sortAsc) {
-    this.sortAsc = sortAsc;
+  public void setSortAscending(boolean sortAscending) {
+    this.sortAscending = sortAscending;
   }
   
   /**
@@ -175,7 +175,7 @@ public class TableViewService implements IContentViewService {
   public void updateModel(Model model) {
     model.addAttribute("results", getResults());
     model.addAttribute("sortField", getSortField());
-    if (isSortAsc()) {
+    if (isSortAscending()) {
       model.addAttribute("order", "asc");
     } else {
       model.addAttribute("order", "desc");
@@ -199,27 +199,27 @@ public class TableViewService implements IContentViewService {
    */
   public JSONArray getData() throws JSONException {
     JSONArray data = new JSONArray();
-    for (Manuscript man : getResults()) {
+    for (Manuscript manuscript : getResults()) {
       JSONArray thumbnails = new JSONArray();
-      for (Page pg : man.getPages()) {
-        JSONObject obj = new JSONObject();
-        String thumb = pg.getThumbResourceUrl();
-        String id = pg.getId();
-        obj.put("thumb", thumb);
-        obj.put("id", id);
-        obj.put("pageNumber", pg.getPageNumber());
-        thumbnails.put(obj);
+      for (Page page : manuscript.getPages()) {
+        JSONObject jsonObject = new JSONObject();
+        String thumbNail = page.getThumbResourceUrl();
+        String id = page.getId();
+        jsonObject.put("thumbNail", thumbNail);
+        jsonObject.put("id", id);
+        jsonObject.put("pageNumber", page.getPageNumber());
+        thumbnails.put(jsonObject);
       }
       
       JSONObject row = new JSONObject();
-      row.put("id", man.getId());
-      row.put("title", man.getTitle());
-      row.put("publisher", man.getPublisher());
-      row.put("created", man.getCreated());
-      row.put("publicationYear", man.getPublicationYear());
-      row.put("hasAlgorithmAnnotations", man.hasAlgorithmAnnotations());
-      row.put("lastModified", man.getLastModified());
-      row.put("noPages", man.getNoPages());
+      row.put("id", manuscript.getId());
+      row.put("title", manuscript.getTitle());
+      row.put("publisher", manuscript.getPublisher());
+      row.put("created", manuscript.getCreated());
+      row.put("publicationYear", manuscript.getPublicationYear());
+      row.put("hasAlgorithmAnnotations", manuscript.hasAlgorithmAnnotations());
+      row.put("lastModified", manuscript.getLastModified());
+      row.put("noPages", manuscript.getNoPages());
       row.put("thumbnails", thumbnails);
       
       data.put(row);

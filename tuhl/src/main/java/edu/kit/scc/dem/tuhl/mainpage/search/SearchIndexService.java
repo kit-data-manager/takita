@@ -551,7 +551,7 @@ public class  SearchIndexService implements ISearchIndexService {
     
     for (Page page : searchHits.getSearchHit(0).getContent().getPages()) {
       for (Annotation annotation : page.getAnnotations()) {
-        if (isBodyInAnnotations(annotation, bodyId)) {
+        if (isBodyInAnnotation(annotation, bodyId)) {
           return annotation;
         }
       }
@@ -560,7 +560,7 @@ public class  SearchIndexService implements ISearchIndexService {
         + bodyId);
   }
   
-  private boolean isBodyInAnnotations(Annotation annotation, String bodyId) {
+  private boolean isBodyInAnnotation(Annotation annotation, String bodyId) {
     for (Body body : annotation.getTextCards()) {
       if (body.getId().equals(bodyId)) {
         return true;
@@ -634,11 +634,7 @@ public class  SearchIndexService implements ISearchIndexService {
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
 
     if (manuscripts.hasSearchHits()) {
-      for (Page page : manuscripts.getSearchHit(0).getContent().getPages()) {
-        if (page.getId().equals(id)) {
-          return page;
-        }
-      }
+      getPageById(id, manuscripts.getSearchHit(0).getContent());
     }
     throw new NoSuchIndexEntryException("The page with the id " + id + " could not be found");
   }
@@ -754,6 +750,7 @@ public class  SearchIndexService implements ISearchIndexService {
     allBodies.addAll(annotation.getTags());
     allBodies.addAll(annotation.getTextCards());
     for (Body newBody : allBodies) {
+      // can't use ID because same body can have different IDs
       if (newBody.getCreated() != null
           && newBody.getCreated().equals(body.getCreated())
           && newBody.getCreators().containsAll(body.getCreators())

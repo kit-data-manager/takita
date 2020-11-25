@@ -17,22 +17,26 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Class responsible for converting manuscripts from JSON to Manuscript Object.
+ */
 class ManuscriptConverter {
 
   private IRepositoryAccessService repositoryAccessService;
   private IAnnotationStoreAccessService annotationStoreAccessService;
   private AnnotationConverter annotationConverter;
 
-  @Value("${repository.baseUrl}")
-  private String baseUrl;
-  @Value("${repository.staticPath}")
-  private String staticPath;
-
+  /**
+   * Constructor, initializes instances of used interfaces.
+   *
+   * @param annotationStoreAccessService instance of IAnnotationStoreAccessService
+   * @param repositoryAccessService instance of IRepositoryAccessService
+   */
   public ManuscriptConverter(IRepositoryAccessService repositoryAccessService,
                              IAnnotationStoreAccessService annotationStoreAccessService) {
     this.repositoryAccessService = repositoryAccessService;
     this.annotationStoreAccessService = annotationStoreAccessService;
-    this.annotationConverter = new AnnotationConverter(annotationStoreAccessService);
+    this.annotationConverter = new AnnotationConverter(annotationStoreAccessService, repositoryAccessService);
   }
 
   public Manuscript buildManuscriptFromJson(
@@ -142,10 +146,10 @@ class ManuscriptConverter {
 
     if (resourceTypeString.equals(RepositoryStrings.IMAGE.getName())) {
       // URL to image of Page
-      String resourceUrl = baseUrl + staticPath + id
+      String resourceUrl = repositoryAccessService.getBaseUrl() + repositoryAccessService.getStaticPath() + id
           + RepositoryAccessService.DATA_PATH + pageNumber + RepositoryAccessService.MASTER_JPG;
-      String thumbResourceUrl = baseUrl + staticPath + id + RepositoryAccessService.DATA_PATH
-          + pageNumber + RepositoryAccessService.THUMB_JPG;
+      String thumbResourceUrl = repositoryAccessService.getBaseUrl() + repositoryAccessService.getStaticPath()
+          + id + RepositoryAccessService.DATA_PATH + pageNumber + RepositoryAccessService.THUMB_JPG;
 
       ImagePage imagePage = new ImagePage(id, pageNumber, created, resourceUrl, thumbResourceUrl);
       if (sortedAnnotations == null) {

@@ -77,7 +77,7 @@ class TableViewControllerTest {
 
     Mockito.verify(mockedTableViewService).setCurrentPage(1);
     Mockito.verify(mockedTableViewService).setNumberOfResults(10);
-    Mockito.verify(mockedTableViewService).setSortAsc(true);
+    Mockito.verify(mockedTableViewService).setSortAscending(true);
     Mockito.verify(mockedTableViewService).setSortField("id");
     Mockito.verify(mockedTableViewService).search();
     Mockito.verify(mockedMainPageService).update(Mockito.any(Model.class));
