@@ -1,0 +1,47 @@
+{
+  "@context": "http://www.w3.org/ns/anno.jsonld",
+  "id": "http://sampleannoserver.edu/wap/a04/validated/cd9267d1-5402-4f48-ae99-8b5559ccc456",
+  "type": "Annotation",
+  "created": "2019-07-04T07:00:54.634Z",
+  "creator": [
+    {
+      "type": "Person",
+      "name": "M. K."
+    },
+    {
+      "type": "Software",
+      "name": "Akita"
+    }
+  ],
+  "modified": "2019-07-04T09:14:59Z",
+  "canonical": "http://sampleannoserver.edu/wap/a04/deinterpretatione/c6c83ff9-3b68-4965-9e7a-359abad3eb9d",
+  "body": [
+    {
+      "type": "TextualBody",
+      "format": "text/plain",
+      "dc:subject": "TextRegion",
+      "creator": [
+        {
+          "type": "Software",
+          "name": "Akita"
+        },
+        {
+          "type": "Person",
+          "name": "M. K."
+        }
+      ],
+      "value": "16a8",
+      "purpose": "tagging"
+    }
+  ],
+  "target": {
+    "type": "SpecificResource",
+    "selector": {
+      "type": "SvgSelector",
+      "value": "<svg><rect x=\"214\" y=\"73\" width=\"3008\" height=\"4467\"/></svg>"
+    },
+    "source": "http://samplerepo.edu/api/v1/dataresources/f68e307b-c41b-412a-a2e2-60418fbbef27/data/083r.master.jpg"
+  },
+  "motivation": "identifying",
+  "via": "http://sampleannoserver.edu/wap/a04/deinterpretatione/c6c83ff9-3b68-4965-9e7a-359abad3eb9d"
+}

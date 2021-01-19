@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="#{label.editor}"> </title>
+  <!-- Bootstrap core JavaScript -->
+  <!-- CSS only -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous"
+        th:href="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css}">
+
+  <!-- JS, Popper.js, and jQuery -->
+  <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+          integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"
+          th:src="@{https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js}"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+          integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"
+          th:src="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js}"></script>
+
+  <script src="js/editor_stub.js"></script>
+</head>
+<body class="container-fluid p-0">
+<div id="editor" th:fragment="editor">
+  <div class="row mx-auto py-2 bg-light justify-content-between">
+    <div class="col-auto align-self-center">
+      <button class="btn btn-primary" onclick="goHome()" th:text="#{buttons.back}"> </button>
+    </div>
+    <div class="col-6 p-6 my-1 align-self-center"
+         th:insert="header.html :: header"></div>
+  </div>
+
+  <div class="row mx-auto">
+    <div class="col my-3 accordion" style="overflow-y: scroll; height: 94vh">
+
+      <div class="card">
+        <div class="card-header" type="button" data-toggle="collapse" data-target="#createA">
+          <h1 class="text-left font-weight-light" th:text="#{label.anno_create}"> </h1>
+        </div>
+        <div class="collapse show" id="createA">
+          <div class="card-body">
+            <div th:include="editor_stub_fragments :: createAnnotation"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" type="button" data-toggle="collapse" data-target="#readA">
+          <h1 class="text-left font-weight-light" th:text="#{label.anno_read}"> </h1>
+        </div>
+        <div class="collapse" id="readA">
+          <div class="card-body">
+            <div th:include="editor_stub_fragments :: readAnnotation"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" type="button" data-toggle="collapse" data-target="#updateA">
+          <h1 class="text-left font-weight-light" th:text="#{label.anno_update}"> </h1>
+        </div>
+        <div class="collapse" id="updateA">
+          <div class="card-body">
+            <div th:include="editor_stub_fragments :: updateAnnotation"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" type="button" data-toggle="collapse" data-target="#deleteA">
+          <h1 class="text-left font-weight-light" th:text="#{label.anno_delete}"> </h1>
+        </div>
+        <div class="collapse" id="deleteA">
+          <div class="card-body">
+            <div th:include="editor_stub_fragments :: deleteAnnotation"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" type="button" data-toggle="collapse" data-target="#validateA">
+          <h1 class="text-left font-weight-light" th:text="#{label.anno_validate}"> </h1>
+        </div>
+        <div class="collapse" id="validateA">
+          <div class="card-body">
+            <div th:include="editor_stub_fragments :: validateAnnotation"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" type="button" data-toggle="collapse" data-target="#createC">
+          <h1 class="text-left font-weight-light" th:text="#{label.card_create}"> </h1>
+        </div>
+        <div class="collapse" id="createC">
+          <div class="card-body">
+            <div th:include="editor_stub_fragments :: createTextCard"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" type="button" data-toggle="collapse" data-target="#readC">
+          <h1 class="text-left font-weight-light" th:text="#{label.card_read}"> </h1>
+        </div>
+        <div class="collapse" id="readC">
+          <div class="card-body">
+            <div th:include="editor_stub_fragments :: readCard"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" type="button" data-toggle="collapse" data-target="#updateC">
+          <h1 class="text-left font-weight-light" th:text="#{label.card_update}"> </h1>
+        </div>
+        <div class="collapse" id="updateC">
+          <div class="card-body">
+            <div th:include="editor_stub_fragments :: updateTextCard"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" type="button" data-toggle="collapse" data-target="#deleteC">
+          <h1 class="text-left font-weight-light" th:text="#{label.card_delete}"> </h1>
+        </div>
+        <div class="collapse" id="deleteC">
+          <div class="card-body">
+            <div th:include="editor_stub_fragments :: deleteTextCard"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" type="button" data-toggle="collapse" data-target="#createT">
+          <h1 class="text-left font-weight-light" th:text="#{label.tag_create}"> </h1>
+        </div>
+        <div class="collapse" id="createT">
+          <div class="card-body">
+            <div th:include="editor_stub_fragments :: createTag"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" type="button" data-toggle="collapse" data-target="#readT">
+          <h1 class="text-left font-weight-light" th:text="#{label.tag_read}"> </h1>
+        </div>
+        <div class="collapse" id="readT">
+          <div class="card-body">
+            <div th:include="editor_stub_fragments :: readTag"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" type="button" data-toggle="collapse" data-target="#updateT">
+          <h1 class="text-left font-weight-light" th:text="#{label.tag_update}"> </h1>
+        </div>
+        <div class="collapse" id="updateT">
+          <div class="card-body">
+            <div th:include="editor_stub_fragments :: updateTag"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" type="button" data-toggle="collapse" data-target="#deleteT">
+          <h1 class="text-left font-weight-light" th:text="#{label.tag_delete}"> </h1>
+        </div>
+        <div class="collapse" id="deleteT">
+          <div class="card-body">
+            <div th:include="editor_stub_fragments :: deleteTag"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" type="button" data-toggle="collapse" data-target="#rawMJson">
+          <h1 class="text-left font-weight-light" th:text="#{label.raw_manuscriptJson}"> </h1>
+        </div>
+        <div class="collapse" id="rawMJson">
+          <div class="card-body">
+            <div th:include="editor_stub_fragments :: rawManuscriptJson"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" type="button" data-toggle="collapse" data-target="#rawMXml">
+          <h1 class="text-left font-weight-light" th:text="#{label.raw_manuscriptXml}"> </h1>
+        </div>
+        <div class="collapse" id="rawMXml">
+          <div class="card-body">
+            <div th:include="editor_stub_fragments :: rawManuscriptXml"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" type="button" data-toggle="collapse" data-target="#rawPJson">
+          <h1 class="text-left font-weight-light" th:text="#{label.raw_pageJson}"> </h1>
+        </div>
+        <div class="collapse" id="rawPJson">
+          <div class="card-body">
+            <div th:include="editor_stub_fragments :: rawPageJson"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" type="button" data-toggle="collapse" data-target="#rawAJson">
+          <h1 class="text-left font-weight-light" th:text="#{label.raw_annoJson}"> </h1>
+        </div>
+        <div class="collapse" id="rawAJson">
+          <div class="card-body">
+            <div th:include="editor_stub_fragments :: rawAnnotationJson"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="col my-3" style="overflow-y: scroll; height: 94vh">
+      <div class="row mx-auto" id="viewerHolder">
+      </div>
+    </div>
+
+  </div>
+</div>
+</body>
+</html>

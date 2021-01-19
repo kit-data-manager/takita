@@ -96,7 +96,7 @@ public class AssistanceService implements IAssistanceService {
    */
   @Override
   public void toggleCheckThumbs() {
-    currentUser.setCheckThumbNails(!currentUser.isCheckThumbNails());
+    currentUser.setCheckThumbs(!currentUser.isCheckThumbs());
     updateUser();
   }
   

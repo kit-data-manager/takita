@@ -159,12 +159,12 @@ public class TableViewService implements IContentViewService {
   /**
    * Gets the id of the first Page of the Manuscript with the specified id.
    *
-   * @param manId of manuscript
+   * @param manuscriptId of manuscript
    * @return the id of the first page
    * @throws NoSuchIndexEntryException when there is no manuscript with this ID in the search index
    */
-  public String getFirstPage(String manId) throws NoSuchIndexEntryException {
-    return searchIndexService.getManuscriptById(manId).getPages().get(0).getId();
+  public String getFirstPage(String manuscriptId) throws NoSuchIndexEntryException {
+    return getPages(manuscriptId).get(0).getId();
   }
   
   /**
@@ -183,8 +183,8 @@ public class TableViewService implements IContentViewService {
     model.addAttribute("currentPage", getCurrentPage());
   }
   
-  public void setNumberOfResults(int noResults) {
-    searchService.setPageSize(noResults);
+  public void setNumberOfResults(int numberOfResults) {
+    searchService.setPageSize(numberOfResults);
   }
   
   public long getNumberOfResultsPages() {

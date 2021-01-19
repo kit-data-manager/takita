@@ -6,14 +6,11 @@ import edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.TableViewService;
 import edu.kit.scc.dem.tuhl.mainpage.search.IFilterService;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchService;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.ui.Model;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest

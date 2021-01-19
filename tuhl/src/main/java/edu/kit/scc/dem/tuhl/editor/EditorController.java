@@ -1,13 +1,17 @@
 package edu.kit.scc.dem.tuhl.editor;
 
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
+import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
 import edu.kit.scc.dem.tuhl.model.Color;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
+
 import java.io.IOException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,6 +29,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 @RequestMapping("/editor")
 public class EditorController {
   private final IEditorService editorService;
+  private final IAssistanceService assistanceService;
 
   private static final String NOT_IMPLEMENTED = "not implemented";
   private static final String REDIRECT_ERROR = "redirect:/error/";
@@ -36,10 +41,12 @@ public class EditorController {
    * Constructor, initializes instances of used interfaces.
    *
    * @param editorService instance of IEditorService
+   * @param assistanceService instance of IAssistanceService
    */
   @Autowired
-  public EditorController(IEditorService editorService) {
+  public EditorController(IEditorService editorService, IAssistanceService assistanceService) {
     this.editorService = editorService;
+    this.assistanceService = assistanceService;
   }
   
   /**
@@ -49,8 +56,9 @@ public class EditorController {
    * @return a string to indicate the redirect
    */
   @GetMapping
-  public String editor(Model model) {
-      throw new AssertionError(NOT_IMPLEMENTED);
+  public String init(Model model) {
+      assistanceService.updateModel(model);
+      return "editor";
   }
 
   /**
@@ -59,14 +67,18 @@ public class EditorController {
    * @param pageId Identifier in the editor of the page that should be displayed
    * @return name of html file to display editor
    */
-  @GetMapping("/{pageId}")
-  public String selectPage(@PathVariable ("pageId") String pageId) {
+  @GetMapping("/{pageId:.+}")
+  public String selectPage(@PathVariable ("pageId") String pageId, Model model) {
     try {
       editorService.selectPage(pageId);
+      model.addAttribute("currentPage", editorService.getCurrentPage());
+      model.addAttribute("currentManuscript", editorService.getCurrentManuscript());
+      assistanceService.updateModel(model);
+
     } catch (NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     }
-    return REDIRECT_ERROR;
+    return "/editor";
   }
 
   /**
@@ -91,7 +103,7 @@ public class EditorController {
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
    */
-  @PostMapping("/add/annotation")
+  @PostMapping("/addAnnotation")
   public String addAnnotation(@RequestParam("svg") String svg, @RequestParam("color") Color color,
                               Model model) {
     throw new AssertionError(NOT_IMPLEMENTED);
@@ -104,9 +116,21 @@ public class EditorController {
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return a string to indicate the redirect
    */
-  @PostMapping("/select")
-  public String selectAnnotation(@RequestBody String annotationId, Model model) {
-    throw new AssertionError(NOT_IMPLEMENTED);
+  @PostMapping("/select_annotation")
+  public String selectAnnotation(@RequestBody String annotationJson, Model model) {
+    try {
+      JSONObject json = new JSONObject(annotationJson);
+      String id = json.getString("id");
+      editorService.selectAnnotation(id);
+      model.addAttribute("currentAnnotation", editorService.getCurrentAnnotation());
+      System.out.println("current annotation " + editorService.getCurrentAnnotation().getId());
+      model.addAttribute("currentPage", editorService.getCurrentPage());
+      model.addAttribute("currentManuscript", editorService.getCurrentManuscript());
+      assistanceService.updateModel(model);
+    } catch (JSONException | NoSuchIndexEntryException e) {
+      return REDIRECT_ERROR + e.getMessage();
+    }
+    return "editor";
   }
 
   /**

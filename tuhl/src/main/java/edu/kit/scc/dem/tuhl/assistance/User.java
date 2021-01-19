@@ -31,7 +31,7 @@ public class User {
   @Id
   private String name;
 
-  private boolean checkThumbNails;
+  private boolean checkThumbs;
   private int currentPage;
   private int pageSize;
   private String language;
@@ -49,7 +49,7 @@ public class User {
   @Lob
   private String rangeFilter;
 
-  //constructor for dataJPA do not use!!
+  //constructor for dataJPA, do not use!!
   protected User() {
   }
 
@@ -61,7 +61,7 @@ public class User {
    */
   public User(String name) {
     this.name = name;
-    this.checkThumbNails = false;
+    this.checkThumbs = false;
     this.currentPage = 1;
     this.pageSize = 10;
     this.language = "en";
@@ -159,17 +159,17 @@ public class User {
    *
    * @return if checkThumb is true
    */
-  public boolean isCheckThumbNails() {
-    return checkThumbNails;
+  public boolean isCheckThumbs() {
+    return checkThumbs;
   }
 
   /**
    * Sets checkThumb boolean.
    *
-   * @param checkThumbNails bool to be set
+   * @param checkThumbs bool to be set
    */
-  public void setCheckThumbNails(boolean checkThumbNails) {
-    this.checkThumbNails = checkThumbNails;
+  public void setCheckThumbs(boolean checkThumbs) {
+    this.checkThumbs = checkThumbs;
   }
 
   /**

@@ -634,7 +634,7 @@ public class  SearchIndexService implements ISearchIndexService {
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
 
     if (manuscripts.hasSearchHits()) {
-      getPageById(id, manuscripts.getSearchHit(0).getContent());
+      return getPageById(id, manuscripts.getSearchHit(0).getContent());
     }
     throw new NoSuchIndexEntryException("The page with the id " + id + " could not be found");
   }

@@ -111,9 +111,9 @@ class AssistanceServiceTest {
   
   @Test
   void toggleCheckThumbs() {
-    boolean expected = !assistanceService.getCurrentUser().isCheckThumbNails();
+    boolean expected = !assistanceService.getCurrentUser().isCheckThumbs();
     assistanceService.toggleCheckThumbs();
-    assertEquals(expected, assistanceService.getCurrentUser().isCheckThumbNails());
+    assertEquals(expected, assistanceService.getCurrentUser().isCheckThumbs());
     verify(mockedUserRepository, VerificationModeFactory.atLeastOnce())
         .save(Mockito.any(User.class));
   }

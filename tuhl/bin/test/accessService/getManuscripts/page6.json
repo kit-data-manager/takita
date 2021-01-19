@@ -1,0 +1,75 @@
+{
+  "id": "4b756754-54a2-4932-8b1e-a33889ab0c37",
+  "identifier": {
+    "id": 4146,
+    "value": "(:tba)",
+    "identifierType": "DOI"
+  },
+  "creators": [
+    {
+      "id": 4146,
+      "familyName": null,
+      "givenName": "SELF",
+      "affiliations": []
+    }
+  ],
+  "titles": [
+    {
+      "id": 4146,
+      "value": "402 Volckmar 1639 anno, page315_Ig315",
+      "titleType": null,
+      "lang": null
+    }
+  ],
+  "publisher": "SFB 980 - C08",
+  "publicationYear": "2019",
+  "resourceType": {
+    "id": 4146,
+    "value": "manuscriptPage",
+    "typeGeneral": "IMAGE"
+  },
+  "subjects": [],
+  "contributors": [],
+  "dates": [
+    {
+      "id": 4146,
+      "value": "2019-08-26T09:21:02Z",
+      "type": "CREATED"
+    }
+  ],
+  "relatedIdentifiers": [
+    {
+      "id": 8201,
+      "identifierType": "URL",
+      "value": "http://samplerepo.edu/api/v1/dataresources/2abde917-3fbe-4b4b-992c-c7810e4e29bb",
+      "relationType": "HAS_METADATA",
+      "scheme": null,
+      "relatedMetadataScheme": null
+    }
+  ],
+  "descriptions": [],
+  "geoLocations": [],
+  "language": null,
+  "alternateIdentifiers": [
+    {
+      "id": 4146,
+      "value": "4b756754-54a2-4932-8b1e-a33889ab0c37",
+      "identifierType": "INTERNAL"
+    }
+  ],
+  "sizes": [],
+  "formats": [],
+  "version": null,
+  "rights": [],
+  "fundingReferences": [],
+  "lastUpdate": "2019-08-26T09:21:22.852Z",
+  "state": "VOLATILE",
+  "embargoDate": "",
+  "acls": [
+    {
+      "id": 4146,
+      "sid": "SELF",
+      "permission": "ADMINISTRATE"
+    }
+  ]
+}

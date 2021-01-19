@@ -2,7 +2,6 @@ package edu.kit.scc.dem.tuhl.mainpage.search;
 
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.dataaccess.IAccessService;
-import edu.kit.scc.dem.tuhl.dataaccess.IAnnotationStoreAccessService;
 import edu.kit.scc.dem.tuhl.dataaccess.TimeStampFormats;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Manuscript;

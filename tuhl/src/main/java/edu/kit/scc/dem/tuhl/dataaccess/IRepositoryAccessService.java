@@ -5,7 +5,6 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
-import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;

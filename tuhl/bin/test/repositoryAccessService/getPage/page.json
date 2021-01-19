@@ -1,0 +1,106 @@
+{
+    "id": "000b458c-67d5-445e-8274-73e8e4582952",
+    "identifier": {
+      "id": 3705,
+      "value": "(:tba)",
+      "identifierType": "DOI"
+    },
+    "creators": [
+      {
+        "id": 3705,
+        "familyName": null,
+        "givenName": "SELF",
+        "affiliations": [
+
+        ]
+      }
+    ],
+    "titles": [
+      {
+        "id": 3705,
+        "value": "Mailand Ambr A 160 sup, 146r",
+        "titleType": null,
+        "lang": null
+      }
+    ],
+    "publisher": "SFB 980 - A04",
+    "publicationYear": "2019",
+    "resourceType": {
+      "id": 3705,
+      "value": "manuscriptPage",
+      "typeGeneral": "IMAGE"
+    },
+    "subjects": [
+
+    ],
+    "contributors": [
+
+    ],
+    "dates": [
+      {
+        "id": 3705,
+        "value": "2019-03-12T14:12:50Z",
+        "type": "CREATED"
+      }
+    ],
+    "relatedIdentifiers": [
+      {
+        "id": 7300,
+        "identifierType": "URL",
+        "value": "http://samplerepo.edu/api/v1/dataresources/5c17cfb4-151b-4f5d-9679-242a2434edaf",
+        "relationType": "HAS_METADATA",
+        "scheme": null,
+        "relatedMetadataScheme": null
+      }
+    ],
+    "descriptions": [
+
+    ],
+    "geoLocations": [
+      {
+        "id": 7409,
+        "point": null,
+        "box": null,
+        "polygon": null,
+        "place": "Mailand"
+      },
+      {
+        "id": 7410,
+        "point": null,
+        "box": null,
+        "polygon": null,
+        "place": "Biblioteca Ambrosiana"
+      }
+    ],
+    "language": null,
+    "alternateIdentifiers": [
+      {
+        "id": 3705,
+        "value": "000b458c-67d5-445e-8274-73e8e4582952",
+        "identifierType": "INTERNAL"
+      }
+    ],
+    "sizes": [
+
+    ],
+    "formats": [
+
+    ],
+    "version": null,
+    "rights": [
+
+    ],
+    "fundingReferences": [
+
+    ],
+    "lastUpdate": "",
+    "state": "VOLATILE",
+    "embargoDate": "",
+    "acls": [
+      {
+        "id": 3705,
+        "sid": "SELF",
+        "permission": "ADMINISTRATE"
+      }
+    ]
+  }

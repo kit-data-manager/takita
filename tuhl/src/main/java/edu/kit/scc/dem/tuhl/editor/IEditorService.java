@@ -2,18 +2,16 @@ package edu.kit.scc.dem.tuhl.editor;
 
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.model.Annotation;
-import edu.kit.scc.dem.tuhl.model.Color;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
+import edu.kit.scc.dem.tuhl.model.body.Body;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
-import edu.kit.scc.dem.tuhl.model.page.Page;
-import edu.kit.scc.dem.tuhl.model.page.ResourceType;
+
 import java.io.IOException;
-import java.util.List;
-import org.springframework.boot.configurationprocessor.json.JSONException;
+
+import edu.kit.scc.dem.tuhl.model.page.Page;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
 
 /**
@@ -235,4 +233,12 @@ public interface IEditorService {
   void selectAnnotation(String annoId) throws NoSuchIndexEntryException;
 
   void selectBody(String bodyId) throws NoSuchIndexEntryException;
+
+  Manuscript getCurrentManuscript();
+
+  Page getCurrentPage();
+
+  Annotation getCurrentAnnotation();
+
+  Body getCurrentBody();
 }

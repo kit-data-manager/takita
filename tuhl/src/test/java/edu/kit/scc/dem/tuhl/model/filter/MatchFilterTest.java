@@ -1,8 +1,6 @@
 package edu.kit.scc.dem.tuhl.model.filter;
 
 import org.elasticsearch.common.unit.Fuzziness;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;

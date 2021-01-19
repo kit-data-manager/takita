@@ -82,8 +82,6 @@ class FilterControllerTest {
     User mockedUser = Mockito.mock(User.class);
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(mockedUser);
 
-    String filterField = "id";
-
     this.mockMvc.perform(post("/filter/apply"))
         .andExpect(status().is3xxRedirection())
         .andExpect(view().name("redirect:/"))

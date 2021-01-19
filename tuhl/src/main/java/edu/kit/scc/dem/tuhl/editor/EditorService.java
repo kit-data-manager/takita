@@ -11,19 +11,17 @@ import edu.kit.scc.dem.tuhl.model.body.Body;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import edu.kit.scc.dem.tuhl.model.page.Page;
-import edu.kit.scc.dem.tuhl.model.page.ResourceType;
+
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 import org.springframework.web.context.annotation.SessionScope;
 
 /**
@@ -36,8 +34,6 @@ public class EditorService implements IEditorService {
   private Page currentPage;
   private Annotation currentAnnotation;
   private Body currentBody;
-
-  private static final String NOT_IMPLEMENTED = "not implemented";
 
   private final IAssistanceService assistanceService;
   private final ISearchIndexService searchIndexService;
@@ -334,11 +330,10 @@ public class EditorService implements IEditorService {
       updatedTextCard.setPurpose(stringToMotivation(purpose));
     }
 
-    TextCard newTextCard;
+    TextCard newTextCard = new TextCard(UUID.randomUUID().toString());
     try {
       newTextCard = (TextCard) searchIndexService.updateBody(updatedTextCard);
     } catch (JSONException e) {
-      newTextCard  = new TextCard("No TextCard");
       e.printStackTrace();
     }
 
@@ -497,6 +492,9 @@ public class EditorService implements IEditorService {
   @Override
   public void selectPage(String pageId) throws NoSuchIndexEntryException {
     currentPage = searchIndexService.getPageById(pageId);
+    if (currentManuscript == null || currentManuscript.getId() != currentPage.getManuscriptId()) {
+      currentManuscript = searchIndexService.getManuscriptById(currentPage.getManuscriptId());
+    }
   }
 
   @Override
@@ -509,6 +507,26 @@ public class EditorService implements IEditorService {
     if (currentAnnotation != null) {
       currentBody = searchIndexService.getBodyFromAnnotationAndId(currentAnnotation, bodyId);
     }
+  }
+
+  @Override
+  public Manuscript getCurrentManuscript() {
+    return currentManuscript;
+  }
+
+  @Override
+  public Page getCurrentPage() {
+    return currentPage;
+  }
+
+  @Override
+  public Annotation getCurrentAnnotation() {
+    return currentAnnotation;
+  }
+
+  @Override
+  public Body getCurrentBody() {
+    return currentBody;
   }
 
   // TODO: auslagern in enum

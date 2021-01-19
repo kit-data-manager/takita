@@ -333,8 +333,4 @@ public class AccessService implements IAccessService {
 
     return annotations;
   }
-
-  private boolean isJsonArray(String array) {
-    return array.startsWith("[");
-  }
 }
