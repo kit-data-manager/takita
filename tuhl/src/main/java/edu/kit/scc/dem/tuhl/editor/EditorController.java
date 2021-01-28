@@ -123,14 +123,14 @@ public class EditorController {
       String id = json.getString("id");
       editorService.selectAnnotation(id);
       model.addAttribute("currentAnnotation", editorService.getCurrentAnnotation());
-      System.out.println("current annotation " + editorService.getCurrentAnnotation().getId());
       model.addAttribute("currentPage", editorService.getCurrentPage());
       model.addAttribute("currentManuscript", editorService.getCurrentManuscript());
+
       assistanceService.updateModel(model);
     } catch (JSONException | NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     }
-    return "editor";
+    return "editor_fragments :: annotationViewer";
   }
 
   /**

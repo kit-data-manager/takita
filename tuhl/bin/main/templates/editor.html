@@ -96,40 +96,7 @@
         </div>
         <!-- bodies and annotations -->
         <div class="col-5 p-0 container-fluid scrollable px-5 pt-3" style="height: 100vh">
-            <div th:unless="${currentAnnotation == null}">
-                <p>
-                    <div th:each="tag : ${currentAnnotation.tags}">
-                        <span class="badge m-1" th:text="${tag.value}"> </span>
-                    </div>
-                    <div th:each="textCard : ${currentAnnotation.getTextCards()}">
-                        <div class="card mb-3">
-                            <div class="card-header px-3 py-1">
-                                <div class="row justify-content-between">
-                                    <div class="col-auto align-self-center">
-                                        <p class="m-0"
-                                        th:text="${textCard.purpose}"> </p>
-                                    </div>
-                                    <div class="col-auto align-self-center"
-                                        th:if="${!textCard.creators.isEmpty()}">
-                                        <p class="m-0 text-right" th:text="${textCard.creators[0]}"> </p>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <h6 class="card-title"
-                                    th:if="${textCard.title != null && !textCard.title.isEmpty()}"
-                                    th:text="${textCard.title}">
-                                </h6>
-                                <p class="card-text" th:text="${textCard.value}"> </p>
-                            </div>
-                        </div>
-                    </div>
-                </p>
-            </div>
-            <div th:if="${currentAnnotation == null}">
-                <p>
-                    <label class="text-center" th:text="#{info.no_annos_selected}"> </label>
-                </p>
+            <div class="row mx-auto" id="viewerHolder">
             </div>
         </div>
     </div>
