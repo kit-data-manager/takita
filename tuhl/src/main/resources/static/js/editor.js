@@ -1,9 +1,16 @@
 function selectAnnotation(event, anno) {
     event.preventDefault();
     let params = {
-        id: anno.getAttribute('data-field')
+        id: anno.getAttribute('title')
     }
     postEditorController("select_annotation", params);
+}
+
+function showSvgs(annotations) {
+    console.log("show svgs " + annotations)
+    annotations.forEach(element => {
+        drawSvg(element.getSvgCode());
+    });
 }
 
 function postEditorController(endpoint, params) {
