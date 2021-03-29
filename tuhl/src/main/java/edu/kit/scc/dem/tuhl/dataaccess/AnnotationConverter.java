@@ -91,17 +91,37 @@ class AnnotationConverter {
       annotation.setMotivation(stringToMotivation(jsonAnnotation.getString(
           AnnotationStoreStrings.MOTIVATION.getName())));
     }
-
+    
     //set svg code
+    String svgString;
     if (jsonAnnotation.has(AnnotationStoreStrings.TARGET.getName())
-        && jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName())
-        .has(AnnotationStoreStrings.SELECTOR.getName())) {
+        && jsonAnnotation
+        .getJSONObject(AnnotationStoreStrings.TARGET.getName())
+        .has(AnnotationStoreStrings.SELECTOR.getName())
+        && jsonAnnotation
+        .getJSONObject(AnnotationStoreStrings.TARGET.getName())
+        .getJSONObject(AnnotationStoreStrings.SELECTOR.getName())
+        .has(AnnotationStoreStrings.TYPE.getName())
+        && jsonAnnotation
+        .getJSONObject(AnnotationStoreStrings.TARGET.getName())
+        .getJSONObject(AnnotationStoreStrings.SELECTOR.getName())
+        .getString(AnnotationStoreStrings.TYPE.getName())
+        .equals(AnnotationStoreStrings.SVG_SELECTOR.getName())) {
 
-      annotation.setSvgCode(jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName())
-          .getJSONObject(AnnotationStoreStrings.SELECTOR.getName()).getString(
-              AnnotationStoreStrings.VALUE.getName()));
+      String fullSvg = jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName())
+        .getJSONObject(AnnotationStoreStrings.SELECTOR.getName()).getString(
+          AnnotationStoreStrings.VALUE.getName());
+      
+      if (!fullSvg.contains("</svg>")) {
+        svgString = "invalid";
+      } else {
+        svgString = fullSvg.substring(fullSvg.indexOf('>') + 1, fullSvg.lastIndexOf('<'));
+      }
+    } else {
+      svgString = "invalid";
     }
-
+    annotation.setSvgCode(svgString);
+    
     //set via
     if (jsonAnnotation.has(AnnotationStoreStrings.VIA.getName())) {
       annotation.setVia(jsonAnnotation.getString(AnnotationStoreStrings.VIA.getName()));
@@ -395,6 +415,7 @@ class AnnotationConverter {
     if (annotation.getSvgCode() != null && !annotation.getSvgCode().trim().equals("")) {
       selector.put(AnnotationStoreStrings.TYPE.getName(),
           AnnotationStoreStrings.SVG_SELECTOR.getName());
+          //TODO
       selector.put(AnnotationStoreStrings.VALUE.getName(), annotation.getSvgCode());
       target.put(AnnotationStoreStrings.SELECTOR.getName(), selector);
     }

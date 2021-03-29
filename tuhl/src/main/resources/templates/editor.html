@@ -133,8 +133,10 @@
                         <td th:text="${anno.getId()}"
                             th:title="${anno.getId()}"
                             th:data-field="${anno.getSvgCode()}"
+                            th:bgcolor="${anno.getColor().getColorHex()}"
                             id="anno_id"
-                            onclick="selectAnnotation(event, this); drawSvgs(this.getAttribute('data-field'))">
+                            onclick="selectAnnotation(event, this); 
+                                drawSvg(this.getAttribute('data-field'), this.getAttribute('bgcolor'))">
                         </td>
                     </tr>
                     </tbody>

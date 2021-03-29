@@ -300,37 +300,4 @@ public class AccessService implements IAccessService {
     }
     return sortedAnnotations;
   }
-
-  /*
-   * Gets all annotations for a page.
-   */
-  private List<Annotation> getAnnotationsByPage(Page page)
-      throws InterruptedException, JSONException, IOException {
-    List<JSONObject> jsonAnnotations =
-        annotationStoreAccessService.getAnnotationsByPageId(page.getId(), page.getPageNumber());
-    List<Annotation> annotations = new ArrayList<>();
-
-    for (JSONObject annotation : jsonAnnotations) {
-      annotations.add(annotationConverter.buildAnnotationFromJson(annotation));
-    }
-
-    //remove de interpretatione annotations to which there is a corresponding validated annotation
-    List<String> canonicalIds = new ArrayList<>();
-    for (Annotation annotation : annotations) {
-      if (annotation.getCanonical() != null) {
-        canonicalIds.add(annotation.getCanonical());
-      }
-    }
-    List<Annotation> redundantAnnotations = new ArrayList<>();
-    for (Annotation annotation : annotations) {
-      if (canonicalIds.contains(annotation.getId())) {
-        redundantAnnotations.add(annotation);
-      }
-    }
-    for (Annotation redundantAnno : redundantAnnotations) {
-      annotations.remove(redundantAnno);
-    }
-
-    return annotations;
-  }
 }
