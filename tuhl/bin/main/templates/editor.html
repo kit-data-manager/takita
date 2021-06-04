@@ -20,9 +20,12 @@
             th:src="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js}"></script>
     <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@3.0/dist/svg.min.js"></script>
     <script src="/js/editor.js"></script>
+    <script src="/js/editor_svg.js"></script>
     
 </head>
-<body class="container-fluid p-0">
+<body class="container-fluid p-0" th:data-field="${currentAnnotationsJson}" 
+    onload="init(document.body.getAttribute('data-field'))" 
+    onresize="resizeViewbox()">
 <div id="editor" th:fragment="editor">
     <div class="row mx-auto pr-3 bg-light">
         <div class="col-auto align-self-center">
@@ -94,7 +97,7 @@
                         th:text="#{info.no_text_support}">
                     </label>
                 </div>
-                <button id="editAnnoSvg" onclick="toggleEditable()" type="button">edit</button>
+                <button id="editAnnoSvg" onclick="toggleEditable()" type="button" class="btn btn-primary">edit</button>
             </div>
         </div>
         
@@ -106,15 +109,16 @@
     </div>
     <div class="row m-5">
         <div class="col-auto">
-            <button class="btn btn-primary"
+            <div >
+                <button class="btn btn-primary"
                     type="button"
                     data-toggle="collapse"
                     data-target="#outline"
                     aria-expanded="false"
                     aria-controls="outline"
                     th:text="#{buttons.annotations}">
-            </button>
-        </div>
+                </button>
+             </div>
         <div class="col-auto">
             <button class="btn btn-primary"
                     type="button"
@@ -135,8 +139,8 @@
                             th:data-field="${anno.getSvgCode()}"
                             th:bgcolor="${anno.getColor().getColorHex()}"
                             id="anno_id"
-                            onclick="selectAnnotation(event, this); 
-                                drawSvg(this.getAttribute('data-field'), this.getAttribute('bgcolor'))">
+                            onclick="selectAnnotation(event, this.getAttribute('title'));
+                                    drawSvg(this.getAttribute('data-field'), this.getAttribute('bgcolor'))">
                         </td>
                     </tr>
                     </tbody>
@@ -170,7 +174,6 @@
         </div>
     </div>
 </div>
-<script src="/js/editor_svg.js"></script>
 </body>
 
 </html>
@@ -194,7 +197,7 @@
 }
 
 #imageWorkspace {
-    background-color: yellowgreen; /* debug color, is hidden behint image if everything works as intended */
+    background-color: yellowgreen; /* debug color, is hidden behind image if everything works as intended */
     position: relative;
     display: inline-block; /* shrinks container to image size */
 }

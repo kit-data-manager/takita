@@ -1,7 +1,7 @@
-function selectAnnotation(event, anno) {
+function selectAnnotation(event, annoTitle) {
     event.preventDefault();
     let params = {
-        id: anno.getAttribute('title')
+        id: annoTitle
     }
     postEditorController("select_annotation", params);
 }

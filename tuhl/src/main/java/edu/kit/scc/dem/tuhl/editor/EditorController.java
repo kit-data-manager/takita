@@ -2,14 +2,17 @@ package edu.kit.scc.dem.tuhl.editor;
 
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
+import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Controller;
@@ -73,8 +76,10 @@ public class EditorController {
       editorService.selectPage(pageId);
       model.addAttribute("currentPage", editorService.getCurrentPage());
       model.addAttribute("currentManuscript", editorService.getCurrentManuscript());
+      model.addAttribute("currentAnnotationsJson", 
+        getDisplayableAnnotations(editorService.getCurrentPage().getAnnotations()));
       assistanceService.updateModel(model);
-
+      
     } catch (NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     }
@@ -271,4 +276,26 @@ public class EditorController {
     }
     return "editor";
   }
+
+  private JSONArray getDisplayableAnnotations(List<Annotation> annotations) {
+    JSONArray displayable = new JSONArray();
+    try {
+      
+      for (int i = 0; i < annotations.size(); i++) {
+        JSONObject thisAnno = new JSONObject();
+
+        thisAnno.put("ID", annotations.get(i).getId());
+        thisAnno.put("SVG", annotations.get(i).getSvgCode());
+        thisAnno.put("Color", annotations.get(i).getColor().getColorHex());
+
+        displayable.put(i, thisAnno);
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return displayable;
+  }
+
+  
 }
