@@ -35,4 +35,37 @@ public enum Motivation {
   public String getName() {
     return name;
   }
+
+  public static Motivation stringToMotivation(String stringMotivation) {
+    /* See Motivation enum
+    if (Motivation.ASSESSING.toString().equals(stringMotivation)) {
+      return Motivation.ASSESSING;
+    } else */
+    if (Motivation.BOOKMARKING.toString().equals(stringMotivation)) {
+      return Motivation.BOOKMARKING;
+    } else if (Motivation.CLASSIFYING.toString().equals(stringMotivation)) {
+      return Motivation.CLASSIFYING;
+    } else if (Motivation.COMMENTING.toString().equals(stringMotivation)) {
+      return Motivation.COMMENTING;
+    } else if (Motivation.DESCRIBING.toString().equals(stringMotivation)) {
+      return Motivation.DESCRIBING;
+    } else if (Motivation.EDITING.toString().equals(stringMotivation)) {
+      return Motivation.EDITING;
+    } else if (Motivation.HIGHLIGHTING.toString().equals(stringMotivation)) {
+      return Motivation.HIGHLIGHTING;
+    } else if (Motivation.IDENTIFYING.toString().equals(stringMotivation)) {
+      return Motivation.IDENTIFYING;
+    } else if (Motivation.LINKING.toString().equals(stringMotivation)) {
+      return Motivation.LINKING;
+    } else if (Motivation.MODERATING.toString().equals(stringMotivation)) {
+      return Motivation.MODERATING;
+    } else if (Motivation.QUESTIONING.toString().equals(stringMotivation)) {
+      return Motivation.QUESTIONING;
+    } else if (Motivation.REPLYING.toString().equals(stringMotivation)) {
+      return Motivation.REPLYING;
+    } else if (Motivation.TAGGING.toString().equals(stringMotivation)) {
+      return Motivation.TAGGING;
+    }
+    throw new IllegalArgumentException("Purpose couldn't be parsed.");
+  }
 }

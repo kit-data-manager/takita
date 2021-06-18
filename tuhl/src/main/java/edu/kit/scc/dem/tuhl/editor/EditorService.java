@@ -74,7 +74,7 @@ public class EditorService implements IEditorService {
     newAnnotation.setModified(Date.from(Instant.now()));
 
     if (color != null) {
-      newAnnotation.setColor(stringToColor(color));
+      newAnnotation.setColor(Color.stringToColor(color));
     } else {
       newAnnotation.setColor(Color.DEFAULT);
     }
@@ -83,8 +83,8 @@ public class EditorService implements IEditorService {
       newAnnotation.setSvgCode(svgCode);
     }
 
-    if (motivation != null && stringToMotivation(motivation) != null) {
-      newAnnotation.setMotivation(stringToMotivation(motivation));
+    if (motivation != null && Motivation.stringToMotivation(motivation) != null) {
+      newAnnotation.setMotivation(Motivation.stringToMotivation(motivation));
     }
 
     try {
@@ -131,7 +131,7 @@ public class EditorService implements IEditorService {
     updatedAnnotation.setModified(Date.from(Instant.now()));
 
     if (color != null && !color.trim().equals("")) {
-      updatedAnnotation.setColor(stringToColor(color));
+      updatedAnnotation.setColor(Color.stringToColor(color));
     } else {
       updatedAnnotation.setColor(Color.DEFAULT);
     }
@@ -140,8 +140,8 @@ public class EditorService implements IEditorService {
       updatedAnnotation.setSvgCode(svgCode);
     }
 
-    if (motivation != null && stringToMotivation(motivation) != null) {
-      updatedAnnotation.setMotivation(stringToMotivation(motivation));
+    if (motivation != null && Motivation.stringToMotivation(motivation) != null) {
+      updatedAnnotation.setMotivation(Motivation.stringToMotivation(motivation));
     }
 
     try {
@@ -227,8 +227,8 @@ public class EditorService implements IEditorService {
       newTextCard.setValue(value);
     }
 
-    if (purpose != null && stringToMotivation(purpose) != null) {
-      newTextCard.setPurpose(stringToMotivation(purpose));
+    if (purpose != null && Motivation.stringToMotivation(purpose) != null) {
+      newTextCard.setPurpose(Motivation.stringToMotivation(purpose));
     }
     try {
       newTextCard = (TextCard) searchIndexService.addBody(newTextCard);
@@ -327,7 +327,7 @@ public class EditorService implements IEditorService {
     }
 
     if (purpose != null && !purpose.trim().equals("")) {
-      updatedTextCard.setPurpose(stringToMotivation(purpose));
+      updatedTextCard.setPurpose(Motivation.stringToMotivation(purpose));
     }
 
     TextCard newTextCard = new TextCard(UUID.randomUUID().toString());
@@ -527,75 +527,5 @@ public class EditorService implements IEditorService {
   @Override
   public Body getCurrentBody() {
     return currentBody;
-  }
-
-  // TODO: auslagern in enum
-  private Color stringToColor(String stringColor) {
-    if (Color.TEXT_REGION.toString().equals(stringColor)) {
-      return Color.TEXT_REGION;
-    } else if (Color.IMAGE_REGION.toString().equals(stringColor)) {
-      return Color.IMAGE_REGION;
-    } else if (Color.PAGE_REGION.toString().equals(stringColor)) {
-      return Color.PAGE_REGION;
-    } else if (Color.LINE_DRAWING_REGION.toString().equals(stringColor)) {
-      return Color.LINE_DRAWING_REGION;
-    } else if (Color.GRAPHIC_REGION.toString().equals(stringColor)) {
-      return Color.GRAPHIC_REGION;
-    } else if (Color.TABLE_REGION.toString().equals(stringColor)) {
-      return Color.TABLE_REGION;
-    } else if (Color.CHART_REGION.toString().equals(stringColor)) {
-      return Color.CHART_REGION;
-    } else if (Color.SEPARATOR_REGION.toString().equals(stringColor)) {
-      return Color.SEPARATOR_REGION;
-    } else if (Color.MATHS_REGION.toString().equals(stringColor)) {
-      return Color.MATHS_REGION;
-    } else if (Color.CHEM_REGION.toString().equals(stringColor)) {
-      return Color.CHEM_REGION;
-    } else if (Color.MUSIC_REGION.toString().equals(stringColor)) {
-      return Color.MUSIC_REGION;
-    } else if (Color.ADVERT_REGION.toString().equals(stringColor)) {
-      return Color.ADVERT_REGION;
-    } else if (Color.NOISE_REGION.toString().equals(stringColor)) {
-      return Color.NOISE_REGION;
-    } else if (Color.UNKNOWN_REGION.toString().equals(stringColor)) {
-      return Color.UNKNOWN_REGION;
-    } else if (Color.CUSTOM_REGION.toString().equals(stringColor)) {
-      return Color.CUSTOM_REGION;
-    } else {
-      return Color.DEFAULT;
-    }
-  }
-
-  private Motivation stringToMotivation(String stringMotivation) {
-    /* See Motivation enum
-    if (Motivation.ASSESSING.toString().equals(stringMotivation)) {
-      return Motivation.ASSESSING;
-    } else */
-    if (Motivation.BOOKMARKING.toString().equals(stringMotivation)) {
-      return Motivation.BOOKMARKING;
-    } else if (Motivation.CLASSIFYING.toString().equals(stringMotivation)) {
-      return Motivation.CLASSIFYING;
-    } else if (Motivation.COMMENTING.toString().equals(stringMotivation)) {
-      return Motivation.COMMENTING;
-    } else if (Motivation.DESCRIBING.toString().equals(stringMotivation)) {
-      return Motivation.DESCRIBING;
-    } else if (Motivation.EDITING.toString().equals(stringMotivation)) {
-      return Motivation.EDITING;
-    } else if (Motivation.HIGHLIGHTING.toString().equals(stringMotivation)) {
-      return Motivation.HIGHLIGHTING;
-    } else if (Motivation.IDENTIFYING.toString().equals(stringMotivation)) {
-      return Motivation.IDENTIFYING;
-    } else if (Motivation.LINKING.toString().equals(stringMotivation)) {
-      return Motivation.LINKING;
-    } else if (Motivation.MODERATING.toString().equals(stringMotivation)) {
-      return Motivation.MODERATING;
-    } else if (Motivation.QUESTIONING.toString().equals(stringMotivation)) {
-      return Motivation.QUESTIONING;
-    } else if (Motivation.REPLYING.toString().equals(stringMotivation)) {
-      return Motivation.REPLYING;
-    } else if (Motivation.TAGGING.toString().equals(stringMotivation)) {
-      return Motivation.TAGGING;
-    }
-    throw new IllegalArgumentException("Purpose couldn't be parsed.");
   }
 }

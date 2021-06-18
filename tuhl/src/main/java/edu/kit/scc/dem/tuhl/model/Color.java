@@ -52,4 +52,83 @@ public enum Color {
   public String getColorHex() {
     return colorHex;
   }
+
+  /**
+   * Converts String with color name to Color
+   * 
+   * @param stringColor
+   * @return Color color
+   */
+  public static Color stringToColor(String stringColor) {
+    if (Color.TEXT_REGION.toString().equals(stringColor)) {
+      return Color.TEXT_REGION;
+    } else if (Color.IMAGE_REGION.toString().equals(stringColor)) {
+      return Color.IMAGE_REGION;
+    } else if (Color.PAGE_REGION.toString().equals(stringColor)) {
+      return Color.PAGE_REGION;
+    } else if (Color.LINE_DRAWING_REGION.toString().equals(stringColor)) {
+      return Color.LINE_DRAWING_REGION;
+    } else if (Color.GRAPHIC_REGION.toString().equals(stringColor)) {
+      return Color.GRAPHIC_REGION;
+    } else if (Color.TABLE_REGION.toString().equals(stringColor)) {
+      return Color.TABLE_REGION;
+    } else if (Color.CHART_REGION.toString().equals(stringColor)) {
+      return Color.CHART_REGION;
+    } else if (Color.SEPARATOR_REGION.toString().equals(stringColor)) {
+      return Color.SEPARATOR_REGION;
+    } else if (Color.MATHS_REGION.toString().equals(stringColor)) {
+      return Color.MATHS_REGION;
+    } else if (Color.CHEM_REGION.toString().equals(stringColor)) {
+      return Color.CHEM_REGION;
+    } else if (Color.MUSIC_REGION.toString().equals(stringColor)) {
+      return Color.MUSIC_REGION;
+    } else if (Color.ADVERT_REGION.toString().equals(stringColor)) {
+      return Color.ADVERT_REGION;
+    } else if (Color.NOISE_REGION.toString().equals(stringColor)) {
+      return Color.NOISE_REGION;
+    } else if (Color.UNKNOWN_REGION.toString().equals(stringColor)) {
+      return Color.UNKNOWN_REGION;
+    } else if (Color.CUSTOM_REGION.toString().equals(stringColor)) {
+      return Color.CUSTOM_REGION;
+    } else {
+      return Color.DEFAULT;
+    }
+  }
+
+  public static String colorToString(Color color) {
+    switch (color) {
+      case TEXT_REGION:
+        return Color.TEXT_REGION.getName();
+      case IMAGE_REGION:
+        return Color.IMAGE_REGION.getName();
+      case PAGE_REGION:
+        return Color.PAGE_REGION.getName();
+      case LINE_DRAWING_REGION:
+        return Color.LINE_DRAWING_REGION.getName();
+      case GRAPHIC_REGION:
+        return Color.GRAPHIC_REGION.getName();
+      case TABLE_REGION:
+        return Color.TABLE_REGION.getName();
+      case CHART_REGION:
+        return Color.CHART_REGION.getName();
+      case SEPARATOR_REGION:
+        return Color.SEPARATOR_REGION.getName();
+      case MATHS_REGION:
+        return Color.MATHS_REGION.getName();
+      case CHEM_REGION:
+        return Color.CHEM_REGION.getName();
+      case MUSIC_REGION:
+        return Color.MUSIC_REGION.getName();
+      case ADVERT_REGION:
+        return Color.ADVERT_REGION.getName();
+      case NOISE_REGION:
+        return Color.NOISE_REGION.getName();
+      case UNKNOWN_REGION:
+        return Color.UNKNOWN_REGION.getName();
+      case CUSTOM_REGION:
+        return Color.CUSTOM_REGION.getName();
+      default:
+        return Color.DEFAULT.getName();
+    }
+  }
 }

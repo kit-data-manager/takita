@@ -86,9 +86,11 @@ class AnnotationConverter {
     }
 
     //set motivation
-    if (jsonAnnotation.has(AnnotationStoreStrings.MOTIVATION.getName()) && stringToMotivation(
-        jsonAnnotation.getString(AnnotationStoreStrings.MOTIVATION.getName())) != null) {
-      annotation.setMotivation(stringToMotivation(jsonAnnotation.getString(
+    if (jsonAnnotation.has(AnnotationStoreStrings.MOTIVATION.getName()) 
+        && Motivation.stringToMotivation(jsonAnnotation.getString(
+          AnnotationStoreStrings.MOTIVATION.getName())) != null) {
+
+      annotation.setMotivation(Motivation.stringToMotivation(jsonAnnotation.getString(
           AnnotationStoreStrings.MOTIVATION.getName())));
     }
     
@@ -147,16 +149,16 @@ class AnnotationConverter {
       JSONArray bodies = jsonAnnotation.getJSONArray(AnnotationStoreStrings.BODY.getName());
       for (int i = 0; i < bodies.length(); i++) {
         if (bodies.getJSONObject(i).has(AnnotationStoreStrings.DC_SUBJECT.getName())) {
-          stringToColor(bodies.getJSONObject(i).getString(
-              AnnotationStoreStrings.DC_SUBJECT.getName()), annotation);
+          annotation.setColor(Color.stringToColor(bodies.getJSONObject(i).getString(
+              AnnotationStoreStrings.DC_SUBJECT.getName())));
         }
       }
       //if annotation has single body
     } else {
       if (jsonAnnotation.getJSONObject(AnnotationStoreStrings.BODY.getName())
           .has(AnnotationStoreStrings.DC_SUBJECT.getName())) {
-        stringToColor(jsonAnnotation.getJSONObject(AnnotationStoreStrings.BODY.getName()).getString(
-            AnnotationStoreStrings.DC_SUBJECT.getName()), annotation);
+            annotation.setColor(Color.stringToColor(jsonAnnotation.getJSONObject(AnnotationStoreStrings.BODY.getName()).getString(
+            AnnotationStoreStrings.DC_SUBJECT.getName())));
       }
     }
   }
@@ -279,9 +281,9 @@ class AnnotationConverter {
       tags.add((Tag) thisBody);
     } else {
       thisBody = new TextCard(UUID.randomUUID().toString());
-      if (jsonBody.has(AnnotationStoreStrings.PURPOSE.getName()) && stringToMotivation(
+      if (jsonBody.has(AnnotationStoreStrings.PURPOSE.getName()) && Motivation.stringToMotivation(
           jsonBody.getString(AnnotationStoreStrings.PURPOSE.getName())) != null) {
-        thisBody.setPurpose(stringToMotivation(jsonBody.getString(
+        thisBody.setPurpose(Motivation.stringToMotivation(jsonBody.getString(
             AnnotationStoreStrings.PURPOSE.getName())));
       }
       textCards.add((TextCard) thisBody);
@@ -381,7 +383,7 @@ class AnnotationConverter {
         for (int i = 0; i < bodyArray.length(); i++) {
           if (bodyArray.getJSONObject(i).has(AnnotationStoreStrings.DC_SUBJECT.getName())) {
             bodyArray.getJSONObject(i).put(AnnotationStoreStrings.DC_SUBJECT.getName(),
-                colorToString(annotation.getColor()));
+                Color.colorToString(annotation.getColor()));
             buildCreator(annotation, bodyArray.getJSONObject(i));
             hasColor = true;
           }
@@ -389,7 +391,7 @@ class AnnotationConverter {
         if (!hasColor) {
           JSONObject colorBody = new JSONObject();
           colorBody.put(AnnotationStoreStrings.DC_SUBJECT.getName(),
-              colorToString(annotation.getColor()));
+              Color.colorToString(annotation.getColor()));
           buildCreator(annotation, colorBody);
           jsonAnnotation.getJSONArray(AnnotationStoreStrings.BODY.getName()).put(colorBody);
         }
@@ -624,115 +626,6 @@ class AnnotationConverter {
       jsonBody.put(AnnotationStoreStrings.CREATOR.getName(), newCreators);
     }
   }
-
-  private String colorToString(Color color) {
-    switch (color) {
-      case TEXT_REGION:
-        return Color.TEXT_REGION.getName();
-      case IMAGE_REGION:
-        return Color.IMAGE_REGION.getName();
-      case PAGE_REGION:
-        return Color.PAGE_REGION.getName();
-      case LINE_DRAWING_REGION:
-        return Color.LINE_DRAWING_REGION.getName();
-      case GRAPHIC_REGION:
-        return Color.GRAPHIC_REGION.getName();
-      case TABLE_REGION:
-        return Color.TABLE_REGION.getName();
-      case CHART_REGION:
-        return Color.CHART_REGION.getName();
-      case SEPARATOR_REGION:
-        return Color.SEPARATOR_REGION.getName();
-      case MATHS_REGION:
-        return Color.MATHS_REGION.getName();
-      case CHEM_REGION:
-        return Color.CHEM_REGION.getName();
-      case MUSIC_REGION:
-        return Color.MUSIC_REGION.getName();
-      case ADVERT_REGION:
-        return Color.ADVERT_REGION.getName();
-      case NOISE_REGION:
-        return Color.NOISE_REGION.getName();
-      case UNKNOWN_REGION:
-        return Color.UNKNOWN_REGION.getName();
-      case CUSTOM_REGION:
-        return Color.CUSTOM_REGION.getName();
-      default:
-        return Color.DEFAULT.getName();
-    }
-  }
-
-
-  private Motivation stringToMotivation(String stringMotivation) {
-    /* See Motivation enum
-    if (Motivation.ASSESSING.getName().equals(stringMotivation)) {
-      return Motivation.ASSESSING;
-    } else*/
-    if (Motivation.BOOKMARKING.getName().equals(stringMotivation)) {
-      return Motivation.BOOKMARKING;
-    } else if (Motivation.CLASSIFYING.getName().equals(stringMotivation)) {
-      return Motivation.CLASSIFYING;
-    } else if (Motivation.COMMENTING.getName().equals(stringMotivation)) {
-      return Motivation.COMMENTING;
-    } else if (Motivation.DESCRIBING.getName().equals(stringMotivation)) {
-      return Motivation.DESCRIBING;
-    } else if (Motivation.EDITING.getName().equals(stringMotivation)) {
-      return Motivation.EDITING;
-    } else if (Motivation.HIGHLIGHTING.getName().equals(stringMotivation)) {
-      return Motivation.HIGHLIGHTING;
-    } else if (Motivation.IDENTIFYING.getName().equals(stringMotivation)) {
-      return Motivation.IDENTIFYING;
-    } else if (Motivation.LINKING.getName().equals(stringMotivation)) {
-      return Motivation.LINKING;
-    } else if (Motivation.MODERATING.getName().equals(stringMotivation)) {
-      return Motivation.MODERATING;
-    } else if (Motivation.QUESTIONING.getName().equals(stringMotivation)) {
-      return Motivation.QUESTIONING;
-    } else if (Motivation.REPLYING.getName().equals(stringMotivation)) {
-      return Motivation.REPLYING;
-    } else if (Motivation.TAGGING.getName().equals(stringMotivation)) {
-      return Motivation.TAGGING;
-    }
-    return null;
-  }
-
-
-  private void stringToColor(String color, Annotation annotation) {
-    if (Color.TEXT_REGION.getName().equals(color)) {
-      annotation.setColor(Color.TEXT_REGION);
-    } else if (Color.IMAGE_REGION.getName().equals(color)) {
-      annotation.setColor(Color.IMAGE_REGION);
-    } else if (Color.PAGE_REGION.getName().equals(color)) {
-      annotation.setColor(Color.PAGE_REGION);
-    } else if (Color.LINE_DRAWING_REGION.getName().equals(color)) {
-      annotation.setColor(Color.LINE_DRAWING_REGION);
-    } else if (Color.GRAPHIC_REGION.getName().equals(color)) {
-      annotation.setColor(Color.GRAPHIC_REGION);
-    } else if (Color.TABLE_REGION.getName().equals(color)) {
-      annotation.setColor(Color.TABLE_REGION);
-    } else if (Color.CHART_REGION.getName().equals(color)) {
-      annotation.setColor(Color.CHART_REGION);
-    } else if (Color.SEPARATOR_REGION.getName().equals(color)) {
-      annotation.setColor(Color.SEPARATOR_REGION);
-    } else if (Color.MATHS_REGION.getName().equals(color)) {
-      annotation.setColor(Color.MATHS_REGION);
-    } else if (Color.CHEM_REGION.getName().equals(color)) {
-      annotation.setColor(Color.CHEM_REGION);
-    } else if (Color.MUSIC_REGION.getName().equals(color)) {
-      annotation.setColor(Color.MUSIC_REGION);
-    } else if (Color.ADVERT_REGION.getName().equals(color)) {
-      annotation.setColor(Color.ADVERT_REGION);
-    } else if (Color.NOISE_REGION.getName().equals(color)) {
-      annotation.setColor(Color.NOISE_REGION);
-    } else if (Color.UNKNOWN_REGION.getName().equals(color)) {
-      annotation.setColor(Color.UNKNOWN_REGION);
-    } else if (Color.CUSTOM_REGION.getName().equals(color)) {
-      annotation.setColor(Color.CUSTOM_REGION);
-    } else {
-      annotation.setColor(Color.DEFAULT);
-    }
-  }
-
 
   private Date extractDateFromJsonAnnotation(JSONObject json, String type) {
     Date date = null;
