@@ -19,6 +19,7 @@
             integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"
             th:src="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js}"></script>
     <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@3.0/dist/svg.min.js"></script>
+    <script src="https://d3js.org/d3.v6.min.js"></script>
     <script src="/js/editor.js"></script>
     <script src="/js/editor_svg.js"></script>
     
@@ -137,10 +138,15 @@
                         <td th:text="${anno.getId()}"
                             th:title="${anno.getId()}"
                             th:data-field="${anno.getSvgCode()}"
-                            th:bgcolor="${anno.getColor().getColorHex()}"
                             id="anno_id"
-                            onclick="selectAnnotation(event, this.getAttribute('title'));
-                                    drawSvg(this.getAttribute('data-field'), this.getAttribute('bgcolor'))">
+                            onclick="selectAnnotation(event, this.getAttribute('title'));">
+                        </td>
+                        <td>
+                            <span class="btn btn-primary" type="button"
+                                th:data-field="${anno.getId()}" 
+                                th:bgcolor="${anno.getColor().getColorHex()}" 
+                                onclick="toggleVisible(this.getAttribute('data-field'), this)"> 👁
+                            </span>
                         </td>
                     </tr>
                     </tbody>

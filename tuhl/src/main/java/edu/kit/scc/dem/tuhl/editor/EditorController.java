@@ -287,6 +287,7 @@ public class EditorController {
         thisAnno.put("ID", annotations.get(i).getId());
         thisAnno.put("SVG", annotations.get(i).getSvgCode());
         thisAnno.put("Color", annotations.get(i).getColor().getColorHex());
+        thisAnno.put("Visible", true);
 
         displayable.put(i, thisAnno);
       }

@@ -8,6 +8,7 @@ var height;
 
 var canvas
 var img;
+var annoJson;
 
 function toggleEditable() {
   if (editable) {
@@ -37,8 +38,37 @@ function drawSvg(svgString, color, id) {
   })
 }
 
+function drawAnnos(annoJson) {
+  for (var i = 0; i < annoJson.length; i++) {
+    var anno = annoJson[i];
+    if (anno["Visible"]) {
+      drawSvg(anno["SVG"], anno["Color"], anno["ID"]);
+    }
+  }
+}
+
+function toggleVisible(id, button) {
+  console.log("clear");
+  canvas.clear();
+
+  for (i = 0; i < annoJson.length; i++) {
+    var thisAnno = annoJson[i];
+    if (id === thisAnno["ID"]) {
+      var newColor;
+      if (thisAnno["Visible"])  {
+        newColor = 'grey'
+      } else {
+        newColor = 'blue'
+      }
+      button.style.background = newColor;
+
+      thisAnno["Visible"] = !thisAnno["Visible"];
+    }
+  }
+  drawAnnos(annoJson);
+}
+
 function init(annotations) {
-  console.log(annotations)
 
   img = document.getElementById("pageImage");
   width = img.naturalWidth;
@@ -51,12 +81,8 @@ function init(annotations) {
     .viewbox(0, 0, width, height);
 
   // Drawing anno svgs on first opening of page
-  var annoJson = JSON.parse(annotations);
-  for (var i = 0; i < annoJson.length; i++) {
-    var anno = annoJson[i]; 
-    drawSvg(anno["SVG"], anno["Color"], anno["ID"]);
-  }
-  
+  annoJson = JSON.parse(annotations);
+  drawAnnos(annoJson);
 
   // what to do when we press the mouse button down
   canvas.on('mousedown', (e) => {
