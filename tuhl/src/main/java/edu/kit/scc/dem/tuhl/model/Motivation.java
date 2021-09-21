@@ -2,7 +2,7 @@ package edu.kit.scc.dem.tuhl.model;
 
 public enum Motivation {
   //assessing doesn't yet work with the WADM
-  //ASSESSING("assessing"),
+  ASSESSING("assessing"),
   BOOKMARKING("bookmarking"),
   CLASSIFYING("classifying"),
   COMMENTING("commenting"),
@@ -14,7 +14,8 @@ public enum Motivation {
   MODERATING("moderating"),
   QUESTIONING("questioning"),
   REPLYING("replying"),
-  TAGGING("tagging");
+  TAGGING("tagging"),
+  NOMOTIVATION("no motivation");
 
   private final String name;
 
@@ -41,31 +42,32 @@ public enum Motivation {
     if (Motivation.ASSESSING.toString().equals(stringMotivation)) {
       return Motivation.ASSESSING;
     } else */
-    if (Motivation.BOOKMARKING.toString().equals(stringMotivation)) {
+    if (stringMotivation.equals(Motivation.BOOKMARKING.getName())) {
       return Motivation.BOOKMARKING;
-    } else if (Motivation.CLASSIFYING.toString().equals(stringMotivation)) {
+    } else if (stringMotivation.equals(Motivation.CLASSIFYING.getName())) {
       return Motivation.CLASSIFYING;
-    } else if (Motivation.COMMENTING.toString().equals(stringMotivation)) {
+    } else if (stringMotivation.equals(Motivation.COMMENTING.getName())) {
       return Motivation.COMMENTING;
-    } else if (Motivation.DESCRIBING.toString().equals(stringMotivation)) {
+    } else if (stringMotivation.equals(Motivation.DESCRIBING.getName())) {
       return Motivation.DESCRIBING;
-    } else if (Motivation.EDITING.toString().equals(stringMotivation)) {
+    } else if (stringMotivation.equals(Motivation.EDITING.getName())) {
       return Motivation.EDITING;
-    } else if (Motivation.HIGHLIGHTING.toString().equals(stringMotivation)) {
+    } else if (stringMotivation.equals(Motivation.HIGHLIGHTING.getName())) {
       return Motivation.HIGHLIGHTING;
-    } else if (Motivation.IDENTIFYING.toString().equals(stringMotivation)) {
+    } else if (stringMotivation.equals(Motivation.IDENTIFYING.getName())) {
       return Motivation.IDENTIFYING;
-    } else if (Motivation.LINKING.toString().equals(stringMotivation)) {
+    } else if (stringMotivation.equals(Motivation.LINKING.getName())) {
       return Motivation.LINKING;
-    } else if (Motivation.MODERATING.toString().equals(stringMotivation)) {
+    } else if (stringMotivation.equals(Motivation.MODERATING.getName())) {
       return Motivation.MODERATING;
-    } else if (Motivation.QUESTIONING.toString().equals(stringMotivation)) {
+    } else if (stringMotivation.equals(Motivation.QUESTIONING.getName())) {
       return Motivation.QUESTIONING;
-    } else if (Motivation.REPLYING.toString().equals(stringMotivation)) {
+    } else if (stringMotivation.equals(Motivation.REPLYING.getName())) {
       return Motivation.REPLYING;
-    } else if (Motivation.TAGGING.toString().equals(stringMotivation)) {
+    } else if (stringMotivation.equals(Motivation.TAGGING.name())) {
       return Motivation.TAGGING;
+    } else {
+      return Motivation.NOMOTIVATION;
     }
-    throw new IllegalArgumentException("Purpose couldn't be parsed.");
   }
 }
