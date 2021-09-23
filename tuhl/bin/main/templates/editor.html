@@ -19,6 +19,10 @@
             integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"
             th:src="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js}"></script>
     <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@3.0/dist/svg.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js/dist/svg.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.panzoom.js/dist/svg.panzoom.js"></script>
+
     <script src="https://d3js.org/d3.v6.min.js"></script>
     <script src="/js/editor.js"></script>
     <script src="/js/editor_svg.js"></script>
@@ -89,10 +93,14 @@
     <!-- manuscript page -->
     <div class="row mx-auto">
         <div class="col-7 p-0 container-fluid px-5 pt-3">
-            <div class="row scrollable mx-5">
+            <div>Zoom: <input type="range" id="zoomer" value="1" min="1" max="10" step="0.1"
+                    oninput="zoom(this.value)"></div>
+            <div class="row height- mx-5 scrollable">
                 <div id="imageWorkspace">
                     <img th:if="${currentPage.resourceType == (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).IMAGE)}"
-                        th:src="${currentPage.getResourceUrl()}" class="img-fluid unselectable" id="pageImage">
+                        th:src="${currentPage.getResourceUrl()}" 
+                        class="img-fluid unselectable" 
+                        id="pageImage">
                     <label class="text-center"
                         th:if="${currentPage.resourceType != (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).IMAGE)}"
                         th:text="#{info.no_text_support}">
@@ -103,7 +111,8 @@
         </div>
         
         <!-- bodies and annotations -->
-        <div class="col-5 p-0 container-fluid scrollable px-5 pt-3" style="height: 100vh">
+        <div class="col-5 p-0 container-fluid height-
+     px-5 pt-3" style="height: 100vh">
             <div class="row mx-auto" id="viewerHolder">
             </div>
         </div>
@@ -185,6 +194,10 @@
 </html>
 <style>
 .scrollable {
+    overflow: scroll;
+}
+
+.height-scrollable {
     overflow-y: scroll;
 }
 
@@ -220,6 +233,12 @@
     left: 0;
     height: 100%; /* use containers size */
     width: 100%;
+}
+
+input#zoomer {
+ position: relative;
+ width: 390px;
+ vertical-align: Middle;
 }
 
 /*

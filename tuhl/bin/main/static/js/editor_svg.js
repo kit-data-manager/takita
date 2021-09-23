@@ -68,6 +68,12 @@ function toggleVisible(id, button) {
   drawAnnos(annoJson);
 }
 
+function zoom(z) {
+  img.style.transform=" scale("+z+", "+z+")";
+  img.style.width=(z*100)+"%";
+  canvas.zoom(z/6, { x:width/2, y:height/2});
+ }
+
 function init(annotations) {
 
   img = document.getElementById("pageImage");
@@ -78,7 +84,12 @@ function init(annotations) {
   canvas = SVG().addTo('#imageWorkspace')
     .attr({id: "canvas"})
     .size(img.width, img.height)
-    .viewbox(0, 0, width, height);
+    .viewbox(0, 0, width, height)
+    .panZoom({
+      wheelZoom: false,
+      zoomMin: 0.5,
+      zoomMax: 10
+    });
 
   // Drawing anno svgs on first opening of page
   annoJson = JSON.parse(annotations);
