@@ -70,7 +70,7 @@ public class EditorController {
    * @param pageId Identifier in the editor of the page that should be displayed
    * @return name of html file to display editor
    */
-  @GetMapping("/{pageId:.+}")
+  @GetMapping("/{pageId}")
   public String selectPage(@PathVariable ("pageId") String pageId, Model model) {
     try {
       editorService.selectPage(pageId);
@@ -83,7 +83,7 @@ public class EditorController {
     } catch (NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     }
-    return "/editor";
+    return "editor";
   }
 
   /**
