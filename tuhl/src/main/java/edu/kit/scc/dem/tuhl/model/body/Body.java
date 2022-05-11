@@ -1,27 +1,42 @@
 package edu.kit.scc.dem.tuhl.model.body;
 
-import edu.kit.scc.dem.tuhl.model.Motivation;
+import edu.kit.scc.dem.tuhl.dataaccess.AnnotationStoreStrings;
+import edu.kit.scc.dem.tuhl.dataaccess.TimeStampFormats;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.DateFormat;
+import org.springframework.data.elasticsearch.annotations.Field;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 
 public abstract class Body {
   private String annotationId;
+  
+  @Id
   private final String id;
 
   private List<String> creators;
 
-  private Date created;
-  private Date modified;
+  // format = DateFormat.custom, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSSZ"
+  @Field(type = FieldType.Date)
+  private Instant created;
+  @Field(type = FieldType.Date)
+  private Instant modified;
 
 
   private String title;
+  private String subject;
 
-  //Text content
+  //Text content can either be stored in value or source
   private String value;
-  private Motivation purpose;
+  private String source;
+  
+  private String purpose;
 
   private String fullJson;
 
@@ -94,7 +109,7 @@ public abstract class Body {
    *
    * @return creation date
    */
-  public Date getCreated() {
+  public Instant getCreated() {
     return created;
   }
 
@@ -103,7 +118,7 @@ public abstract class Body {
    *
    * @param created date to be set
    */
-  public void setCreated(Date created) {
+  public void setCreated(Instant created) {
     this.created = created;
   }
 
@@ -112,7 +127,7 @@ public abstract class Body {
    *
    * @return modification date
    */
-  public Date getModified() {
+  public Instant getModified() {
     return modified;
   }
 
@@ -121,7 +136,7 @@ public abstract class Body {
    *
    * @param modified date to be set.
    */
-  public void setModified(Date modified) {
+  public void setModified(Instant modified) {
     this.modified = modified;
   }
 
@@ -141,6 +156,23 @@ public abstract class Body {
   public void setTitle(String title) {
     this.title = title;
   }
+  
+    /**
+   * Gets subject of a body.
+   *
+   * @return subject
+   */
+  public String getSubject() {
+    return subject;
+  }
+
+  /**
+   * Sets subject of a body.
+   * @param subject to be set
+   */
+  public void setSubject(String subject) {
+    this.subject = subject;
+  }
 
   /**
    * Gets value/textual content of a body.
@@ -159,13 +191,31 @@ public abstract class Body {
   public void setValue(String value) {
     this.value = value;
   }
+  
+    /**
+   * Gets source/textual content of a body.
+   *
+   * @return source
+   */
+  public String getSource() {
+    return source;
+  }
+
+  /**
+   * Sets source/textual content of a body.
+   *
+   * @param source / textual content to be set
+   */
+  public void setSource(String source) {
+    this.source = source;
+  }
 
   /**
    * Gets purpose of a body.
    *
    * @return purpose
    */
-  public Motivation getPurpose() {
+  public String getPurpose() {
     return purpose;
   }
 
@@ -174,7 +224,7 @@ public abstract class Body {
    *
    * @param purpose to be set
    */
-  public void setPurpose(Motivation purpose) {
+  public void setPurpose(String purpose) {
     this.purpose = purpose;
   }
 
@@ -199,6 +249,15 @@ public abstract class Body {
    */
   public void setFullJson(JSONObject json) {
     this.fullJson = json.toString();
+  }
+  
+  public boolean equals(Body body) {
+      return (this.fullJson.equals(body.fullJson));
+  }
+  
+  @Override
+  public String toString(){
+      return getClass().getSimpleName() + id + ": " + fullJson;
   }
 }
 

@@ -2,10 +2,14 @@ package edu.kit.scc.dem.tuhl.model;
 
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
@@ -19,12 +23,14 @@ public class Annotation {
   @Field(type = FieldType.Nested, includeInParent = true)
   private List<TextCard> textCards;
 
-  //Annotation ID is whole link to annotationStore
+  //Annotation ID is whole link to annotationStore - format = DateFormat.custom, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSSZ"
   @Id
   private String id;
-  private Date modified;
+  @Field(type = FieldType.Date)
+  private Instant modified;
   private List<String> creators;
-  private Date created;
+  @Field(type = FieldType.Date)
+  private Instant created;
   //contains old Annotation url, for validated annotations only
   private String via;
   //same as via
@@ -33,7 +39,7 @@ public class Annotation {
   private Color color;
   private String svgCode;
 
-  private Motivation motivation;
+  private String motivation;
   
   @Field(type = FieldType.Nested, includeInParent = true)
   private List<Tag> tags;
@@ -99,6 +105,21 @@ public class Annotation {
     this.textCards.add(textCard);
     
   }
+  
+    /**
+   * Updates one text card in the annotation.
+   *
+   * @param textCard to be updated in the text card list
+   */
+  public void updateTextCard(TextCard textCard) {
+    for (TextCard existingTextCard : this.textCards) {
+        if (existingTextCard.getId().equals(textCard.getId())) {
+            this.textCards.set(this.textCards.indexOf(existingTextCard), textCard);
+            
+        }
+    }
+    
+  }
 
   /**
    * Gets id of annotation, which is the complete link to the AnnotationStore.
@@ -123,7 +144,7 @@ public class Annotation {
    *
    * @return modification date
    */
-  public Date getModified() {
+  public Instant getModified() {
     return modified;
   }
 
@@ -132,7 +153,7 @@ public class Annotation {
    *
    * @param modified date to be set
    */
-  public void setModified(Date modified) {
+  public void setModified(Instant modified) {
     this.modified = modified;
   }
 
@@ -168,7 +189,7 @@ public class Annotation {
    *
    * @return creation date
    */
-  public Date getCreated() {
+  public Instant getCreated() {
     return created;
   }
 
@@ -177,7 +198,7 @@ public class Annotation {
    *
    * @param created date to be set
    */
-  public void setCreated(Date created) {
+  public void setCreated(Instant created) {
     this.created = created;
   }
 
@@ -262,7 +283,7 @@ public class Annotation {
    *
    * @return motivation
    */
-  public Motivation getMotivation() {
+  public String getMotivation() {
     return motivation;
   }
 
@@ -271,7 +292,7 @@ public class Annotation {
    *
    * @param motivation to be set
    */
-  public void setMotivation(Motivation motivation) {
+  public void setMotivation(String motivation) {
     this.motivation = motivation;
   }
 
@@ -304,6 +325,22 @@ public class Annotation {
     }
     this.tags.add(tag);
   }
+  
+  /**
+   * Updates one tag in the annotation.
+   *
+   * @param tag to be updated in the text card list
+   */
+  public void updateTag(Tag tag) {
+    for (Tag existingTag : this.tags) {
+        if (existingTag.getId().equals(tag.getId())) {
+            this.tags.set(this.tags.indexOf(existingTag), tag);
+            
+        }
+    }
+    
+  }
+  
 
   /**
    * Gets boolean if annotation was created by algorithm.
@@ -340,4 +377,18 @@ public class Annotation {
   public void setEtag(String etag) {
     this.etag = etag;
   }
+  
+  @Override
+  public String toString(){
+      return getClass().getSimpleName() + id + ": { " + "pageId: " + pageId + 
+              ", modified: " + modified + ", created: " + created +
+              ", via: " + via + ", canonical: " + canonical +
+              ", color: " + color + ", svgCode: " + svgCode + 
+              ", motivation: " + motivation + ", etag: " + etag +
+              ", isAlgorithmAnnotation: " + isAlgorithmAnnotation +
+              ", creators: " + creators.toString() + 
+              ", tags: " + tags.toString() +
+              ", textCards: " + textCards.toString() + "}";
+  }
 }
+

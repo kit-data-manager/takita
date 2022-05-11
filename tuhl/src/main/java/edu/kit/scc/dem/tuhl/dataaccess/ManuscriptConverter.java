@@ -15,12 +15,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class responsible for converting manuscripts from JSON to Manuscript Object.
  */
 class ManuscriptConverter {
 
+  private static final Logger logger = LoggerFactory.getLogger(ManuscriptConverter.class);
   private IRepositoryAccessService repositoryAccessService;
   private IAnnotationStoreAccessService annotationStoreAccessService;
   private AnnotationConverter annotationConverter;
@@ -151,6 +154,7 @@ class ManuscriptConverter {
           + id + RepositoryAccessService.DATA_PATH + pageNumber + RepositoryAccessService.THUMB_JPG;
 
       ImagePage imagePage = new ImagePage(id, pageNumber, created, resourceUrl, thumbResourceUrl);
+ 
       if (sortedAnnotations == null) {
         imagePage.setAnnotations(getAnnotationsByPage(imagePage));
       } else {
@@ -183,7 +187,11 @@ class ManuscriptConverter {
     List<Annotation> annotations = new ArrayList<>();
 
     for (JSONObject annotation : jsonAnnotations) {
-      annotations.add(annotationConverter.buildAnnotationFromJson(annotation));
+      try {
+          annotations.add(annotationConverter.buildAnnotationFromJson(annotation));
+      } catch (Exception e) {
+          logger.info("Couldn't add annotation" + annotation.getString("id"));
+      }
     }
 
     //remove de interpretatione annotations to which there is a corresponding validated annotation

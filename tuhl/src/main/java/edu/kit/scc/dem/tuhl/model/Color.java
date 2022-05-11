@@ -60,35 +60,35 @@ public enum Color {
    * @return Color color
    */
   public static Color stringToColor(String stringColor) {
-    if (Color.TEXT_REGION.toString().equals(stringColor)) {
+    if (Color.TEXT_REGION.getName().equalsIgnoreCase(stringColor)) {
       return Color.TEXT_REGION;
-    } else if (Color.IMAGE_REGION.toString().equals(stringColor)) {
+    } else if (Color.IMAGE_REGION.getName().equalsIgnoreCase(stringColor)) {
       return Color.IMAGE_REGION;
-    } else if (Color.PAGE_REGION.toString().equals(stringColor)) {
+    } else if (Color.PAGE_REGION.getName().equalsIgnoreCase(stringColor)) {
       return Color.PAGE_REGION;
-    } else if (Color.LINE_DRAWING_REGION.toString().equals(stringColor)) {
+    } else if (Color.LINE_DRAWING_REGION.getName().equalsIgnoreCase(stringColor)) {
       return Color.LINE_DRAWING_REGION;
-    } else if (Color.GRAPHIC_REGION.toString().equals(stringColor)) {
+    } else if (Color.GRAPHIC_REGION.getName().equalsIgnoreCase(stringColor)) {
       return Color.GRAPHIC_REGION;
-    } else if (Color.TABLE_REGION.toString().equals(stringColor)) {
+    } else if (Color.TABLE_REGION.getName().equalsIgnoreCase(stringColor)) {
       return Color.TABLE_REGION;
-    } else if (Color.CHART_REGION.toString().equals(stringColor)) {
+    } else if (Color.CHART_REGION.getName().equalsIgnoreCase(stringColor)) {
       return Color.CHART_REGION;
-    } else if (Color.SEPARATOR_REGION.toString().equals(stringColor)) {
+    } else if (Color.SEPARATOR_REGION.getName().equalsIgnoreCase(stringColor)) {
       return Color.SEPARATOR_REGION;
-    } else if (Color.MATHS_REGION.toString().equals(stringColor)) {
+    } else if (Color.MATHS_REGION.getName().equalsIgnoreCase(stringColor)) {
       return Color.MATHS_REGION;
-    } else if (Color.CHEM_REGION.toString().equals(stringColor)) {
+    } else if (Color.CHEM_REGION.getName().equalsIgnoreCase(stringColor)) {
       return Color.CHEM_REGION;
-    } else if (Color.MUSIC_REGION.toString().equals(stringColor)) {
+    } else if (Color.MUSIC_REGION.getName().equalsIgnoreCase(stringColor)) {
       return Color.MUSIC_REGION;
-    } else if (Color.ADVERT_REGION.toString().equals(stringColor)) {
+    } else if (Color.ADVERT_REGION.getName().equalsIgnoreCase(stringColor)) {
       return Color.ADVERT_REGION;
-    } else if (Color.NOISE_REGION.toString().equals(stringColor)) {
+    } else if (Color.NOISE_REGION.getName().equalsIgnoreCase(stringColor)) {
       return Color.NOISE_REGION;
-    } else if (Color.UNKNOWN_REGION.toString().equals(stringColor)) {
+    } else if (Color.UNKNOWN_REGION.getName().equalsIgnoreCase(stringColor)) {
       return Color.UNKNOWN_REGION;
-    } else if (Color.CUSTOM_REGION.toString().equals(stringColor)) {
+    } else if (Color.CUSTOM_REGION.getName().equalsIgnoreCase(stringColor)) {
       return Color.CUSTOM_REGION;
     } else {
       return Color.DEFAULT;

@@ -2,7 +2,6 @@ package edu.kit.scc.dem.tuhl.dataaccess;
 
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
-import edu.kit.scc.dem.tuhl.model.Motivation;
 import edu.kit.scc.dem.tuhl.model.body.Body;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
@@ -12,15 +11,23 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 import java.io.IOException;
 import java.text.ParseException;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-class AnnotationConverter {
+public class AnnotationConverter {
 
+  private static final Logger logger = LoggerFactory.getLogger(AnnotationConverter.class);
   private IAnnotationStoreAccessService annotationStoreAccessService;
   private IRepositoryAccessService repositoryAccessService;
 
@@ -48,6 +55,7 @@ class AnnotationConverter {
    */
   public Annotation buildAnnotationFromJson(JSONObject jsonAnnotation) throws JSONException {
     Annotation annotation = new Annotation();
+    
     //set ID
     if (jsonAnnotation.has(AnnotationStoreStrings.ID.getName())) {
       annotation.setId(jsonAnnotation.getString(AnnotationStoreStrings.ID.getName()));
@@ -87,11 +95,11 @@ class AnnotationConverter {
 
     //set motivation
     if (jsonAnnotation.has(AnnotationStoreStrings.MOTIVATION.getName()) 
-        && Motivation.stringToMotivation(jsonAnnotation.getString(
-          AnnotationStoreStrings.MOTIVATION.getName())) != null) {
+        && jsonAnnotation
+            .getString(AnnotationStoreStrings.MOTIVATION.getName()) != null) {
 
-      annotation.setMotivation(Motivation.stringToMotivation(jsonAnnotation.getString(
-          AnnotationStoreStrings.MOTIVATION.getName())));
+      annotation.setMotivation(jsonAnnotation
+            .getString(AnnotationStoreStrings.MOTIVATION.getName()));
     }
     
     //set svg code
@@ -119,10 +127,12 @@ class AnnotationConverter {
       } else {
         svgString = fullSvg.substring(fullSvg.indexOf('>') + 1, fullSvg.lastIndexOf('<'));
       }
-    } else {
-      svgString = "invalid";
-    }
-    annotation.setSvgCode(svgString);
+      annotation.setSvgCode(svgString);
+    } 
+    //else {
+    //  svgString = "invalid";
+    //}
+        
     
     //set via
     if (jsonAnnotation.has(AnnotationStoreStrings.VIA.getName())) {
@@ -134,12 +144,13 @@ class AnnotationConverter {
       buildBodiesFromJson(jsonAnnotation, annotation);
     }
 
-    //set page ID
-    if (jsonAnnotation.has(AnnotationStoreStrings.TARGET.getName()) && jsonAnnotation.getJSONObject(
-        AnnotationStoreStrings.TARGET.getName()).has(AnnotationStoreStrings.SOURCE.getName())) {
+    //set page ID - either from target-source or target-id
+    if (jsonAnnotation.has(AnnotationStoreStrings.TARGET.getName()) && (jsonAnnotation.getJSONObject(
+        AnnotationStoreStrings.TARGET.getName()).has(AnnotationStoreStrings.SOURCE.getName()) ||
+        jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName()).has(AnnotationStoreStrings.ID.getName()))) {
       buildPageId(jsonAnnotation, annotation);
     }
-
+    
     return annotation;
   }
 
@@ -168,9 +179,18 @@ class AnnotationConverter {
    */
   private void buildPageId(JSONObject jsonAnnotation, Annotation annotation) throws JSONException {
     Pattern pattern = Pattern.compile(SOURCE_PATTERN_STRING);
-    Matcher matcher = pattern.matcher(jsonAnnotation.getJSONObject(
+    Matcher matcher;
+    // only works for targets url stored in either source or id
+    if (jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName()).has(AnnotationStoreStrings.SOURCE.getName())) {
+        matcher = pattern.matcher(jsonAnnotation.getJSONObject(
         AnnotationStoreStrings.TARGET.getName())
         .getString(AnnotationStoreStrings.SOURCE.getName()));
+    } else {
+        matcher = pattern.matcher(jsonAnnotation.getJSONObject(
+        AnnotationStoreStrings.TARGET.getName())
+        .getString(AnnotationStoreStrings.ID.getName()));
+    }
+     
     if (matcher.find()) {
       annotation.setPageId(matcher.group(1));
     }
@@ -258,10 +278,20 @@ class AnnotationConverter {
       if (thisJson.has(AnnotationStoreStrings.DC_TITLE.getName())) {
         thisBody.setTitle(thisJson.getString(AnnotationStoreStrings.DC_TITLE.getName()));
       }
+      
+     //set subject
+      if (thisJson.has(AnnotationStoreStrings.DC_SUBJECT.getName())) {
+        thisBody.setSubject(thisJson.getString(AnnotationStoreStrings.DC_SUBJECT.getName()));
+      } 
 
       //set value
       if (thisJson.has(AnnotationStoreStrings.VALUE.getName())) {
         thisBody.setValue(thisJson.getString(AnnotationStoreStrings.VALUE.getName()));
+      }
+      
+      //set source
+      if (thisJson.has(AnnotationStoreStrings.SOURCE.getName())) {
+        thisBody.setSource(thisJson.getString(AnnotationStoreStrings.SOURCE.getName()));
       }
     }
     annotation.setTags(tags);
@@ -281,10 +311,10 @@ class AnnotationConverter {
       tags.add((Tag) thisBody);
     } else {
       thisBody = new TextCard(UUID.randomUUID().toString());
-      if (jsonBody.has(AnnotationStoreStrings.PURPOSE.getName()) && Motivation.stringToMotivation(
-          jsonBody.getString(AnnotationStoreStrings.PURPOSE.getName())) != null) {
-        thisBody.setPurpose(Motivation.stringToMotivation(jsonBody.getString(
-            AnnotationStoreStrings.PURPOSE.getName())));
+      if (jsonBody.has(AnnotationStoreStrings.PURPOSE.getName()) && 
+          jsonBody.getString(AnnotationStoreStrings.PURPOSE.getName()) != null) {
+        thisBody.setPurpose(jsonBody.getString(
+            AnnotationStoreStrings.PURPOSE.getName()));
       }
       textCards.add((TextCard) thisBody);
     }
@@ -324,10 +354,11 @@ class AnnotationConverter {
     //put created date
     if (annotation.getCreated() != null) {
       jsonAnnotation.put(AnnotationStoreStrings.CREATED.getName(),
-          TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat()
-              .format(annotation.getCreated()));
+          annotation.getCreated().toString());
+              //TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat()
+              //.format(annotation.getCreated()));
     }
-
+   
     //put creators
     if (!annotation.getCreators().isEmpty()) {
       buildCreator(annotation, jsonAnnotation);
@@ -336,34 +367,37 @@ class AnnotationConverter {
     //put modified date
     if (annotation.getModified() != null) {
       jsonAnnotation.put(AnnotationStoreStrings.MODIFIED.getName(),
-          TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat()
-              .format(annotation.getModified()));
+              annotation.getModified().toString());
+          //TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat()
+          //    .format(annotation.getModified()));
     }
-
+   
     //put canonical
     if (annotation.getCanonical() != null && !annotation.getCanonical().equals("")) {
       jsonAnnotation.put(AnnotationStoreStrings.CANONICAL.getName(), annotation.getCanonical());
     }
 
     //put bodies
-    if (annotation.getTextCards() != null && annotation.getTags() != null) {
+    if (!(annotation.getTextCards().isEmpty() && annotation.getTags().isEmpty())) {
+        // annotation.getTextCards() != null && annotation.getTags() != null
+      
       putBodies(jsonAnnotation, annotation);
     }
-
+  
     //put target
     putTarget(jsonAnnotation, annotation, pageNumber);
-
+    
     //put motivation
     if (annotation.getMotivation() != null) {
       jsonAnnotation.put(AnnotationStoreStrings.MOTIVATION.getName(),
-          annotation.getMotivation().getName());
+          annotation.getMotivation());
     }
-
+    
     //put via
     if (annotation.getVia() != null && !annotation.getVia().equals("")) {
       jsonAnnotation.put(AnnotationStoreStrings.VIA.getName(), annotation.getVia());
     }
-
+    
     return jsonAnnotation;
   }
 
@@ -407,7 +441,13 @@ class AnnotationConverter {
     JSONObject target = new JSONObject();
     JSONObject selector = new JSONObject();
     if (jsonAnnotation.has(AnnotationStoreStrings.TARGET.getName())) {
-      target = jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName());
+      // if target is no object and just contains the target URL
+      if (jsonAnnotation.get(AnnotationStoreStrings.TARGET.getName()) instanceof String) {
+          target.put(AnnotationStoreStrings.ID.getName(), jsonAnnotation.getString(AnnotationStoreStrings.TARGET.getName()));
+      } else {
+          target = jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName()); 
+      }
+      
       if (target.has(AnnotationStoreStrings.SELECTOR.getName())) {
         selector = target.getJSONObject(AnnotationStoreStrings.SELECTOR.getName());
       }
@@ -418,19 +458,34 @@ class AnnotationConverter {
       selector.put(AnnotationStoreStrings.TYPE.getName(),
           AnnotationStoreStrings.SVG_SELECTOR.getName());
           //TODO
-      selector.put(AnnotationStoreStrings.VALUE.getName(), annotation.getSvgCode());
+      if (!annotation.getSvgCode().contains("<svg>")) {
+        selector.put(AnnotationStoreStrings.VALUE.getName(), "<svg>" + annotation.getSvgCode() + "</svg>");
+      } else {
+        selector.put(AnnotationStoreStrings.VALUE.getName(), annotation.getSvgCode());
+      };
+          
       target.put(AnnotationStoreStrings.SELECTOR.getName(), selector);
-    }
-
-    // source is url of page image
-    if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
-      target.put(AnnotationStoreStrings.TYPE.getName(),
+      
+      // source is url of page image
+      if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
+        target.put(AnnotationStoreStrings.TYPE.getName(),
           AnnotationStoreStrings.SPECIFIC_RESOURCE.getName());
-      target.put(AnnotationStoreStrings.SOURCE.getName(), repositoryAccessService.getBaseUrl()
+        target.put(AnnotationStoreStrings.SOURCE.getName(), repositoryAccessService.getBaseUrl()
           + repositoryAccessService.getStaticPath()
           + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
           + RepositoryAccessService.MASTER_JPG);
+      }
+    } else {
+       
+        if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
+            target.put(AnnotationStoreStrings.ID.getName(), repositoryAccessService.getBaseUrl()
+          + repositoryAccessService.getStaticPath()
+          + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
+          + RepositoryAccessService.MASTER_JPG);
+        }
+        
     }
+
     jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), target);
   }
 
@@ -471,7 +526,7 @@ class AnnotationConverter {
   /*
    * Converts single body object to JSONObject.
    */
-  private JSONObject bodyToJson(Body body) throws JSONException {
+  public JSONObject bodyToJson(Body body) throws JSONException {
     JSONObject jsonBody = new JSONObject();
     if (body.getFullJson() != null) {
       jsonBody = body.getFullJson();
@@ -487,24 +542,36 @@ class AnnotationConverter {
     //puts created date
     if (body.getCreated() != null) {
       jsonBody.put(AnnotationStoreStrings.CREATED.getName(),
-          TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat().format(body.getCreated()));
+        body.getCreated().toString());
+        //TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat().format(body.getCreated()));
     }
     //puts modified date
     if (body.getModified() != null) {
       jsonBody.put(AnnotationStoreStrings.MODIFIED.getName(),
-          TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat().format(body.getCreated()));
+        body.getModified().toString());
+        //TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat().format(body.getModified()));
     }
     //puts purpose as Motivation
     if (body.getPurpose() != null) {
-      jsonBody.put(AnnotationStoreStrings.PURPOSE.getName(), body.getPurpose().getName());
+      jsonBody.put(AnnotationStoreStrings.PURPOSE.getName(), body.getPurpose());
     }
     //puts value
     if (body.getValue() != null) {
       jsonBody.put(AnnotationStoreStrings.VALUE.getName(), body.getValue());
+      jsonBody.put(AnnotationStoreStrings.TYPE.getName(), AnnotationStoreStrings.TEXTUAL_BODY.getName());
+    }
+    //puts source
+    if (body.getSource() != null) {
+      jsonBody.put(AnnotationStoreStrings.SOURCE.getName(), body.getSource());
+      jsonBody.put(AnnotationStoreStrings.TYPE.getName(), AnnotationStoreStrings.SPECIFIC_RESOURCE.getName());
     }
     //puts title
     if (body.getTitle() != null) {
       jsonBody.put(AnnotationStoreStrings.DC_TITLE.getName(), body.getTitle());
+    }
+    //puts subject
+    if (body.getSubject() != null) {
+      jsonBody.put(AnnotationStoreStrings.DC_SUBJECT.getName(), body.getSubject());
     }
     return jsonBody;
   }
@@ -600,6 +667,7 @@ class AnnotationConverter {
   /*
    * Puts the creators as JSONObject, JSONArray or String from the creators of a body object.
    */
+  // TODO: give the method a return value, changes fullJson as side effect ATM
   private void buildCreatorsFromBodies(JSONObject jsonBody, Body body)
       throws JSONException {
     //if body already has json and multiple creators
@@ -613,6 +681,7 @@ class AnnotationConverter {
         creator = jsonBody.getJSONObject(AnnotationStoreStrings.CREATOR.getName());
       }
       JSONArray newCreators = new JSONArray();
+      // what happens to software?!
       for (String newCreator : body.getCreators()) {
         if (!creator.has(AnnotationStoreStrings.PERSON.getName())
             || !creator.getString(AnnotationStoreStrings.NAME.getName()).equals(newCreator)) {
@@ -623,27 +692,42 @@ class AnnotationConverter {
           newCreators.put(person);
         }
       }
-      jsonBody.put(AnnotationStoreStrings.CREATOR.getName(), newCreators);
+      logger.info(Integer.toString(newCreators.length()));
+      if (newCreators.length() == 1) {
+          jsonBody.put(AnnotationStoreStrings.CREATOR.getName(), newCreators.get(0));
+      } else {
+          jsonBody.put(AnnotationStoreStrings.CREATOR.getName(), newCreators);
+      }
+      
     }
   }
 
-  private Date extractDateFromJsonAnnotation(JSONObject json, String type) {
-    Date date = null;
+  private Instant extractDateFromJsonAnnotation(JSONObject json, String type) {
+    Instant date = null;
     try {
       //Extracts the dates from the JSON
       String dateString;
+      DateTimeFormatter isoFormatter;
       if (json.has(type)) {
         dateString = json.getString(type);
+        date = Instant.parse(dateString);
+        
         //Parse the right date to a Date Object.
-        if (dateString.contains(".")) {
-          date = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat().parse(dateString);
-        } else {
-          date = TimeStampFormats.TIMESTAMP_FORMAT_ANNO.getDateFormat().parse(dateString);
-        }
+        //if (dateString.contains(".")) {
+        //    isoFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ss.[SSS][SS][S]XXX");
+        //    date = Instant.parse(dateString, isoFormatter);
+        //  date = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat().parse(dateString);
+        //} else {
+        //    isoFormatter = DateTimeFormatter.ofPattern("uuuu-MM-dd'T'HH:mm:ssXXX");
+        //    date = LocalDateTime.parse(dateString, isoFormatter);
+        //  date = TimeStampFormats.TIMESTAMP_FORMAT_ANNO.getDateFormat().parse(dateString);
+        //}
       }
-    } catch (ParseException | JSONException e) {
+        
+    } catch (JSONException e) {
       e.printStackTrace();
     }
+    
     return date;
   }
 

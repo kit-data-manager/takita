@@ -1,7 +1,5 @@
 package edu.kit.scc.dem.tuhl.model.body;
 
-import edu.kit.scc.dem.tuhl.model.Motivation;
-
 public class Tag extends Body {
 
   /**
@@ -11,6 +9,6 @@ public class Tag extends Body {
    */
   public Tag(String id) {
     super(id);
-    setPurpose(Motivation.TAGGING);
+    setPurpose("tagging");
   }
 }

@@ -48,6 +48,9 @@ public interface IAnnotationStoreAccessService {
    */
   List<JSONObject> getAnnotationsByPageId(String pageId, String pageNumber)
       throws IOException, InterruptedException, JSONException;
+  
+  List<JSONObject> getAnnotationsByTarget(String target)
+      throws IOException, InterruptedException, JSONException;
 
   /**
    * Gets all annotations in the annotation store.

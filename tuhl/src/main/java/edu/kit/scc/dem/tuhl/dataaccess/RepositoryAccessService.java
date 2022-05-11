@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -22,6 +24,8 @@ import org.springframework.stereotype.Service;
 @Service
 public class RepositoryAccessService implements IRepositoryAccessService {
 
+  private static final Logger logger = LoggerFactory.getLogger(AnnotationConverter.class);  
+    
   //All public variables are for accessing the path to images/thumbnails
   public static final String DATA_PATH = "/data/";
   public static final String THUMB_JPG = ".thumb.jpg";
@@ -88,6 +92,7 @@ public class RepositoryAccessService implements IRepositoryAccessService {
   @Override
   public JSONArray getPageAssignmentForManuscriptId(String manuscriptId)
       throws InterruptedException, JSONException, IOException {
+      logger.info("Trying to get pages.json");
     return new JSONArray(httpRequestHelper
         .get(baseUrl + staticPath + manuscriptId + DATA_PATH + PAGES_JSON)
         .body());

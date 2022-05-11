@@ -24,6 +24,7 @@ public enum AnnotationStoreStrings {
   DC_SUBJECT("dc:subject"),
   TARGET("target"),
   SPECIFIC_RESOURCE("SpecificResource"),
+  TEXTUAL_BODY("TextualBody"),
   SELECTOR("selector"),
   SVG_SELECTOR("SvgSelector"),
   SOURCE("source"),

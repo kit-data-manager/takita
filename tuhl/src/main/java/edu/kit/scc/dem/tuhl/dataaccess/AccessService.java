@@ -74,12 +74,19 @@ public class AccessService implements IAccessService {
   public List<Manuscript> getAllManuscripts()
       throws InterruptedException, JSONException, IOException {
     List<Manuscript> manuscripts = new ArrayList<>();
-    Map<String, List<Annotation>> sortedAnnotations =
-        getAllAnnotationsSorted(annotationStoreAccessService.getAllAnnotations());
+    //Map<String, List<Annotation>> sortedAnnotations =
+    //    getAllAnnotationsSorted(annotationStoreAccessService.getAllAnnotations());
 
     logger.info("Getting all manuscripts.");
     for (JSONObject manuscriptJson : repositoryAccessService.getAllManuscripts(-1)) {
-      manuscripts.add(manuscriptConverter.buildManuscriptFromJson(manuscriptJson, sortedAnnotations));
+      try {
+        manuscripts.add(manuscriptConverter.buildManuscriptFromJson(manuscriptJson, null));
+      } catch (Exception e) {
+        logger.info("Couldn't index manuscript " + manuscriptJson.getString("id"));
+        logger.info(e.toString());
+        
+      }
+        
     }
     return manuscripts;
   }
@@ -166,8 +173,10 @@ public class AccessService implements IAccessService {
   @Override
   public Annotation addAnnotation(Annotation annotation, String pageNumber)
       throws JSONException, IOException, InterruptedException {
+      logger.info("Nach Konvertierung: " + annotationConverter.buildJsonFromAnnotation(annotation, pageNumber).toString());
     JSONObject response = annotationStoreAccessService
         .addAnnotation(annotationConverter.buildJsonFromAnnotation(annotation, pageNumber));
+      logger.info("Nach Speicherung: " + response.toString());
     return annotationConverter.buildAnnotationFromJson(response);
   }
 
@@ -206,6 +215,7 @@ public class AccessService implements IAccessService {
       throws JSONException, IOException, InterruptedException {
     JSONObject updatedAnnotation = annotationStoreAccessService.updateAnnotation(annotation.getId(),
         annotationConverter.buildJsonFromAnnotation(annotation, pageNumber), annotation.getEtag());
+    logger.info(updatedAnnotation.toString());
     return annotationConverter.buildAnnotationFromJson(updatedAnnotation);
   }
 

@@ -14,7 +14,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 /**
  * Contains logic for accessing the annotation store with RestTemplate.
@@ -84,8 +86,10 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   @Override
   public JSONObject addAnnotation(JSONObject jsonAnnotation)
       throws IOException, InterruptedException, JSONException {
-    JSONObject deinterpretationeAnnotation = new JSONObject(httpRequestHelper
-        .postAnnotations(urlPrefix + DEINTERPRETATIONE_URL, jsonAnnotation).body());
+    HttpResponse<String> response = httpRequestHelper
+        .postAnnotations(urlPrefix + DEINTERPRETATIONE_URL, jsonAnnotation);
+    JSONObject deinterpretationeAnnotation = new JSONObject(response.body());
+    logger.info("Antwort Annostore: " + deinterpretationeAnnotation.toString());
 
     String deinterpretationeId;
     if (deinterpretationeAnnotation.has(AnnotationStoreStrings.ID.getName())) {
@@ -95,16 +99,15 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
       throw new JSONException("There was a problem with the annotation");
     }
 
-    jsonAnnotation.put(AnnotationStoreStrings.VIA.getName(), deinterpretationeId);
-    jsonAnnotation.put(AnnotationStoreStrings.CANONICAL.getName(), deinterpretationeId);
-    jsonAnnotation.remove(AnnotationStoreStrings.ID.getName());
-    HttpResponse<String> response = httpRequestHelper.postAnnotations(urlPrefix
-        + VALIDATED_URL, jsonAnnotation);
-    JSONObject validatedAnnotation = new JSONObject(response.body());
+    //jsonAnnotation.put(AnnotationStoreStrings.VIA.getName(), deinterpretationeId);
+    //jsonAnnotation.put(AnnotationStoreStrings.CANONICAL.getName(), deinterpretationeId);
+    //jsonAnnotation.remove(AnnotationStoreStrings.ID.getName());
+    //HttpResponse<String> response = httpRequestHelper.postAnnotations(urlPrefix
+    //    + VALIDATED_URL, jsonAnnotation);
+    //JSONObject validatedAnnotation = new JSONObject(response.body());
     putEtag(response, jsonAnnotation);
     
-    jsonAnnotation.put(AnnotationStoreStrings.ID.getName(),
-        validatedAnnotation.getString(AnnotationStoreStrings.ID.getName()));
+    jsonAnnotation.put(AnnotationStoreStrings.ID.getName(),deinterpretationeId);
     return jsonAnnotation;
   }
 
@@ -151,6 +154,18 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
         + SPARQL_QUERY_ANNOTATION_BY_PAGE_1 + URLEncoder.encode(repositoryAccessService.getBaseUrl()
         + repositoryAccessService.getStaticPath()+ pageId + RepositoryAccessService.DATA_PATH + pageNumber
         + RepositoryAccessService.MASTER_JPG, Charset.defaultCharset())
+        + SPARQL_QUERY_ANNOTATION_BY_PAGE_2);
+
+    //Extracts annotations from response and adds them to the list
+    return getAnnotationsFromXml(response.body());
+  }
+  
+  @Override
+  public List<JSONObject> getAnnotationsByTarget(String target)
+      throws IOException, InterruptedException, JSONException {
+    //Sparql query to get only the annotations modified after date
+    HttpResponse<String> response = httpRequestHelper.get(sparqlQueryUrlPrefix
+        + SPARQL_QUERY_ANNOTATION_BY_PAGE_1 + target
         + SPARQL_QUERY_ANNOTATION_BY_PAGE_2);
 
     //Extracts annotations from response and adds them to the list
@@ -349,6 +364,14 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
               AnnotationStoreStrings.ETAG.getName()));
     }
     HttpResponse<String> response = httpRequestHelper.put(annotationId, jsonAnnotation, etag);
+    logger.info("Etag: " + etag);
+    logger.info(response.toString());
+    
+    // making errors or redirects of the HTTP communication with the annotation 
+    // store visible otherwise they would silently fail
+    if (HttpStatus.valueOf(response.statusCode()).is3xxRedirection() || HttpStatus.valueOf(response.statusCode()).isError()) {
+        throw new ResponseStatusException(HttpStatus.resolve(response.statusCode()));
+    }
     
     putEtag(response, jsonAnnotation);
     
