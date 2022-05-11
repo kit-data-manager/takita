@@ -8,6 +8,7 @@ import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import edu.kit.scc.dem.tuhl.model.page.Page;
 import java.io.IOException;
+import java.util.List;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -74,6 +75,8 @@ public interface ISearchIndexService {
    * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
    */
   Annotation getAnnotationById(String id) throws NoSuchIndexEntryException;
+  
+  List<Annotation> getAnnotationsForPageById(String id) throws NoSuchIndexEntryException;
 
   /**
    * Updates an annotation in the search index.

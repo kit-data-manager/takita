@@ -5,6 +5,8 @@ import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import java.io.IOException;
+import java.util.List;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 /**
@@ -100,29 +102,33 @@ public interface IEditorStubService {
    *
    * @param annotationId of the annotation to which the text card belongs
    * @param title of the text card
+   * @param subject of the text card
    * @param value of the text card
    * @param purpose of the text card
    * @return added text card
    * @throws InterruptedException when the http request to database is interrupted
    * @throws NoSuchIndexEntryException when there is no such annotation in the index
    * @throws IOException when the http request to database was faulty
+     * @throws org.springframework.boot.configurationprocessor.json.JSONException
    */
-  TextCard addTextCard(String annotationId, String title, String value, String purpose)
-      throws InterruptedException, NoSuchIndexEntryException, IOException;
+  TextCard addTextCard(String annotationId, String title, String subject, String value, String source, String purpose)
+      throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException;
 
   /**
    * Adds a tag to an annotation in the search index and the database.
    *
    * @param annotationId of the annotation to which the tag belongs
    * @param title of the tag
+   * @param subject of the tag
    * @param value of the tag
    * @return added tag
    * @throws InterruptedException when the http request to database is interrupted
    * @throws NoSuchIndexEntryException when there is no such annotation in the index
    * @throws IOException when the http request to database was faulty
+     * @throws org.springframework.boot.configurationprocessor.json.JSONException
    */
-  Tag addTag(String annotationId, String title, String value)
-      throws InterruptedException, NoSuchIndexEntryException, IOException;
+  Tag addTag(String annotationId, String title, String subject, String value, String source)
+      throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException;
 
   /**
    * Updates a text card in the search index and the database.
@@ -135,9 +141,10 @@ public interface IEditorStubService {
    * @throws InterruptedException when the http request to database is interrupted
    * @throws NoSuchIndexEntryException when there is no such text card in the index
    * @throws IOException when the http request to database was faulty
+     * @throws org.springframework.boot.configurationprocessor.json.JSONException
    */
-  TextCard updateTextCard(String textCardId, String title, String value, String purpose)
-      throws InterruptedException, NoSuchIndexEntryException, IOException;
+  TextCard updateTextCard(String textCardId, String title, String subject, String value, String source, String purpose)
+      throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException;
 
   /**
    * Updates a tag in the search index and the database.
@@ -149,9 +156,10 @@ public interface IEditorStubService {
    * @throws InterruptedException when the http request to database is interrupted
    * @throws NoSuchIndexEntryException when there is no such tag in the index
    * @throws IOException when the http request to database was faulty
+     * @throws org.springframework.boot.configurationprocessor.json.JSONException
    */
-  Tag updateTag(String tagId, String title, String value)
-      throws NoSuchIndexEntryException, InterruptedException, IOException;
+  Tag updateTag(String tagId, String title, String subject, String value, String source)
+      throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException;
 
   /**
    * Deletes a text card in the search index and the database.
@@ -220,4 +228,12 @@ public interface IEditorStubService {
    */
   JSONObject getAnnotationJson(String annotationId)
       throws InterruptedException, IOException;
+  
+  
+ public List<JSONObject> getAnnotationsForPage(String pageId, String pageNumber)
+    throws InterruptedException, IOException, JSONException;
+
+
+public List<Annotation> getAnnotationsForId(String id)
+    throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException;
 }

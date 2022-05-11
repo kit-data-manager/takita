@@ -2,11 +2,13 @@ package edu.kit.scc.dem.tuhl.editor;
 
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
+import edu.kit.scc.dem.tuhl.dataaccess.AnnotationConverter;
+import edu.kit.scc.dem.tuhl.dataaccess.IAnnotationStoreAccessService;
+import edu.kit.scc.dem.tuhl.dataaccess.IRepositoryAccessService;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
-import edu.kit.scc.dem.tuhl.model.Motivation;
 import edu.kit.scc.dem.tuhl.model.body.Body;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
@@ -14,6 +16,7 @@ import edu.kit.scc.dem.tuhl.model.page.Page;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.UUID;
@@ -37,12 +40,14 @@ public class EditorService implements IEditorService {
 
   private final IAssistanceService assistanceService;
   private final ISearchIndexService searchIndexService;
-
+  
   /**
    * Constructor, initializes instances of used interfaces.
    *
    * @param assistanceService instance of IAssistanceService
    * @param searchIndexService instance of ISearchIndexService
+   * @param annotationStoreAccessService
+   * @param repositoryAccessService
    */
   @Autowired
   public EditorService(IAssistanceService assistanceService,
@@ -70,8 +75,8 @@ public class EditorService implements IEditorService {
     newAnnotation.setPageId(pageId);
     newAnnotation.setCreators(Collections.singletonList(
         assistanceService.getCurrentUser().getName()));
-    newAnnotation.setCreated(Date.from(Instant.now()));
-    newAnnotation.setModified(Date.from(Instant.now()));
+    newAnnotation.setCreated(Instant.now());
+    newAnnotation.setModified(Instant.now());
 
     if (color != null) {
       newAnnotation.setColor(Color.stringToColor(color));
@@ -83,8 +88,8 @@ public class EditorService implements IEditorService {
       newAnnotation.setSvgCode(svgCode);
     }
 
-    if (motivation != null && Motivation.stringToMotivation(motivation) != null) {
-      newAnnotation.setMotivation(Motivation.stringToMotivation(motivation));
+    if (motivation != null) {
+      newAnnotation.setMotivation(motivation);
     }
 
     try {
@@ -128,7 +133,7 @@ public class EditorService implements IEditorService {
         .getCurrentUser().getName())) {
       updatedAnnotation.addCreator(assistanceService.getCurrentUser().getName());
     }
-    updatedAnnotation.setModified(Date.from(Instant.now()));
+    updatedAnnotation.setModified(Instant.now());
 
     if (color != null && !color.trim().equals("")) {
       updatedAnnotation.setColor(Color.stringToColor(color));
@@ -140,8 +145,8 @@ public class EditorService implements IEditorService {
       updatedAnnotation.setSvgCode(svgCode);
     }
 
-    if (motivation != null && Motivation.stringToMotivation(motivation) != null) {
-      updatedAnnotation.setMotivation(Motivation.stringToMotivation(motivation));
+    if (motivation != null) {
+      updatedAnnotation.setMotivation(motivation);
     }
 
     try {
@@ -166,7 +171,7 @@ public class EditorService implements IEditorService {
   public Annotation validateAnnotation(String annotationId)
       throws NoSuchIndexEntryException, InterruptedException, IOException {
     Annotation annotation = searchIndexService.getAnnotationById(annotationId);
-    annotation.setModified(Date.from(Instant.now()));
+    annotation.setModified(Instant.now());
     annotation.addCreator(assistanceService.getCurrentUser().getName());
     try {
       annotation = searchIndexService.validateAnnotation(annotation);
@@ -216,8 +221,8 @@ public class EditorService implements IEditorService {
     newTextCard.setAnnotationId(annotationId);
     newTextCard.setCreators(Collections.singletonList(
         assistanceService.getCurrentUser().getName()));
-    newTextCard.setCreated(Date.from(Instant.now()));
-    newTextCard.setModified(Date.from(Instant.now()));
+    newTextCard.setCreated(Instant.now());
+    newTextCard.setModified(Instant.now());
 
     if (title != null && !title.trim().equals("")) {
       newTextCard.setTitle(title);
@@ -227,8 +232,8 @@ public class EditorService implements IEditorService {
       newTextCard.setValue(value);
     }
 
-    if (purpose != null && Motivation.stringToMotivation(purpose) != null) {
-      newTextCard.setPurpose(Motivation.stringToMotivation(purpose));
+    if (purpose != null) {
+      newTextCard.setPurpose(purpose);
     }
     try {
       newTextCard = (TextCard) searchIndexService.addBody(newTextCard);
@@ -256,8 +261,8 @@ public class EditorService implements IEditorService {
     Tag newTag = new Tag(UUID.randomUUID().toString());
     newTag.setAnnotationId(annotationId);
     newTag.setCreators(Collections.singletonList(assistanceService.getCurrentUser().getName()));
-    newTag.setCreated(Date.from(Instant.now()));
-    newTag.setModified(Date.from(Instant.now()));
+    newTag.setCreated(Instant.now());
+    newTag.setModified(Instant.now());
 
     if (title != null && !title.trim().equals("")) {
       newTag.setTitle(title);
@@ -266,7 +271,7 @@ public class EditorService implements IEditorService {
     if (value != null && !value.trim().equals("")) {
       newTag.setValue(value);
     }
-
+    
     try {
       newTag = (Tag) searchIndexService.addBody(newTag);
     } catch (JSONException e) {
@@ -316,7 +321,7 @@ public class EditorService implements IEditorService {
     if (!updatedTextCard.getCreators().contains(assistanceService.getCurrentUser().getName())) {
       updatedTextCard.addCreator(assistanceService.getCurrentUser().getName());
     }
-    updatedTextCard.setModified(Date.from(Instant.now()));
+    updatedTextCard.setModified(Instant.now());
 
     if (title != null && !title.trim().equals("")) {
       updatedTextCard.setTitle(title);
@@ -327,7 +332,7 @@ public class EditorService implements IEditorService {
     }
 
     if (purpose != null && !purpose.trim().equals("")) {
-      updatedTextCard.setPurpose(Motivation.stringToMotivation(purpose));
+      updatedTextCard.setPurpose(purpose);
     }
 
     TextCard newTextCard = new TextCard(UUID.randomUUID().toString());
@@ -358,7 +363,7 @@ public class EditorService implements IEditorService {
     if (!updatedTag.getCreators().contains(assistanceService.getCurrentUser().getName())) {
       updatedTag.addCreator(assistanceService.getCurrentUser().getName());
     }
-    updatedTag.setModified(Date.from(Instant.now()));
+    updatedTag.setModified(Instant.now());
 
     if (title != null && !title.trim().equals("")) {
       updatedTag.setTitle(title);

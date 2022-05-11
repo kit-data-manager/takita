@@ -8,7 +8,6 @@ import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.dataaccess.IAccessService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
-import edu.kit.scc.dem.tuhl.model.Motivation;
 import edu.kit.scc.dem.tuhl.model.body.Body;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
@@ -289,6 +288,26 @@ public class  SearchIndexService implements ISearchIndexService {
     }
     throw new NoSuchIndexEntryException("Could not find Annotation with id: " + id);
   }
+  
+  @Override
+  public List<Annotation> getAnnotationsForPageById(String id) throws NoSuchIndexEntryException {
+    Query query =
+        new NativeSearchQueryBuilder().withQuery(
+            matchQuery("pages.id.keyword", id)).build();
+    
+    SearchHits<Manuscript> searchHits = elasticsearchRestTemplate.search(
+        query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
+    if (searchHits.isEmpty()) {
+      throw new NoSuchIndexEntryException("Could not find page with id: " + id);
+    }
+    
+    for (Page page : searchHits.getSearchHit(0).getContent().getPages()) {
+        if (page.getId().equals(id)) {
+            return page.getAnnotations();
+        }
+    }
+    throw new NoSuchIndexEntryException("Could not find Annotation with id: " + id);
+  }
 
   /**
    * Updates an annotation in the search index.
@@ -307,6 +326,8 @@ public class  SearchIndexService implements ISearchIndexService {
     // to annotation only data access needs
     Page page = getPageById(annotation.getPageId());
     Annotation newAnnotation = accessService.updateAnnotation(annotation, page.getPageNumber());
+    logger.info("SISupdateAnno1: " + annotation.toString());
+    logger.info("SISupdateAnno2: " + newAnnotation.toString());
     
     applyChangedAnnotation(page, annotation, newAnnotation);
     
@@ -338,9 +359,10 @@ public class  SearchIndexService implements ISearchIndexService {
   
   private void applyChangedAnnotation(Page page, Annotation annotation,
                                       Annotation changedAnnotation)
-      throws NoSuchIndexEntryException {
+      throws NoSuchIndexEntryException, JSONException {
     Optional<Manuscript> manuscriptHit = manuscriptRepository.findById(page.getManuscriptId());
   
+    logger.info("apply1: " + changedAnnotation.toString());
     if (manuscriptHit.isPresent()) {
       Page updatedPage = getPageById(annotation.getPageId(), manuscriptHit.get());
       Annotation annoToRemove = new Annotation();
@@ -351,8 +373,10 @@ public class  SearchIndexService implements ISearchIndexService {
       }
       updatedPage.getAnnotations().remove(annoToRemove);
       updatedPage.getAnnotations().add(changedAnnotation);
+      logger.info("apply2: " + changedAnnotation.toString());
     
       manuscriptRepository.save(manuscriptHit.get());
+      logger.info("apply3: " + changedAnnotation.toString());
     }
   }
 
@@ -405,14 +429,19 @@ public class  SearchIndexService implements ISearchIndexService {
   public Body addBody(Body body) throws IOException, InterruptedException, JSONException,
       NoSuchIndexEntryException {
     Annotation updatedAnnotation = getAnnotationById(body.getAnnotationId());
-    if (body.getPurpose() == Motivation.TAGGING) {
+    logger.info("OriginalAnno: " + updatedAnnotation);
+    logger.info(body.toString());
+    logger.info("1: " + body.getId());
+    if (body.getPurpose().equalsIgnoreCase("tagging")) {
       updatedAnnotation.addTag((Tag) body);
     } else {
       updatedAnnotation.addTextCard((TextCard) body);
     }
-    
+    logger.info("2: " + updatedAnnotation.toString());
     updatedAnnotation = updateAnnotation(updatedAnnotation);
+    logger.info("3: " + updatedAnnotation.toString());
     
+    //return getBodyFromAnnotationAndId(updatedAnnotation, body.getId());
     return findBodyInAnnotation(body, updatedAnnotation);
   }
   
@@ -505,14 +534,24 @@ public class  SearchIndexService implements ISearchIndexService {
   public Body updateBody(Body body) throws IOException, InterruptedException, JSONException,
       NoSuchIndexEntryException {
     Annotation annotation = getAnnotationByBodyId(body.getId());
-    if (body.getPurpose() == Motivation.TAGGING) {
-      annotation.addTag((Tag) body);
+    logger.info(annotation.getEtag());
+    logger.info(annotation.getId());
+    Body oldBody = getBodyFromAnnotationAndId(annotation, body.getId());
+    logger.info("Lösche Body " + oldBody.getFullJson().toString());
+    if (body.getPurpose().equalsIgnoreCase("tagging")) {
+      //annotation.addTag((Tag) body);
+      //annotation.getTags().remove(oldBody);
+      annotation.updateTag((Tag) body);
     } else {
-      annotation.addTextCard((TextCard) body);
+      //annotation.addTextCard((TextCard) body);
+      //annotation.getTextCards().remove(oldBody);
+      annotation.updateTextCard((TextCard) body);
     }
     
     Annotation updatedAnnotation = updateAnnotation(annotation);
+    logger.info("JSON " + getBodyFromAnnotationAndId(annotation, body.getId()).getFullJson().toString());
     
+    //return getBodyFromAnnotationAndId(annotation, body.getId());
     return findBodyInAnnotation(body, updatedAnnotation);
   }
 
@@ -529,8 +568,10 @@ public class  SearchIndexService implements ISearchIndexService {
   public void deleteBodyById(String id) throws IOException, InterruptedException,
       JSONException, NoSuchIndexEntryException {
     Annotation updatedAnnotation = getAnnotationByBodyId(id);
+    logger.info("Lösche Body aus " + updatedAnnotation.getId());
     Body body = getBodyFromAnnotationAndId(updatedAnnotation, id);
-    if (body.getPurpose() == Motivation.TAGGING) {
+    logger.info("Lösche Body " + body.getFullJson().toString());
+    if (body.getPurpose().equalsIgnoreCase("tagging")) {
       updatedAnnotation.getTags().remove(body);
     } else {
       updatedAnnotation.getTextCards().remove(body);
@@ -587,6 +628,8 @@ public class  SearchIndexService implements ISearchIndexService {
       throws NoSuchIndexEntryException {
     
     for (Body body : annotation.getTags()) {
+        logger.info("TagId: " + body.getId());
+        logger.info("To check: " + bodyId);
       if (body.getId().equals(bodyId)) {
         return body;
       }
@@ -745,20 +788,25 @@ public class  SearchIndexService implements ISearchIndexService {
   }
   
   private Body findBodyInAnnotation(Body body, Annotation annotation)
-      throws NoSuchIndexEntryException {
+      throws NoSuchIndexEntryException, JSONException {
     List<Body> allBodies = new ArrayList<>();
     allBodies.addAll(annotation.getTags());
     allBodies.addAll(annotation.getTextCards());
     for (Body newBody : allBodies) {
+        logger.info(newBody.getFullJson().toString());
+        logger.info(body.getFullJson().toString());
+        if (newBody.equals(body)) {
+            return newBody;
+        }
       // can't use ID because same body can have different IDs
-      if (newBody.getCreated() != null
-          && newBody.getCreated().equals(body.getCreated())
-          && newBody.getCreators().containsAll(body.getCreators())
-          && newBody.getPurpose() == body.getPurpose()
-          && newBody.getTitle().equals(body.getTitle())
-          && newBody.getValue().equals(body.getValue())) {
-        return newBody;
-      }
+      // old bodies may miss a created date? newBody.getCreated() != null
+      // newBody.getCreated().equals(body.getCreated())
+      // && newBody.getTitle().equals(body.getTitle())
+      //if (newBody.getCreators().containsAll(body.getCreators())
+      //    && newBody.getPurpose() == body.getPurpose()
+      //    && newBody.getValue().equals(body.getValue())) {
+      //  return newBody;
+      //}
     }
     throw new NoSuchIndexEntryException("No body like this was found in the index.");
   }

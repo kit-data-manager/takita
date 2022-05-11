@@ -7,6 +7,9 @@ import edu.kit.scc.dem.tuhl.model.Color;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -80,7 +83,7 @@ public class EditorController {
         getDisplayableAnnotations(editorService.getCurrentPage().getAnnotations()));
       assistanceService.updateModel(model);
       
-    } catch (NoSuchIndexEntryException e) {
+    } catch (UnsupportedEncodingException | NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     }
     return "editor";
@@ -94,7 +97,7 @@ public class EditorController {
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
    */
-  @GetMapping("/visibility")
+  /** @GetMapping("/visibility")
   public String changeVisibility(@RequestParam("annotationNumber") int annotationNumber,
                                  @RequestParam("visibility") Boolean visibility, Model model) {
     throw new AssertionError(NOT_IMPLEMENTED);
@@ -108,7 +111,7 @@ public class EditorController {
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
    */
-  @PostMapping("/addAnnotation")
+  /** @PostMapping("/addAnnotation")
   public String addAnnotation(@RequestParam("svg") String svg, @RequestParam("color") Color color,
                               Model model) {
     throw new AssertionError(NOT_IMPLEMENTED);
@@ -121,7 +124,7 @@ public class EditorController {
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return a string to indicate the redirect
    */
-  @PostMapping("/select_annotation")
+  /** @PostMapping("/select_annotation")
   public String selectAnnotation(@RequestBody String annotationJson, Model model) {
     try {
       JSONObject json = new JSONObject(annotationJson);
@@ -147,7 +150,7 @@ public class EditorController {
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
    */
-  @GetMapping("/change/annotation")
+  /** @GetMapping("/change/annotation")
   public String updateAnnotation(@RequestParam("svg") String svg,
                                  @RequestParam("color") Color color,
                                  @RequestParam("motivation") String motivation, Model model) {
@@ -160,7 +163,7 @@ public class EditorController {
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
    */
-  @GetMapping("/delete/annotation")
+  /** @GetMapping("/delete/annotation")
   public String deleteAnnotation(Model model) {
     throw new AssertionError(NOT_IMPLEMENTED);
   }
@@ -171,7 +174,7 @@ public class EditorController {
    * @param textCard Textcard with the new title, purpose and Value
    * @return the name of the html file to display
    */
-  @PostMapping("/add/textcard")
+  /** @PostMapping("/add/textcard")
   public String addTextCard(@ModelAttribute("textCard") TextCard textCard) {
     throw new AssertionError(NOT_IMPLEMENTED);
   }
@@ -184,7 +187,7 @@ public class EditorController {
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
    */
-  @GetMapping("/change/textcard")
+  /** @GetMapping("/change/textcard")
   public String updateTextCard(@RequestParam("text") String text,
                                @RequestParam("purpose") String purpose, Model model) {
     throw new AssertionError(NOT_IMPLEMENTED);
@@ -196,7 +199,7 @@ public class EditorController {
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
    */
-  @PostMapping("/allmetadata")
+  /** @PostMapping("/allmetadata")
   public String getAllMetadata(Model model) {
     throw new AssertionError(NOT_IMPLEMENTED);
   }
@@ -207,7 +210,7 @@ public class EditorController {
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
    */
-  @PostMapping("/rawmetadata")
+  /** @PostMapping("/rawmetadata")
   public String getRawMetadata(Model model) {
     throw new AssertionError(NOT_IMPLEMENTED);
   }
@@ -218,7 +221,7 @@ public class EditorController {
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
    */
-  @PostMapping("/change/metadata")
+  /** @PostMapping("/change/metadata")
   public String changeDisplayedMetadata(Model model) {
     throw new AssertionError(NOT_IMPLEMENTED);
   }
@@ -230,7 +233,7 @@ public class EditorController {
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
    */
-  @PostMapping("/add/tag")
+  /** @PostMapping("/add/tag")
   public String addTag(@RequestParam("tag") String tag, Model model) {
     throw new AssertionError(NOT_IMPLEMENTED);
   }
@@ -242,7 +245,7 @@ public class EditorController {
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
    */
-  @PostMapping("/delete/tag")
+  /** @PostMapping("/delete/tag")
   public String deleteTag(@RequestParam("tag") String tag, Model model) {
     throw new AssertionError(NOT_IMPLEMENTED);
   }
@@ -253,7 +256,7 @@ public class EditorController {
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
    */
-  @PostMapping("/get/allTags")
+  /** @PostMapping("/get/allTags")
   public String getAllTags(Model model) {
     throw new AssertionError(NOT_IMPLEMENTED);
   }
@@ -265,7 +268,7 @@ public class EditorController {
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
    */
-  public String validateAnnotation(@RequestParam("validated") String validated, Model model) {
+  /** public String validateAnnotation(@RequestParam("validated") String validated, Model model) {
     try {
       editorService.validateAnnotation(validated);
     } catch (IOException | NoSuchIndexEntryException e) {
@@ -275,19 +278,30 @@ public class EditorController {
       return REDIRECT_ERROR + e.getMessage();
     }
     return "editor";
-  }
+  } */
 
-  private JSONArray getDisplayableAnnotations(List<Annotation> annotations) {
+  private JSONArray getDisplayableAnnotations(List<Annotation> annotations)
+    throws UnsupportedEncodingException {
     JSONArray displayable = new JSONArray();
     try {
       
       for (int i = 0; i < annotations.size(); i++) {
         JSONObject thisAnno = new JSONObject();
 
-        thisAnno.put("ID", annotations.get(i).getId());
-        thisAnno.put("SVG", annotations.get(i).getSvgCode());
-        thisAnno.put("Color", annotations.get(i).getColor().getColorHex());
-        thisAnno.put("Visible", true);
+        thisAnno.put("id", annotations.get(i).getId());
+        String encodedId = URLEncoder.encode(annotations.get(i).getId(), StandardCharsets.UTF_8.toString());
+        String encodedIdDouble = URLEncoder.encode(encodedId, StandardCharsets.UTF_8.toString());
+        thisAnno.put("idEncoded", encodedIdDouble);
+        thisAnno.put("svg", annotations.get(i).getSvgCode());
+        if (annotations.get(i).getColor() != null) {
+            thisAnno.put("color", annotations.get(i).getColor().getColorHex());
+        }
+        thisAnno.put("visible", true);
+        thisAnno.put("created", annotations.get(i).getCreated());
+        thisAnno.put("creator", annotations.get(i).getCreators());
+        thisAnno.put("modified", annotations.get(i).getModified());
+        thisAnno.put("motivation", annotations.get(i).getMotivation());
+        thisAnno.put("via", annotations.get(i).getVia());
 
         displayable.put(i, thisAnno);
       }

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -72,25 +73,48 @@ public class EditorStubController {
    * @param jsonString holds the values for specifying the added annotation
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
-   */
+   *
   @PostMapping("/create_annotation")
-  public String createAnnotation(@RequestBody String jsonString, Model model) {
-    try {
+  public @ResponseBody String createAnnotation(@RequestBody String jsonString, Model model) {
+    String annoId = "";
+      try {
       JSONObject json = new JSONObject(jsonString);
       String pageId = json.getString("pageId");
       String color = json.getString("color");
       String svgCode = json.getString("svgCode");
       String motivation = json.getString("motivation");
       Annotation annotation = editorStubService.addAnnotation(pageId, color, svgCode, motivation);
-      model.addAttribute(ANNOTATION_STRING, annotation);
-      assistanceService.updateModel(model);
+      annoId = annotation.getId();
+      //model.addAttribute(ANNOTATION_STRING, annotation);
+      //assistanceService.updateModel(model);
     } catch (JSONException | IOException | NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       return REDIRECT_ERROR + e.getMessage();
     }
-    return FRAGMENT_ANNOTATION_VIEWER;
+    return annoId;
+  }
+  
+   @PostMapping("/create_page_annotation")
+  public @ResponseBody String createPageAnnotation(@RequestBody String jsonString, Model model) {
+    String annoId = "";
+      try {
+      JSONObject json = new JSONObject(jsonString);
+      String pageId = json.getString("pageId");
+      String color = json.getString("color");
+      String motivation = json.getString("motivation");
+      Annotation annotation = editorStubService.addAnnotation(pageId, color, "", motivation);
+      annoId = annotation.getId();
+      //model.addAttribute(ANNOTATION_STRING, annotation);
+      //assistanceService.updateModel(model);
+    } catch (JSONException | IOException | NoSuchIndexEntryException e) {
+      return REDIRECT_ERROR + e.getMessage();
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      return REDIRECT_ERROR + e.getMessage();
+    }
+    return annoId;
   }
 
   /**
@@ -99,7 +123,7 @@ public class EditorStubController {
    * @param jsonString holds the values for specifying the annotation to read
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
-   */
+   *
   @PostMapping("/read_annotation")
   public String readAnnotation(@RequestBody String jsonString, Model model) {
     try {
@@ -113,6 +137,15 @@ public class EditorStubController {
     }
     return FRAGMENT_ANNOTATION_VIEWER;
   }
+  
+  @PostMapping("/get_annotation")
+  public @ResponseBody String getAnnotation(@RequestBody String jsonString, Model model) throws JSONException, NoSuchIndexEntryException {
+    JSONObject json = new JSONObject(jsonString);
+    String id = json.getString(ID_STRING);
+    Annotation annotation = editorStubService.getAnnotation(id);
+    // return buildJsonFromAnnotation(annotation, "");
+    return "Schnitzel!";
+  }
 
   /**
    * Delegates the task to update an annotation to IEditorStubService.
@@ -120,7 +153,7 @@ public class EditorStubController {
    * @param jsonString holds the values for specifying the updated annotation
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
-   */
+   *
   @PostMapping("/update_annotation")
   public String updateAnnotation(@RequestBody String jsonString, Model model) {
     try {
@@ -148,7 +181,7 @@ public class EditorStubController {
    * @param jsonString holds the values for specifying the validated annotation
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
-   */
+   *
   @PostMapping("/validate_annotation")
   public String validateAnnotation(@RequestBody String jsonString, Model model) {
     try {
@@ -172,7 +205,7 @@ public class EditorStubController {
    * @param jsonString holds the values for specifying the deleted annotation
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
-   */
+   *
   @PostMapping("/delete_annotation")
   public String deleteAnnotation(@RequestBody String jsonString, Model model) {
     try {
@@ -196,7 +229,7 @@ public class EditorStubController {
    * @param jsonString holds the values for specifying the added text card
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
-   */
+   *
   @PostMapping("/create_card")
   public String createTextCard(@RequestBody String jsonString, Model model) {
     try {
@@ -223,7 +256,7 @@ public class EditorStubController {
    * @param jsonString holds the values for specifying the text card to be read
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
-   */
+   *
   @PostMapping("/read_card")
   public String readCard(@RequestBody String jsonString, Model model) {
     try {
@@ -244,7 +277,7 @@ public class EditorStubController {
    * @param jsonString holds the values for specifying the updated text card
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
-   */
+   *
   @PostMapping("/update_card")
   public String updateTextCard(@RequestBody String jsonString, Model model) {
     try {
@@ -271,7 +304,7 @@ public class EditorStubController {
    * @param jsonString holds the values for specifying the deleted text card
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
-   */
+   *
   @PostMapping("/delete_card")
   public String deleteTextCard(@RequestBody String jsonString, Model model) {
     try {
@@ -295,7 +328,7 @@ public class EditorStubController {
    * @param jsonString holds the values for specifying the added tag
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
-   */
+   *
   @PostMapping("/create_tag")
   public String createTag(@RequestBody String jsonString, Model model) {
     try {
@@ -321,7 +354,7 @@ public class EditorStubController {
    * @param jsonString holds the values for specifying the tag to be read
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
-   */
+   *
   @PostMapping("/read_tag")
   public String readTag(@RequestBody String jsonString, Model model) {
     try {
@@ -342,7 +375,7 @@ public class EditorStubController {
    * @param jsonString holds the values for specifying the updated tag
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
-   */
+   *
   @PostMapping("/update_tag")
   public String updateTag(@RequestBody String jsonString, Model model) {
     try {
@@ -368,7 +401,7 @@ public class EditorStubController {
    * @param jsonString holds the values for specifying the deleted tag
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
-   */
+   *
   @PostMapping("/delete_tag")
   public String deleteTag(@RequestBody String jsonString, Model model) {
     try {
@@ -392,7 +425,7 @@ public class EditorStubController {
    * @param jsonString holds the values for specifying the manuscript in question
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
-   */
+   *
   @PostMapping("/raw_manuscript_json")
   public String getManuscriptJson(@RequestBody String jsonString, Model model) {
     try {
@@ -401,13 +434,14 @@ public class EditorStubController {
       String rawJson = editorStubService.getManuscriptJson(id).toString(2).replace("\\/", "/");
       model.addAttribute(RAW_JSON_STRING, rawJson);
       assistanceService.updateModel(model);
+      return rawJson;
     } catch (JSONException | IOException e) {
       return REDIRECT_ERROR + e.getMessage();
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       return REDIRECT_ERROR + e.getMessage();
     }
-    return FRAGMENT_RAW_JSON_VIEWER;
+    //return FRAGMENT_RAW_JSON_VIEWER;
   }
 
   /**
@@ -416,7 +450,7 @@ public class EditorStubController {
    * @param jsonString holds the values for specifying the manuscript in question
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
-   */
+   *
   @PostMapping("/raw_manuscript_xml")
   public String getManuscriptXml(@RequestBody String jsonString, Model model) {
     try {
@@ -440,7 +474,7 @@ public class EditorStubController {
    * @param jsonString holds the values for specifying the page in question
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
-   */
+   *
   @PostMapping("/raw_page_json")
   public String getPageJson(@RequestBody String jsonString, Model model) {
     try {
@@ -464,24 +498,26 @@ public class EditorStubController {
    * @param jsonString holds the values for specifying the annotation in question
    * @param model the holder for model attributes. Used to pass attributes back to the view
    * @return the name of the html file to display
-   */
+   *
   @PostMapping("/raw_annotation_json")
-  public String getAnnotationJson(@RequestBody String jsonString, Model model) {
+  public @ResponseBody String getAnnotationJson(@RequestBody String jsonString, Model model) {
+    String rawJson = "";
     try {
       JSONObject json = new JSONObject(jsonString);
       String id = json.getString(ID_STRING);
-      String rawJson = editorStubService
+      rawJson = editorStubService
           .getAnnotationJson(id)
           .toString(2)
           .replace("\\/", "/");
-      model.addAttribute(RAW_JSON_STRING, rawJson);
-      assistanceService.updateModel(model);
+      //model.addAttribute(RAW_JSON_STRING, rawJson);
+      //assistanceService.updateModel(model);
     } catch (JSONException | IOException e) {
       return REDIRECT_ERROR + e.getMessage();
     } catch (InterruptedException e) {
       Thread.currentThread().interrupt();
       return REDIRECT_ERROR + e.getMessage();
     }
-    return FRAGMENT_RAW_JSON_VIEWER;
+    return rawJson;
   }
+  */
 }

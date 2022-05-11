@@ -1,18 +1,25 @@
 package edu.kit.scc.dem.tuhl.editorstub;
 
+import com.google.gson.Gson;
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
+import edu.kit.scc.dem.tuhl.dataaccess.AnnotationConverter;
+import edu.kit.scc.dem.tuhl.dataaccess.IAnnotationStoreAccessService;
+import edu.kit.scc.dem.tuhl.dataaccess.IRepositoryAccessService;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
-import edu.kit.scc.dem.tuhl.model.Motivation;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import java.io.IOException;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -26,8 +33,12 @@ import org.springframework.web.context.annotation.SessionScope;
 @SessionScope
 public class EditorStubService implements IEditorStubService {
 
+  private static final Logger logger = LoggerFactory.getLogger(EditorStubService.class);
   private final IAssistanceService assistanceService;
   private final ISearchIndexService searchIndexService;
+  private final IAnnotationStoreAccessService accessService;
+  private final IRepositoryAccessService repositoryAccessService;
+  private final AnnotationConverter annotationConverter;
 
   /**
    * Constructor, initializes instances of used interfaces.
@@ -37,9 +48,14 @@ public class EditorStubService implements IEditorStubService {
    */
   @Autowired
   public EditorStubService(IAssistanceService assistanceService,
-                           ISearchIndexService searchIndexService) {
+                           ISearchIndexService searchIndexService,
+                           IAnnotationStoreAccessService accessService,
+                           IRepositoryAccessService repositoryAccessService) {
     this.assistanceService = assistanceService;
     this.searchIndexService = searchIndexService;
+    this.accessService = accessService;
+    this.repositoryAccessService = repositoryAccessService;
+    this.annotationConverter = new AnnotationConverter(accessService, repositoryAccessService);
   }
 
   /**
@@ -61,8 +77,8 @@ public class EditorStubService implements IEditorStubService {
     newAnnotation.setPageId(pageId);
     newAnnotation.setCreators(Collections.singletonList(
         assistanceService.getCurrentUser().getName()));
-    newAnnotation.setCreated(Date.from(Instant.now()));
-    newAnnotation.setModified(Date.from(Instant.now()));
+    newAnnotation.setCreated(Instant.now());
+    newAnnotation.setModified(Instant.now());
 
     if (color != null) {
       newAnnotation.setColor(Color.stringToColor(color));
@@ -74,11 +90,12 @@ public class EditorStubService implements IEditorStubService {
       newAnnotation.setSvgCode(svgCode);
     }
 
-    if (motivation != null && Motivation.stringToMotivation(motivation) != null) {
-      newAnnotation.setMotivation(Motivation.stringToMotivation(motivation));
+    if (motivation != null) {
+      newAnnotation.setMotivation(motivation);
     }
 
     try {
+      logger.info("EditorStubService: " + newAnnotation.toString());
       newAnnotation = searchIndexService.addAnnotation(newAnnotation);
     } catch (JSONException e) {
       e.printStackTrace();
@@ -95,7 +112,7 @@ public class EditorStubService implements IEditorStubService {
    */
   @Override
   public Annotation getAnnotation(String annotationId) throws NoSuchIndexEntryException {
-    return searchIndexService.getAnnotationById(annotationId);
+    return searchIndexService.getAnnotationById(annotationId);       
   }
 
   /**
@@ -119,7 +136,7 @@ public class EditorStubService implements IEditorStubService {
         .getCurrentUser().getName())) {
       updatedAnnotation.addCreator(assistanceService.getCurrentUser().getName());
     }
-    updatedAnnotation.setModified(Date.from(Instant.now()));
+    updatedAnnotation.setModified(Instant.now());
 
     if (color != null && !color.trim().equals("")) {
       updatedAnnotation.setColor(Color.stringToColor(color));
@@ -131,8 +148,8 @@ public class EditorStubService implements IEditorStubService {
       updatedAnnotation.setSvgCode(svgCode);
     }
 
-    if (motivation != null && Motivation.stringToMotivation(motivation) != null) {
-      updatedAnnotation.setMotivation(Motivation.stringToMotivation(motivation));
+    if (motivation != null) {
+      updatedAnnotation.setMotivation(motivation);
     }
 
     try {
@@ -157,7 +174,7 @@ public class EditorStubService implements IEditorStubService {
   public Annotation validateAnnotation(String annotationId)
       throws NoSuchIndexEntryException, InterruptedException, IOException {
     Annotation annotation = searchIndexService.getAnnotationById(annotationId);
-    annotation.setModified(Date.from(Instant.now()));
+    annotation.setModified(Instant.now());
     annotation.addCreator(assistanceService.getCurrentUser().getName());
     try {
       annotation = searchIndexService.validateAnnotation(annotation);
@@ -201,26 +218,36 @@ public class EditorStubService implements IEditorStubService {
    * @throws IOException when the http request to database was faulty
    */
   @Override
-  public TextCard addTextCard(String annotationId, String title, String value, String purpose)
-      throws InterruptedException, NoSuchIndexEntryException, IOException {
+  public TextCard addTextCard(String annotationId, String title, String subject, String value, String source, String purpose)
+      throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException {
     TextCard newTextCard = new TextCard(UUID.randomUUID().toString());
     newTextCard.setAnnotationId(annotationId);
     newTextCard.setCreators(Collections.singletonList(
         assistanceService.getCurrentUser().getName()));
-    newTextCard.setCreated(Date.from(Instant.now()));
-    newTextCard.setModified(Date.from(Instant.now()));
+    newTextCard.setCreated(Instant.now());
+    newTextCard.setModified(Instant.now());
 
     if (title != null && !title.trim().equals("")) {
       newTextCard.setTitle(title);
+    }
+    
+    if (subject != null && !subject.trim().equals("")) {
+      newTextCard.setSubject(subject);
     }
 
     if (value != null && !value.trim().equals("")) {
       newTextCard.setValue(value);
     }
-
-    if (purpose != null && Motivation.stringToMotivation(purpose) != null) {
-      newTextCard.setPurpose(Motivation.stringToMotivation(purpose));
+    
+    if (source != null && !source.trim().equals("")) {
+      newTextCard.setSource(source);
     }
+
+    if (purpose != null) {
+      newTextCard.setPurpose(purpose);
+    }
+    
+    newTextCard.setFullJson(annotationConverter.bodyToJson(newTextCard));
     try {
       newTextCard = (TextCard) searchIndexService.addBody(newTextCard);
     } catch (JSONException e) {
@@ -242,22 +269,33 @@ public class EditorStubService implements IEditorStubService {
    * @throws IOException when the http request to database was faulty
    */
   @Override
-  public Tag addTag(String annotationId, String title, String value)
-      throws InterruptedException, NoSuchIndexEntryException, IOException {
+  public Tag addTag(String annotationId, String title, String subject, String value, String source)
+      throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException {
     Tag newTag = new Tag(UUID.randomUUID().toString());
+    logger.info("newTag: " + newTag.toString());
     newTag.setAnnotationId(annotationId);
     newTag.setCreators(Collections.singletonList(assistanceService.getCurrentUser().getName()));
-    newTag.setCreated(Date.from(Instant.now()));
-    newTag.setModified(Date.from(Instant.now()));
+    newTag.setCreated(Instant.now());
+    newTag.setModified(Instant.now());
 
     if (title != null && !title.trim().equals("")) {
       newTag.setTitle(title);
+    }
+    
+    if (subject != null && !subject.trim().equals("")) {
+      newTag.setSubject(subject);
     }
 
     if (value != null && !value.trim().equals("")) {
       newTag.setValue(value);
     }
-
+    
+    if (source != null && !source.trim().equals("")) {
+      newTag.setSource(source);
+    }
+    
+    newTag.setFullJson(annotationConverter.bodyToJson(newTag));
+    logger.info("addedInfo: " + newTag.toString());
     try {
       newTag = (Tag) searchIndexService.addBody(newTag);
     } catch (JSONException e) {
@@ -301,25 +339,35 @@ public class EditorStubService implements IEditorStubService {
    * @throws IOException when the http request to database was faulty
    */
   @Override
-  public TextCard updateTextCard(String textCardId, String title, String value, String purpose)
-      throws InterruptedException, NoSuchIndexEntryException, IOException {
+  public TextCard updateTextCard(String textCardId, String title, String subject, String value, String source, String purpose)
+      throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException {
     TextCard updatedTextCard = searchIndexService.getTextCardById(textCardId);
     if (!updatedTextCard.getCreators().contains(assistanceService.getCurrentUser().getName())) {
       updatedTextCard.addCreator(assistanceService.getCurrentUser().getName());
     }
-    updatedTextCard.setModified(Date.from(Instant.now()));
+    updatedTextCard.setModified(Instant.now());
 
     if (title != null && !title.trim().equals("")) {
       updatedTextCard.setTitle(title);
+    }
+    
+    if (subject != null && !subject.trim().equals("")) {
+      updatedTextCard.setSubject(subject);
     }
 
     if (value != null && !value.trim().equals("")) {
       updatedTextCard.setValue(value);
     }
+    
+    if (source != null && !source.trim().equals("")) {
+      updatedTextCard.setSource(source);
+    }
 
     if (purpose != null && !purpose.trim().equals("")) {
-      updatedTextCard.setPurpose(Motivation.stringToMotivation(purpose));
+      updatedTextCard.setPurpose(purpose);
     }
+    
+    updatedTextCard.setFullJson(annotationConverter.bodyToJson(updatedTextCard));
 
     TextCard newTextCard;
     try {
@@ -344,21 +392,31 @@ public class EditorStubService implements IEditorStubService {
    * @throws IOException when the http request to database was faulty
    */
   @Override
-  public Tag updateTag(String tagId, String title, String value)
-      throws NoSuchIndexEntryException, InterruptedException, IOException {
+  public Tag updateTag(String tagId, String title, String subject, String value, String source)
+      throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException {
     Tag updatedTag = searchIndexService.getTagById(tagId);
     if (!updatedTag.getCreators().contains(assistanceService.getCurrentUser().getName())) {
       updatedTag.addCreator(assistanceService.getCurrentUser().getName());
     }
-    updatedTag.setModified(Date.from(Instant.now()));
+    updatedTag.setModified(Instant.now());
 
     if (title != null && !title.trim().equals("")) {
       updatedTag.setTitle(title);
+    }
+    
+    if (subject != null && !subject.trim().equals("")) {
+      updatedTag.setSubject(subject);
     }
 
     if (value != null && !value.trim().equals("")) {
       updatedTag.setValue(value);
     }
+    
+    if (source != null && !source.trim().equals("")) {
+      updatedTag.setSource(source);
+    }
+    
+    updatedTag.setFullJson(annotationConverter.bodyToJson(updatedTag));
 
     try {
       updatedTag = (Tag) searchIndexService.updateBody(updatedTag);
@@ -480,4 +538,18 @@ public class EditorStubService implements IEditorStubService {
     }
     return null;
   }
+  
+  @Override
+  public List<JSONObject> getAnnotationsForPage(String pageId, String pageNumber)
+    throws InterruptedException, IOException, JSONException {
+    return accessService.getAnnotationsByPageId(pageId, pageNumber);
+  }
+  
+  @Override
+  public List<Annotation> getAnnotationsForId(String id)
+    throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException {
+    //return accessService.getAnnotationsByTarget(target);
+    return searchIndexService.getAnnotationsForPageById(id);
+  }
 }
+  
