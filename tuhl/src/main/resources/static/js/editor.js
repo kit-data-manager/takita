@@ -1,35 +1,488 @@
-function selectAnnotation(event, annoTitle) {
-    event.preventDefault();
-    let params = {
-        id: annoTitle
-    }
-    postEditorController("select_annotation", params);
-}
-
-function showSvgs(annotations) {
-    console.log("show svgs " + annotations)
-    annotations.forEach(element => {
-        drawSvg(element.getSvgCode());
-    });
-}
-
-function postEditorController(endpoint, params) {
+function selectAnnotation(event, annoId) {
     $ .ajax({
-        type: 'POST',
-        url: '/editor/' + endpoint,
+        type: 'GET',
+        url: '/editor_rest/annotations/' + annoId,
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
         },
-        dataType: 'text',
-        data: JSON.stringify(params),
 
-        success: function(responseData) {
-            $('#viewerHolder').html(responseData);
-        }
+        success: function(responseJson) {
+            console.log(responseJson);
+            if (responseJson.created.seconds) {
+                responseJson.created = new Date(responseJson.created.seconds * 1000 + responseJson.created.nanos / 1000000).toISOString();
+                if(responseJson.modified.seconds) {
+                    responseJson.modified = new Date(responseJson.modified.seconds * 1000 + responseJson.modified.nanos / 1000000).toISOString();
+                };
+            };
+  
+            //toggleOverview('annotationCard');
+            
+            //var responseJson = JSON.parse(responseData);
+            var annotationDiv = document.getElementById("annotationCard");
+            console.log(annotationDiv);
+            console.log(annotationDiv.childElementCount);
+            while (annotationDiv.lastElementChild) {
+              annotationDiv.removeChild(annotationDiv.lastElementChild);  
+            };
+            
+            var iconRowTop = document.createElement("div");
+            iconRowTop.id = "iconRowTop";
+            iconRowTop.title = responseJson.id;
+                
+            var addBody = document.createElement("i");
+            addBody.id = "addBody";
+            addBody.classList.add("bx");
+            addBody.classList.add("bx-plus");
+            addBody.onclick = function() {
+                console.log("create");
+                //var modal = document.createElement("div");
+                //modal.classList.add("modal");
+                //modal.style.display = "block";
+                const modal = document.getElementById("createBody");
+                modal.classList.toggle("show-modal");
+                pickTemplate("",encodeAnnoId(responseJson.id), "createForm", "pickBodyTemplateForm", "bodyTemplate");
+            };
+                
+            var deleteAnnotationIcon = document.createElement("i");
+            deleteAnnotationIcon.id = "deleteAnnotation";
+            deleteAnnotationIcon.classList.add("bx");
+            deleteAnnotationIcon.classList.add("bx-trash");
+            deleteAnnotationIcon.onclick = function() {console.log("Hier wird gelöscht!"); deleteAnnotation(document.getElementById(this.id).parentNode.title)};
+            
+            iconRowTop.append(addBody);
+            iconRowTop.append(deleteAnnotationIcon);
+            iconRowTop.classList.add("is-right");
+            iconRowTop.classList.add("is-full-width");
+            
+            
+            var formDataModel = {
+                "type": "object",
+                "properties": {}
+            };
+            
+            const headerFields = ["created", "creators", "modified", "generator", "motivation", "target", "via"];
+            const omitFields = ["type", "selector", "fullJson", "annotationId"];
+            
+            for (field in headerFields) {
+                if (responseJson[headerFields[field]]) {
+                    console.log(responseJson[headerFields[field]]);
+                    formDataModel = completeFormDataModel(responseJson, formDataModel, headerFields[field], omitFields);    
+                };
+            };
+            
+            console.log(formDataModel);
+            
+            options = {operation: "READ", dataModel: formDataModel, uiForm: "*", resource: responseJson};
+            
+            $('#annotationCard').metadataeditorForm(options, function onSubmitValid(value) {
+                console.log(value);
+            });
+            
+            annotationDiv.prepend(iconRowTop);
+            
+            var bodies = responseJson.tags.concat(responseJson.textCards);
+            
+            for (let body in bodies) {
+                if (bodies[body].created) {
+                    bodies[body].created = new Date(bodies[body].created.seconds * 1000 + bodies[body].created.nanos / 1000000).toISOString();
+                };
+                
+                // bodies can have a modified date without having a created date
+                // 'legacy annotations'
+                if (bodies[body].modified) {
+                    bodies[body].modified = new Date(bodies[body].modified.seconds * 1000 + bodies[body].modified.nanos / 1000000).toISOString();
+                };
+                
+                console.log(bodies[body]);
+                
+                var bodyCard = document.createElement("div");
+                bodyCard.classList.add("card");
+                
+                var bodyRowDiv = document.createElement("div");
+                bodyRowDiv.classList.add("row");
+                bodyRowDiv.classList.add("is-full-width");
+                bodyCard.append(bodyRowDiv);
+                
+                var bodyDiv = document.createElement("div");
+                bodyDiv.innerText = bodies[body].purpose;
+                bodyDiv.id = bodies[body].id;
+                bodyDiv.title = bodies[body].annotationId;
+                bodyDiv.classList.add("is-left");
+                bodyDiv.classList.add("col");
+                bodyRowDiv.append(bodyDiv);
+                console.log(bodyDiv.id);
+                
+                var formRowDiv = document.createElement("div");
+                formRowDiv.classList.add("row");
+                formRowDiv.classList.add("is-full-width");
+                bodyCard.append(formRowDiv);
+                
+                var bodyForm = document.createElement("form");
+                bodyForm.id = "form" + bodies[body].id;
+                bodyForm.addEventListener('submit', function(e) {e.preventDefault();});
+                //bodyForm.style.paddingLeft = "20rem";
+                //bodyForm.classList.add("is-full-width");
+                bodyForm.classList.add("col");
+                formRowDiv.append(bodyForm);
+                
+                var iconRow = document.createElement("div");
+                iconRow.id = "iconRow" + body;
+                //iconRow.classList.add("is-full-width");
+                iconRow.style.paddingRight = "1rem";
+                
+                var expand = document.createElement("i");
+                expand.id = "expand" + body;
+                expand.classList.add("bx");
+                expand.classList.add("bx-chevron-right");
+                //expand.style.color = "#b5b5be";
+                expand.onclick = function() {console.log(this.id); toggleExpand(document.getElementById(this.id).parentNode.parentNode.parentNode.nextElementSibling);};
+                
+                var deleteBody = document.createElement("i");
+                deleteBody.id = "delete" + body;
+                deleteBody.classList.add("bx");
+                deleteBody.classList.add("bx-trash");
+                //deleteBody.style.color = "#b5b5be";
+                deleteBody.onclick = function() {console.log("Hier wird gelöscht!"); deleteBodyFromAnnotation(document.getElementById(this.id).parentNode.parentNode.title, document.getElementById(this.id).parentNode.parentNode.id);};
+                
+                iconRow.append(expand);
+                iconRow.append(deleteBody);
+                document.getElementById('annotationCard').append(bodyCard);
+                
+                var formBodyDataModel = {
+                "type": "object",
+                "properties": {}
+                };
+                
+                let uiForm = {
+                    "type" : "fieldset",
+                    "items" : []
+                };
+                
+                for (let key in bodies[body]) {
+                    console.log(key);
+                    if(bodies[body].hasOwnProperty(key)) {
+                        formDataModel = completeFormDataModel(bodies[body], formBodyDataModel, key, omitFields);
+                        if (key !== "value" && omitFields.indexOf(key) === -1) {
+                            uiForm.items.push(key);    
+                        }
+                    };
+                };
+                
+                if(bodies[body].value && bodies[body].purpose === "tadirah:transcription") {
+                    uiForm.items.push({"key": "value", "type": "textarea"});
+                } else {
+                    if(bodies[body].value) {
+                        uiForm.items.push("value");
+                    };
+                };
+                
+                console.log(uiForm);
+                
+                console.log(formBodyDataModel);
+                
+                options = {operation: "UPDATE", dataModel: formBodyDataModel, uiForm: uiForm, resource: bodies[body]};
+            
+                $('#form' + bodies[body].id).metadataeditorForm(options, function onSubmitValid(value) {
+                    console.log(value);
+                    var jsonObject = JSON.parse(value);
+    
+                    var endpoint;
+                    var annoIdEncoded = encodeAnnoId(document.getElementById("iconRowTop").title);
+                    console.log(document.activeElement);
+                    
+                    if (jsonObject.purpose==="tagging") {
+                        endpoint = '/editor_rest/annotations/' + annoIdEncoded + '/tags/' + jsonObject.id;
+                    } else {
+                        endpoint = '/editor_rest/annotations/' + annoIdEncoded + '/bodies/' + jsonObject.id;
+                    };
+                    
+                    $ .ajax({
+                        type: 'PUT',
+                        url: endpoint,
+                        data: value,
+                        headers: {
+                            'Content-Type' : 'application/json'
+                        },
+
+                        success: function(responseData) {
+                            console.log(responseData);
+                            selectAnnotation(null, annoIdEncoded);
+                        },
+        
+                        error: function(errorData) {
+                            console.log(errorData);
+                        }
+                    });
+                });
+                //document.getElementById(expand.id).parentNode.previousElementSibling.classList.add("is-hidden");
+                //document.getElementById(bodyDiv.id).childNodes[0].classList.add("is-hidden");
+                bodyDiv.prepend(iconRow);
+                //bodyDiv.childNodes[2].classList.add("is-hidden");
+                formRowDiv.classList.add("is-hidden");
+                
+            };
+        }                
     });
+};
+
+function deleteBodyFromAnnotation(annoId, bodyId) {
+    let confirmation = confirm("Are you sure to delete this body?");
+    
+    if (confirmation) {
+        console.log(annoId);
+        console.log(bodyId);
+    
+        let annoIdEncoded = encodeAnnoId(annoId);
+    
+        $ .ajax({
+            type: 'DELETE',
+            url: '/editor_rest/annotations/' + annoIdEncoded + '/bodies/' + bodyId,
+
+            success: function(responseData) {
+                console.log(responseData);
+                selectAnnotation(null, annoIdEncoded);
+            },
+        
+            error: function(errorData) {
+                console.log(errorData);
+            
+                $ .ajax({
+                    type: 'DELETE',
+                    url: '/editor_rest/annotations/' + annoIdEncoded + '/tags/' + bodyId,
+
+                    success: function(responseData) {
+                        console.log(responseData);
+                        selectAnnotation(null, annoIdEncoded);
+                    }
+                });    
+            }
+        });
+    }; 
 }
 
-function goHome() {
-    location.href="/"
+function encodeAnnoId(annoId) {
+    var annoIdEncoded = encodeURIComponent(annoId);
+    console.log(annoIdEncoded);
+    var annoIdEncodedDouble = encodeURIComponent(annoIdEncoded);
+    console.log(annoIdEncodedDouble);
+    return annoIdEncodedDouble;
 }
+
+function deleteAnnotation(annoId) {
+    let confirmation = confirm("Are you sure to delete this annotation?");
+    
+    if(confirmation) {
+        let annoIdEncoded = encodeAnnoId(annoId);
+        
+        $ .ajax({
+            type : 'DELETE',
+            url : '/editor_rest/annotations/' + annoIdEncoded,
+            
+            success: function(responseData) {
+                console.log(responseData);
+                if (!document.getElementById('annotationCard').classList.contains('is-hidden')) {
+                    toggleOverview('annotationCard');
+                };
+                
+                paper.forEach(function(element) {
+                    if (element.annoId === annoId) {
+                        element.remove();
+                    };
+                });
+                
+                for (let anno in annoJson) {
+                    if (annoJson[anno].id === annoId) {
+                        console.log(annoId + " this must go!")
+                        annoJson.splice(anno, 1);
+                    };
+                };
+                
+                // maybe move it within the if clause?
+                console.log(annoJson);
+                fillMetaDataEditorTable(annoJson);
+            }
+        });
+    };
+};
+
+//function readAnnotation(event, annoId) {
+    //event.preventDefault();
+//    let params = {
+//        id: annoId
+//    }
+//    postEditorDeleteController("get_annotation", params);
+//}
+
+//function postEditorDeleteController(endpoint, params) {
+//    $ .ajax({
+//        type: 'POST',
+//        url: '/editor_stub/' + endpoint,
+//        headers: {
+//            'Accept': 'application/json',
+//            'Content-Type': 'application/json'
+//        },
+//        dataType: 'text',
+//        data: JSON.stringify(params),
+//
+//        success: function(responseData) {
+//            console.log(responseData);
+//        }
+//    });
+//};
+
+
+
+
+//function showSvgs(annotations) {
+//    console.log("show svgs " + annotations)
+//    annotations.forEach(element => {
+//        drawSvg(element.getSvgCode());
+//    });
+//}
+
+
+function completeFormDataModel (responseJson, formDataModel, addition, omitFields) {
+    if (Array.isArray(responseJson[addition])) {
+        if (responseJson[addition][0] instanceof Object && (omitFields.indexOf(addition) === -1)) {
+            var properties = {};
+            var keys = [];
+            for (let jsonObject in responseJson[addition]) {
+                keys.push(Object.keys(responseJson[addition][jsonObject]));
+            };
+                            
+            var uniqueKeys = [...new Set(keys.flat())];
+                            
+            for (let key in uniqueKeys) {
+                if (omitFields.indexOf(uniqueKeys[key]) === -1) {
+                    properties[uniqueKeys[key]] = {
+                        "type" : "string",
+                        "title" : uniqueKeys[key]
+                    };
+                };
+            };
+         
+            formDataModel.properties[addition] = {
+                "type" : "array",
+                "items" : {
+                    "type" : "object",
+                    "title" : addition,
+                    "properties" : properties
+                }
+            };
+        } else
+            if(omitFields.indexOf(addition) === -1) {
+                formDataModel.properties[addition] = {
+                    "type" : "array",
+                    "items" : {
+                        "type" : "string",
+                        "title" : addition
+                    }
+                };
+            };
+                        
+    } else 
+        if (responseJson[addition] instanceof Object && (omitFields.indexOf(addition) === -1)) {
+            var objectKeys = Object.keys(responseJson[addition]);
+                                
+            var objectProperties = {
+                "type" : "object",
+                "properties" : {}
+            };
+            
+            for (let key in objectKeys) {
+                if (omitFields.indexOf(objectKeys[key]) === -1) {
+                    objectProperties.properties[objectKeys[key]] = {
+                        "type" : "string",
+                        "title" : objectKeys[key]
+                    };
+                };
+            };
+                                
+            formDataModel.properties[addition] = objectProperties;
+        
+        } else {
+            if (omitFields.indexOf(addition) === -1) {
+                formDataModel.properties[addition] = {
+                    "type" : "string",
+                    "title" : addition
+                };
+            };
+        
+        };
+    return formDataModel;    
+};
+
+// returning to table view of repository data
+function goHome() {
+    location.href="/";
+};
+
+// toggling the side bar
+// all text elements should not be hoverable when side bar is collapsed
+function toggleAnnoSideBar() {
+    let sideBar = document.querySelector('.anno-side-bar');
+    let arrowCollapse = document.querySelector('#logo-name__icon');
+    let textElements = document.querySelectorAll('.features-item-text');
+    sideBar.classList.toggle('annocollapse');
+    arrowCollapse.classList.toggle('annocollapse');
+    if (arrowCollapse.classList.contains('annocollapse')) {
+      arrowCollapse.classList =
+        'bx bx-arrow-from-left logo-name__icon annocollapse';
+        for (let element in textElements) {
+            if (textElements[element].classList) {
+               textElements[element].classList.add('annocollapse'); 
+            };  
+        };   
+    } else {
+      arrowCollapse.classList = 'bx bx-arrow-from-right logo-name__icon';
+      for (let element in textElements) {
+          if(textElements[element].classList) {
+              textElements[element].classList.remove('annocollapse');
+          };
+        };
+    };
+};
+
+// toggle for book and annotation overwiew
+// can be used for all divs / cards
+function toggleOverview(divId) {
+    var classDomTokens = document.getElementById(divId).classList;
+    let buttonElement = document.getElementById(divId + 'Button');
+    if (classDomTokens.contains('is-hidden')) {
+        classDomTokens.remove('is-hidden');
+        if (buttonElement) {
+            buttonElement.parentElement.classList.add('active');
+            document.getElementById(divId).scrollIntoView();
+        };
+    } else {
+        classDomTokens.add('is-hidden');
+        if (buttonElement) {
+            buttonElement.parentElement.classList.remove('active');
+        };
+    };
+};
+
+// toggling the bodies within the annotation selection
+function toggleExpand(div) {
+    var classDomTokens = div.classList;
+    var expandIcon = div.previousElementSibling.firstChild.firstChild.firstChild; 
+    if (classDomTokens.contains('is-hidden')) {
+        classDomTokens.remove('is-hidden');
+        expandIcon.classList.remove('bx-chevron-right');
+        expandIcon.classList.add('bx-chevron-down');
+    } else {
+        classDomTokens.add('is-hidden');
+        expandIcon.classList.remove('bx-chevron-down');
+        expandIcon.classList.add('bx-chevron-right');
+    };
+};
+
+// show the animated book as loading icon whenever an ajax call is running
+$(document).ajaxStart(function(){
+    const modal = document.getElementById("loading");
+    modal.classList.toggle("show-modal");
+ }).ajaxStop(function(){
+    const modal = document.getElementById("loading"); 
+    modal.classList.toggle("show-modal"); 
+ });
