@@ -1,2 +1,8 @@
-
-.DS_Store
+tuhl/.gradle
+tuhl/build/
+tuhl/bin/
+tuhl/node_modules/
+!tuhl/gradle/wrapper/gradle-wrapper.jar
+!**/src/main/**
+!**/src/test/**
+**/.DS_Store
