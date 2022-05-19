@@ -453,15 +453,15 @@ public class AnnotationConverter {
       }
     }
 
-    // in form <svg><code></svg>
     if (annotation.getSvgCode() != null && !annotation.getSvgCode().trim().equals("")) {
       selector.put(AnnotationStoreStrings.TYPE.getName(),
           AnnotationStoreStrings.SVG_SELECTOR.getName());
-          //TODO
+
       if (!annotation.getSvgCode().contains("<svg>")) {
-        selector.put(AnnotationStoreStrings.VALUE.getName(), "<svg>" + annotation.getSvgCode() + "</svg>");
+        selector.put(AnnotationStoreStrings.VALUE.getName(), "<svg xmlns=\"http://www.w3.org/2000/svg\">" + annotation.getSvgCode() + "</svg>");
       } else {
-        selector.put(AnnotationStoreStrings.VALUE.getName(), annotation.getSvgCode());
+        String svgString = annotation.getSvgCode().substring(annotation.getSvgCode().indexOf('>') + 1, annotation.getSvgCode().lastIndexOf('<'));
+        selector.put(AnnotationStoreStrings.VALUE.getName(), "<svg xmlns=\"http://www.w3.org/2000/svg\">" + svgString + "</svg>");
       };
           
       target.put(AnnotationStoreStrings.SELECTOR.getName(), selector);
