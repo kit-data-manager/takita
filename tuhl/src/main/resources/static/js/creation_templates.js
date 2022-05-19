@@ -15,6 +15,7 @@ const annotationTemplate = {
     GLOSS : "gloss",
     PAGEREGION : "pageregion",
     MAINTEXT : "maintext",
+    TARGETAUDIENCE : "targetaudience",
     NOTEMPLATE : "notemplate"
     
 };
@@ -189,6 +190,36 @@ function getFormModel(chosenTemplate) {
                 ]
             };
             break;
+            case "TARGETAUDIENCE":
+            dataModel = {
+                "type" : "object",
+                "properties" : {
+                    "transcription" : {
+                        "type" : "string",
+                        "title" : "transcription"
+                    },
+                    "tag" : {
+                        "type" : "string",
+                        "title" : "tag",
+                        "default" : "Zielgruppe",
+                        "readOnly" : true
+                    }
+                }
+            };
+            uiForm = {
+                "type" : "fieldset",
+                "items" : [
+                    {
+                        "key": "transcription",
+                        "type": "textarea"
+                    },
+                    {
+                        "key" : "tag",
+                        "readOnly" : true
+                    }
+                
+            ]};
+            break;     
         case "NOTEMPLATE":
             dataModel = {
                 "type" : "object",
