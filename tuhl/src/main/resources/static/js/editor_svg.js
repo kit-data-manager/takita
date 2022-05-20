@@ -30,12 +30,11 @@ let mode = Mode.View;
 
 // returns relative coordinates to the upper left corner of the image
 // also includes scrolling offsets
-// ToDo: check browser compatibility! Is imageOffset needed?
+// ToDo: check browser compatibility! 
 function getRelativeCoordinates(x, y) {
     let imageWorkspaceBoundingRect = document.getElementById("imageWorkspace").getBoundingClientRect();
-    let image = document.getElementById('pageImage');
-    let relativeX = (x - imageWorkspaceBoundingRect.left - image.offsetLeft - window.pageXOffset); //* paper.currentWidth / paper.originalWidth;
-    let relativeY = (y - imageWorkspaceBoundingRect.top - image.offsetTop - window.pageYOffset); //* paper.currentHeight / paper.originalHeight;
+    let relativeX = (x - imageWorkspaceBoundingRect.left - window.pageXOffset); //* paper.currentWidth / paper.originalWidth;
+    let relativeY = (y - imageWorkspaceBoundingRect.top - window.pageYOffset); //* paper.currentHeight / paper.originalHeight;
    
     return [relativeX, relativeY];
 };
