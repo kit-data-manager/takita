@@ -1,8 +1,8 @@
-version: '2.2'
+version: '3.7'
 services:
   es:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
-    container_name: es
+    container_name: takita_es
     environment:
       - discovery.type=single-node
       - bootstrap.memory_lock=true
@@ -11,5 +11,29 @@ services:
       memlock:
         soft: -1
         hard: -1
+    volumes:
+      - "E:/work/takita/esdata:/usr/share/elasticsearch/data"
     ports:
       - 9200:9200
+    healthcheck:
+      test: curl -u elastic:elastic -s -f es:9200/_cat/health >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+  takita:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    ports:
+      - "9100:8080"
+    depends_on:
+      es:
+        condition: service_healthy
+    links:
+    - es
+    restart: unless-stopped
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        "elasticsearch.ip": "es"
+      }'
