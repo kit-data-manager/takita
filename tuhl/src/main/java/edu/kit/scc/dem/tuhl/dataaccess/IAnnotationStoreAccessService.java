@@ -16,12 +16,13 @@ public interface IAnnotationStoreAccessService {
    * Adds an annotation to the annotation store.
    *
    * @param jsonAnnotation annotation as JSONObject
+   * @param projectId id of the project the annotation is associated with, used as subfolder in annotation store
    * @return new Annotation with ID and ETag
    * @throws IOException if an I/O error occurs when sending or receiving http request
    * @throws InterruptedException if the http request is interrupted
    * @throws JSONException if the response body could not be parsed to json
    */
-  JSONObject addAnnotation(JSONObject jsonAnnotation)
+  JSONObject addAnnotation(JSONObject jsonAnnotation, String projectId)
       throws IOException, InterruptedException, JSONException;
 
   /**

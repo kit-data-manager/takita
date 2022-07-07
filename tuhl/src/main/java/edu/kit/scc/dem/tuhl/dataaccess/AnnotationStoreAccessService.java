@@ -37,6 +37,8 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   private static final String VALIDATED_URL = "validated/";
 
   private static final String DEINTERPRETATIONE_URL = "deinterpretatione/";
+  
+  private static final String TAKITA_URL = "takita/";
 
   private static final String FIRST_PAGE = "?iris=1&page=0";
 
@@ -78,16 +80,17 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
    * Adds an annotation to the annotation store.
    *
    * @param jsonAnnotation annotation as JSONObject
+   * @param projectId id of the project the annotation is associated with, used as subfolder in annotation store
    * @return new Annotation with ID and ETag
    * @throws IOException if an I/O error occurs when sending or receiving http request
    * @throws InterruptedException if the http request is interrupted
    * @throws JSONException if the response body could not be parsed to json
    */
   @Override
-  public JSONObject addAnnotation(JSONObject jsonAnnotation)
+  public JSONObject addAnnotation(JSONObject jsonAnnotation, String projectId)
       throws IOException, InterruptedException, JSONException {
     HttpResponse<String> response = httpRequestHelper
-        .postAnnotations(urlPrefix + DEINTERPRETATIONE_URL, jsonAnnotation);
+        .postAnnotations(urlPrefix + projectId + TAKITA_URL, jsonAnnotation);
     JSONObject deinterpretationeAnnotation = new JSONObject(response.body());
     logger.info("Antwort Annostore: " + deinterpretationeAnnotation.toString());
 
