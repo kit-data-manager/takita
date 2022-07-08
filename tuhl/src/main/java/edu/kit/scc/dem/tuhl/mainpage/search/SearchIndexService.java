@@ -245,8 +245,24 @@ public class  SearchIndexService implements ISearchIndexService {
   public Annotation addAnnotation(Annotation annotation) throws InterruptedException, IOException,
       JSONException, NoSuchIndexEntryException {
     Page page = getPageById(annotation.getPageId());
+    Manuscript manuscript = getManuscriptById(page.getManuscriptId());
+    logger.info(manuscript.getPublisher());
     
-    Annotation newAnnotation = accessService.addAnnotation(annotation, page.getPageNumber());
+    String manuscriptPublisher = manuscript.getPublisher();
+    // bad string magic, take everything after the last occurence of "-", 
+    // omit the space and convert it to lower case to use this as a subfolder 
+    // in the annotion store
+    String projectId = manuscriptPublisher.substring(manuscriptPublisher.lastIndexOf("-") + 2).toLowerCase() + "/";
+    
+    Annotation newAnnotation;
+    
+    // if a parsing error occurs then store the annotation to a default subfolder
+    if (projectId != null && !projectId.equals(manuscriptPublisher)) {
+        newAnnotation = accessService.addAnnotation(annotation, page.getPageNumber(), projectId);
+    } else {
+        newAnnotation = accessService.addAnnotation(annotation, page.getPageNumber(), "takitadefault");
+        logger.info("ProjectId could not be parsed from " + manuscriptPublisher + ", result: " + projectId);
+    }
     
     Optional<Manuscript> manuscriptHit = manuscriptRepository.findById(page.getManuscriptId());
     

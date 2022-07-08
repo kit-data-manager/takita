@@ -66,12 +66,13 @@ public interface IAccessService {
    *
    * @param annotation annotation to add to database as Annotation
    * @param pageNumber number of the page on which the annotation is
+   * @param projectId id of the project the annotation is associated with, used as subfolder in annotation store
    * @return Annotation with added fields
    * @throws JSONException if an error occurs while parsing json
    * @throws IOException if an error occurs while sending or receiving http request
    * @throws InterruptedException if the http request is interrupted
    */
-  Annotation addAnnotation(Annotation annotation, String pageNumber)
+  Annotation addAnnotation(Annotation annotation, String pageNumber, String projectId)
       throws JSONException, IOException, InterruptedException;
 
   /**
