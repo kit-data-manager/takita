@@ -6,3 +6,5 @@ tuhl/node_modules/
 !**/src/main/**
 !**/src/test/**
 **/.DS_Store
+esdata
+.gitattributes
