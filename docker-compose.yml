@@ -1,4 +1,4 @@
-version: '3.7'
+version: '2.7'
 services:
   es:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
@@ -35,5 +35,6 @@ services:
     restart: unless-stopped
     environment:
       SPRING_APPLICATION_JSON: '{
-        "elasticsearch.ip": "es"
+        "elasticsearch.ip": "es",
+        "annotationStore.url": "http://sampleannoserver.edu/wap/"
       }'
