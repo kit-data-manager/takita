@@ -12,5 +12,5 @@ then
 else
   echo "Found existing search index"
   echo "Starting application"
-  java -jar tuhl-0.0.2-SNAPSHOT.jar scheduleIndex
+  java -jar tuhl-0.0.2-SNAPSHOT.jar updateIndex scheduleIndex
 fi

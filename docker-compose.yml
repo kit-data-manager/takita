@@ -36,5 +36,7 @@ services:
     environment:
       SPRING_APPLICATION_JSON: '{
         "elasticsearch.ip": "es",
-        "annotationStore.url": "http://sampleannoserver.edu/wap/"
+        "repository.baseUrl": "http://samplerepo.edu/",
+        "annotationStore.url": "http://sampleannoserver.edu/wap/",
+        "sparqlQuery.urlPrefix": "http://sampleannoserver-sparql.edu/wap/sparql?query="
       }'
