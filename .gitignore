@@ -8,3 +8,4 @@ tuhl/node_modules/
 **/.DS_Store
 esdata
 .gitattributes
+.idea
