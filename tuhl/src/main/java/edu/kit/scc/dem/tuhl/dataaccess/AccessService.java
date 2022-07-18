@@ -304,6 +304,8 @@ public class AccessService implements IAccessService {
         annotation = annotationConverter.buildAnnotationFromJson(jsonAnnotation);
       } catch (JSONException e) {
         logger.error("JSON Error on Annotation conversion. Skipping Annotation");
+        logger.error("Unparsable annotation: ", jsonAnnotation.optString(AnnotationStoreStrings.ID.getName()));
+        logger.error(e.getMessage(), e);
         e.printStackTrace();
         continue;
       }

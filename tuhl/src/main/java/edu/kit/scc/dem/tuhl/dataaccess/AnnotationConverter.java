@@ -202,7 +202,8 @@ public class AnnotationConverter {
   private List<String> buildCreatorList(JSONObject jsonAnnotation, Annotation annotation)
       throws JSONException {
     List<String> creatorList = new ArrayList<>();
-
+    
+    //TODO: If array of creators, all creators of type person are added
     if (isJsonArray(jsonAnnotation.getString(AnnotationStoreStrings.CREATOR.getName()))) {
       JSONArray creators = jsonAnnotation.getJSONArray(AnnotationStoreStrings.CREATOR.getName());
 
@@ -219,11 +220,20 @@ public class AnnotationConverter {
       creatorList.add(jsonAnnotation.getString(AnnotationStoreStrings.CREATOR.getName()));
       annotation.setIsAlgorithmAnnotation(true);
     } else {
+      //If creator type is a person
       if (jsonAnnotation.getJSONObject(AnnotationStoreStrings.CREATOR.getName())
           .getString(AnnotationStoreStrings.TYPE.getName()).equals(
               AnnotationStoreStrings.PERSON.getName())) {
-        creatorList.add(jsonAnnotation.getJSONObject(AnnotationStoreStrings.CREATOR.getName())
-            .getString(AnnotationStoreStrings.NAME.getName()));
+        if(jsonAnnotation.getJSONObject(AnnotationStoreStrings.CREATOR.getName()).has(AnnotationStoreStrings.NAME.getName())) {
+          creatorList.add(jsonAnnotation.getJSONObject(AnnotationStoreStrings.CREATOR.getName())
+          .getString(AnnotationStoreStrings.NAME.getName()));
+        } else {
+          if(jsonAnnotation.getJSONObject(AnnotationStoreStrings.CREATOR.getName()).has(AnnotationStoreStrings.NICK.getName())) {
+            creatorList.add(jsonAnnotation.getJSONObject(AnnotationStoreStrings.CREATOR.getName())
+            .getString(AnnotationStoreStrings.NICK.getName()));
+          }
+        }
+
       }
     }
     return creatorList;

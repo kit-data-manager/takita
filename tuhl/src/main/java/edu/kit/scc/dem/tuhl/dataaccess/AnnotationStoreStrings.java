@@ -18,6 +18,7 @@ public enum AnnotationStoreStrings {
   PURPOSE("purpose"),
   TAGGING("tagging"),
   NAME("name"),
+  NICK("nickname"),
   TYPE("type"),
   PERSON("Person"),
   DC_TITLE("dc:title"),
