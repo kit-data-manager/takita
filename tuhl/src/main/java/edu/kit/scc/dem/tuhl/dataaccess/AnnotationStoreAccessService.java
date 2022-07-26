@@ -5,9 +5,13 @@ import java.net.URLEncoder;
 import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +40,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
 
   private static final String VALIDATED_URL = "validated/";
 
-  private static final String DEINTERPRETATIONE_URL = "deinterpretatione/";
+  //private static final String DEINTERPRETATIONE_URL = "deinterpretatione/";
   
   private static final String TAKITA_URL = "takita/";
 
@@ -187,29 +191,52 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   public List<JSONObject> getAllAnnotations()
       throws IOException, InterruptedException, JSONException {
     logger.info("Getting all annotations.");
-  
-    //get validated annotations
-    List<JSONObject> annotationsJson = new ArrayList<>(getValidatedAnnotations());
 
-    //obtain canonical ids
-    List<String> canonicalIds = new ArrayList<>();
-    for (JSONObject validatedAnnotation : annotationsJson) {
-      if (validatedAnnotation.has(AnnotationStoreStrings.CANONICAL.getName())) {
-        canonicalIds.add(validatedAnnotation.getString(AnnotationStoreStrings.CANONICAL.getName()));
-      }
+    Queue<String> wapContainerQ;
+    wapContainerQ = new LinkedList<String>(Arrays.asList(urlPrefix));
+    Queue<String> annoContainerQ = new LinkedList<String>();
+    
+
+    //Go through all nested containers and queue annotation containers for retrieval
+    HttpResponse<String> currentResponse;
+    JSONObject containerJson;
+    while(wapContainerQ.size() > 0) {
+        String currentUri = wapContainerQ.poll();
+
+        currentResponse = httpRequestHelper.get(currentUri.toString());
+        containerJson = new JSONObject(currentResponse.body());
+        if(containerJson.has("first")) {
+          annoContainerQ.add(currentUri);
+        }
+        if(containerJson.has("contains")) {
+          JSONArray containerUriArray = containerJson.getJSONArray("contains");
+          for (int i = 0; i < containerUriArray.length(); i++) {  
+            String nextContainerURI = containerUriArray.getString(i);
+            //TODO: only for testing purposes!
+            if (!nextContainerURI.contains("/repo/")){
+              wapContainerQ.add(nextContainerURI);
+            }
+            
+          }
+        }
     }
-    
-    //get deInterpretatione annotations
-    annotationsJson.addAll(getDeInterpretationeAnnotations(canonicalIds));
-    
-    return annotationsJson;
+
+    List<JSONObject> annoJsonList = new ArrayList<>();
+    for(String containerUri : annoContainerQ) {
+      logger.info("Getting annos from {}", containerUri);
+      annoJsonList.addAll(getAnnotationsFromContainer(containerUri.toString()));
+    }
+
+
+    logger.info("Finished getting Annotations");
+    return annoJsonList;
   }
   
-  private List<JSONObject> getValidatedAnnotations()
+  private List<JSONObject> getAnnotationsFromContainer(String containerURL)
       throws JSONException, IOException, InterruptedException {
     List<JSONObject> annotationsJson = new ArrayList<>();
     
-    String nextUri = urlPrefix + VALIDATED_URL + FIRST_PAGE;
+    String nextUri = containerURL + FIRST_PAGE;
     HttpResponse<String> response;
     JSONObject annotationList;
     do {
@@ -238,6 +265,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
     return annotationsJson;
   }
   
+  /*
   private List<JSONObject> getDeInterpretationeAnnotations(List<String> canonicalIds)
       throws JSONException, IOException, InterruptedException {
     List<JSONObject> deInterpretationeAnnotations = new ArrayList<>();
@@ -267,6 +295,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
     } while (annotationList.has(AnnotationStoreStrings.NEXT.getName()));
     return deInterpretationeAnnotations;
   }
+  */
 
   /**
    * Gets all annotations in the annotation store modified after a certain time.

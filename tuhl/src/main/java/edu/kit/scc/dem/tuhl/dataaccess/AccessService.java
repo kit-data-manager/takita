@@ -74,13 +74,13 @@ public class AccessService implements IAccessService {
   public List<Manuscript> getAllManuscripts()
       throws InterruptedException, JSONException, IOException {
     List<Manuscript> manuscripts = new ArrayList<>();
-    //Map<String, List<Annotation>> sortedAnnotations =
-    //    getAllAnnotationsSorted(annotationStoreAccessService.getAllAnnotations());
+    Map<String, List<Annotation>> sortedAnnotations =
+        getAllAnnotationsSorted(annotationStoreAccessService.getAllAnnotations());
 
     logger.info("Getting all manuscripts.");
     for (JSONObject manuscriptJson : repositoryAccessService.getAllManuscripts(-1)) {
       try {
-        manuscripts.add(manuscriptConverter.buildManuscriptFromJson(manuscriptJson, null));
+        manuscripts.add(manuscriptConverter.buildManuscriptFromJson(manuscriptJson, sortedAnnotations));
       } catch (Exception e) {
         logger.info("Couldn't index manuscript " + manuscriptJson.getString("id"));
         logger.info(e.toString());
@@ -295,11 +295,20 @@ public class AccessService implements IAccessService {
 
 
   private Map<String, List<Annotation>> getAllAnnotationsSorted(
-      List<JSONObject> jsonAnnotations) throws JSONException {
+      List<JSONObject> jsonAnnotations) {
     Map<String, List<Annotation>> sortedAnnotations = new HashMap<>();
 
     for (JSONObject jsonAnnotation : jsonAnnotations) {
-      Annotation annotation = annotationConverter.buildAnnotationFromJson(jsonAnnotation);
+      Annotation annotation;
+      try {
+        annotation = annotationConverter.buildAnnotationFromJson(jsonAnnotation);
+      } catch (JSONException e) {
+        logger.error("JSON Error on Annotation conversion. Skipping Annotation");
+        logger.error("Unparsable annotation: ", jsonAnnotation.optString(AnnotationStoreStrings.ID.getName()));
+        logger.error(e.getMessage(), e);
+        e.printStackTrace();
+        continue;
+      }
 
       if (sortedAnnotations.containsKey(annotation.getPageId())) {
         sortedAnnotations.get(annotation.getPageId()).add(annotation);
