@@ -11,6 +11,7 @@ ADD dockerstart.sh /takita/start.sh
 ADD tuhl/ /takita/tuhl/
 
 RUN chmod +x /takita/build.sh
+RUN chmod +x /takita/start.sh
 RUN /takita/build.sh
 
 RUN chmod -R +x /takita/tuhl/build
