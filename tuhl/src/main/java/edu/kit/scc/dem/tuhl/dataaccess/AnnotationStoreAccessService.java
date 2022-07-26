@@ -209,14 +209,19 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
           annoContainerQ.add(currentUri);
         }
         if(containerJson.has("contains")) {
-          JSONArray containerUriArray = containerJson.getJSONArray("contains");
-          for (int i = 0; i < containerUriArray.length(); i++) {  
-            String nextContainerURI = containerUriArray.getString(i);
-            //TODO: only for testing purposes!
-            if (!nextContainerURI.contains("/repo/")){
-              wapContainerQ.add(nextContainerURI);
+          Object containerContains = containerJson.get("contains");
+          if (containerContains instanceof JSONArray) {
+            JSONArray containerUriArray = (JSONArray)containerContains;
+            for (int i = 0; i < containerUriArray.length(); i++) {  
+              String nextContainerURI = containerUriArray.getString(i);
+              //TODO: only for testing purposes!
+              if (!nextContainerURI.contains("/repo/")){
+                wapContainerQ.add(nextContainerURI);
+              }
             }
-            
+          }
+          if (containerContains instanceof String && !containerContains.toString().contains("/repo/")) {
+            wapContainerQ.add(containerContains.toString());
           }
         }
     }
