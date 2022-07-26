@@ -120,6 +120,7 @@ public class AccessService implements IAccessService {
       Page page = searchIndexService.getPageById(annotation.getPageId());
       Manuscript manuscript = searchIndexService.getManuscriptById(page.getManuscriptId());
       if (!page.getAnnotations().contains(annotation)) {
+        logger.info("Adding new annotation to page object {}", page.getId());
         ((ImagePage) page).addAnnotation(annotation);
       }
       manuscripts.add(manuscript);
@@ -135,6 +136,7 @@ public class AccessService implements IAccessService {
       }
     }
 
+    if(!manuscripts.isEmpty()) {logger.info("Found {} new or newly annotated manuscripts", manuscripts.size());}
     return manuscripts;
   }
 

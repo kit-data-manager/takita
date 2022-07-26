@@ -16,6 +16,7 @@ import edu.kit.scc.dem.tuhl.model.page.Page;
 import edu.kit.scc.dem.tuhl.model.page.ResourceType;
 import edu.kit.scc.dem.tuhl.model.page.TextPage;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.time.Duration;
 import java.time.Instant;
@@ -41,6 +42,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.IndexOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -156,6 +158,18 @@ public class  SearchIndexService implements ISearchIndexService {
     } else {
       logger.info("Index update started. This may take a while.");
       Date timestamp = lastUpdatedIndex;
+      
+      //after a restart or rebuild the application might have no information about the last update.
+      //In this case try to use index creation date instead.
+      //TODO: find a better solution, i.e. checking the most recent updates in the index somehow
+      if(timestamp.equals(Date.from(Instant.EPOCH))) {
+        Date creationDate = indexCreationDate();
+        
+        if(creationDate != null && creationDate.after(Date.from(Instant.EPOCH))) {
+          timestamp = creationDate;
+        }
+      }
+
       lastUpdatedIndex = Date.from(Instant.now());
       final LocalDateTime startUpdate = LocalDateTime.now();
       
@@ -168,7 +182,15 @@ public class  SearchIndexService implements ISearchIndexService {
       }
       logger.info("Indexing new or modified Manuscripts.");
       for (Manuscript manuscript : newManuscripts) {
+        try {
+          Manuscript oldManuscript = getManuscriptById(manuscript.getId());
+          logger.info("Updating manuscript {}", manuscript.getId());
+        } catch (NoSuchIndexEntryException e) {
+          logger.info("Inserting new manuscript {}", manuscript.getId());
+        }
+
         manuscriptRepository.deleteById(manuscript.getId());
+        
         manuscriptRepository.save(manuscript);
       }
       Duration duration = Duration.between(startUpdate, LocalDateTime.now());
@@ -177,6 +199,21 @@ public class  SearchIndexService implements ISearchIndexService {
     }
   }
   
+  public Date indexCreationDate() {
+
+    GetIndexRequest indexReq = new GetIndexRequest(INDEX_NAME);
+    indexReq.includeDefaults(true);
+    try {
+      return elasticsearchRestTemplate.execute(client -> 
+        Date.from(Instant.ofEpochMilli(Long.parseLong(client.indices().get(indexReq, RequestOptions.DEFAULT).getSetting(INDEX_NAME, "index.creation_date"))))    
+      );      
+    } catch (NullPointerException e) {
+      logger.error("Search index creation date could not be parsed");
+      return null;
+    }
+
+}
+
   private boolean indexExists() {
     return elasticsearchRestTemplate.execute(client ->
         client.indices().exists(new GetIndexRequest(INDEX_NAME), RequestOptions.DEFAULT));

@@ -321,6 +321,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
     //Extracts annotations from response and adds them to the list
     List<JSONObject> modifiedAnnotations = getAnnotationsFromXml(response.body());
     List<String> canonicalIds = new ArrayList<>();
+    logger.info("Detected {} new or modified annotations", modifiedAnnotations.size());
     for (JSONObject annotation : modifiedAnnotations) {
       if (annotation.has(AnnotationStoreStrings.CANONICAL.getName())) {
         canonicalIds.add(annotation.getString(AnnotationStoreStrings.CANONICAL.getName()));
@@ -335,6 +336,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
     for (JSONObject redundantAnnotation : redundantAnnotations) {
       modifiedAnnotations.remove(redundantAnnotation);
     }
+    logger.info("Detected {} relevant modified annotations", modifiedAnnotations.size());
     return modifiedAnnotations;
   }
 
