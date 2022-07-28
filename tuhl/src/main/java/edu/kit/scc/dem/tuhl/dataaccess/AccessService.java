@@ -119,11 +119,18 @@ public class AccessService implements IAccessService {
     for (Annotation annotation : newAnnotations) {
       Page page = searchIndexService.getPageById(annotation.getPageId());
       Manuscript manuscript = searchIndexService.getManuscriptById(page.getManuscriptId());
+
+      page = manuscript.getPageMap().get(page.getId()); //get real page object from manuscript you want to change
+
       if (!page.getAnnotations().contains(annotation)) {
+        logger.debug("Number of annotations on page before {}", page.getAnnotations().size());
         logger.info("Adding new annotation to page object {}", page.getId());
-        ((ImagePage) page).addAnnotation(annotation);
+        String changedPageID = page.getId();
+        page.addAnnotation(annotation);
+        logger.debug("Number of annotations on page after {}", page.getAnnotations().size());
       }
       manuscripts.add(manuscript);
+      
     }
 
     //adds new manuscripts

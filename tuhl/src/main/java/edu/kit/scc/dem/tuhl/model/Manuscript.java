@@ -5,7 +5,10 @@ import edu.kit.scc.dem.tuhl.model.page.Page;
 import edu.kit.scc.dem.tuhl.model.page.ResourceType;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -76,6 +79,14 @@ public class Manuscript {
    */
   public List<Page> getPages() {
     return pages;
+  }
+
+  public Map<String, Page> getPageMap() {
+      Map<String, Page> pageMap = new HashMap<String, Page>();
+      for (Page p: pages) {
+        pageMap.put(p.getId(), p);
+      }
+      return pageMap;
   }
 
   /**

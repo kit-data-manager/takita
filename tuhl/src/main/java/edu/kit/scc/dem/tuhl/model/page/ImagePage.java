@@ -1,6 +1,5 @@
 package edu.kit.scc.dem.tuhl.model.page;
 
-import edu.kit.scc.dem.tuhl.model.Annotation;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -24,15 +23,6 @@ public class ImagePage extends Page {
     super(id, ResourceType.IMAGE, pageNumber, created, resourceUrl);
     annotations = new ArrayList<>();
     this.thumbResourceUrl = thumbResourceUrl;
-  }
-
-  /**
-   * Adds an annotation to list of annotations.
-   *
-   * @param annotation to be added
-   */
-  public void addAnnotation(Annotation annotation) {
-    annotations.add(annotation);
   }
 
   /**

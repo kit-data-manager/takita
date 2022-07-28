@@ -146,5 +146,14 @@ public abstract class Page {
   public void setAnnotations(List<Annotation> annotations) {
     this.annotations = annotations;
   }
+
+    /**
+   * Adds an annotation to list of annotations.
+   *
+   * @param annotation to be added
+   */
+  public void addAnnotation(Annotation annotation) {
+    annotations.add(annotation);
+  }
 }
 

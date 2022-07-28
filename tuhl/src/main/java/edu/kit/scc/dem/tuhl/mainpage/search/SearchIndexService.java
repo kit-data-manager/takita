@@ -163,6 +163,7 @@ public class  SearchIndexService implements ISearchIndexService {
       //In this case try to use index creation date instead.
       //TODO: find a better solution, i.e. checking the most recent updates in the index somehow
       if(timestamp.equals(Date.from(Instant.EPOCH))) {
+        logger.warn("No date for last index build found");
         Date creationDate = indexCreationDate();
         
         if(creationDate != null && creationDate.after(Date.from(Instant.EPOCH))) {
@@ -182,6 +183,7 @@ public class  SearchIndexService implements ISearchIndexService {
       }
       logger.info("Indexing new or modified Manuscripts.");
       for (Manuscript manuscript : newManuscripts) {
+
         try {
           Manuscript oldManuscript = getManuscriptById(manuscript.getId());
           logger.info("Updating manuscript {}", manuscript.getId());
@@ -191,7 +193,8 @@ public class  SearchIndexService implements ISearchIndexService {
 
         manuscriptRepository.deleteById(manuscript.getId());
         
-        manuscriptRepository.save(manuscript);
+        Manuscript savedManuscript = manuscriptRepository.save(manuscript);
+
       }
       Duration duration = Duration.between(startUpdate, LocalDateTime.now());
       logger.info("Finished index update in {} minutes and {} seconds", duration.toMinutes(),
@@ -204,6 +207,7 @@ public class  SearchIndexService implements ISearchIndexService {
     GetIndexRequest indexReq = new GetIndexRequest(INDEX_NAME);
     indexReq.includeDefaults(true);
     try {
+      logger.info("Getting index creation date");
       return elasticsearchRestTemplate.execute(client -> 
         Date.from(Instant.ofEpochMilli(Long.parseLong(client.indices().get(indexReq, RequestOptions.DEFAULT).getSetting(INDEX_NAME, "index.creation_date"))))    
       );      
