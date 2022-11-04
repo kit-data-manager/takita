@@ -5,20 +5,20 @@
     <meta charset="UTF-8">
     <title th:text="#{label.editor}"> </title>
     <!-- Bootstrap core JavaScript -->
-    <!-- CSS only 
+    <!-- CSS only
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
           integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous"
           th:href="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css}">
     <!-- <link href="https://www.cssscript.com/demo/sticky.css" rel="stylesheet" type="text/css">-->
-    
+
     <link rel="stylesheet" th:href="@{/css/reset.css}">
     <link rel="stylesheet" th:href="@{/css/tabulator_bootstrap4.min.css}">
     <link rel="stylesheet" th:href="@{/css/editor_sidebar_topbar.css}">
     <link rel="stylesheet" th:href="@{/css/modal.css}">
-    
+
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css">
     <link rel="stylesheet" href="https://unpkg.com/chota@latest">
-   
+
 
     <!-- JS, Popper.js, and jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
@@ -34,10 +34,10 @@
     <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.panzoom.js/dist/svg.panzoom.js"></script>
 
     <script src="https://d3js.org/d3.v6.min.js"></script>
-    
+
 </head>
-<body class="container-fluid p-0" th:data-field="${currentAnnotationsJson}" 
-    onload="init(document.body.getAttribute('data-field'))" 
+<body class="container-fluid p-0" th:data-field="${currentAnnotationsJson}"
+    onload="init(document.body.getAttribute('data-field'))"
     onresize="resizeViewbox()">
 
 <div id="sideBar" class="anno-side-bar annocollapse">
@@ -54,7 +54,7 @@
           <span class="tooltip">Expand</span>
         </div>
       </div>
-    
+
   <ul class="features-list">
       <div class="category-header">View Mode</div>
     <li class="features-item draft">
@@ -132,7 +132,7 @@
     </li>
   </ul>
 </div>
-    
+
     <div class="row topbar-row is-full-width">
         <div class="col-1"></div>
         <div class="col-1 is-vertical-align is-horizontal-align"> <i class="bx bx-home" onclick="goHome();"></i> </div>
@@ -170,12 +170,12 @@
         <div class="col-1"></div>
         <div class="col-2" th:text="#{col_name.lastModified}">"></div>
         <div class="col-4" th:text="${currentManuscript.lastModified}"></div>
-    </div>    
-    
+    </div>
+
 
     <div id="editor">
         <!-- th:fragment="editor -->
- 
+
     <!-- manuscript page -->
     <div class="row is-full-width">
         <div class="col-7">
@@ -184,17 +184,17 @@
                     var currentPageId = [[${currentPage.getResourceUrl()}]];
                 </script>
                 <img th:if="${currentPage.resourceType == (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).IMAGE)}"
-                        th:src="${currentPage.getResourceUrl()}"  
+                        th:src="${currentPage.getResourceUrl()}"
                         id="pageImage">
                 <label class="text-center"
                     th:if="${currentPage.resourceType != (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).IMAGE)}"
                     th:text="#{info.no_text_support}">
                 </label>
-                <div id="canvas">  
+                <div id="canvas">
                 </div>
             </div>
         </div>
-        
+
         <!-- bodies and annotations -->
         <div class="col-5" style="height: 100vh">
             <div class="row mx-auto" id="viewerHolder">
@@ -203,11 +203,11 @@
                         <div class="col">
                             <div class="is-right">
                                 <i class="bx bx-plus" onclick="imageZoomIn()"></i>
-                                <i class="bx bx-trash" onclick="imageZoomIn()"></i> 
+                                <i class="bx bx-trash" onclick="imageZoomIn()"></i>
                             </div>
                         </div>
                     </div>
-                </div>  
+                </div>
             </div>
         </div>
     </div>
@@ -235,27 +235,27 @@
                         th:if="${page.id != currentPage.id}">
                         </label>
                         <label class="col-auto bg-light" th:text="${page.pageNumber}"
-                        th:if="${page.id == currentPage.id}">    
+                        th:if="${page.id == currentPage.id}">
                         </label>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    
+
     <div class="collapse col-auto is-hidden is-full-width" id="editortable">
         <div class="card">
                 <div class="boxlist margin-top-30" id="training-box">
                     <div class="box-header bg-green-blue"></div>
                     <div class="box-body"><div id="table"></div>
-                        
+
                     </div>
                 </div>
          </div>
     </div>
-    
+
 </div>
-    
+
     <div class="modal" id="createBody">
         <div class="modal-content">
             <span class="close-button" id="closeButton">&times;</span>
@@ -263,7 +263,7 @@
             <form id="createForm"></form>
         </div>
     </div>
-    
+
     <div class="modal" id="createAnnotation">
         <div class="modal-content">
             <span class="close-button" id="closeButtonAnno">&times;</span>
@@ -271,13 +271,33 @@
             <form id="createAnnotationForm"></form>
         </div>
     </div>
-    
+
     <div class="modal" id="loading">
         <div class="modal-loading">
             <img th:src="@{/images/Book.gif}"/>
         </div>
     </div>
-    
+
+    <!-- Copied from main_page.html - may be exchanged in the future -->
+    <div class="modal" id="pseudonymInputModal">
+            <div class="modal-content">
+                <form onsubmit="setPseudonym('pseudonymInitInput')">
+                    <div class="modal-body form-group">
+                        <label for="pseudonymInitInput" th:text="#{prompt.pseudonym}"> </label>
+                        <input type="text"
+                               class="form-control"
+                               id="pseudonymInitInput"
+                               th:placeholder="#{label.pseudonym}"
+                               required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}">
+                        </button>
+                    </div>
+                </form>
+            </div>
+    </div>
+
     <script th:inline="javascript">
 
         function clickDe(){
@@ -320,13 +340,15 @@
                 button.classList.remove('bx-check');
                 button.classList.add('bx-edit');
                 input.disabled = true;
-                setPseudonym();
+                setPseudonym('pseudonymInput');
             }
             /*]]>*/
         }
 
-        function setPseudonym() {
-            let input = $('#pseudonymInput').val();
+        function setPseudonym(pseudonymForm) {
+            let input = $('#' + pseudonymForm).val();
+            console.log(input);
+            // $('#pseudonymInput').val();
             $.ajax({
                 type: 'GET',
                 url: '../assistance/' + input,
@@ -336,8 +358,16 @@
                 }
             });
         }
+
+        // adapted from main_page.html - may be exchanged in the future
+        $(document).ready(function () {
+            if ([[${user.getName()}]] === 'default') {
+              document.getElementById("pseudonymInputModal").classList.toggle("show-modal");
+            }
+
+        });
     </script>
-    
+
     <script src="/js/raphael.js"></script>
     <script src="/js/ajv7.js"></script>
     <script src="/js/underscore.js"></script>
