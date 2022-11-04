@@ -444,8 +444,10 @@ function extractInformationFromSvg (svgString, annoJson) {
         annoJson.icon = "<i class='bx bx-square'></i>";
     } else if (svgPolygon) {
         let polygonPoints = svgPolygon.getAttribute('points').split(' ');
-        // remove the last empty element
-        polygonPoints.pop();
+        if (!polygonPoints[polygonPoints.length-1]) {
+          // remove the last empty element
+          polygonPoints.pop();
+        };
 
         let polygonTempPath = 'M' + polygonPoints[0];
         for (let i = 1; i < polygonPoints.length; i++) {
