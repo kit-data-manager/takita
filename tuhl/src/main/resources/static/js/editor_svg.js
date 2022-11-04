@@ -1,5 +1,5 @@
 let annoJson;
-let paper; 
+let paper;
 
 let MouseDownX;
 let MouseDownY;
@@ -20,7 +20,7 @@ class Mode {
   static View = new Mode("view");
   static Create = new Mode("create");
   static Modify = new Mode("modify");
-  
+
   constructor(name) {
       this.name = name;
   }
@@ -30,23 +30,23 @@ let mode = Mode.View;
 
 // returns relative coordinates to the upper left corner of the image
 // also includes scrolling offsets
-// ToDo: check browser compatibility! 
+// ToDo: check browser compatibility!
 function getRelativeCoordinates(x, y) {
     let imageWorkspaceBoundingRect = document.getElementById("imageWorkspace").getBoundingClientRect();
     let relativeX = (x - imageWorkspaceBoundingRect.left - window.pageXOffset); //* paper.currentWidth / paper.originalWidth;
     let relativeY = (y - imageWorkspaceBoundingRect.top - window.pageYOffset); //* paper.currentHeight / paper.originalHeight;
-   
+
     return [relativeX, relativeY];
 };
 
-// return scaling ratios (image size rendered at client vs original size) 
+// return scaling ratios (image size rendered at client vs original size)
 // for x and y coordinates, can also be used for width / height
 function getScalingRatios() {
     //let imageWorkspaceBoundingRect = document.getElementById("imageWorkspace").getBoundingClientRect();
     let image = document.getElementById('pageImage');
     let scalingRatioX2 = image.clientWidth / paper.originalWidth;
     let scalingRatioY2 = image.clientHeight / paper.originalHeight;
-    
+
     return [scalingRatioX2, scalingRatioY2];
 };
 
@@ -54,7 +54,7 @@ function getScalingRatios() {
 function createPolygonPath(points) {
     let polygonPath = 'M' + points[0].attrs.cx + ',' + points[0].attrs.cy;
     for (let i = 1; i < points.length; i++) {
-        polygonPath = polygonPath + 'L' + points[i].attrs.cx + ',' + points[i].attrs.cy;  
+        polygonPath = polygonPath + 'L' + points[i].attrs.cx + ',' + points[i].attrs.cy;
     };
     polygonPath = polygonPath + 'Z';
     return polygonPath;
@@ -65,17 +65,17 @@ function createPolygonPath(points) {
 function drawRectangle(x, y, width, height, color, id, idEncoded){
     let rectangle = paper.rect(x, y, width, height);
     rectangle.attr({
-       'stroke' : color, 
-       'stroke-opacity' : 1, 
-       'stroke-width' : 10, 
-       'fill' : color, 
+       'stroke' : color,
+       'stroke-opacity' : 1,
+       'stroke-width' : 10,
+       'fill' : color,
        'fill-opacity' : 0.01
     });
     rectangle.annoId = id;
     rectangle.annoIdEncoded = idEncoded;
     rectangle.click(function() {
         paper.forEach(function(element) {
-            // deselect all previously selected shapes and remove all Raphael 
+            // deselect all previously selected shapes and remove all Raphael
             // events for view and create mode
             if (element.selected && element.id !== rectangle.id) {
                 if (mode.name !== "modify") {
@@ -131,9 +131,9 @@ function disableRectangleModification (shape) {
 function drawPolygon(path, color, id, idEncoded) {
     let polygon = paper.path(path)
                        .attr({
-                            'stroke': color, 
+                            'stroke': color,
                             'stroke-width' : 10,
-                            'fill' : color, 
+                            'fill' : color,
                             'fill-opacity' : 0.01
                         });
     polygon.points = [];
@@ -147,7 +147,7 @@ function drawPolygon(path, color, id, idEncoded) {
                     disablePolygonModification(element);
                 toggleShapeSelect(element);
                 };
-                
+
             };
         });
         if (mode.name === "modify") {
@@ -172,7 +172,7 @@ function drawPolygon(path, color, id, idEncoded) {
                 };
             };
             toggleShapeSelect(this);
-        };    
+        };
     });
     return polygon;
 };
@@ -181,7 +181,7 @@ function enablePolygonModification (shape) {
     // Raphael event
     shape.drag(dragPolygonMove, dragPolygonStart, dragPolygonEnd);
     shape.attr({'cursor' : 'move'});
-    
+
     // show vertices of polygon
     for (let point in shape.points) {
         toggleShapeVisibility(shape.points[point]);
@@ -196,7 +196,7 @@ function disablePolygonModification (shape) {
         // if not checked, polygons will get modifiable by accident
         if (shape.points[point].isVisible()) {
             toggleShapeVisibility(shape.points[point]);
-        }; 
+        };
     };
 };
 
@@ -239,7 +239,7 @@ let dragPolygonStart = function() {
     this.opoints = [];
     for (let circle in this.points) {
         this.opoints.push(this.points[circle].clone().attr({'r' : 1}));
-        
+
     }
 };
 
@@ -253,41 +253,41 @@ let dragCircleStart = function() {
 // x and y input coordinates are scaled to match the resolution of the image
 let dragRectangleMove = function(screenDx, screenDy) {
     let scalingRatios = getScalingRatios();
-                    
+
     let dx = screenDx / scalingRatios[0] * paper.currentWidth / paper.originalWidth;
     let dy = screenDy / scalingRatios[1] * paper.currentHeight / paper.originalHeight;
-                    
+
     // Inspect cursor to determine which resize/move process to use
     switch (this.attr('cursor')) {
 
 	case 'nw-resize' :
             this.attr({
-		x: Math.round(this.ox + dx), 
-		y: Math.round(this.oy + dy), 
-		width: Math.round(this.ow - dx), 
+		x: Math.round(this.ox + dx),
+		y: Math.round(this.oy + dy),
+		width: Math.round(this.ow - dx),
 		height: Math.round(this.oh - dy)
             });
             break;
 
 	case 'ne-resize' :
-            this.attr({ 
-		y: Math.round(this.oy + dy), 
-		width: Math.round(this.ow + dx), 
+            this.attr({
+		y: Math.round(this.oy + dy),
+		width: Math.round(this.ow + dx),
 		height: Math.round(this.oh - dy)
             });
             break;
 
 	case 'se-resize' :
             this.attr({
-		width: Math.round(this.ow + dx), 
+		width: Math.round(this.ow + dx),
 		height: Math.round(this.oh + dy)
             });
             break;
 
 	case 'sw-resize' :
-            this.attr({ 
-		x: Math.round(this.ox + dx), 
-		width: Math.round(this.ow - dx), 
+            this.attr({
+		x: Math.round(this.ox + dx),
+		width: Math.round(this.ow - dx),
 		height: Math.round(this.oh + dy)
             });
             break;
@@ -320,7 +320,7 @@ let dragRectangleMove = function(screenDx, screenDy) {
 
 	default :
             this.attr({
-                x: Math.round(this.ox + dx), 
+                x: Math.round(this.ox + dx),
 		y: Math.round(this.oy + dy)
             });
             break;
@@ -330,13 +330,13 @@ let dragRectangleMove = function(screenDx, screenDy) {
 
 let dragPolygonMove = function(screenDx, screenDy) {
     this.attr('cursor', 'move');
-    
+
     let scalingRatios = getScalingRatios();
-    
+
     // scale screen movement to orginal image size
     let dx = screenDx / scalingRatios[0] * paper.currentWidth / paper.originalWidth;
     let dy = screenDy / scalingRatios[1] * paper.currentHeight / paper.originalHeight;
-    
+
     for (let circle in this.opoints) {
         movedX = Math.round(this.opoints[circle].attrs.cx + dx);
         movedY = Math.round(this.opoints[circle].attrs.cy + dy);
@@ -348,7 +348,7 @@ let dragPolygonMove = function(screenDx, screenDy) {
 
 let dragCircleMove = function(screenDx, screenDy) {
     let scalingRatios = getScalingRatios();
-                    
+
     let dx = screenDx / scalingRatios[0];
     let dy = screenDy / scalingRatios[1];
 
@@ -371,7 +371,7 @@ let dragPolygonEnd = function() {
         };
         drawingHistory.push({"id" : this.id, "attr" : {"path" : createPolygonPath(this.opoints)}, "points" : undoInformation});
     };
-    
+
     this.attr({'cursor' : 'default'});
     for (let circle in this.opoints) {
         this.opoints[circle].remove();
@@ -392,25 +392,25 @@ let changeCursor = function(e, mouseX, mouseY) {
 
     let scalingRatios = getScalingRatios();
     let relativeCoordinates = getRelativeCoordinates(mouseX, mouseY);
-    
+
     // X,Y Coordinates relative to shape's orgin
     let relativeX = relativeCoordinates[0] - (this.attr('x') * scalingRatios[0]) + (paper.currentX * scalingRatios[0]);
     let relativeY = relativeCoordinates[1] - (this.attr('y') * scalingRatios[1]) + (paper.currentY * scalingRatios[1]);
-    
+
     let shapeWidth = this.attr('width') * scalingRatios[0];
     let shapeHeight = this.attr('height') * scalingRatios[1];
-    
+
     // area around exact line where events will be triggered
     let resizeBorder = 5;
-    
+
     // Change cursor
-    if (relativeX < resizeBorder && relativeY < resizeBorder) { 
+    if (relativeX < resizeBorder && relativeY < resizeBorder) {
 	this.attr('cursor', 'nw-resize');
-    } else if (relativeX > shapeWidth-resizeBorder && relativeY < resizeBorder) { 
+    } else if (relativeX > shapeWidth-resizeBorder && relativeY < resizeBorder) {
 	this.attr('cursor', 'ne-resize');
-    } else if (relativeX > shapeWidth-resizeBorder && relativeY > shapeHeight-resizeBorder) { 
+    } else if (relativeX > shapeWidth-resizeBorder && relativeY > shapeHeight-resizeBorder) {
 	this.attr('cursor', 'se-resize');
-    } else if (relativeX < resizeBorder && relativeY > shapeHeight-resizeBorder) { 
+    } else if (relativeX < resizeBorder && relativeY > shapeHeight-resizeBorder) {
 	this.attr('cursor', 'sw-resize');
     } else if (relativeX < resizeBorder && relativeY < shapeHeight-resizeBorder) {
 	this.attr('cursor', 'w-resize');
@@ -420,7 +420,7 @@ let changeCursor = function(e, mouseX, mouseY) {
 	this.attr('cursor', 's-resize');
     } else if (relativeX > resizeBorder && relativeY < resizeBorder) {
 	this.attr('cursor', 'n-resize');
-    } else { 
+    } else {
 	this.attr('cursor', 'move');
     }
 };
@@ -446,22 +446,22 @@ function extractInformationFromSvg (svgString, annoJson) {
         let polygonPoints = svgPolygon.getAttribute('points').split(' ');
         // remove the last empty element
         polygonPoints.pop();
-        
+
         let polygonTempPath = 'M' + polygonPoints[0];
         for (let i = 1; i < polygonPoints.length; i++) {
-          polygonTempPath = polygonTempPath + 'L' + polygonPoints[i];  
+          polygonTempPath = polygonTempPath + 'L' + polygonPoints[i];
         };
         polygonTempPath = polygonTempPath + 'Z';
-        
+
         annoJson.points = polygonPoints;
         annoJson.path = polygonTempPath;
         annoJson.type = "Polygon";
         annoJson.icon = "<i class='bx bx-polygon'></i>";
-        
+
         polygonPath = drawPolygon(polygonTempPath, "purple", null, null).hide();
         annoJson.height = Math.round(polygonPath.getBBox().height);
         annoJson.width = Math.round(polygonPath.getBBox().width);
-        polygonPath.remove(); 
+        polygonPath.remove();
     };
 }
 
@@ -469,8 +469,8 @@ function drawAnnos(annoJson) {
     console.log(annoJson);
   for (let anno in annoJson) {
      extractInformationFromSvg(annoJson[anno].svg, annoJson[anno]);
-  }; 
-  
+  };
+
     // sort all annotations resp. the corresponding shape area (descending)
     // annotations without shape are at the end of the array
     let sortedAnnoJson = annoJson.sort(function(a,b) {
@@ -483,7 +483,7 @@ function drawAnnos(annoJson) {
         };
         return (b.height*b.width)-(a.height*a.width);
     });
-  
+
     // create Raphael objects according to the shape to draw them on the canvas
     for (let anno in sortedAnnoJson) {
       if (sortedAnnoJson[anno]["visible"]) {
@@ -515,7 +515,7 @@ function drawAnnos(annoJson) {
         };
       };
   };
-  
+
   fillMetaDataEditorTable(annoJson);
 }
 
@@ -524,7 +524,7 @@ function fillMetaDataEditorTable(annoJson) {
     if (document.getElementById('editor-buttons')) {
         document.getElementById('editor-buttons').remove();
     };
-    
+
     // decision to only show page annotations in the table
     // can be removed to simply show all annotations of the page
     let filteredAnnoJson = annoJson.filter(anno => anno.type !== "Rectangle" && anno.type !== "Polygon");
@@ -544,15 +544,15 @@ function fillMetaDataEditorTable(annoJson) {
                     }
                 }
     };
-    
+
     let items = [{title: "Identifier", field: "id", headerSort: false, cellClick: function (e, cell) {
-                selectAnnotation(null, encodeAnnoId(cell.getValue())); 
+                selectAnnotation(null, encodeAnnoId(cell.getValue()));
                 if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
                     toggleOverview('annotationCard');
                 };
                 // function to select shape on the canvas
                 // not needed as long only page annotations are shown
-                // 
+                //
                 //paper.forEach(function(element) {
                     // select the shape corresponding to the row
                 //    if (element.annoId === cell.getValue()) {
@@ -566,11 +566,11 @@ function fillMetaDataEditorTable(annoJson) {
                 }},
                 //{title: "", field: "icon", formatter:"html", width:60, hozAlign: "center"},
                 {title: "", field: "color", formatter:"color", width:60}];
-    
-    let inputs = {dataModel: dataModel, uiForm: "*", resource: filteredAnnoJson, items: items, 
+
+    let inputs = {dataModel: dataModel, uiForm: "*", resource: filteredAnnoJson, items: items,
             // toggling shape visibility on the canvas
             // not needed as long only page annotations are shown
-            // 
+            //
             //readOperation: function (rowColumnvalue){
             //    paper.forEach(function(element) {
             //        if (element.annoId === rowColumnvalue.id) {
@@ -585,11 +585,11 @@ function fillMetaDataEditorTable(annoJson) {
                 };
                 // toggling shape selection on the canvas
                 // not needed as long only page annotations are shown
-                // 
+                //
                 //paper.forEach(function(element) {
                 //    if (element.annoId === rowColumnvalue.id) {
                 //        toggleShapeSelect(element);
-                //    };  
+                //    };
                 //});
             },
             deleteOperation: function (rowColumnvalue){
@@ -599,53 +599,55 @@ function fillMetaDataEditorTable(annoJson) {
             //
             //createOperation: { callback: function (){
             //    const modal = document.getElementById("createAnnotation");
-            //    modal.classList.toggle("show-modal");   
+            //    modal.classList.toggle("show-modal");
             //    pickTemplate("", "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
             //}, buttonTitle: "Create New Annotation"},
-            
+
             // list operation not needed in our use case right now
-            // 
+            //
             //listOperation: function(rowColumnvalue){
                 //project-specific implementation.
             //}
             };
 
             $('#table').metadataeditorTable(inputs);
-    
+
 };
 
 function createPageAnnotation() {
     const modal = document.getElementById("createAnnotation");
-    modal.classList.toggle("show-modal");   
+    modal.classList.toggle("show-modal");
     pickTemplate("", "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
 };
 
 function imageZoomIn() {
     paper.currentWidth = paper.currentWidth - paper.originalWidth/10;
     paper.currentHeight = paper.currentHeight - paper.originalHeight/10;
-    
+
     if (paper.currentWidth > 0 && paper.currentHeight > 0) {
        paper.setViewBox(paper.currentX, paper.currentY, paper.currentWidth, paper.currentHeight);
-      
+
        let image = document.getElementById('pageImage');
-       image.style.width = document.getElementById('imageWorkspace').clientWidth * 10 / (10 * paper.currentWidth / paper.originalWidth) + 'px';
-       image.style.left = Math.round(-paper.currentX * document.getElementById('imageWorkspace').clientWidth / paper.originalWidth)  + 'px';
-       image.style.top = Math.round(-paper.currentY * document.getElementById('imageWorkspace').clientHeight / paper.originalHeight) + 'px';
+       image.style.width = document.getElementById('imageWorkspace').clientWidth * paper.originalWidth / paper.currentWidth + 'px';
+       //image.style.left = Math.round(-paper.currentX * document.getElementById('imageWorkspace').clientWidth / paper.originalWidth)  + 'px';
+       image.style.left = Math.round(-paper.currentX * image.clientWidth / paper.originalWidth)  + 'px';
+       //image.style.top = Math.round(-paper.currentY * document.getElementById('imageWorkspace').clientHeight / paper.originalHeight) + 'px';
+       image.style.top = Math.round(-paper.currentY * image.clientHeight / paper.originalHeight) + 'px';
     } else {
         alert("Can't zoom in further!");
     };
-    
+
 };
 
 function imageZoomOut() {
     paper.currentWidth = paper.currentWidth + paper.originalWidth/10;
     paper.currentHeight = paper.currentHeight + paper.originalHeight/10;
     paper.setViewBox(paper.currentX, paper.currentY, paper.currentWidth, paper.currentHeight);
-    
+
     let image = document.getElementById('pageImage');
     image.style.width = document.getElementById('imageWorkspace').clientWidth * paper.originalWidth / paper.currentWidth + 'px';
-    image.style.left = Math.round(-paper.currentX * document.getElementById('imageWorkspace').clientWidth / paper.originalWidth)  + 'px';
-    image.style.top = Math.round(-paper.currentY * document.getElementById('imageWorkspace').clientHeight / paper.originalHeight) + 'px';
+    image.style.left = Math.round(-paper.currentX * image.clientWidth / paper.originalWidth)  + 'px';
+    image.style.top = Math.round(-paper.currentY * image.clientHeight / paper.originalHeight) + 'px';
 };
 
 function hideShape() {
@@ -675,22 +677,22 @@ function resetView() {
 
 function modifyShape() {
     mode = Mode.Modify;
-    
+
     document.getElementById('modifyButton').parentElement.classList.add('active');
-    
+
     paper.forEach(function(element) {
-        // adding the Raphael events for modification if a shape was already 
+        // adding the Raphael events for modification if a shape was already
         // selected before the button click
         if (element.selected) {
             if (element.type === "rect") {
                 enableRectangleModification(element);
             };
-            
+
             if (element.type === "path") {
                 enablePolygonModification(element);
             };
         };
-    });     
+    });
 }
 
 // undo also works for multiple objects and object creation
@@ -701,14 +703,14 @@ function undo() {
         lastChangedElement = drawingHistory[drawingHistory.length-1];
         // get the corresponding shape from the Raphael paper
         lastChangedShape = paper.getById(lastChangedElement.id);
-        // if the shape was created, delete it 
+        // if the shape was created, delete it
         // otherwise restore the former state as stored in the history
         if (!lastChangedElement.attr) {
             // remove polygon vertices
             for (let point in lastChangedElement.points) {
                 if (lastChangedElement.points[point].id) {
                     paper.getById(lastChangedElement.points[point].id).remove();
-                }; 
+                };
             };
             lastChangedShape.remove();
         } else {
@@ -717,19 +719,19 @@ function undo() {
             for (let point in lastChangedElement.points) {
                 lastChangedShape.points[point].attr(lastChangedElement.points[point]);
             };
-            // 
+            //
             if (lastChangedElement.pathId) {
                 let pathShape = paper.getById(lastChangedElement.pathId);
                 pathShape.attr({'path' : createPolygonPath(pathShape.points)});
             }
-        }; 
+        };
         drawingHistory.pop();
     };
 };
 
 function saveShape() {
     if (drawingHistory) {
-        // for now all entries have the same id - needs to be adjusted if the 
+        // for now all entries have the same id - needs to be adjusted if the
         // design of the modification mode is altered
         let modifiedShape;
         let svgString;
@@ -740,15 +742,15 @@ function saveShape() {
             for (let point in modifiedShape.points) {
                 svgString += modifiedShape.points[point].attrs.cx + "," + modifiedShape.points[point].attrs.cy + " ";
             };
-            svgString += "\"/></svg>";           
+            svgString += "\"/></svg>";
         } else {
             // modified shape is a rectangle
             modifiedShape = paper.getById(drawingHistory[0].id);
             svgString = "<svg><rect x=\"" + modifiedShape.attrs.x + "\" y=\"" + modifiedShape.attrs.y + "\" width=\"" + modifiedShape.attrs.width + "\" height=\"" + modifiedShape.attrs.height + "\"/></svg>";
         };
-        
+
         let annotationDataJson = {"color" : modifiedShape.attrs.fill, "motivation" : "describing", "svgCode" : svgString};
-        
+
         $ .ajax({
             type : 'PUT',
             url : '/editor_rest/annotations/' + modifiedShape.annoIdEncoded,
@@ -756,12 +758,12 @@ function saveShape() {
             headers : {
                 'Content-Type' : 'application/json'
             },
-                    
+
             success : function(responseData) {
                 for (let anno in annoJson) {
                     if (annoJson[anno].id === modifiedShape.annoId) {
                         annoJson[anno].svg = svgString;
-                        
+
                         if (annoJson[anno].type === "Rectangle") {
                             annoJson[anno].x = modifiedShape.attrs.x;
                             annoJson[anno].y = modifiedShape.attrs.y;
@@ -772,13 +774,13 @@ function saveShape() {
                             for (let point in modifiedShape.points) {
                                 polygonPoints.push(modifiedShape.points[point].attrs.cx + ',' + modifiedShape.points[point].attrs.cy);
                             }
-        
+
                             let polygonTempPath = 'M' + polygonPoints[0];
                             for (let i = 1; i < polygonPoints.length; i++) {
-                                polygonTempPath = polygonTempPath + 'L' + polygonPoints[i];  
+                                polygonTempPath = polygonTempPath + 'L' + polygonPoints[i];
                             };
                             polygonTempPath = polygonTempPath + 'Z';
-                            
+
                             annoJson[anno].path = polygonTempPath;
                             annoJson[anno].points = polygonPoints;
                         };
@@ -786,10 +788,10 @@ function saveShape() {
                 };
                 endModification(modifiedShape);
             },
-                    
+
             error : function(errorData) {
                  console.log(errorData);
-            }           
+            }
         });
     };
 };
@@ -798,16 +800,16 @@ function endModification (shape) {
     document.getElementById('modifyButton').parentElement.classList.remove('active');
     // empty the undo stack
     drawingHistory.length = 0;
-    
+
     // remove all modification functionalities
     if (shape.type === "rect") {
         disableRectangleModification(shape);
     };
-            
+
     if (shape.type === "path") {
         disablePolygonModification(shape);
     };
-            
+
     mode = Mode.View;
 };
 
@@ -815,7 +817,7 @@ function init(annotations) {
   let image = document.getElementById('pageImage');
   image.style.width = document.getElementById('imageWorkspace').clientWidth + 'px';
   paper = Raphael("canvas", image.width, image.height);
-  
+
   paper.currentWidth = image.naturalWidth;
   paper.currentHeight = image.naturalHeight;;
   paper.currentX = 0;
@@ -823,7 +825,7 @@ function init(annotations) {
   paper.originalWidth = image.naturalWidth;
   paper.originalHeight = image.naturalHeight;
   paper.setViewBox(0, 0, paper.originalWidth, paper.originalHeight);
-    
+
     document.getElementById("imageWorkspace").oncontextmenu = function(e) {
         e.preventDefault();
         if (addingPolygon) {
@@ -842,10 +844,10 @@ function init(annotations) {
     };
     document.getElementById("imageWorkspace").onmousedown = function(coordinates) {
         if (addingRectangle) {
-            
+
             let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
             let scalingRatios = getScalingRatios();
-            
+
             let scaledX = Math.round((relativeCoordinates[0]) / scalingRatios[0] + paper.currentX);
             let scaledY = Math.round((relativeCoordinates[1]) / scalingRatios[1] + paper.currentY);
 
@@ -856,7 +858,7 @@ function init(annotations) {
         };
 
         if (movingImage) {
-            
+
             initiated = true;
             let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
             mouseDownX = Math.round(relativeCoordinates[0]);
@@ -870,19 +872,19 @@ function init(annotations) {
             let scalingRatios = getScalingRatios();
             let scaledX = Math.round(relativeCoordinates[0] / scalingRatios[0] + paper.currentX);
             let scaledY = Math.round(relativeCoordinates[1] / scalingRatios[1] + paper.currentY);
-        
+
             if (!firstPolygonPoint) {
                 firstPolygonPoint = {'x' : scaledX, 'y' : scaledY};
                 polygonPath = drawPolygon("M" + scaledX + " " + scaledY, '#ff8d00', null);
             };
-        
+
             let dx = Math.abs(scaledX - firstPolygonPoint.x);
             let dy = Math.abs(scaledY - firstPolygonPoint.y);
-        
+
             if (dx > 0 && dx < 50 && dy < 50 || dy > 0 && dx < 50 && dy < 50) {
                     polygonPath.attr({
                         'path' : polygonPath.attrs.path.toString().substring(0,polygonPath.attrs.path.toString().lastIndexOf('L')) + 'Z',
-                        'fill' : "#ff8d00", 
+                        'fill' : "#ff8d00",
                         'fill-opacity' : 0.01});
                     //let undoInformation = [{"id" : invisiblePolygonPoint.id}];
                     //for (point in polygonPath.points) {
@@ -891,17 +893,17 @@ function init(annotations) {
                     //polygonPath.points.push(invisiblePolygonPoint)
                     //drawingHistory.push({"id" : polygonPath.id, "element": null, "points" : undoInformation});
                     mode = Mode.View;
-                    
+
                     let svgString = "<svg><polygon points=\"";
                     for (let point in polygonPath.points) {
                         svgString += polygonPath.points[point].attrs.cx + "," + polygonPath.points[point].attrs.cy + " ";
                     };
                     svgString += "\"/></svg>";
-               
+
                     const modal = document.getElementById("createAnnotation");
                     modal.classList.toggle("show-modal");
                     pickTemplate(svgString, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
-                    
+
                 firstPolygonPoint = undefined;
                 //polygonPath = undefined;
                 polygonPoint = undefined;
@@ -936,9 +938,9 @@ function init(annotations) {
 
             let rectangleWidth = Math.round((relativeCoordinates[0] - mouseDownX) / scalingRatios[0]);
             let rectangleHeight = Math.round((relativeCoordinates[1] - mouseDownY) / scalingRatios[1]);
-        
+
             let scaledX, scaledY;
-        
+
             if (rectangleWidth < 0) {
                 rectangleWidth = -rectangleWidth;
                 scaledX = Math.round(mouseDownX / scalingRatios[0] - rectangleWidth);
@@ -951,7 +953,7 @@ function init(annotations) {
             } else {
                 scaledY = Math.round(mouseDownY / scalingRatios[1]);
             };
-         
+
             newRectangle.attr({
                 'x' : scaledX + paper.currentX,
                 'y' : scaledY + paper.currentY,
@@ -962,31 +964,31 @@ function init(annotations) {
         if (addingPolygon && polygonPoint) {
             let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
             let scalingRatios = getScalingRatios();
-            
+
             let polygonX = Math.round(relativeCoordinates[0] / scalingRatios[0] + paper.currentX);
             let polygonY = Math.round(relativeCoordinates[1] / scalingRatios[1] + paper.currentY);
             invisiblePolygonPoint.attr({'cx' : polygonX, 'cy' : polygonY});
-            
+
             polygonPath.attr({'path' : polygonPath.attrs.path.toString().substring(0,polygonPath.attrs.path.toString().lastIndexOf('L')) + 'L' + polygonX + " " + polygonY});
-            
+
         };
         if (movingImage && initiated) {
             let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
             let scalingRatios = getScalingRatios();
-            
+
             //let deltaX = Math.round((relativeCoordinates[0] - mouseDownX) * paper.currentWidth / scalingRatios[0] / 10 / paper.originalWidth);
             //let deltaY = Math.round((relativeCoordinates[1] - mouseDownY) * paper.currentHeight / scalingRatios[1] / 10 / paper.originalHeight);
-            
+
             let deltaX = Math.round((relativeCoordinates[0] - mouseDownX) / scalingRatios[0] / 100);
             let deltaY = Math.round((relativeCoordinates[1] - mouseDownY) / scalingRatios[1] / 100);
-            
-            
+
+
             paper.currentX = paper.currentX - deltaX;
             paper.currentY = paper.currentY - deltaY;
-            
+
             let image = document.getElementById('pageImage');
-            image.style.left = Math.round(-paper.currentX * scalingRatios[0]) + 'px';//* document.getElementById('imageWorkspace').clientWidth / paper.originalWidth  + 'px';
-            image.style.top = Math.round(-paper.currentY * scalingRatios[1]) + 'px';//* document.getElementById('imageWorkspace').clientHeight / paper.originalHeight + 'px';
+            image.style.left = Math.round(-paper.currentX * scalingRatios[0]) + 'px';//*  document.getElementById('imageWorkspace').clientWidth / paper.originalWidth  + 'px';
+            image.style.top = Math.round(-paper.currentY * scalingRatios[1]) + 'px';//*  document.getElementById('imageWorkspace').clientHeight / paper.originalHeight + 'px';
 
             paper.setViewBox(paper.currentX, paper.currentY, paper.currentWidth, paper.currentHeight);
         };
@@ -1001,32 +1003,32 @@ function init(annotations) {
             //addingRectangle = false;
             return;
         };
-        
+
         if (addingRectangle) {
             //drawingHistory.push({"id" : newRectangle.id, "element" : null});
-            
+
             let svgString = "<svg><rect x=\"" + newRectangle.attrs.x + "\" y=\"" + newRectangle.attrs.y + "\" width=\"" + newRectangle.attrs.width + "\" height=\"" + newRectangle.attrs.height + "\"/></svg>";
-            
+
             //document.getElementById('closeButtonAnno').hide();
             const modal = document.getElementById("createAnnotation");
             modal.classList.toggle("show-modal");
             pickTemplate(svgString, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
-            
+
             // reset variables needed for rectangle creation
             //addingRectangle = false;
             // TODO: find a new place for that!
             //newRectangle = undefined;
             mouseDownX = undefined;
-            mouseDownY = undefined; 
+            mouseDownY = undefined;
         };
-        
-        
+
+
         if (movingImage) {
-          movingImage = false; 
+          movingImage = false;
           initiated = false;
         };
     };
-    
+
     // Drawing anno svgs on first opening of page
     annoJson = JSON.parse(annotations);
     drawAnnos(annoJson);
@@ -1039,14 +1041,14 @@ function confirmDiscardChanges() {
     if (addingPolygon) {
         document.getElementById('createPolygonButton').parentElement.classList.add('active');
     };
-    
+
     if (!document.getElementById('annotationCard').classList.contains('is-hidden')) {
         toggleOverview('annotationCard');
     };
-    
+
     if (drawingHistory.length > 0) {
         let confirmation = confirm("There are unsaved changes. Do you want to continue and discard them?");
-                
+
         if (confirmation) {
             let modifiedShape = paper.getById(drawingHistory[0].id);
             // get modified shape to former state and deselect it
@@ -1069,25 +1071,25 @@ window.addEventListener("beforeunload", function (e) {
     if (drawingHistory.length > 0) {
         let confirmationMessage = 'It looks like you have been editing something. '
                             + 'If you leave before saving, your changes will be lost.';
-                    
+
         // e.preventDefault();
 
         (e || window.event).returnValue = confirmationMessage; //Gecko + IE
         return confirmationMessage; //Gecko + Webkit, Safari, Chrome etc.
     };
-    
+
 });
 
 // adding the closing functionality to annotation creation modal
 document.getElementById('closeButtonAnno').addEventListener('click', function (e) {
     document.getElementById("createAnnotation").classList.toggle("show-modal");
-    
+
     // if modal was shown during creation of new rectangle, remove rectangle
     if (newRectangle) {
         newRectangle.remove();
         document.getElementById('createRectangleButton').parentElement.classList.remove('active');
     };
-  
+
     // if modal was shown during creation of new polygon, remove polygon
     if (polygonPath) {
         polygonPath.remove();
