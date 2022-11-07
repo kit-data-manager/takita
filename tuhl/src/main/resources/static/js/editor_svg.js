@@ -20,6 +20,7 @@ class Mode {
   static View = new Mode("view");
   static Create = new Mode("create");
   static Modify = new Mode("modify");
+  static Move = new Mode("move");
 
   constructor(name) {
       this.name = name;
@@ -866,8 +867,16 @@ function init(annotations) {
             mouseDownX = Math.round(relativeCoordinates[0]);
             mouseDownY = Math.round(relativeCoordinates[1]);
         };
+
+        if (mode.name === "move" && !movingImage) {
+          mode = Mode.View;
+        };
     };
     document.getElementById("imageWorkspace").onclick = function(coordinates){
+        if (mode.name === "move" && !movingImage) {
+          mode = Mode.View;
+        };
+
         if (addingPolygon) {
 
             let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
@@ -932,6 +941,7 @@ function init(annotations) {
             mode = Mode.View;
             addingRectangle = false;
         }
+
     };
     document.getElementById("imageWorkspace").onmousemove = function(coordinates) {
         if (addingRectangle && newRectangle) {
