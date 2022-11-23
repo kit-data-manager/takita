@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="#{label.editor}"> </title>
+    <!-- Bootstrap core JavaScript -->
+    <!-- CSS only
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous"
+          th:href="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css}">
+    <!-- <link href="https://www.cssscript.com/demo/sticky.css" rel="stylesheet" type="text/css">-->
+
+    <link rel="stylesheet" th:href="@{/css/reset.css}">
+    <link rel="stylesheet" th:href="@{/css/tabulator_bootstrap4.min.css}">
+    <link rel="stylesheet" th:href="@{/css/editor_sidebar_topbar.css}">
+    <link rel="stylesheet" th:href="@{/css/modal.css}">
+
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/chota@latest">
+
+
+    <!-- JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"
+            th:src="@{https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js}"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+            integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"
+            th:src="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@3.0/dist/svg.min.js"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js/dist/svg.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.panzoom.js/dist/svg.panzoom.js"></script>
+
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+
+</head>
+<body class="container-fluid p-0" th:data-field="${currentAnnotationsJson}"
+    onload="init(document.body.getAttribute('data-field'))"
+    onresize="resizeViewbox()">
+
+<div id="sideBar" class="anno-side-bar annocollapse">
+    <div class="logo-name-wrapper">
+        <div class="logo-name">
+          <span class="logo-name__name">Akita 3.0</span>
+        </div>
+        <div class="logo-name__button">
+          <i
+            class="bx bx-arrow-from-left logo-name__icon annocollapse"
+            id="logo-name__icon"
+            onclick="toggleAnnoSideBar()"
+          ></i>
+          <span class="tooltip">Expand</span>
+        </div>
+      </div>
+
+  <ul class="features-list">
+      <div class="category-header">View Mode</div>
+    <li class="features-item draft">
+      <i id="zoomInButton" class="bx bx-zoom-in features-item-icon" onclick="hideExpandedSidebar(); imageZoomIn()"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); imageZoomIn()">Zoom In</span>
+      <span class="tooltip">Zoom In</span>
+    </li>
+    <li class="features-item draft">
+      <i id="zoomOutButton" class="bx bx-zoom-out features-item-icon" onclick="hideExpandedSidebar(); imageZoomOut()"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); imageZoomOut()">Zoom Out</span>
+      <span class="tooltip">Zoom Out</span>
+    </li>
+    <li class="features-item draft">
+      <i id="moveImageButton" class="bx bx-move features-item-icon" onclick="hideExpandedSidebar(); movingImage = true;"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); movingImage = true">Move Image</span>
+      <span class="tooltip">Move Image</span>
+    </li>
+    <li class="features-item draft">
+      <i id="hideShapeButton" class="bx bx-low-vision features-item-icon" onclick="hideExpandedSidebar(); hideShape()"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); hideShape()">Hide Shape</span>
+      <span class="tooltip">Hide Shape</span>
+    </li>
+    <li class="features-item draft">
+      <i id="resetViewButton" class="bx bx-reset features-item-icon" onclick="hideExpandedSidebar(); resetView()"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); resetView()">Reset View</span>
+      <span class="tooltip">Reset View</span>
+    </li>
+  </ul>
+  <ul class="features-list">
+      <div class="category-header">Create Mode</div>
+    <li class="features-item draft">
+      <i id="createRectangleButton" class="bx bx-shape-square features-item-icon" onclick="hideExpandedSidebar(); addingRectangle = true; confirmDiscardChanges(); mode = Mode.Create;"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); addingRectangle = true; confirmDiscardChanges(); mode = Mode.Create;">Create Square</span>
+      <span class="tooltip">Create Square</span>
+    </li>
+    <li class="features-item draft">
+      <i id="createPolygonButton" class="bx bx-shape-polygon features-item-icon" onclick="hideExpandedSidebar(); addingPolygon = true; confirmDiscardChanges(); mode = Mode.Create;"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); addingPolygon = true; confirmDiscardChanges(); mode = Mode.Create;">Create Polygon</span>
+      <span class="tooltip">Create Polygon</span>
+    </li>
+    <li class="features-item draft">
+      <i id="createPageAnnoButton" class="bx bx-note features-item-icon" onclick="hideExpandedSidebar(); confirmDiscardChanges(); mode = Mode.Create; createPageAnnotation();"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); confirmDiscardChanges(); mode = Mode.Create; createPageAnnotation();">Create Annotation</span>
+      <span class="tooltip">Create Annotation</span>
+    </li>
+   </ul>
+   <ul class="features-list">
+       <div class="category-header">Modify Mode</div>
+    <li class="features-item star">
+      <i id="modifyButton" class="bx bx-edit features-item-icon" onclick="hideExpandedSidebar(); modifyShape();"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); modifyShape();">Modify Shape</span>
+      <span class="tooltip">Modify Shape</span>
+    </li>
+    <li class="features-item star">
+      <i id="undoButton" class="bx bx-undo features-item-icon" onclick="hideExpandedSidebar(); undo();"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); undo()">Undo</span>
+      <span class="tooltip">Undo</span>
+    </li>
+    <li class="features-item star">
+      <i id="saveButton" class="bx bx-save features-item-icon" onclick="hideExpandedSidebar(); saveShape();"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); saveShape();">Save</span>
+      <span class="tooltip">Save</span>
+    </li>
+  </ul>
+    <ul class="features-list">
+    <li class="features-item star">
+      <i id="pagesButton" class="bx bx-book-open features-item-icon" onclick="hideExpandedSidebar(); toggleOverview('pages')"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); toggleOverview('pages')">Show Book</span>
+      <span class="tooltip">Show Book</span>
+    </li>
+    <li class="features-item star">
+      <i id="editortableButton" class="bx bx-list-ul features-item-icon" onclick="hideExpandedSidebar(); toggleOverview('editortable')"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); toggleOverview('editortable')">Show Annotations</span>
+      <span class="tooltip">Show Annotations</span>
+    </li>
+  </ul>
+</div>
+
+    <div class="row topbar-row is-full-width">
+        <div class="col-1"></div>
+        <div class="col-1 is-vertical-align is-horizontal-align"> <i class="bx bx-home" onclick="goHome();"></i> </div>
+        <div class="col-4 is-vertical-align is-horizontal-align" th:text="${currentManuscript.title}"></div>
+        <div class="col-5 is-vertical-align is-horizontal-align">
+            <div class="row input-group">
+                <input class="form-control col-9 is-vertical-align"
+                th:placeholder="#{label.pseudonym}"
+                id="pseudonymInput"
+                th:value="${user.getName()}"
+                disabled>
+                <div class="col-3 input-group-append is-vertical-align">
+                    <button id="editButton"
+                    class="bx bx-edit"
+                    onclick="clickButton()"
+                    > </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-1 is-vertical-align is-horizontal-align"> <i class="bx bx-help-circle" onclick="console.log('ZoomIn!')"></i> </div>
+    </div>
+    <div class="row is-full-width"><div class="col-12"></div></div>
+    <div class="row is-full-width">
+        <div class="col-1"></div>
+        <div class="col-2" th:text="#{col_name.noPages}">"></div>
+        <div class="col-2" th:text="${currentManuscript.noPages}"></div>
+        <div class="col-1"></div>
+        <div class="col-2" th:text="#{col_name.created}"></div>
+        <div class="col-4" th:text="${currentManuscript.created}"></div>
+    </div>
+    <div class="row is-full-width">
+        <div class="col-1"></div>
+        <div class="col-2" th:text="#{col_name.pageNumber}"></div>
+        <div class="col-2" th:text="${currentPage.pageNumber}"></div>
+        <div class="col-1"></div>
+        <div class="col-2" th:text="#{col_name.lastModified}">"></div>
+        <div class="col-4" th:text="${currentManuscript.lastModified}"></div>
+    </div>
+
+
+    <div id="editor">
+        <!-- th:fragment="editor -->
+
+    <!-- manuscript page -->
+    <div class="row is-full-width">
+        <div class="col-7" th:if="${currentPage.resourceType == (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).TEXT)}">
+            <div id="imageWorkspace" class="is-full-width">
+                <script th:inline="javascript">
+                    var currentPageId = [[${currentPage.getResourceUrl()}]];
+                </script>
+                <p>TEXT Editor BOIIII</p>
+                <p th:text="${currentPage.getResourceUrl()}">spaceholder</p>
+                <embed th:src="${currentPage.getResourceUrl()}" class="is-full-width">
+                <div id="canvas">
+                </div>
+            </div>
+        </div>
+        <!-- bodies and annotations -->
+        <div class="col-5" style="height: 100vh">
+            <div class="row mx-auto" id="viewerHolder">
+                <div class="card card-body is-full-width is-hidden" id="annotationCard">
+                    <div class="row" id="iconRow">
+                        <div class="col">
+                            <div class="is-right">
+                                <i class="bx bx-plus" onclick="imageZoomIn()"></i>
+                                <i class="bx bx-trash" onclick="imageZoomIn()"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Page overview for the whole book onclick="window.open(${page.id})" no-wrap> -->
+    <div class="collapse col-auto is-hidden is-full-width" id="pages">
+        <div class="card">
+            <div class="row">
+                <div class="col-auto" th:each="page : ${currentManuscript.pages}">
+                    <div class="row">
+                        <div class="col">
+                            <img th:src="${page.thumbResourceUrl}"
+                                 class="img-thumbnail"
+                                 id="pageThumb"
+                                 th:if="${page.id != currentPage.id}"
+                                 th:data-field="${page.id}"
+                                 th:attr="onclick=|window.open('${page.id}')|">
+                            <img th:src="${page.thumbResourceUrl}"
+                                 class="img-thumbnail bd-error"
+                                 th:if="${page.id == currentPage.id}">
+                        </div>
+                    </div>
+                    <div class="row is-center">
+                        <label class="col-auto" th:text="${page.pageNumber}"
+                        th:if="${page.id != currentPage.id}">
+                        </label>
+                        <label class="col-auto bg-light" th:text="${page.pageNumber}"
+                        th:if="${page.id == currentPage.id}">
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="collapse col-auto is-hidden is-full-width" id="editortable">
+        <div class="card">
+                <div class="boxlist margin-top-30" id="training-box">
+                    <div class="box-header bg-green-blue"></div>
+                    <div class="box-body"><div id="table"></div>
+
+                    </div>
+                </div>
+         </div>
+    </div>
+
+</div>
+
+    <div class="modal" id="createBody">
+        <div class="modal-content">
+            <span class="close-button" id="closeButton">&times;</span>
+            <form id="pickBodyTemplateForm"></form>
+            <form id="createForm"></form>
+        </div>
+    </div>
+
+    <div class="modal" id="createAnnotation">
+        <div class="modal-content">
+            <span class="close-button" id="closeButtonAnno">&times;</span>
+            <form id="pickAnnotationTemplateForm"></form>
+            <form id="createAnnotationForm"></form>
+        </div>
+    </div>
+
+    <div class="modal" id="loading">
+        <div class="modal-loading">
+            <img th:src="@{/images/Book.gif}"/>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+
+        function clickDe(){
+            console.log("click de");
+            $.ajax({
+                type: 'GET',
+                url: '/assistance/lang/de',
+                dataType: 'text',
+            })
+            return true;
+        }
+
+        function clickEn(){
+            console.log("click en");
+            $.ajax({
+                type: 'GET',
+                url: '/assistance/lang/en',
+                dataType: 'text',
+            })
+
+            return true;
+        }
+
+        function getHelp(){
+            location.href = '/assistance/help';
+        }
+
+        function clickButton(){
+            /*<![CDATA[*/
+            let button = document.getElementById('editButton');
+            let input = document.getElementById('pseudonymInput');
+            let edit = [[#{buttons.edit}]];
+                let ok = [[#{buttons.ok}]];
+            if (button.classList.contains('bx-edit')){
+                button.classList.remove('bx-edit');
+                button.classList.add('bx-check');
+                input.disabled = false;
+            }
+            else {
+                button.classList.remove('bx-check');
+                button.classList.add('bx-edit');
+                input.disabled = true;
+                setPseudonym();
+            }
+            /*]]>*/
+        }
+
+        function setPseudonym() {
+            let input = $('#pseudonymInput').val();
+            $.ajax({
+                type: 'GET',
+                url: '../assistance/' + input,
+                dataType: 'text',
+                success: function (responseData) {
+                    //location.href = '?lang=' + responseData;
+                }
+            });
+        }
+    </script>
+
+    <script src="/js/raphael.js"></script>
+    <script src="/js/ajv7.js"></script>
+    <script src="/js/underscore.js"></script>
+    <script src="/js/jsonform.js"></script>
+    <script src="/js/tabulator.min.js"></script>
+    <script src="/js/metadataeditor.js"></script>
+    <script src="/js/editor.js"></script>
+    <script src="/js/editor_svg.js"></script>
+    <script src="/js/creation_templates.js"></script>
+
+</body>
+
+</html>
+<style>
+
+#imageWorkspace {
+    background-color: transparent; /* debug color, is hidden behind image if everything works as intended */
+    position: relative;
+    display: inline-block;  /*shrinks container to image size */
+    z-Index :1;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+#imageWorkspace img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    max-width: none;
+}
+
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#editor {
+    margin-left: 7.5rem;
+}
+
+/*
+   Optional. Prevent the accidential selection of the image (or other elements).
+   Old, but still works at least in Firefox, might be better to find a new method for this.
+   Very old source: https://stackoverflow.com/questions/5915023/preventing-images-and-text-to-be-selected
+*/
+.unselectable {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+</style>

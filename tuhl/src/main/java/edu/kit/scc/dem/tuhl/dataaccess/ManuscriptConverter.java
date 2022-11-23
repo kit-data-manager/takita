@@ -165,9 +165,18 @@ class ManuscriptConverter {
     } else if (resourceTypeString.equals(RepositoryStrings.TEXT.getName())) {
 
       // Here comes the URL to the resource of the page
-      String resourceUrl = "";
+      // just a copy of the image code from above and added ".xml" and using a TextPage object instead of ImagePage
+      String resourceUrl = repositoryAccessService.getBaseUrl() + repositoryAccessService.getStaticPath() + id
+              + RepositoryAccessService.DATA_PATH + pageNumber + ".xml";
 
-      page = new TextPage(id, pageNumber, created, resourceUrl);
+      TextPage textPage = new TextPage(id, pageNumber, created, resourceUrl);
+      if (sortedAnnotations == null) {
+          textPage.setAnnotations(getAnnotationsByPage(textPage));
+        } else {
+          textPage.setAnnotations(sortedAnnotations.get(textPage.getId()));
+        }
+
+      page = textPage;
     } else {
       throw new IllegalStateException("Unexpected value: " + resourceTypeString);
     }

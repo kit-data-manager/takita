@@ -5,6 +5,7 @@ import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
+import edu.kit.scc.dem.tuhl.model.page.ResourceType;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -79,6 +80,8 @@ public class EditorController {
       editorService.selectPage(pageId);
       model.addAttribute("currentPage", editorService.getCurrentPage());
       model.addAttribute("currentManuscript", editorService.getCurrentManuscript());
+      System.out.print("----------------------------------------------------");
+      System.out.print(editorService.getCurrentPage().getResourceType());
       model.addAttribute("currentAnnotationsJson", 
         getDisplayableAnnotations(editorService.getCurrentPage().getAnnotations()));
       assistanceService.updateModel(model);
@@ -86,7 +89,17 @@ public class EditorController {
     } catch (UnsupportedEncodingException | NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     }
-    return "editor";
+    
+    // choose which editor (text or image is returned)
+    String editorChoice ="";
+    
+    if (editorService.getCurrentPage().getResourceType().equals(ResourceType.TEXT)) {
+    	editorChoice = "editor_text";
+    } else {
+    	editorChoice= "editor";
+    }
+    
+    return editorChoice;
   }
 
   /**
