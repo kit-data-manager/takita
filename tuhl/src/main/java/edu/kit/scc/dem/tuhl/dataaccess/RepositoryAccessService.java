@@ -127,11 +127,14 @@ public class RepositoryAccessService implements IRepositoryAccessService {
     int pageCounter = 0;
     List<JSONObject> manuscriptsJson = new ArrayList<>();
     String nextUri = baseUrl + staticPath + SEARCH_URL + pageCounter + SEARCH_SIZE_URL;
-  
     JSONObject resourceType = new JSONObject();
     JSONObject typeGeneral = new JSONObject();
-    typeGeneral.put(RepositoryStrings.TYPE_GENERAL.getName(), RepositoryStrings.TEXT.getName());
+    
+    // fetch all the manuscript DOs independently of typeGeneral
+    // by using resourceType/value (which distinguishes between manuscript and pages)
+    typeGeneral.put(RepositoryStrings.VALUE.getName(), RepositoryStrings.MANUSCRIPT_METADATA.getName());
     resourceType.put(RepositoryStrings.RESOURCE_TYPE.getName(), typeGeneral);
+    
     HttpResponse<String> pageResponse = httpRequestHelper.postManuscript(
         nextUri + pageSize, resourceType);
     Optional<String> link;
@@ -147,11 +150,11 @@ public class RepositoryAccessService implements IRepositoryAccessService {
         JSONObject resource = responseBodyJson.getJSONObject(i);
         //Adds all resources which are manuscripts and not pages to the list
         manuscriptsJson.add(resource);
-  
         // Check if number of required manuscripts already reached
         if (numberManuscripts != -1 && manuscriptsJson.size() >= numberManuscripts) {
-          return manuscriptsJson;
+        	return manuscriptsJson;
         }
+        
       }
       if (link.isPresent()) {
         //Extracts next link from response header
