@@ -1092,6 +1092,22 @@ window.addEventListener("beforeunload", function (e) {
 
 });
 
+window.addEventListener("wheel", function(e) {
+    if (e.ctrlKey) {
+      e.preventDefault();
+      let sign = Math.sign(e.deltaY);
+      if (sign > 0) {
+          imageZoomIn();
+          console.log("Zooming in!");
+      } else {
+          imageZoomOut();
+          console.log("Zooming out!");
+      }
+    }
+}, {
+  passive: false
+});
+
 // adding the closing functionality to annotation creation modal
 document.getElementById('closeButtonAnno').addEventListener('click', function (e) {
     document.getElementById("createAnnotation").classList.toggle("show-modal");
