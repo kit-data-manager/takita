@@ -185,7 +185,10 @@
                 </script>
                 <p>TEXT Editor BOIIII</p>
                 <p th:text="${currentPage.getResourceUrl()}">spaceholder</p>
-                <embed th:src="${currentPage.getResourceUrl()}" class="is-full-width">
+                <embed th:src="${currentPage.getResourceUrl()}" class="is-full-width"></embed>
+                <p>TEXTS</p>
+                <div id="TEI">
+                </div>
                 <div id="canvas">
                 </div>
             </div>
@@ -333,6 +336,7 @@
         }
     </script>
 
+
     <script src="/js/raphael.js"></script>
     <script src="/js/ajv7.js"></script>
     <script src="/js/underscore.js"></script>
@@ -342,7 +346,16 @@
     <script src="/js/editor.js"></script>
     <script src="/js/editor_svg.js"></script>
     <script src="/js/creation_templates.js"></script>
-
+	<script src="/js/CETEI.js"></script>
+	<script th:inline="javascript">
+		
+	    var CETEIcean = new CETEI();
+	    CETEIcean.getHTML5(currentPageId, function(data) {
+	      document.getElementById("TEI").innerHTML = "";
+	      document.getElementById("TEI").appendChild(data);
+	      CETEIcean.addStyle(document, data);
+	    });
+    </script>
 </body>
 
 </html>
