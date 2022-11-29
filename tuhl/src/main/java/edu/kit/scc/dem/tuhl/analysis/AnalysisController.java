@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 @Controller
 public class AnalysisController {
   /**
-   * Changes the currently displayed analysis.
-   *
-   * @param analysisId Identifier of the analysis that should be displayed
+   * Delegates to client-side app to display and interact with an analysis.
+   * 
+   * Client-side routing includes URLs of the pattern
+   *  "/analysis/{analysisId}/propositions", or
+   *  "/analysis/{analysisId}/openmapping"
+   * 
    * @return name of html file to display analysis tool
    */
   @RequestMapping("/**")
