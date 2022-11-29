@@ -160,4 +160,16 @@ public interface IAccessService {
    * @throws InterruptedException if the http request is interrupted
    */
   String getRawManuscriptXml(String manuscriptId) throws IOException, InterruptedException;
+
+  /**
+   * Gets the XML content given in the TEI standard of a page as the raw XML String.
+   *
+   * @param pageId the id of the manuscript
+   * @param fileName identifies the file associated to a page
+   * @return the raw xml as a String
+   * @throws IOException if an error occurs while sending or receiving http request
+   * @throws InterruptedException if the http request is interrupted
+   */
+  String getRawPageContentXml(String pageId, String fileName) throws IOException, InterruptedException;
+  
 }

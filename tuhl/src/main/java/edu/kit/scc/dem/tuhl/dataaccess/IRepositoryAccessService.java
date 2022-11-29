@@ -86,6 +86,17 @@ public interface IRepositoryAccessService {
   String getXmlByManuscriptId(String manuscriptId) throws IOException, InterruptedException;
 
   /**
+   * Gets the content of a page that is given in the TEI standard.
+   *
+   * @param pageId the id of the page
+   * @param fileName identifies the file associated to a page
+   * @return the xml as a String
+   * @throws IOException if an error occurs while sending or receiving
+   * @throws InterruptedException if the get request is interrupted
+   */
+  String getXmlByPageId(String pageId, String fileName) throws IOException, InterruptedException;
+  
+  /**
    * Gets base url for manuscript repository.
    *
    * @return base url String
@@ -98,4 +109,5 @@ public interface IRepositoryAccessService {
    * @return static path String
    */
   String getStaticPath();
+
 }

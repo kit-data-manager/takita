@@ -804,7 +804,22 @@ public class  SearchIndexService implements ISearchIndexService {
   public String getRawManuscriptXml(String manuscriptId) throws IOException, InterruptedException {
     return accessService.getRawManuscriptXml(manuscriptId);
   }
-
+  
+  /**
+   * Gets the XML content of a page as the raw XML String.
+   *
+   * @param pageId the id of the page
+   * @param fileName identifies the file associated to a page
+   * @return the raw xml as a String
+   * @throws IOException if an error occurs while sending/receiving http request to annotation store
+   * @throws InterruptedException if http request is interrupted
+   * 
+   */
+  @Override
+  public String getRawPageContentXml(String pageId, String fileName) throws IOException, InterruptedException {
+	    return accessService.getRawPageContentXml(pageId, fileName);
+  }
+  
   /**
    * Starts the update cycle of the search index with the specified parameters.
    *

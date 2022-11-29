@@ -242,7 +242,22 @@ public class RepositoryAccessService implements IRepositoryAccessService {
     return httpRequestHelper.get(baseUrl + staticPath + manuscriptId + DATA_PATH
         + MANUSCRIPT_METADATA_FILE).body();
   }
-
+  
+  /**
+   * Gets the content of a page that is given in the TEI standard.
+   *
+   * @param pageId the id of the page
+   * @param fileName identifies the file associated to a page
+   * @return the xml as a String
+   * @throws IOException if an error occurs while sending or receiving
+   * @throws InterruptedException if the get request is interrupted
+   */
+  @Override
+  public String getXmlByPageId(String pageId, String fileName) throws IOException, InterruptedException {
+	    return httpRequestHelper.get(baseUrl + staticPath + pageId + DATA_PATH
+	        + fileName).body();
+  }
+  
   /**
    * Gets base url for manuscript repository.
    *

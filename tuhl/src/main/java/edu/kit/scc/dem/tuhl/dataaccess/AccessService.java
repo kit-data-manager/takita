@@ -301,7 +301,20 @@ public class AccessService implements IAccessService {
   public String getRawManuscriptXml(String manuscriptId) throws IOException, InterruptedException {
     return repositoryAccessService.getXmlByManuscriptId(manuscriptId);
   }
-
+  
+  /**
+   * Gets the XML content given in the TEI standard of a page as the raw XML String.
+   *
+   * @param pageId the id of the manuscript
+   * @param fileName identifies the file associated to a page
+   * @return the raw xml as a String
+   * @throws IOException if an error occurs while sending or receiving http request
+   * @throws InterruptedException if the http request is interrupted
+   */
+  @Override
+  public String getRawPageContentXml(String pageId, String fileName) throws IOException, InterruptedException {
+	    return repositoryAccessService.getXmlByPageId(pageId, fileName);
+  }
 
   private Map<String, List<Annotation>> getAllAnnotationsSorted(
       List<JSONObject> jsonAnnotations) {

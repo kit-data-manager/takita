@@ -219,6 +219,17 @@ public interface IEditorStubService {
       throws InterruptedException, IOException;
 
   /**
+   * Gets the raw XML of a page.
+   *
+   * @param pageId of the manuscript to which the raw XML should be gotten
+   * @param fileName identifies the file associated to a page
+   * @return page as XML as String
+   * @throws IOException when the http request to database was faulty
+   * @throws InterruptedException when the http request to database is interrupted
+   */
+  String getPageContentXml(String pageId, String fileName) throws IOException, InterruptedException;
+  
+  /**
    * Gets the raw JSON of an annotation.
    *
    * @param annotationId of the annotation to which the raw JSON should be gotten
@@ -230,10 +241,10 @@ public interface IEditorStubService {
       throws InterruptedException, IOException;
   
   
- public List<JSONObject> getAnnotationsForPage(String pageId, String pageNumber)
-    throws InterruptedException, IOException, JSONException;
+  public List<JSONObject> getAnnotationsForPage(String pageId, String pageNumber)
+	    throws InterruptedException, IOException, JSONException;
 
+  public List<Annotation> getAnnotationsForId(String id)
+	    throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException;
 
-public List<Annotation> getAnnotationsForId(String id)
-    throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException;
 }

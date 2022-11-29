@@ -240,6 +240,18 @@ public interface ISearchIndexService {
    * @throws InterruptedException if http request is interrupted
    */
   String getRawManuscriptXml(String manuscriptId) throws IOException, InterruptedException;
+
+  /**
+   * Gets the XML content of a page as the raw XML String.
+   *
+   * @param pageId the id of the page
+   * @param fileName identifies the file associated to a page
+   * @return the raw xml as a String
+   * @throws IOException if an error occurs while sending/receiving http request to annotation store
+   * @throws InterruptedException if http request is interrupted
+   * 
+   */
+  String getRawPageContentXml(String pageId, String fileName) throws IOException, InterruptedException;
   
   /**
    * Starts the update cycle of the search index with the specified parameters.
@@ -258,5 +270,6 @@ public interface ISearchIndexService {
    * @throws NoSuchIndexEntryException when there is no body with this ID in the annotation
    */
   Body getBodyFromAnnotationAndId(Annotation annotation, String bodyId) throws NoSuchIndexEntryException;
+
 }
 

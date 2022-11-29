@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="https://unpkg.com/chota@latest">
 
 
-    <!-- JS, Popper.js, and jQuery -->
+    <!-- JS, jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
             integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"
@@ -28,16 +28,10 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
             integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"
             th:src="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@3.0/dist/svg.min.js"></script>
 
-    <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js/dist/svg.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.panzoom.js/dist/svg.panzoom.js"></script>
-
-    <script src="https://d3js.org/d3.v6.min.js"></script>
 
 </head>
 <body class="container-fluid p-0" th:data-field="${currentAnnotationsJson}"
-    onload="init(document.body.getAttribute('data-field'))"
     onresize="resizeViewbox()">
 
 <div id="sideBar" class="anno-side-bar annocollapse">
@@ -178,18 +172,15 @@
 
     <!-- manuscript page -->
     <div class="row is-full-width">
-        <div class="col-7" th:if="${currentPage.resourceType == (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).TEXT)}">
-            <div id="imageWorkspace" class="is-full-width">
+        <div class="col-7">
+            <div id="textWorkspace" class="is-full-width">
                 <script th:inline="javascript">
                     var currentPageId = [[${currentPage.getResourceUrl()}]];
                 </script>
-                <p>TEXT Editor BOIIII</p>
-                <p th:text="${currentPage.getResourceUrl()}">spaceholder</p>
-                <embed th:src="${currentPage.getResourceUrl()}" class="is-full-width"></embed>
-                <p>TEXTS</p>
-                <div id="TEI">
+                <div id="TEI" th:if="${currentPage.resourceType == (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).TEXT)}">
                 </div>
-                <div id="canvas">
+                <div th:if="${currentPage.resourceType != (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).TEXT)}">
+                	Something went wrong. Most likely you want to display something, that is not text.
                 </div>
             </div>
         </div>
@@ -337,20 +328,19 @@
     </script>
 
 
-    <script src="/js/raphael.js"></script>
     <script src="/js/ajv7.js"></script>
     <script src="/js/underscore.js"></script>
     <script src="/js/jsonform.js"></script>
     <script src="/js/tabulator.min.js"></script>
     <script src="/js/metadataeditor.js"></script>
     <script src="/js/editor.js"></script>
-    <script src="/js/editor_svg.js"></script>
     <script src="/js/creation_templates.js"></script>
 	<script src="/js/CETEI.js"></script>
 	<script th:inline="javascript">
-		
+
+		var linkToResource = "/editor_rest/content/" + [[${currentPage.getId()}]] + "/" + [[${fileName}]];
 	    var CETEIcean = new CETEI();
-	    CETEIcean.getHTML5(currentPageId, function(data) {
+	    CETEIcean.getHTML5(linkToResource, function(data) {
 	      document.getElementById("TEI").innerHTML = "";
 	      document.getElementById("TEI").appendChild(data);
 	      CETEIcean.addStyle(document, data);
@@ -360,29 +350,6 @@
 
 </html>
 <style>
-
-#imageWorkspace {
-    background-color: transparent; /* debug color, is hidden behind image if everything works as intended */
-    position: relative;
-    display: inline-block;  /*shrinks container to image size */
-    z-Index :1;
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-}
-
-#imageWorkspace img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    max-width: none;
-}
-
-#canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-}
 
 #editor {
     margin-left: 7.5rem;

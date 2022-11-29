@@ -80,8 +80,6 @@ public class EditorController {
       editorService.selectPage(pageId);
       model.addAttribute("currentPage", editorService.getCurrentPage());
       model.addAttribute("currentManuscript", editorService.getCurrentManuscript());
-      System.out.print("----------------------------------------------------");
-      System.out.print(editorService.getCurrentPage().getResourceType());
       model.addAttribute("currentAnnotationsJson", 
         getDisplayableAnnotations(editorService.getCurrentPage().getAnnotations()));
       assistanceService.updateModel(model);
@@ -90,16 +88,18 @@ public class EditorController {
       return REDIRECT_ERROR + e.getMessage();
     }
     
-    // choose which editor (text or image is returned)
-    String editorChoice ="";
-    
+    // choice of which editor (text or image) is returned
     if (editorService.getCurrentPage().getResourceType().equals(ResourceType.TEXT)) {
-    	editorChoice = "editor_text";
+    	// the text_editor.html needs the name of the file
+        // so the javascript in there can call the RestController endpoint (/editor_rest/pageId) and fetch the data.
+    	// The filename and fileextension get extracted from the resourceUrl.
+    	String[] parts = editorService.getCurrentPage().getResourceUrl().split("/");
+    	String fileName = parts[8];
+    	model.addAttribute("fileName", fileName);
+    	return "editor_text";
     } else {
-    	editorChoice= "editor";
+    	return "editor";
     }
-    
-    return editorChoice;
   }
 
   /**

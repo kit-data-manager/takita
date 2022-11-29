@@ -500,7 +500,21 @@ public class EditorStubService implements IEditorStubService {
   public String getManuscriptXml(String manuscriptId) throws IOException, InterruptedException {
     return searchIndexService.getRawManuscriptXml(manuscriptId);
   }
-
+  
+  /**
+   * Gets the raw XML of a page.
+   *
+   * @param pageId of the manuscript to which the raw XML should be gotten
+   * @param fileName identifies the file associated to a page
+   * @return page as XML as String
+   * @throws IOException when the http request to database was faulty
+   * @throws InterruptedException when the http request to database is interrupted
+   */
+  @Override
+  public String getPageContentXml(String pageId, String fileName) throws IOException, InterruptedException {
+	    return searchIndexService.getRawPageContentXml(pageId, fileName);
+  }
+  
   /**
    * Gets the raw JSON of a page.
    *

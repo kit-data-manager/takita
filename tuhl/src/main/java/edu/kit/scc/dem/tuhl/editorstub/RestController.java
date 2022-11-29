@@ -682,6 +682,32 @@ public ResponseEntity getObjectXml(@PathVariable("objectId") String objectId, fi
    return ResponseEntity.ok().body(rawXml);
 }
 
+/**
+ * Delegates the task to get the raw XML file to a page to IEditorStubService.
+ *
+ * @param pageId identifies the page to get the content of
+ * @param fileName identifies the file associated to a page
+ * @param request to access the headers from the HTTP request
+ * @param response to access the headers for the HTTP response
+ * @return HTTP entity sent back, either ok for a success including the 
+ *    XML or 500 for an internal error
+ */
+
+@RequestMapping(value = "/content/{pageId}/{fileName}", method = RequestMethod.GET, produces = "application/xml")
+@ResponseBody
+public ResponseEntity getPageContentXml(@PathVariable("pageId") String pageId, @PathVariable("fileName") String fileName, final WebRequest request, final HttpServletResponse response) {
+   String rawXml;
+   try {
+       rawXml = editorStubService.getPageContentXml(pageId, fileName);
+    } catch (IOException e) {
+    	return ResponseEntity.status(500).body(e.getMessage());
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        return ResponseEntity.status(500).body(e.getMessage());
+    }
+   return ResponseEntity.ok().body(rawXml);
+}
+
 private String decodeURL(String url) throws UnsupportedEncodingException {
     String decoded = URLDecoder.decode(url, StandardCharsets.UTF_8.toString());
     if (!url.equals(decoded)) {
