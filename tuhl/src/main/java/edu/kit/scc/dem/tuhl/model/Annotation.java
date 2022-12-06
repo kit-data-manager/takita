@@ -28,7 +28,6 @@ public class Annotation {
   private String id;
   @Field(type = FieldType.Date)
   private Instant modified;
-  // @Field(type = FieldType.String)
   private List<String> creators;
   @Field(type = FieldType.Date)
   private Instant created;

@@ -15,7 +15,6 @@
     <link rel="stylesheet" th:href="@{/css/tabulator_bootstrap4.min.css}">
     <link rel="stylesheet" th:href="@{/css/editor_sidebar_topbar.css}">
     <link rel="stylesheet" th:href="@{/css/modal.css}">
-    <link rel="stylesheet" th:href="@{/css/annotator.min.css}">
 
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css">
     <link rel="stylesheet" href="https://unpkg.com/chota@latest">
@@ -194,9 +193,7 @@
                 <script th:inline="javascript">
                     var currentPageId = [[${currentPage.getResourceUrl()}]];
                 </script>
-                <div id="content">
-                	<div id="TEI" th:if="${currentPage.resourceType == (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).TEXT)}">
-                	</div>
+                <div id="TEI" th:if="${currentPage.resourceType == (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).TEXT)}">
                 </div>
                 <div th:if="${currentPage.resourceType != (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).TEXT)}">
                 	Something went wrong. Most likely you want to display something, that is not text.
@@ -440,7 +437,6 @@
     <script src="/js/metadataeditor.js"></script>
     <script src="/js/editor.js"></script>
     <script src="/js/creation_templates.js"></script>
-    <script src="/js/annotator-full.min.js"></script>
 	<script src="/js/CETEI.js"></script>
 	<script th:inline="javascript">
 	
@@ -450,7 +446,6 @@
 	    var teiContent = CETEIcean.getHTML5(linkToResource).then(data => {
 			document.getElementById("TEI").innerHTML = "";
 			const text = document.getElementById("TEI").appendChild(data);
-			
 			// hiding all chapters besides the first one. needed for navigation
 			const chapters = text.querySelectorAll('tei-div[type="chapter"]');
 			const chapterSelect = document.getElementById("chapterSelect");
@@ -476,23 +471,8 @@
 	      }
 	      // disabling the prevChaptButton as the first chapter will be displayed
 	      document.getElementById("prevChaptButton").disabled = true;
-	      $("#TEI").annotator();
 	    });
-	    /* document.addEventListener('DOMContentLoaded', function () {
-	    	  $("#content").annotator();
-	    }, false);
-	     $(document).ready(function(){
-	  	  $('#content').annotator();
-	    });
-	     
-	    window.onload = function() {
-	    	let x = true;
-	    }
-	    $(document).ready(function(){
-		  if (x == true){
-			$('#TEI').annotator();
-		  }
-		});*/
+
     </script>
 
 </body>
