@@ -1,0 +1,889 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+<?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml" schematypens="http://purl.oclc.org/dsdl/schematron"?>
+<TEI xmlns="http://www.tei-c.org/ns/1.0">
+    <teiHeader xml:lang="en">
+        <fileDesc>
+            <titleStmt>
+                <title level="s">Tanakh</title>
+                <title level="m">Genesis</title>
+                <respStmt>
+                    <resp>The data was extracted from the ETCBC4b/BHSA dataset (Text Fabric,
+                        obtained by following the steps of the manual given in the <ref
+                            target="https://github.com/ETCBC/bhsa">ETCBC/BHSA git repo</ref>) using
+                            <ref
+                            target="https://github.com/ETCBC/bhsa/blob/master/programs/bigTablesP.ipynb"
+                            >a python script</ref> and converted into this TEI compliant xml
+                        file.</resp>
+                    <persName xml:id="jha.vandana">Vandana Jha</persName>
+                </respStmt>
+            </titleStmt>
+            <publicationStmt>
+                <distributor>
+                    <orgName>Center for Religious Studies (CERES) at Ruhr-Universität Bochum
+                        (RUB)</orgName>
+                    <orgName>Steinbuch Centre for Computing (SCC) at Karlsruhe Institut für
+                        Technologie (KIT)</orgName>
+                </distributor>
+                <availability>
+                    <licence target="https://creativecommons.org/licenses/by-nc/4.0/"
+                        >Attribution-NonCommercial 4.0 International (CC BY-NC 4.0)</licence>
+                </availability>
+            </publicationStmt>
+            <sourceDesc>
+                <biblFull n="digitalSource">
+                    <fileDesc>
+                        <titleStmt>
+                            <title>Hebrew Text Database ETCBC4b. Biblia Hebraica Stuttgartensia
+                                Amstelodamensis</title>
+                            <author>Eep Talstra Centre for Bible and Computer</author>
+                            <principal>W. T. Peursen</principal>
+                            <respStmt>
+                                <resp>contributors</resp>
+                                <name type="encoder">Constantijn Sikkel (QDF)</name>
+                                <name type="encoder">Ulrik Petersen (MQL)</name>
+                                <name type="encoder">Dirk Roorda (TF)</name>
+                                <name>E. Talstra</name>
+                                <name>J. Dyk</name>
+                                <name>O. Glanz</name>
+                                <name>R. Oosting</name>
+                                <name>G. Kalkman</name>
+                            </respStmt>
+                        </titleStmt>
+                        <editionStmt>
+                            <edition>
+                                <date>2021</date>Version</edition>
+                        </editionStmt>
+                        <extent>
+                            <measure unit="chapters">50</measure>
+                            <measure unit="verses">1533</measure>
+                            <measure unit="words">28764</measure>
+                        </extent>
+                        <publicationStmt>
+                            <distributor>Eep Talstra Centre for Bible and Computer</distributor>
+                            <date when="2015-11-16">16. November 2015</date>
+                            <availability>
+                                <licence target="https://creativecommons.org/licenses/by-nc/4.0/"
+                                    >Attribution-NonCommercial 4.0 International (CC BY-NC
+                                    4.0)</licence>
+                                <p>Attribution: dx.doi.org/10.17026/dans-z6y-skyh</p>
+                            </availability>
+                        </publicationStmt>
+                        <sourceDesc>
+                            <p>The ETCBC4b text is based on the printed edition of the Biblia
+                                Hebraica Stuttgartensia, editio quinta emendata (1997). This
+                                edition, published by the German Bible Society, represents the text
+                                found in the oldest complete manuscript of the Hebrew Bible / Old
+                                Testament, the so-called Codex Leningradensis (Codex Firkovich B 19
+                                A). Although it cannot be taken for granted that this manuscript,
+                                and hence the scholarly edition that represents it, always contains
+                                the best (“original”) reading and although we have older manuscripts
+                                for various parts of the Bible (Dead Sea Scrolls, some other codices
+                                that cover only part of the Hebrew Bible), taking this edition as
+                                basis for the electronic text was a natural step because of its
+                                central role as *the* scholarly edition of the Old Testament that is
+                                almost exclusively used by biblical scholars and that is the basis
+                                for almost all Bible translations in modern languages as far as they
+                                translate the Hebrew text. The linguistic features of ETCBC4b have
+                                been provided by the Eep Talstra Centre for Bible and Computing. At
+                                the moment of depositing, this version is still in beta. The data
+                                deposited is the newest data that was available at the date of
+                                depositing. This LAF resource has been generated from the contents
+                                of an Emdros database However, not all data that the ETCBC group is
+                                producing, is published in this form. We have made a selection of
+                                some extra data, and have added that as an extra LAF annotation
+                                file, which can be used in conjunction with the LAF resource
+                                originating from the Emdros database. We refer to the ETCBC
+                                organization on Github for more examples of work done on with
+                                LAF-Fabric operating on ETCBC4.</p>
+                        </sourceDesc>
+                    </fileDesc>
+                    <profileDesc>
+                        <creation>
+                            <date when="2015-11-03">3. November 2015</date>
+                        </creation>
+                    </profileDesc>
+                </biblFull>
+            </sourceDesc>
+        </fileDesc>
+        <encodingDesc>
+            <editorialDecl>
+                <segmentation>
+                    <p>Verse level granularity with <gi>ab</gi> and word level granularity with
+                            <gi>w</gi> tags.</p>
+                </segmentation>
+            </editorialDecl>
+            <projectDesc>
+                <p><name type="project">SFB 1475 Metaphors of Religion</name>, brings together
+                    research in religious studies, philology and linguistics, and centers on the
+                    significance of metaphors for the formation of religious meaning. <ref
+                        target="https://sfb1475.ruhr-uni-bochum.de/">Project Website/</ref>. Contact
+                    via: <email>sfb1475-coordination@ruhr-uni-bochum.de</email>.</p>
+                <p><name type="subproject">Subproject B03, Metaphors of the self: On the connection
+                        between self-constitution and religion in the Hebrew Bible</name>. Project
+                    members: <persName>Prof. Dr. Christian Frevel</persName> and <persName>Dr.
+                        Nikita Artemov</persName>. <ref
+                        target="https://sfb1475.ruhr-uni-bochum.de/de/teilprojekte/sfb1475b03/"
+                        >Subproject Website/</ref>.</p>
+            </projectDesc>
+        </encodingDesc>
+        <profileDesc>
+            <creation>
+                <date type="file" when="2022-07-07">7. July 2022</date>
+                <date type="manuscript" from="-0650" to="-0450">650-450 BCE</date>
+            </creation>
+            <!--  <textClass>
+                <catRef scheme="https://moreGenres$fill" target="#$fill"/>
+            </textClass> -->
+        </profileDesc>
+        <revisionDesc>
+            <listChange resp="SFB1475">
+                <change when="2022-07-07" who="#jha.vandana #toegel.philipp">Transformation into
+                    TEI.</change>
+            </listChange>
+        </revisionDesc>
+    </teiHeader>
+    <text xml:lang="hbo">
+        <body>
+            <div type="book" n="Genesis" xml:id="b.426591">
+                <div type="chapter" n="1" xml:id="c.426630">
+                    <ab type="verse" n="1" xml:id="v.1414389">
+                        <w xml:id="w.1">בְּ</w>
+                        <w xml:id="w.2">רֵאשִׁ֖ית</w>
+                        <w xml:id="w.3">בָּרָ֣א</w>
+                        <w xml:id="w.4">אֱלֹהִ֑ים</w>
+                        <w xml:id="w.5">אֵ֥ת</w>
+                        <w xml:id="w.6">הַ</w>
+                        <w xml:id="w.7">שָּׁמַ֖יִם</w>
+                        <w xml:id="w.8">וְ</w>
+                        <w xml:id="w.9">אֵ֥ת</w>
+                        <w xml:id="w.10">הָ</w>
+                        <w xml:id="w.11">אָֽרֶץ</w>
+                    </ab>
+                    <ab type="verse" n="2" xml:id="v.1414390">
+                        <w xml:id="w.12">וְ</w>
+                        <w xml:id="w.13">הָ</w>
+                        <w xml:id="w.14">אָ֗רֶץ</w>
+                        <w xml:id="w.15">הָיְתָ֥ה</w>
+                        <w xml:id="w.16">תֹ֨הוּ֙</w>
+                        <w xml:id="w.17">וָ</w>
+                        <w xml:id="w.18">בֹ֔הוּ</w>
+                        <w xml:id="w.19">וְ</w>
+                        <w xml:id="w.20">חֹ֖שֶׁךְ</w>
+                        <w xml:id="w.21">עַל</w>
+                        <w xml:id="w.22">פְּנֵ֣י</w>
+                        <w xml:id="w.23">תְהֹ֑ום</w>
+                        <w xml:id="w.24">וְ</w>
+                        <w xml:id="w.25">ר֣וּחַ</w>
+                        <w xml:id="w.26">אֱלֹהִ֔ים</w>
+                        <w xml:id="w.27">מְרַחֶ֖פֶת</w>
+                        <w xml:id="w.28">עַל</w>
+                        <w xml:id="w.29">פְּנֵ֥י</w>
+                        <w xml:id="w.30">הַ</w>
+                        <w xml:id="w.31">מָּֽיִם</w>
+                    </ab>
+                    <ab type="verse" n="3" xml:id="v.1414391">
+                        <w xml:id="w.32">וַ</w>
+                        <w xml:id="w.33">יֹּ֥אמֶר</w>
+                        <w xml:id="w.34">אֱלֹהִ֖ים</w>
+                        <w xml:id="w.35">יְהִ֣י</w>
+                        <w xml:id="w.36">אֹ֑ור</w>
+                        <w xml:id="w.37">וַֽ</w>
+                        <w xml:id="w.38">יְהִי</w>
+                        <w xml:id="w.39">אֹֽור</w>
+                    </ab>
+                    <ab type="verse" n="4" xml:id="v.1414392">
+                        <w xml:id="w.40">וַ</w>
+                        <w xml:id="w.41">יַּ֧רְא</w>
+                        <w xml:id="w.42">אֱלֹהִ֛ים</w>
+                        <w xml:id="w.43">אֶת</w>
+                        <w xml:id="w.44">הָ</w>
+                        <w xml:id="w.45">אֹ֖ור</w>
+                        <w xml:id="w.46">כִּי</w>
+                        <w xml:id="w.47">טֹ֑וב</w>
+                        <w xml:id="w.48">וַ</w>
+                        <w xml:id="w.49">יַּבְדֵּ֣ל</w>
+                        <w xml:id="w.50">אֱלֹהִ֔ים</w>
+                        <w xml:id="w.51">בֵּ֥ין</w>
+                        <w xml:id="w.52">הָ</w>
+                        <w xml:id="w.53">אֹ֖ור</w>
+                        <w xml:id="w.54">וּ</w>
+                        <w xml:id="w.55">בֵ֥ין</w>
+                        <w xml:id="w.56">הַ</w>
+                        <w xml:id="w.57">חֹֽשֶׁךְ</w>
+                    </ab>
+                    <ab type="verse" n="5" xml:id="v.1414393">
+                        <w xml:id="w.58">וַ</w>
+                        <w xml:id="w.59">יִּקְרָ֨א</w>
+                        <w xml:id="w.60">אֱלֹהִ֤ים</w>
+                        <w xml:id="w.61">לָ</w>
+                        <w xml:id="w.62"/>
+                        <w xml:id="w.63">אֹור֙</w>
+                        <w xml:id="w.64">יֹ֔ום</w>
+                        <w xml:id="w.65">וְ</w>
+                        <w xml:id="w.66">לַ</w>
+                        <w xml:id="w.67"/>
+                        <w xml:id="w.68">חֹ֖שֶׁךְ</w>
+                        <w xml:id="w.69">קָ֣רָא</w>
+                        <w xml:id="w.70">לָ֑יְלָה</w>
+                        <w xml:id="w.71">וַֽ</w>
+                        <w xml:id="w.72">יְהִי</w>
+                        <w xml:id="w.73">עֶ֥רֶב</w>
+                        <w xml:id="w.74">וַֽ</w>
+                        <w xml:id="w.75">יְהִי</w>
+                        <w xml:id="w.76">בֹ֖קֶר</w>
+                        <w xml:id="w.77">יֹ֥ום</w>
+                        <w xml:id="w.78">אֶחָֽד</w>
+                    </ab>
+                    <ab type="verse" n="6" xml:id="v.1414394">
+                        <w xml:id="w.79">וַ</w>
+                        <w xml:id="w.80">יֹּ֣אמֶר</w>
+                        <w xml:id="w.81">אֱלֹהִ֔ים</w>
+                        <w xml:id="w.82">יְהִ֥י</w>
+                        <w xml:id="w.83">רָקִ֖יעַ</w>
+                        <w xml:id="w.84">בְּ</w>
+                        <w xml:id="w.85">תֹ֣וךְ</w>
+                        <w xml:id="w.86">הַ</w>
+                        <w xml:id="w.87">מָּ֑יִם</w>
+                        <w xml:id="w.88">וִ</w>
+                        <w xml:id="w.89">יהִ֣י</w>
+                        <w xml:id="w.90">מַבְדִּ֔יל</w>
+                        <w xml:id="w.91">בֵּ֥ין</w>
+                        <w xml:id="w.92">מַ֖יִם</w>
+                        <w xml:id="w.93">לָ</w>
+                        <w xml:id="w.94">מָֽיִם</w>
+                    </ab>
+                    <ab type="verse" n="7" xml:id="v.1414395">
+                        <w xml:id="w.95">וַ</w>
+                        <w xml:id="w.96">יַּ֣עַשׂ</w>
+                        <w xml:id="w.97">אֱלֹהִים֮</w>
+                        <w xml:id="w.98">אֶת</w>
+                        <w xml:id="w.99">הָ</w>
+                        <w xml:id="w.100">רָקִיעַ֒</w>
+                        <w xml:id="w.101">וַ</w>
+                        <w xml:id="w.102">יַּבְדֵּ֗ל</w>
+                        <w xml:id="w.103">בֵּ֤ין</w>
+                        <w xml:id="w.104">הַ</w>
+                        <w xml:id="w.105">מַּ֨יִם֙</w>
+                        <w xml:id="w.106">אֲשֶׁר֙</w>
+                        <w xml:id="w.107">מִ</w>
+                        <w xml:id="w.108">תַּ֣חַת</w>
+                        <w xml:id="w.109">לָ</w>
+                        <w xml:id="w.110"/>
+                        <w xml:id="w.111">רָקִ֔יעַ</w>
+                        <w xml:id="w.112">וּ</w>
+                        <w xml:id="w.113">בֵ֣ין</w>
+                        <w xml:id="w.114">הַ</w>
+                        <w xml:id="w.115">מַּ֔יִם</w>
+                        <w xml:id="w.116">אֲשֶׁ֖ר</w>
+                        <w xml:id="w.117">מֵ</w>
+                        <w xml:id="w.118">עַ֣ל</w>
+                        <w xml:id="w.119">לָ</w>
+                        <w xml:id="w.120"/>
+                        <w xml:id="w.121">רָקִ֑יעַ</w>
+                        <w xml:id="w.122">וַֽ</w>
+                        <w xml:id="w.123">יְהִי</w>
+                        <w xml:id="w.124">כֵֽן</w>
+                    </ab>
+                    <ab type="verse" n="8" xml:id="v.1414396">
+                        <w xml:id="w.125">וַ</w>
+                        <w xml:id="w.126">יִּקְרָ֧א</w>
+                        <w xml:id="w.127">אֱלֹהִ֛ים</w>
+                        <w xml:id="w.128">לָֽ</w>
+                        <w xml:id="w.129"/>
+                        <w xml:id="w.130">רָקִ֖יעַ</w>
+                        <w xml:id="w.131">שָׁמָ֑יִם</w>
+                        <w xml:id="w.132">וַֽ</w>
+                        <w xml:id="w.133">יְהִי</w>
+                        <w xml:id="w.134">עֶ֥רֶב</w>
+                        <w xml:id="w.135">וַֽ</w>
+                        <w xml:id="w.136">יְהִי</w>
+                        <w xml:id="w.137">בֹ֖קֶר</w>
+                        <w xml:id="w.138">יֹ֥ום</w>
+                        <w xml:id="w.139">שֵׁנִֽי</w>
+                    </ab>
+                    <ab type="verse" n="9" xml:id="v.1414397">
+                        <w xml:id="w.140">וַ</w>
+                        <w xml:id="w.141">יֹּ֣אמֶר</w>
+                        <w xml:id="w.142">אֱלֹהִ֗ים</w>
+                        <w xml:id="w.143">יִקָּו֨וּ</w>
+                        <w xml:id="w.144">הַ</w>
+                        <w xml:id="w.145">מַּ֜יִם</w>
+                        <w xml:id="w.146">מִ</w>
+                        <w xml:id="w.147">תַּ֤חַת</w>
+                        <w xml:id="w.148">הַ</w>
+                        <w xml:id="w.149">שָּׁמַ֨יִם֙</w>
+                        <w xml:id="w.150">אֶל</w>
+                        <w xml:id="w.151">מָקֹ֣ום</w>
+                        <w xml:id="w.152">אֶחָ֔ד</w>
+                        <w xml:id="w.153">וְ</w>
+                        <w xml:id="w.154">תֵרָאֶ֖ה</w>
+                        <w xml:id="w.155">הַ</w>
+                        <w xml:id="w.156">יַּבָּשָׁ֑ה</w>
+                        <w xml:id="w.157">וַֽ</w>
+                        <w xml:id="w.158">יְהִי</w>
+                        <w xml:id="w.159">כֵֽן</w>
+                    </ab>
+                    <ab type="verse" n="10" xml:id="v.1414398">
+                        <w xml:id="w.160">וַ</w>
+                        <w xml:id="w.161">יִּקְרָ֨א</w>
+                        <w xml:id="w.162">אֱלֹהִ֤ים</w>
+                        <w xml:id="w.163">לַ</w>
+                        <w xml:id="w.164"/>
+                        <w xml:id="w.165">יַּבָּשָׁה֙</w>
+                        <w xml:id="w.166">אֶ֔רֶץ</w>
+                        <w xml:id="w.167">וּ</w>
+                        <w xml:id="w.168">לְ</w>
+                        <w xml:id="w.169">מִקְוֵ֥ה</w>
+                        <w xml:id="w.170">הַ</w>
+                        <w xml:id="w.171">מַּ֖יִם</w>
+                        <w xml:id="w.172">קָרָ֣א</w>
+                        <w xml:id="w.173">יַמִּ֑ים</w>
+                        <w xml:id="w.174">וַ</w>
+                        <w xml:id="w.175">יַּ֥רְא</w>
+                        <w xml:id="w.176">אֱלֹהִ֖ים</w>
+                        <w xml:id="w.177">כִּי</w>
+                        <w xml:id="w.178">טֹֽוב</w>
+                    </ab>
+                    <ab type="verse" n="11" xml:id="v.1414399">
+                        <w xml:id="w.179">וַ</w>
+                        <w xml:id="w.180">יֹּ֣אמֶר</w>
+                        <w xml:id="w.181">אֱלֹהִ֗ים</w>
+                        <w xml:id="w.182">תַּֽדְשֵׁ֤א</w>
+                        <w xml:id="w.183">הָ</w>
+                        <w xml:id="w.184">אָ֨רֶץ֙</w>
+                        <w xml:id="w.185">דֶּ֔שֶׁא</w>
+                        <w xml:id="w.186">עֵ֚שֶׂב</w>
+                        <w xml:id="w.187">מַזְרִ֣יעַ</w>
+                        <w xml:id="w.188">זֶ֔רַע</w>
+                        <w xml:id="w.189">עֵ֣ץ</w>
+                        <w xml:id="w.190">פְּרִ֞י</w>
+                        <w xml:id="w.191">עֹ֤שֶׂה</w>
+                        <w xml:id="w.192">פְּרִי֙</w>
+                        <w xml:id="w.193">לְ</w>
+                        <w xml:id="w.194">מִינֹ֔ו</w>
+                        <w xml:id="w.195">אֲשֶׁ֥ר</w>
+                        <w xml:id="w.196">זַרְעֹו</w>
+                        <w xml:id="w.197">בֹ֖ו</w>
+                        <w xml:id="w.198">עַל</w>
+                        <w xml:id="w.199">הָ</w>
+                        <w xml:id="w.200">אָ֑רֶץ</w>
+                        <w xml:id="w.201">וַֽ</w>
+                        <w xml:id="w.202">יְהִי</w>
+                        <w xml:id="w.203">כֵֽן</w>
+                    </ab>
+                    <ab type="verse" n="12" xml:id="v.1414400">
+                        <w xml:id="w.204">וַ</w>
+                        <w xml:id="w.205">תֹּוצֵ֨א</w>
+                        <w xml:id="w.206">הָ</w>
+                        <w xml:id="w.207">אָ֜רֶץ</w>
+                        <w xml:id="w.208">דֶּ֠שֶׁא</w>
+                        <w xml:id="w.209">עֵ֣שֶׂב</w>
+                        <w xml:id="w.210">מַזְרִ֤יעַ</w>
+                        <w xml:id="w.211">זֶ֨רַע֙</w>
+                        <w xml:id="w.212">לְ</w>
+                        <w xml:id="w.213">מִינֵ֔הוּ</w>
+                        <w xml:id="w.214">וְ</w>
+                        <w xml:id="w.215">עֵ֧ץ</w>
+                        <w xml:id="w.216">עֹ֥שֶׂה</w>
+                        <w xml:id="w.217">פְּרִ֛י</w>
+                        <w xml:id="w.218">אֲשֶׁ֥ר</w>
+                        <w xml:id="w.219">זַרְעֹו</w>
+                        <w xml:id="w.220">בֹ֖ו</w>
+                        <w xml:id="w.221">לְ</w>
+                        <w xml:id="w.222">מִינֵ֑הוּ</w>
+                        <w xml:id="w.223">וַ</w>
+                        <w xml:id="w.224">יַּ֥רְא</w>
+                        <w xml:id="w.225">אֱלֹהִ֖ים</w>
+                        <w xml:id="w.226">כִּי</w>
+                        <w xml:id="w.227">טֹֽוב</w>
+                    </ab>
+                    <ab type="verse" n="13" xml:id="v.1414401">
+                        <w xml:id="w.228">וַֽ</w>
+                        <w xml:id="w.229">יְהִי</w>
+                        <w xml:id="w.230">עֶ֥רֶב</w>
+                        <w xml:id="w.231">וַֽ</w>
+                        <w xml:id="w.232">יְהִי</w>
+                        <w xml:id="w.233">בֹ֖קֶר</w>
+                        <w xml:id="w.234">יֹ֥ום</w>
+                        <w xml:id="w.235">שְׁלִישִֽׁי</w>
+                    </ab>
+                    <ab type="verse" n="14" xml:id="v.1414402">
+                        <w xml:id="w.236">וַ</w>
+                        <w xml:id="w.237">יֹּ֣אמֶר</w>
+                        <w xml:id="w.238">אֱלֹהִ֗ים</w>
+                        <w xml:id="w.239">יְהִ֤י</w>
+                        <w xml:id="w.240">מְאֹרֹת֙</w>
+                        <w xml:id="w.241">בִּ</w>
+                        <w xml:id="w.242">רְקִ֣יעַ</w>
+                        <w xml:id="w.243">הַ</w>
+                        <w xml:id="w.244">שָּׁמַ֔יִם</w>
+                        <w xml:id="w.245">לְ</w>
+                        <w xml:id="w.246">הַבְדִּ֕יל</w>
+                        <w xml:id="w.247">בֵּ֥ין</w>
+                        <w xml:id="w.248">הַ</w>
+                        <w xml:id="w.249">יֹּ֖ום</w>
+                        <w xml:id="w.250">וּ</w>
+                        <w xml:id="w.251">בֵ֣ין</w>
+                        <w xml:id="w.252">הַ</w>
+                        <w xml:id="w.253">לָּ֑יְלָה</w>
+                        <w xml:id="w.254">וְ</w>
+                        <w xml:id="w.255">הָי֤וּ</w>
+                        <w xml:id="w.256">לְ</w>
+                        <w xml:id="w.257">אֹתֹת֙</w>
+                        <w xml:id="w.258">וּ</w>
+                        <w xml:id="w.259">לְ</w>
+                        <w xml:id="w.260">מֹ֣ועֲדִ֔ים</w>
+                        <w xml:id="w.261">וּ</w>
+                        <w xml:id="w.262">לְ</w>
+                        <w xml:id="w.263">יָמִ֖ים</w>
+                        <w xml:id="w.264">וְ</w>
+                        <w xml:id="w.265">שָׁנִֽים</w>
+                    </ab>
+                    <ab type="verse" n="15" xml:id="v.1414403">
+                        <w xml:id="w.266">וְ</w>
+                        <w xml:id="w.267">הָי֤וּ</w>
+                        <w xml:id="w.268">לִ</w>
+                        <w xml:id="w.269">מְאֹורֹת֙</w>
+                        <w xml:id="w.270">בִּ</w>
+                        <w xml:id="w.271">רְקִ֣יעַ</w>
+                        <w xml:id="w.272">הַ</w>
+                        <w xml:id="w.273">שָּׁמַ֔יִם</w>
+                        <w xml:id="w.274">לְ</w>
+                        <w xml:id="w.275">הָאִ֖יר</w>
+                        <w xml:id="w.276">עַל</w>
+                        <w xml:id="w.277">הָ</w>
+                        <w xml:id="w.278">אָ֑רֶץ</w>
+                        <w xml:id="w.279">וַֽ</w>
+                        <w xml:id="w.280">יְהִי</w>
+                        <w xml:id="w.281">כֵֽן</w>
+                    </ab>
+                    <ab type="verse" n="16" xml:id="v.1414404">
+                        <w xml:id="w.282">וַ</w>
+                        <w xml:id="w.283">יַּ֣עַשׂ</w>
+                        <w xml:id="w.284">אֱלֹהִ֔ים</w>
+                        <w xml:id="w.285">אֶת</w>
+                        <w xml:id="w.286">שְׁנֵ֥י</w>
+                        <w xml:id="w.287">הַ</w>
+                        <w xml:id="w.288">מְּאֹרֹ֖ת</w>
+                        <w xml:id="w.289">הַ</w>
+                        <w xml:id="w.290">גְּדֹלִ֑ים</w>
+                        <w xml:id="w.291">אֶת</w>
+                        <w xml:id="w.292">הַ</w>
+                        <w xml:id="w.293">מָּאֹ֤ור</w>
+                        <w xml:id="w.294">הַ</w>
+                        <w xml:id="w.295">גָּדֹל֙</w>
+                        <w xml:id="w.296">לְ</w>
+                        <w xml:id="w.297">מֶמְשֶׁ֣לֶת</w>
+                        <w xml:id="w.298">הַ</w>
+                        <w xml:id="w.299">יֹּ֔ום</w>
+                        <w xml:id="w.300">וְ</w>
+                        <w xml:id="w.301">אֶת</w>
+                        <w xml:id="w.302">הַ</w>
+                        <w xml:id="w.303">מָּאֹ֤ור</w>
+                        <w xml:id="w.304">הַ</w>
+                        <w xml:id="w.305">קָּטֹן֙</w>
+                        <w xml:id="w.306">לְ</w>
+                        <w xml:id="w.307">מֶמְשֶׁ֣לֶת</w>
+                        <w xml:id="w.308">הַ</w>
+                        <w xml:id="w.309">לַּ֔יְלָה</w>
+                        <w xml:id="w.310">וְ</w>
+                        <w xml:id="w.311">אֵ֖ת</w>
+                        <w xml:id="w.312">הַ</w>
+                        <w xml:id="w.313">כֹּוכָבִֽים</w>
+                    </ab>
+                    <ab type="verse" n="17" xml:id="v.1414405">
+                        <w xml:id="w.314">וַ</w>
+                        <w xml:id="w.315">יִּתֵּ֥ן</w>
+                        <w xml:id="w.316">אֹתָ֛ם</w>
+                        <w xml:id="w.317">אֱלֹהִ֖ים</w>
+                        <w xml:id="w.318">בִּ</w>
+                        <w xml:id="w.319">רְקִ֣יעַ</w>
+                        <w xml:id="w.320">הַ</w>
+                        <w xml:id="w.321">שָּׁמָ֑יִם</w>
+                        <w xml:id="w.322">לְ</w>
+                        <w xml:id="w.323">הָאִ֖יר</w>
+                        <w xml:id="w.324">עַל</w>
+                        <w xml:id="w.325">הָ</w>
+                        <w xml:id="w.326">אָֽרֶץ</w>
+                    </ab>
+                    <ab type="verse" n="18" xml:id="v.1414406">
+                        <w xml:id="w.327">וְ</w>
+                        <w xml:id="w.328">לִ</w>
+                        <w xml:id="w.329">מְשֹׁל֙</w>
+                        <w xml:id="w.330">בַּ</w>
+                        <w xml:id="w.331"/>
+                        <w xml:id="w.332">יֹּ֣ום</w>
+                        <w xml:id="w.333">וּ</w>
+                        <w xml:id="w.334">בַ</w>
+                        <w xml:id="w.335"/>
+                        <w xml:id="w.336">לַּ֔יְלָה</w>
+                        <w xml:id="w.337">וּֽ</w>
+                        <w xml:id="w.338">לֲ</w>
+                        <w xml:id="w.339">הַבְדִּ֔יל</w>
+                        <w xml:id="w.340">בֵּ֥ין</w>
+                        <w xml:id="w.341">הָ</w>
+                        <w xml:id="w.342">אֹ֖ור</w>
+                        <w xml:id="w.343">וּ</w>
+                        <w xml:id="w.344">בֵ֣ין</w>
+                        <w xml:id="w.345">הַ</w>
+                        <w xml:id="w.346">חֹ֑שֶׁךְ</w>
+                        <w xml:id="w.347">וַ</w>
+                        <w xml:id="w.348">יַּ֥רְא</w>
+                        <w xml:id="w.349">אֱלֹהִ֖ים</w>
+                        <w xml:id="w.350">כִּי</w>
+                        <w xml:id="w.351">טֹֽוב</w>
+                    </ab>
+                    <ab type="verse" n="19" xml:id="v.1414407">
+                        <w xml:id="w.352">וַֽ</w>
+                        <w xml:id="w.353">יְהִי</w>
+                        <w xml:id="w.354">עֶ֥רֶב</w>
+                        <w xml:id="w.355">וַֽ</w>
+                        <w xml:id="w.356">יְהִי</w>
+                        <w xml:id="w.357">בֹ֖קֶר</w>
+                        <w xml:id="w.358">יֹ֥ום</w>
+                        <w xml:id="w.359">רְבִיעִֽי</w>
+                    </ab>
+                    <ab type="verse" n="20" xml:id="v.1414408">
+                        <w xml:id="w.360">וַ</w>
+                        <w xml:id="w.361">יֹּ֣אמֶר</w>
+                        <w xml:id="w.362">אֱלֹהִ֔ים</w>
+                        <w xml:id="w.363">יִשְׁרְצ֣וּ</w>
+                        <w xml:id="w.364">הַ</w>
+                        <w xml:id="w.365">מַּ֔יִם</w>
+                        <w xml:id="w.366">שֶׁ֖רֶץ</w>
+                        <w xml:id="w.367">נֶ֣פֶשׁ</w>
+                        <w xml:id="w.368">חַיָּ֑ה</w>
+                        <w xml:id="w.369">וְ</w>
+                        <w xml:id="w.370">עֹוף֙</w>
+                        <w xml:id="w.371">יְעֹופֵ֣ף</w>
+                        <w xml:id="w.372">עַל</w>
+                        <w xml:id="w.373">הָ</w>
+                        <w xml:id="w.374">אָ֔רֶץ</w>
+                        <w xml:id="w.375">עַל</w>
+                        <w xml:id="w.376">פְּנֵ֖י</w>
+                        <w xml:id="w.377">רְקִ֥יעַ</w>
+                        <w xml:id="w.378">הַ</w>
+                        <w xml:id="w.379">שָּׁמָֽיִם</w>
+                    </ab>
+                    <ab type="verse" n="21" xml:id="v.1414409">
+                        <w xml:id="w.380">וַ</w>
+                        <w xml:id="w.381">יִּבְרָ֣א</w>
+                        <w xml:id="w.382">אֱלֹהִ֔ים</w>
+                        <w xml:id="w.383">אֶת</w>
+                        <w xml:id="w.384">הַ</w>
+                        <w xml:id="w.385">תַּנִּינִ֖ם</w>
+                        <w xml:id="w.386">הַ</w>
+                        <w xml:id="w.387">גְּדֹלִ֑ים</w>
+                        <w xml:id="w.388">וְ</w>
+                        <w xml:id="w.389">אֵ֣ת</w>
+                        <w xml:id="w.390">כָּל</w>
+                        <w xml:id="w.391">נֶ֣פֶשׁ</w>
+                        <w xml:id="w.392">הַֽ</w>
+                        <w xml:id="w.393">חַיָּ֣ה</w>
+                        <w xml:id="w.394">הָֽ</w>
+                        <w xml:id="w.395">רֹמֶ֡שֶׂת</w>
+                        <w xml:id="w.396">אֲשֶׁר֩</w>
+                        <w xml:id="w.397">שָׁרְצ֨וּ</w>
+                        <w xml:id="w.398">הַ</w>
+                        <w xml:id="w.399">מַּ֜יִם</w>
+                        <w xml:id="w.400">לְ</w>
+                        <w xml:id="w.401">מִֽינֵהֶ֗ם</w>
+                        <w xml:id="w.402">וְ</w>
+                        <w xml:id="w.403">אֵ֨ת</w>
+                        <w xml:id="w.404">כָּל</w>
+                        <w xml:id="w.405">עֹ֤וף</w>
+                        <w xml:id="w.406">כָּנָף֙</w>
+                        <w xml:id="w.407">לְ</w>
+                        <w xml:id="w.408">מִינֵ֔הוּ</w>
+                        <w xml:id="w.409">וַ</w>
+                        <w xml:id="w.410">יַּ֥רְא</w>
+                        <w xml:id="w.411">אֱלֹהִ֖ים</w>
+                        <w xml:id="w.412">כִּי</w>
+                        <w xml:id="w.413">טֹֽוב</w>
+                    </ab>
+                    <ab type="verse" n="22" xml:id="v.1414410">
+                        <w xml:id="w.414">וַ</w>
+                        <w xml:id="w.415">יְבָ֧רֶךְ</w>
+                        <w xml:id="w.416">אֹתָ֛ם</w>
+                        <w xml:id="w.417">אֱלֹהִ֖ים</w>
+                        <w xml:id="w.418">לֵ</w>
+                        <w xml:id="w.419">אמֹ֑ר</w>
+                        <w xml:id="w.420">פְּר֣וּ</w>
+                        <w xml:id="w.421">וּ</w>
+                        <w xml:id="w.422">רְב֗וּ</w>
+                        <w xml:id="w.423">וּ</w>
+                        <w xml:id="w.424">מִלְא֤וּ</w>
+                        <w xml:id="w.425">אֶת</w>
+                        <w xml:id="w.426">הַ</w>
+                        <w xml:id="w.427">מַּ֨יִם֙</w>
+                        <w xml:id="w.428">בַּ</w>
+                        <w xml:id="w.429"/>
+                        <w xml:id="w.430">יַּמִּ֔ים</w>
+                        <w xml:id="w.431">וְ</w>
+                        <w xml:id="w.432">הָ</w>
+                        <w xml:id="w.433">עֹ֖וף</w>
+                        <w xml:id="w.434">יִ֥רֶב</w>
+                        <w xml:id="w.435">בָּ</w>
+                        <w xml:id="w.436"/>
+                        <w xml:id="w.437">אָֽרֶץ</w>
+                    </ab>
+                    <ab type="verse" n="23" xml:id="v.1414411">
+                        <w xml:id="w.438">וַֽ</w>
+                        <w xml:id="w.439">יְהִי</w>
+                        <w xml:id="w.440">עֶ֥רֶב</w>
+                        <w xml:id="w.441">וַֽ</w>
+                        <w xml:id="w.442">יְהִי</w>
+                        <w xml:id="w.443">בֹ֖קֶר</w>
+                        <w xml:id="w.444">יֹ֥ום</w>
+                        <w xml:id="w.445">חֲמִישִֽׁי</w>
+                    </ab>
+                    <ab type="verse" n="24" xml:id="v.1414412">
+                        <w xml:id="w.446">וַ</w>
+                        <w xml:id="w.447">יֹּ֣אמֶר</w>
+                        <w xml:id="w.448">אֱלֹהִ֗ים</w>
+                        <w xml:id="w.449">תֹּוצֵ֨א</w>
+                        <w xml:id="w.450">הָ</w>
+                        <w xml:id="w.451">אָ֜רֶץ</w>
+                        <w xml:id="w.452">נֶ֤פֶשׁ</w>
+                        <w xml:id="w.453">חַיָּה֙</w>
+                        <w xml:id="w.454">לְ</w>
+                        <w xml:id="w.455">מִינָ֔הּ</w>
+                        <w xml:id="w.456">בְּהֵמָ֥ה</w>
+                        <w xml:id="w.457">וָ</w>
+                        <w xml:id="w.458">רֶ֛מֶשׂ</w>
+                        <w xml:id="w.459">וְ</w>
+                        <w xml:id="w.460">חַֽיְתֹו</w>
+                        <w xml:id="w.461">אֶ֖רֶץ</w>
+                        <w xml:id="w.462">לְ</w>
+                        <w xml:id="w.463">מִינָ֑הּ</w>
+                        <w xml:id="w.464">וַֽ</w>
+                        <w xml:id="w.465">יְהִי</w>
+                        <w xml:id="w.466">כֵֽן</w>
+                    </ab>
+                    <ab type="verse" n="25" xml:id="v.1414413">
+                        <w xml:id="w.467">וַ</w>
+                        <w xml:id="w.468">יַּ֣עַשׂ</w>
+                        <w xml:id="w.469">אֱלֹהִים֩</w>
+                        <w xml:id="w.470">אֶת</w>
+                        <w xml:id="w.471">חַיַּ֨ת</w>
+                        <w xml:id="w.472">הָ</w>
+                        <w xml:id="w.473">אָ֜רֶץ</w>
+                        <w xml:id="w.474">לְ</w>
+                        <w xml:id="w.475">מִינָ֗הּ</w>
+                        <w xml:id="w.476">וְ</w>
+                        <w xml:id="w.477">אֶת</w>
+                        <w xml:id="w.478">הַ</w>
+                        <w xml:id="w.479">בְּהֵמָה֙</w>
+                        <w xml:id="w.480">לְ</w>
+                        <w xml:id="w.481">מִינָ֔הּ</w>
+                        <w xml:id="w.482">וְ</w>
+                        <w xml:id="w.483">אֵ֛ת</w>
+                        <w xml:id="w.484">כָּל</w>
+                        <w xml:id="w.485">רֶ֥מֶשׂ</w>
+                        <w xml:id="w.486">הָֽ</w>
+                        <w xml:id="w.487">אֲדָמָ֖ה</w>
+                        <w xml:id="w.488">לְ</w>
+                        <w xml:id="w.489">מִינֵ֑הוּ</w>
+                        <w xml:id="w.490">וַ</w>
+                        <w xml:id="w.491">יַּ֥רְא</w>
+                        <w xml:id="w.492">אֱלֹהִ֖ים</w>
+                        <w xml:id="w.493">כִּי</w>
+                        <w xml:id="w.494">טֹֽוב</w>
+                    </ab>
+                    <ab type="verse" n="26" xml:id="v.1414414">
+                        <w xml:id="w.495">וַ</w>
+                        <w xml:id="w.496">יֹּ֣אמֶר</w>
+                        <w xml:id="w.497">אֱלֹהִ֔ים</w>
+                        <w xml:id="w.498">נַֽעֲשֶׂ֥ה</w>
+                        <w xml:id="w.499">אָדָ֛ם</w>
+                        <w xml:id="w.500">בְּ</w>
+                        <w xml:id="w.501">צַלְמֵ֖נוּ</w>
+                        <w xml:id="w.502">כִּ</w>
+                        <w xml:id="w.503">דְמוּתֵ֑נוּ</w>
+                        <w xml:id="w.504">וְ</w>
+                        <w xml:id="w.505">יִרְדּוּ֩</w>
+                        <w xml:id="w.506">בִ</w>
+                        <w xml:id="w.507">דְגַ֨ת</w>
+                        <w xml:id="w.508">הַ</w>
+                        <w xml:id="w.509">יָּ֜ם</w>
+                        <w xml:id="w.510">וּ</w>
+                        <w xml:id="w.511">בְ</w>
+                        <w xml:id="w.512">עֹ֣וף</w>
+                        <w xml:id="w.513">הַ</w>
+                        <w xml:id="w.514">שָּׁמַ֗יִם</w>
+                        <w xml:id="w.515">וּ</w>
+                        <w xml:id="w.516">בַ</w>
+                        <w xml:id="w.517"/>
+                        <w xml:id="w.518">בְּהֵמָה֙</w>
+                        <w xml:id="w.519">וּ</w>
+                        <w xml:id="w.520">בְ</w>
+                        <w xml:id="w.521">כָל</w>
+                        <w xml:id="w.522">הָ</w>
+                        <w xml:id="w.523">אָ֔רֶץ</w>
+                        <w xml:id="w.524">וּ</w>
+                        <w xml:id="w.525">בְ</w>
+                        <w xml:id="w.526">כָל</w>
+                        <w xml:id="w.527">הָ</w>
+                        <w xml:id="w.528">רֶ֖מֶשׂ</w>
+                        <w xml:id="w.529">הָֽ</w>
+                        <w xml:id="w.530">רֹמֵ֥שׂ</w>
+                        <w xml:id="w.531">עַל</w>
+                        <w xml:id="w.532">הָ</w>
+                        <w xml:id="w.533">אָֽרֶץ</w>
+                    </ab>
+                    <ab type="verse" n="27" xml:id="v.1414415">
+                        <w xml:id="w.534">וַ</w>
+                        <w xml:id="w.535">יִּבְרָ֨א</w>
+                        <w xml:id="w.536">אֱלֹהִ֤ים</w>
+                        <w xml:id="w.537">אֶת</w>
+                        <w xml:id="w.538">הָֽ</w>
+                        <w xml:id="w.539">אָדָם֙</w>
+                        <w xml:id="w.540">בְּ</w>
+                        <w xml:id="w.541">צַלְמֹ֔ו</w>
+                        <w xml:id="w.542">בְּ</w>
+                        <w xml:id="w.543">צֶ֥לֶם</w>
+                        <w xml:id="w.544">אֱלֹהִ֖ים</w>
+                        <w xml:id="w.545">בָּרָ֣א</w>
+                        <w xml:id="w.546">אֹתֹ֑ו</w>
+                        <w xml:id="w.547">זָכָ֥ר</w>
+                        <w xml:id="w.548">וּ</w>
+                        <w xml:id="w.549">נְקֵבָ֖ה</w>
+                        <w xml:id="w.550">בָּרָ֥א</w>
+                        <w xml:id="w.551">אֹתָֽם</w>
+                    </ab>
+                    <ab type="verse" n="28" xml:id="v.1414416">
+                        <w xml:id="w.552">וַ</w>
+                        <w xml:id="w.553">יְבָ֣רֶךְ</w>
+                        <w xml:id="w.554">אֹתָם֮</w>
+                        <w xml:id="w.555">אֱלֹהִים֒</w>
+                        <w xml:id="w.556">וַ</w>
+                        <w xml:id="w.557">יֹּ֨אמֶר</w>
+                        <w xml:id="w.558">לָהֶ֜ם</w>
+                        <w xml:id="w.559">אֱלֹהִ֗ים</w>
+                        <w xml:id="w.560">פְּר֥וּ</w>
+                        <w xml:id="w.561">וּ</w>
+                        <w xml:id="w.562">רְב֛וּ</w>
+                        <w xml:id="w.563">וּ</w>
+                        <w xml:id="w.564">מִלְא֥וּ</w>
+                        <w xml:id="w.565">אֶת</w>
+                        <w xml:id="w.566">הָ</w>
+                        <w xml:id="w.567">אָ֖רֶץ</w>
+                        <w xml:id="w.568">וְ</w>
+                        <w xml:id="w.569">כִבְשֻׁ֑הָ</w>
+                        <w xml:id="w.570">וּ</w>
+                        <w xml:id="w.571">רְד֞וּ</w>
+                        <w xml:id="w.572">בִּ</w>
+                        <w xml:id="w.573">דְגַ֤ת</w>
+                        <w xml:id="w.574">הַ</w>
+                        <w xml:id="w.575">יָּם֙</w>
+                        <w xml:id="w.576">וּ</w>
+                        <w xml:id="w.577">בְ</w>
+                        <w xml:id="w.578">עֹ֣וף</w>
+                        <w xml:id="w.579">הַ</w>
+                        <w xml:id="w.580">שָּׁמַ֔יִם</w>
+                        <w xml:id="w.581">וּ</w>
+                        <w xml:id="w.582">בְ</w>
+                        <w xml:id="w.583">כָל</w>
+                        <w xml:id="w.584">חַיָּ֖ה</w>
+                        <w xml:id="w.585">הָֽ</w>
+                        <w xml:id="w.586">רֹמֶ֥שֶׂת</w>
+                        <w xml:id="w.587">עַל</w>
+                        <w xml:id="w.588">הָ</w>
+                        <w xml:id="w.589">אָֽרֶץ</w>
+                    </ab>
+                    <ab type="verse" n="29" xml:id="v.1414417">
+                        <w xml:id="w.590">וַ</w>
+                        <w xml:id="w.591">יֹּ֣אמֶר</w>
+                        <w xml:id="w.592">אֱלֹהִ֗ים</w>
+                        <w xml:id="w.593">הִנֵּה֩</w>
+                        <w xml:id="w.594">נָתַ֨תִּי</w>
+                        <w xml:id="w.595">לָכֶ֜ם</w>
+                        <w xml:id="w.596">אֶת</w>
+                        <w xml:id="w.597">כָּל</w>
+                        <w xml:id="w.598">עֵ֣שֶׂב</w>
+                        <w xml:id="w.599">זֹרֵ֣עַ</w>
+                        <w xml:id="w.600">זֶ֗רַע</w>
+                        <w xml:id="w.601">אֲשֶׁר֙</w>
+                        <w xml:id="w.602">עַל</w>
+                        <w xml:id="w.603">פְּנֵ֣י</w>
+                        <w xml:id="w.604">כָל</w>
+                        <w xml:id="w.605">הָ</w>
+                        <w xml:id="w.606">אָ֔רֶץ</w>
+                        <w xml:id="w.607">וְ</w>
+                        <w xml:id="w.608">אֶת</w>
+                        <w xml:id="w.609">כָּל</w>
+                        <w xml:id="w.610">הָ</w>
+                        <w xml:id="w.611">עֵ֛ץ</w>
+                        <w xml:id="w.612">אֲשֶׁר</w>
+                        <w xml:id="w.613">בֹּ֥ו</w>
+                        <w xml:id="w.614">פְרִי</w>
+                        <w xml:id="w.615">עֵ֖ץ</w>
+                        <w xml:id="w.616">זֹרֵ֣עַ</w>
+                        <w xml:id="w.617">זָ֑רַע</w>
+                        <w xml:id="w.618">לָכֶ֥ם</w>
+                        <w xml:id="w.619">יִֽהְיֶ֖ה</w>
+                        <w xml:id="w.620">לְ</w>
+                        <w xml:id="w.621">אָכְלָֽה</w>
+                    </ab>
+                    <ab type="verse" n="30" xml:id="v.1414418">
+                        <w xml:id="w.622">וּֽ</w>
+                        <w xml:id="w.623">לְ</w>
+                        <w xml:id="w.624">כָל</w>
+                        <w xml:id="w.625">חַיַּ֣ת</w>
+                        <w xml:id="w.626">הָ֠</w>
+                        <w xml:id="w.627">אָרֶץ</w>
+                        <w xml:id="w.628">וּ</w>
+                        <w xml:id="w.629">לְ</w>
+                        <w xml:id="w.630">כָל</w>
+                        <w xml:id="w.631">עֹ֨וף</w>
+                        <w xml:id="w.632">הַ</w>
+                        <w xml:id="w.633">שָּׁמַ֜יִם</w>
+                        <w xml:id="w.634">וּ</w>
+                        <w xml:id="w.635">לְ</w>
+                        <w xml:id="w.636">כֹ֣ל</w>
+                        <w xml:id="w.637">רֹומֵ֣שׂ</w>
+                        <w xml:id="w.638">עַל</w>
+                        <w xml:id="w.639">הָ</w>
+                        <w xml:id="w.640">אָ֗רֶץ</w>
+                        <w xml:id="w.641">אֲשֶׁר</w>
+                        <w xml:id="w.642">בֹּו֙</w>
+                        <w xml:id="w.643">נֶ֣פֶשׁ</w>
+                        <w xml:id="w.644">חַיָּ֔ה</w>
+                        <w xml:id="w.645">אֶת</w>
+                        <w xml:id="w.646">כָּל</w>
+                        <w xml:id="w.647">יֶ֥רֶק</w>
+                        <w xml:id="w.648">עֵ֖שֶׂב</w>
+                        <w xml:id="w.649">לְ</w>
+                        <w xml:id="w.650">אָכְלָ֑ה</w>
+                        <w xml:id="w.651">וַֽ</w>
+                        <w xml:id="w.652">יְהִי</w>
+                        <w xml:id="w.653">כֵֽן</w>
+                    </ab>
+                    <ab type="verse" n="31" xml:id="v.1414419">
+                        <w xml:id="w.654">וַ</w>
+                        <w xml:id="w.655">יַּ֤רְא</w>
+                        <w xml:id="w.656">אֱלֹהִים֙</w>
+                        <w xml:id="w.657">אֶת</w>
+                        <w xml:id="w.658">כָּל</w>
+                        <w xml:id="w.659">אֲשֶׁ֣ר</w>
+                        <w xml:id="w.660">עָשָׂ֔ה</w>
+                        <w xml:id="w.661">וְ</w>
+                        <w xml:id="w.662">הִנֵּה</w>
+                        <w xml:id="w.663">טֹ֖וב</w>
+                        <w xml:id="w.664">מְאֹ֑ד</w>
+                        <w xml:id="w.665">וַֽ</w>
+                        <w xml:id="w.666">יְהִי</w>
+                        <w xml:id="w.667">עֶ֥רֶב</w>
+                        <w xml:id="w.668">וַֽ</w>
+                        <w xml:id="w.669">יְהִי</w>
+                        <w xml:id="w.670">בֹ֖קֶר</w>
+                        <w xml:id="w.671">יֹ֥ום</w>
+                        <w xml:id="w.672">הַ</w>
+                        <w xml:id="w.673">שִּׁשִּֽׁי</w>
+                    </ab>
+                </div>
+            </div>
+        </body>
+    </text>
+</TEI>
