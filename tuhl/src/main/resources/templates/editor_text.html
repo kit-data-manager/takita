@@ -32,6 +32,7 @@
 
 </head>
 <body class="container-fluid p-0" th:data-field="${currentAnnotationsJson}"
+    onload="init(document.body.getAttribute('data-field'))"
     onresize="resizeViewbox()">
 
 <div id="sideBar" class="anno-side-bar annocollapse">
@@ -79,6 +80,11 @@
   </ul>
   <ul class="features-list">
       <div class="category-header">Create Mode</div>
+	<li class="features-item draft">
+      <i id="selectTextButton" class="bx bx-shape-square features-item-icon" onclick="hideExpandedSidebar(); selectingText = true; confirmDiscardChanges(); mode = Mode.Create;"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); selectingText = true; confirmDiscardChanges(); mode = Mode.Create;">Select Text</span>
+      <span class="tooltip">Select Text</span>
+    </li>
     <li class="features-item draft">
       <i id="createRectangleButton" class="bx bx-shape-square features-item-icon" onclick="hideExpandedSidebar(); addingRectangle = true; confirmDiscardChanges(); mode = Mode.Create;"></i>
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); addingRectangle = true; confirmDiscardChanges(); mode = Mode.Create;">Create Square</span>
@@ -191,9 +197,10 @@
         <div class="col-7">
             <div id="textWorkspace" class="is-full-width">
                 <script th:inline="javascript">
-                    var currentPageId = [[${currentPage.getResourceUrl()}]];
+                    const currentPageId = [[${currentPage.getResourceUrl()}]];
                 </script>
-                <div id="TEI" th:if="${currentPage.resourceType == (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).TEXT)}">
+                <div id="textToSelect"><p id="w.1">Lorem</p> <p id="w.2">ipsum</p> <p id="w.3">dolor</p> sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</div>
+                <div id="TEI" th:if="${currentPage.resourceType == (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).TEXT)}">Please wait until your text is loaded. If it doesn´t load, contact the developers.
                 </div>
                 <div th:if="${currentPage.resourceType != (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).TEXT)}">
                 	Something went wrong. Most likely you want to display something, that is not text.
@@ -430,14 +437,16 @@
    		}
    			
    	</script>
+
     <script src="/js/ajv7.js"></script>
     <script src="/js/underscore.js"></script>
     <script src="/js/jsonform.js"></script>
     <script src="/js/tabulator.min.js"></script>
     <script src="/js/metadataeditor.js"></script>
     <script src="/js/editor.js"></script>
-    <script src="/js/creation_templates.js"></script>
+    <script src="/js/creation_templates_text2.js"></script>
 	<script src="/js/CETEI.js"></script>
+	<script src="/js/editor_xml.js"></script>
 	<script th:inline="javascript">
 	
 		var linkToResource = "/editor_rest/content/" + [[${currentPage.getId()}]] + "/" + [[${fileName}]];

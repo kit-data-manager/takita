@@ -22,6 +22,11 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -443,6 +448,22 @@ public class AnnotationConverter {
     }
   }
 
+  
+  /* function to check if a string is a valid XPATH
+   * 
+   * 
+   */
+  private boolean validateXPATH(String target) {
+	  XPath xPath = XPathFactory.newInstance().newXPath();
+	  boolean isValid = false;
+	  try {
+		    xPath.compile(target);
+		    isValid = true;
+      } catch (Exception e) {
+		    e.printStackTrace();
+	  } 
+	  return isValid;
+  }
   /*
    * Puts target JSONObject with svg code and page image resource in JSONObject annotation.
    */
@@ -462,41 +483,96 @@ public class AnnotationConverter {
         selector = target.getJSONObject(AnnotationStoreStrings.SELECTOR.getName());
       }
     }
-
-    if (annotation.getSvgCode() != null && !annotation.getSvgCode().trim().equals("")) {
-      selector.put(AnnotationStoreStrings.TYPE.getName(),
-          AnnotationStoreStrings.SVG_SELECTOR.getName());
-
-      if (!annotation.getSvgCode().contains("<svg>")) {
-        selector.put(AnnotationStoreStrings.VALUE.getName(), "<svg xmlns=\"http://www.w3.org/2000/svg\">" + annotation.getSvgCode() + "</svg>");
-      } else {
-        String svgString = annotation.getSvgCode().substring(annotation.getSvgCode().indexOf('>') + 1, annotation.getSvgCode().lastIndexOf('<'));
-        selector.put(AnnotationStoreStrings.VALUE.getName(), "<svg xmlns=\"http://www.w3.org/2000/svg\">" + svgString + "</svg>");
-      };
-          
-      target.put(AnnotationStoreStrings.SELECTOR.getName(), selector);
-      
-      // source is url of page image
-      if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
-        target.put(AnnotationStoreStrings.TYPE.getName(),
-          AnnotationStoreStrings.SPECIFIC_RESOURCE.getName());
-        target.put(AnnotationStoreStrings.SOURCE.getName(), repositoryAccessService.getBaseUrl()
-          + repositoryAccessService.getStaticPath()
-          + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
-          + RepositoryAccessService.MASTER_JPG);
-      }
-    } else {
-       
-        if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
-            target.put(AnnotationStoreStrings.ID.getName(), repositoryAccessService.getBaseUrl()
-          + repositoryAccessService.getStaticPath()
-          + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
-          + RepositoryAccessService.MASTER_JPG);
-        }
-        
+    // svg targets
+    if (annotation.getSvgCode() != null && !annotation.getSvgCode().trim().equals("") && annotation.getSvgCode().contains("svg")){
+    	if (annotation.getSvgCode() != null && !annotation.getSvgCode().trim().equals("")) {
+    	    
+		  selector.put(AnnotationStoreStrings.TYPE.getName(),
+		          AnnotationStoreStrings.SVG_SELECTOR.getName());
+		
+	      if (!annotation.getSvgCode().contains("<svg>")) {
+	    	  selector.put(AnnotationStoreStrings.VALUE.getName(), "<svg xmlns=\"http://www.w3.org/2000/svg\">" + annotation.getSvgCode() + "</svg>");
+	      } else {
+		      String svgString = annotation.getSvgCode().substring(annotation.getSvgCode().indexOf('>') + 1, annotation.getSvgCode().lastIndexOf('<'));
+		      selector.put(AnnotationStoreStrings.VALUE.getName(), "<svg xmlns=\"http://www.w3.org/2000/svg\">" + svgString + "</svg>");
+	      };
+	          
+	      target.put(AnnotationStoreStrings.SELECTOR.getName(), selector);
+	      
+	      // source is url of page image
+	      if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
+	        target.put(AnnotationStoreStrings.TYPE.getName(),
+	          AnnotationStoreStrings.SPECIFIC_RESOURCE.getName());
+	        target.put(AnnotationStoreStrings.SOURCE.getName(), repositoryAccessService.getBaseUrl()
+	          + repositoryAccessService.getStaticPath()
+	          + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
+	          + RepositoryAccessService.MASTER_JPG);
+	      }
+	    } else {
+	       
+	        if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
+	            target.put(AnnotationStoreStrings.ID.getName(), repositoryAccessService.getBaseUrl()
+	          + repositoryAccessService.getStaticPath()
+	          + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
+	          + RepositoryAccessService.MASTER_JPG);
+	        }
+	        
+	    }
+    	jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), target);
+    	
+    	// xml targets
+    	// the svgCode (target as xmlId of an annotation) is a string with "§" to mark the beginning of a new
+    	// target
+    } else if (this.validateXPATH(annotation.getSvgCode().split("§")[0]) && annotation.getSvgCode() != null && !annotation.getSvgCode().trim().equals("")) {
+    	String[] xmlIdList = annotation.getSvgCode().split("§");
+    	ArrayList<JSONObject> targetArray = new ArrayList<JSONObject>();
+    	
+    	// sotring all the finished webAnno target in a targetArray
+    	for (String xmlId : xmlIdList) {
+    	    JSONObject target2 = new JSONObject();
+    	    JSONObject selector2 = new JSONObject();
+    	    selector2.put(AnnotationStoreStrings.TYPE.getName(), "XPathSelector");
+  		    selector2.put(AnnotationStoreStrings.VALUE.getName(), xmlId);
+  	        target2.put(AnnotationStoreStrings.SELECTOR.getName(), selector2);
+  	        
+  	        if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
+  	          target2.put(AnnotationStoreStrings.TYPE.getName(),
+  	            AnnotationStoreStrings.SPECIFIC_RESOURCE.getName());
+  	          target2.put(AnnotationStoreStrings.SOURCE.getName(), repositoryAccessService.getBaseUrl()
+  	            + repositoryAccessService.getStaticPath()
+  	            + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
+  	            + ".xml");
+  	        }
+  	        targetArray.add(target2);
+    	}
+    	
+    	// if only one xmlid is the target add only that one object
+    	if (targetArray.size() == 1) {
+    		jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), targetArray.get(0));
+    	} else {
+    		JSONArray targetJsonArray = new JSONArray();
+	    	// else (if multiple ids are the target of the annotation) add an array
+	    	for (JSONObject webTarget : targetArray) {
+	    		
+	    		targetJsonArray.put(webTarget);
+	    		// add all the stuff to the jsonAnnotation jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), target);
+	    	}
+	    	jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), targetJsonArray);
+    	}
+    	System.out.println("___________________Java Target Creation_____________________");
+    	/* this part might be needed laterelse {
+	       
+	        if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
+	            target.put(AnnotationStoreStrings.ID.getName(), repositoryAccessService.getBaseUrl()
+	          + repositoryAccessService.getStaticPath()
+	          + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
+	          + ".xml");
+	        }
+	        
+	    }*/
     }
-
-    jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), target);
+    System.out.println(target);
+    
   }
 
   /*
