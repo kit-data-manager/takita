@@ -281,13 +281,13 @@ const formObjectCreateAnnotation = {
                     },
                     
                     success : function(responseData) {
-                        console.log(responseData);
-                        console.log("annotation created; bodies and drawing to come");
                         let responseJson = JSON.parse(responseData);
+                        // philipp: why does the id not exist? i needed to add it here manually
+                        // philipp: what did i mean here?
                         
                         // if needed: store the annotation ID within the 
                         // corresponding shape
-                        console.log(annotationDataJson.svgCode);
+                        /*this might be needed later to highlight a selection
                         let shape;
                         paper.forEach(function(element) {
                             if (element.type === "rect" || element.type === "path") {
@@ -299,7 +299,7 @@ const formObjectCreateAnnotation = {
                             shape.annoIdEncoded = encodeAnnoId(responseJson.id);
                             shape.attr({'stroke': color, 'fill': color});
                             toggleShapeSelect(shape);
-                        };
+                        };*/
                         
                         // trigger the body creation according to the template
                         storeBody(responseJson, jsonObject, 0);
@@ -408,6 +408,7 @@ function storeBody(responseJson, jsonObject, index) {
         
     } else {
         // if no more body needs to be created, hide modal and update global annotation list
+        // and highlight the new annotation
         document.getElementById('createAnnotation').classList.toggle("show-modal");
         selectAnnotation(null, encodeAnnoId(responseJson.id));
         if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
@@ -421,14 +422,17 @@ function storeBody(responseJson, jsonObject, index) {
         
         if (document.getElementById("createAnnotationForm").title !== "") {
             newAnnotation.svg = document.getElementById("createAnnotationForm").title;
-            extractInformationFromSvg(newAnnotation.svg, newAnnotation);
+            //extractInformationFromSvg(newAnnotation.svg, newAnnotation);
         }; 
         
         annoJson.push(newAnnotation);
         fillMetaDataEditorTable(annoJson);
+        // highlighting the new annotation in orange
+        newAnnoXmlId = newAnnotation.svg.split("\"")[1];
+		document.getElementById(newAnnoXmlId).style.backgroundColor = 'orange';
         
-        document.getElementById('createRectangleButton').parentElement.classList.remove('active');
-        document.getElementById('createPolygonButton').parentElement.classList.remove('active');
+        //document.getElementById('createRectangleButton').parentElement.classList.remove('active');
+        //document.getElementById('createPolygonButton').parentElement.classList.remove('active');
         document.getElementById("createAnnotationForm").removeAttribute('title');
         
         newRectangle = undefined;
