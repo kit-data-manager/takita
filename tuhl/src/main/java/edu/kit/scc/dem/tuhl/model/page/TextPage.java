@@ -1,5 +1,6 @@
 package edu.kit.scc.dem.tuhl.model.page;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 /**
@@ -19,6 +20,7 @@ public class TextPage extends Page {
    */
   public TextPage(String id, String pageNumber, Date created, String resourceUrl) {
     super(id, ResourceType.TEXT, pageNumber, created, resourceUrl);
+    annotations = new ArrayList<>();
   }
   
   /**
