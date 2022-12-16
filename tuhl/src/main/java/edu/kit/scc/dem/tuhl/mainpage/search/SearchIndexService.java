@@ -367,7 +367,7 @@ public class  SearchIndexService implements ISearchIndexService {
   }
 
   /**
-   * Updates an annotation in the search index.
+   * Updates an annotation in the search index AND THE DATABASE??? (PHILIPP).
    *
    * @param annotation updated Annotation
    * @return updated annotation
