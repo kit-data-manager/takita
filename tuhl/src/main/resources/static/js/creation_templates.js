@@ -16,7 +16,11 @@ const annotationTemplate = {
     PAGEREGION : "pageregion",
     MAINTEXT : "maintext",
     TARGETAUDIENCE : "targetaudience",
-    NOTEMPLATE : "notemplate"
+    NOTEMPLATE : "notemplate",
+    MRW : "mrw",
+    MFLAG : "mFlag",
+    METAPHOR : "metaphor",
+    CONTEXT : "context"
     
 };
 
@@ -26,6 +30,98 @@ function getFormModel(chosenTemplate) {
     let uiForm;
     
     switch (chosenTemplate) {
+        case "MRW":
+            dataModel = {
+                "type" : "object",
+                "properties" : {
+                    "tag" : {
+                        "type" : "string",
+                        "title" : "tag",
+                        "default" : "mrw",
+                        "readOnly" : true
+                    }
+                }
+            };
+            uiForm = {
+                "type" : "fieldset",
+                "items" : [
+                    {
+                        "key" : "tag",
+                        "readOnly" : true
+                    }
+                
+            ]};
+            break;  
+        
+        case "MFLAG":
+            dataModel = {
+                "type" : "object",
+                "properties" : {
+                    "tag" : {
+                        "type" : "string",
+                        "title" : "tag",
+                        "default" : "mflag",
+                        "readOnly" : true
+                    }
+                }
+            };
+            uiForm = {
+                "type" : "fieldset",
+                "items" : [
+                    {
+                        "key" : "tag",
+                        "readOnly" : true
+                    }
+                
+            ]};
+            break;  
+        
+        case "METAPHOR":
+            dataModel = {
+                "type" : "object",
+                "properties" : {
+                    "tag" : {
+                        "type" : "string",
+                        "title" : "tag",
+                        "default" : "metaphor",
+                        "readOnly" : true
+                    }
+                }
+            };
+            uiForm = {
+                "type" : "fieldset",
+                "items" : [
+                    {
+                        "key" : "tag",
+                        "readOnly" : true
+                    }
+                
+            ]};
+            break;  
+        
+        case "CONTEXT":
+            dataModel = {
+                "type" : "object",
+                "properties" : {
+                    "tag" : {
+                        "type" : "string",
+                        "title" : "tag",
+                        "default" : "context",
+                        "readOnly" : true
+                    }
+                }
+            };
+            uiForm = {
+                "type" : "fieldset",
+                "items" : [
+                    {
+                        "key" : "tag",
+                        "readOnly" : true
+                    }
+                
+            ]};
+            break;  
+                
         case "TAG":
             dataModel = {
                 "type" : "object",
@@ -372,6 +468,7 @@ const formObjectCreateAnnotation = {
                     
                     success : function(responseData) {
                         console.log(responseData);
+                        console.log("stop");
                         let responseJson = JSON.parse(responseData);
                         
                         // if needed: store the annotation ID within the 
@@ -380,10 +477,14 @@ const formObjectCreateAnnotation = {
                         let shape;
                         paper.forEach(function(element) {
                             if (element.type === "rect" || element.type === "path") {
+                                
                                 shape = element;
+                                
                             }
                         });
                         if (document.getElementById("createAnnotationForm").title !== "") {
+                            console.log(shape);
+                            console.log(responseJson);
                             shape.annoId = responseJson.id;
                             shape.annoIdEncoded = encodeAnnoId(responseJson.id);
                             shape.attr({'stroke': color, 'fill': color});
