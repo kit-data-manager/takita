@@ -133,7 +133,29 @@ public class AnnotationConverter {
         svgString = fullSvg.substring(fullSvg.indexOf('>') + 1, fullSvg.lastIndexOf('<'));
       }
       annotation.setSvgCode(svgString);
-    } 
+    }
+    
+    // set svgCode from Xpath
+    if (jsonAnnotation.has(AnnotationStoreStrings.TARGET.getName())
+        && jsonAnnotation
+        .getJSONObject(AnnotationStoreStrings.TARGET.getName())
+        .has(AnnotationStoreStrings.SELECTOR.getName())
+        && jsonAnnotation
+        .getJSONObject(AnnotationStoreStrings.TARGET.getName())
+        .getJSONObject(AnnotationStoreStrings.SELECTOR.getName())
+        .has(AnnotationStoreStrings.TYPE.getName())
+        && jsonAnnotation
+        .getJSONObject(AnnotationStoreStrings.TARGET.getName())
+        .getJSONObject(AnnotationStoreStrings.SELECTOR.getName())
+        .getString(AnnotationStoreStrings.TYPE.getName())
+        .equals("XPathSelector")) {
+
+      String fullSvg = jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName())
+        .getJSONObject(AnnotationStoreStrings.SELECTOR.getName()).getString(
+          AnnotationStoreStrings.VALUE.getName());
+      
+      annotation.setSvgCode(fullSvg);
+    }
     //else {
     //  svgString = "invalid";
     //}
@@ -471,6 +493,13 @@ public class AnnotationConverter {
       throws JSONException {
     JSONObject target = new JSONObject();
     JSONObject selector = new JSONObject();
+    System.out.println("____ ATRGET PUTTING_____");
+    System.out.println(annotation.toString());
+    if (annotation.getSvgCode() != null && !annotation.getSvgCode().trim().equals("")) {
+    	System.out.println("_____SVG CODE ______");
+    	System.out.println(annotation.getSvgCode());
+    }
+
     if (jsonAnnotation.has(AnnotationStoreStrings.TARGET.getName())) {
       // if target is no object and just contains the target URL
       if (jsonAnnotation.get(AnnotationStoreStrings.TARGET.getName()) instanceof String) {
@@ -523,43 +552,85 @@ public class AnnotationConverter {
     	// xml targets
     	// the svgCode (target as xmlId of an annotation) is a string with "§" to mark the beginning of a new
     	// target
-    } else if (this.validateXPATH(annotation.getSvgCode().split("§")[0]) && annotation.getSvgCode() != null && !annotation.getSvgCode().trim().equals("")) {
-    	String[] xmlIdList = annotation.getSvgCode().split("§");
-    	ArrayList<JSONObject> targetArray = new ArrayList<JSONObject>();
-    	
-    	// sotring all the finished webAnno target in a targetArray
-    	for (String xmlId : xmlIdList) {
-    	    JSONObject target2 = new JSONObject();
-    	    JSONObject selector2 = new JSONObject();
-    	    selector2.put(AnnotationStoreStrings.TYPE.getName(), "XPathSelector");
-  		    selector2.put(AnnotationStoreStrings.VALUE.getName(), xmlId);
-  	        target2.put(AnnotationStoreStrings.SELECTOR.getName(), selector2);
-  	        
-  	        if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
-  	          target2.put(AnnotationStoreStrings.TYPE.getName(),
-  	            AnnotationStoreStrings.SPECIFIC_RESOURCE.getName());
-  	          target2.put(AnnotationStoreStrings.SOURCE.getName(), repositoryAccessService.getBaseUrl()
-  	            + repositoryAccessService.getStaticPath()
-  	            + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
-  	            + ".xml");
-  	        }
-  	        targetArray.add(target2);
-    	}
-    	
-    	// if only one xmlid is the target add only that one object
-    	if (targetArray.size() == 1) {
-    		jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), targetArray.get(0));
-    	} else {
-    		JSONArray targetJsonArray = new JSONArray();
-	    	// else (if multiple ids are the target of the annotation) add an array
-	    	for (JSONObject webTarget : targetArray) {
-	    		
-	    		targetJsonArray.put(webTarget);
-	    		// add all the stuff to the jsonAnnotation jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), target);
+    	// this does not work for multiple targets as takita cant handle jsonArrays for targets atm (but i can for bodies)
+    } else if (annotation.getSvgCode().contains("@xml:id") && annotation.getSvgCode() != null && !annotation.getSvgCode().trim().equals("")) {
+    	if (this.validateXPATH(annotation.getSvgCode().split("§")[0])) {
+    		System.out.println("___________________First Java Target Creation_____________________");
+    		String[] xmlIdList = annotation.getSvgCode().split("§");
+	    	ArrayList<JSONObject> targetArray = new ArrayList<JSONObject>();
+	    	
+	    	// sotring all the finished webAnno target in a targetArray
+	    	for (String xmlId : xmlIdList) {
+	    	    JSONObject target2 = new JSONObject();
+	    	    JSONObject selector2 = new JSONObject();
+	    	    selector2.put(AnnotationStoreStrings.TYPE.getName(), "XPathSelector");
+	  		    selector2.put(AnnotationStoreStrings.VALUE.getName(), xmlId);
+	  	        target2.put(AnnotationStoreStrings.SELECTOR.getName(), selector2);
+	  	        
+	  	        if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
+	  	          target2.put(AnnotationStoreStrings.TYPE.getName(),
+	  	            AnnotationStoreStrings.SPECIFIC_RESOURCE.getName());
+	  	          target2.put(AnnotationStoreStrings.SOURCE.getName(), repositoryAccessService.getBaseUrl()
+	  	            + repositoryAccessService.getStaticPath()
+	  	            + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
+	  	            + ".xml");
+	  	        }
+	  	        targetArray.add(target2);
 	    	}
-	    	jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), targetJsonArray);
+	    	
+	    	// if only one xmlid is the target add only that one object
+	    	if (targetArray.size() == 1) {
+	    		jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), targetArray.get(0));
+	    	} else {
+	    		JSONArray targetJsonArray = new JSONArray();
+		    	// else (if multiple ids are the target of the annotation) add an array
+		    	for (JSONObject webTarget : targetArray) {
+		    		
+		    		targetJsonArray.put(webTarget);
+		    		// add all the stuff to the jsonAnnotation jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), target);
+		    	}
+		    	jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), targetJsonArray);
+	    	}
+	    	
+    	} else if (this.validateXPATH(annotation.getSvgCode())) {
+    		System.out.println("___________________Subsequent Java Target Creation_____________________");
+    		String[] xmlIdList = null;
+    		xmlIdList[0]= annotation.getSvgCode();
+	    	ArrayList<JSONObject> targetArray = new ArrayList<JSONObject>();
+	    	
+	    	// sotring all the finished webAnno target in a targetArray
+	    	for (String xmlId : xmlIdList) {
+	    	    JSONObject target2 = new JSONObject();
+	    	    JSONObject selector2 = new JSONObject();
+	    	    selector2.put(AnnotationStoreStrings.TYPE.getName(), "XPathSelector");
+	  		    selector2.put(AnnotationStoreStrings.VALUE.getName(), xmlId);
+	  	        target2.put(AnnotationStoreStrings.SELECTOR.getName(), selector2);
+	  	        
+	  	        if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
+	  	          target2.put(AnnotationStoreStrings.TYPE.getName(),
+	  	            AnnotationStoreStrings.SPECIFIC_RESOURCE.getName());
+	  	          target2.put(AnnotationStoreStrings.SOURCE.getName(), repositoryAccessService.getBaseUrl()
+	  	            + repositoryAccessService.getStaticPath()
+	  	            + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
+	  	            + ".xml");
+	  	        }
+	  	        targetArray.add(target2);
+	    	}
+	    	
+	    	// if only one xmlid is the target add only that one object
+	    	if (targetArray.size() == 1) {
+	    		jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), targetArray.get(0));
+	    	} else {
+	    		JSONArray targetJsonArray = new JSONArray();
+		    	// else (if multiple ids are the target of the annotation) add an array
+		    	for (JSONObject webTarget : targetArray) {
+		    		
+		    		targetJsonArray.put(webTarget);
+		    		// add all the stuff to the jsonAnnotation jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), target);
+		    	}
+		    	jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), targetJsonArray);
+	    	}
     	}
-    	System.out.println("___________________Java Target Creation_____________________");
     	/* this part might be needed laterelse {
 	       
 	        if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
