@@ -552,7 +552,7 @@ public class AnnotationConverter {
     	// xml targets
     	// the svgCode (target as xmlId of an annotation) is a string with "§" to mark the beginning of a new
     	// target
-    	// this does not work for multiple targets as takita cant handle jsonArrays for targets atm (but i can for bodies)
+    	// this does not work for multiple targets as takita cant handle jsonArrays for targets atm (but it can for bodies)
     } else if (annotation.getSvgCode().contains("@xml:id") && annotation.getSvgCode() != null && !annotation.getSvgCode().trim().equals("")) {
     	if (this.validateXPATH(annotation.getSvgCode().split("§")[0])) {
     		System.out.println("___________________First Java Target Creation_____________________");
