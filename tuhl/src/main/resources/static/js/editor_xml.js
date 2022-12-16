@@ -432,8 +432,8 @@ let changeCursor = function(e, mouseX, mouseY) {
   //canvas.viewbox(0, 0, width, height);
 //}
 
-function extractInformationFromTarget (targetString, annoJson) {
-    const svgDoc = new DOMParser().parseFromString(targetString, "text/xml");
+function extractInformationFromSvg (svgString, annoJson) {
+    const svgDoc = new DOMParser().parseFromString(svgString, "text/xml");
     /*let svgRect = svgDoc.getElementsByTagName('rect')[0];
     let svgPolygon = svgDoc.getElementsByTagName('polygon')[0];
     if (svgRect) {
@@ -469,9 +469,13 @@ function extractInformationFromTarget (targetString, annoJson) {
 }
 
 function drawAnnos(annoJson) {
-    console.log(annoJson);
-  for (let anno in annoJson) {
-     extractInformationFromTarget(annoJson[anno].target, annoJson[anno]);
+    let annoXmlId;
+    annoJson.forEach(annotation => {
+		annoXmlId = annotation.svg.split("\"")[1];
+		document.getElementById(annoXmlId).style.backgroundColor = 'yellow';
+	});
+  /*for (let anno in annoJson) {
+     extractInformationFromSvg(annoJson[anno].svg, annoJson[anno]);
   };
 
     // sort all annotations resp. the corresponding shape area (descending)
@@ -517,7 +521,7 @@ function drawAnnos(annoJson) {
             };
         };
       };
-  };
+  };*/
 
   fillMetaDataEditorTable(annoJson);
 }
@@ -817,6 +821,23 @@ function endModification (shape) {
 };
 
 function init(annotations) {
+	// open textcard if rightclicking on a word that is highlighted, i.e. has an annotation
+	document.getElementById("TEI").oncontextmenu = function(e) {
+        e.preventDefault();
+        
+        if (e.target.style.backgroundColor == "yellow" || e.target.style.backgroundColor == "orange"){
+			annoJson.forEach(item => {
+				if (e.target.id == item.svg.split("\"")[1]){
+					selectAnnotation(null, item.idEncoded);
+                	if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
+                  	  toggleOverview('annotationCard');
+              	  };
+				}
+			});
+			
+		}
+	}
+	
 	document.getElementById("TEI").onmouseup = function (event) {
 		
 		// only get a selection, if a user actually wants to select text
@@ -1153,9 +1174,8 @@ function init(annotations) {
         };
     };
 
-    // Drawing anno svgs on first opening of page
-    annoJson = JSON.parse(annotations);
-    drawAnnos(annoJson);}
+    // Drawing anno svgs on first opening of page moved to CETEIcean call in editor_text.html
+    }
 }
 
 function confirmDiscardChanges() {
