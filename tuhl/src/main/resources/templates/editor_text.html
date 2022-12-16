@@ -199,7 +199,6 @@
                 <script th:inline="javascript">
                     const currentPageId = [[${currentPage.getResourceUrl()}]];
                 </script>
-                <div id="textToSelect"><p id="w.1">Lorem</p> <p id="w.2">ipsum</p> <p id="w.3">dolor</p> sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</div>
                 <div id="TEI" th:if="${currentPage.resourceType == (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).TEXT)}">Please wait until your text is loaded. If it doesn´t load, contact the developers.
                 </div>
                 <div th:if="${currentPage.resourceType != (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).TEXT)}">
@@ -438,6 +437,7 @@
    			
    	</script>
 
+	<script src="/js/raphael.js"></script>
     <script src="/js/ajv7.js"></script>
     <script src="/js/underscore.js"></script>
     <script src="/js/jsonform.js"></script>
@@ -480,6 +480,8 @@
 	      }
 	      // disabling the prevChaptButton as the first chapter will be displayed
 	      document.getElementById("prevChaptButton").disabled = true;
+	  	  // highlight all the annotated words
+		  drawAnnos(JSON.parse(document.body.getAttribute('data-field')));
 	    });
 
     </script>
