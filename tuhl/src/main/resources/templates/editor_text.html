@@ -53,24 +53,19 @@
   <ul class="features-list">
       <div class="category-header">View Mode</div>
     <li class="features-item draft">
-      <i id="zoomInButton" class="bx bx-zoom-in features-item-icon" onclick="hideExpandedSidebar(); imageZoomIn()"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); imageZoomIn()">Zoom In</span>
-      <span class="tooltip">Zoom In</span>
+      <i id="fontIncreaseButton" class="bx bx-zoom-in features-item-icon" onclick="hideExpandedSidebar(); increaseFontSize()"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); increaseFontSize()">Increase Font Size</span>
+      <span class="tooltip">Increase Font Size</span>
     </li>
     <li class="features-item draft">
-      <i id="zoomOutButton" class="bx bx-zoom-out features-item-icon" onclick="hideExpandedSidebar(); imageZoomOut()"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); imageZoomOut()">Zoom Out</span>
-      <span class="tooltip">Zoom Out</span>
+      <i id="fontDecreaseButton" class="bx bx-zoom-out features-item-icon" onclick="hideExpandedSidebar(); decreaseFontSize()"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); decreaseFontSize()">Decrease Font Size</span>
+      <span class="tooltip">Decrease Font Size</span>
     </li>
     <li class="features-item draft">
-      <i id="moveImageButton" class="bx bx-move features-item-icon" onclick="hideExpandedSidebar(); movingImage = true;"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); movingImage = true">Move Image</span>
-      <span class="tooltip">Move Image</span>
-    </li>
-    <li class="features-item draft">
-      <i id="hideShapeButton" class="bx bx-low-vision features-item-icon" onclick="hideExpandedSidebar(); hideShape()"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); hideShape()">Hide Shape</span>
-      <span class="tooltip">Hide Shape</span>
+      <i id="resetFontButton" class="bx bx-font-size features-item-icon" onclick="hideExpandedSidebar(); resetFontSize()"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); resetFontSize()">Reset Font Size</span>
+      <span class="tooltip">Reset Font Size</span>
     </li>
     <li class="features-item draft">
       <i id="resetViewButton" class="bx bx-reset features-item-icon" onclick="hideExpandedSidebar(); resetView()"></i>
@@ -81,7 +76,7 @@
   <ul class="features-list">
       <div class="category-header">Create Mode</div>
 	<li class="features-item draft">
-      <i id="selectTextButton" class="bx bx-shape-square features-item-icon" onclick="hideExpandedSidebar(); annotateSelectedText(); selectingText = true; confirmDiscardChanges(); mode = Mode.Create;"></i>
+      <i id="selectTextButton" class="bx bx-highlight features-item-icon" onclick="hideExpandedSidebar(); annotateSelectedText(); selectingText = true; confirmDiscardChanges(); mode = Mode.Create;"></i>
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); annotateSelectedText(); selectingText = true; confirmDiscardChanges(); mode = Mode.Create;">Select Text</span>
       <span class="tooltip">Select Text</span>
     </li>

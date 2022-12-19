@@ -630,6 +630,30 @@ function createPageAnnotation() {
     pickTemplate("", "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
 };
 
+
+// font manipulation functions called by sidebar buttons
+function changeFontSize(id, changeFactor){
+	txt = document.getElementById(id);
+    style = window.getComputedStyle(txt, null).getPropertyValue('font-size');
+    currentSize = parseFloat(style);
+    txt.style.fontSize = (currentSize + changeFactor) + 'px';
+}
+
+function increaseFontSize(){
+	changeFontSize("TEI", 1);
+	
+}
+
+function decreaseFontSize(){
+	changeFontSize("TEI", -1);
+	
+}
+
+function resetFontSize(){
+	document.getElementById("TEI").style.fontSize = "initial";
+}
+
+
 function imageZoomIn() {
     paper.currentWidth = paper.currentWidth - paper.originalWidth/10;
     paper.currentHeight = paper.currentHeight - paper.originalHeight/10;
