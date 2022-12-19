@@ -928,6 +928,10 @@ function annotateSelectedText(){
 		const modal = document.getElementById("createAnnotation");
 	    modal.classList.toggle("show-modal");
 	    pickTemplate(targetsXmlIds, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
+    	// resetting parameters, so no new annotation can be ceated without clicking on
+		// the button at the sidebar, that enables annotation 
+		mode = Mode.View;
+		selectingText = false;
 	}
 };
 
@@ -954,19 +958,9 @@ function init(annotations) {
 	
 	document.getElementById("TEI").onmouseup = function (event) {
 		
-		// only get a selection, if a user actually wants to select text
-		//if (selectingText) {
-			// paste the finished code here; ich könnte auch if (selectingText && window.getSelection().toString()) nehmen, macht das was?
-			// diasbling the text selection after a successfull one, ot reenable it, a user needs to click on the selectTextButton
-			//selectingText = false;}
-		
+		// only get a selection, if a user actually wants to select text		
 		if (mode === Mode.Create && selectingText){
 			annotateSelectedText();
-			// resetting parameters, so no new annotation can be ceated without clicking on
-			// the button at the sidebar, that enables annotation 
-			mode = Mode.View;
-			selectingText = false;
-
 			
 			/*let target = [];
 			
@@ -1272,11 +1266,19 @@ document.getElementById('closeButtonAnno').addEventListener('click', function (e
         polygonPath.remove();
         document.getElementById('createPolygonButton').parentElement.classList.remove('active');
     };
+    // disabling the option to create an annotation. needed, because selecting text
+	// can be done before the mode was set to create by clicking the button after the text selection process
+    mode = Mode.View;
+	selectingText = false;
 });
 
 // adding the closing functionality to body creation modal
 document.getElementById('closeButton').addEventListener('click', function (e) {
     document.getElementById("createBody").classList.toggle("show-modal");
+	// disabling the option to create an annotation. needed, because selecting text
+	// can be done before the mode was set to create by clicking the button after the text selection process
+    mode = Mode.View;
+	selectingText = false;
 });
 
 function hideExpandedSidebar() {
