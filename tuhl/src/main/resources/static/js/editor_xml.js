@@ -9,6 +9,7 @@ let firstPolygonPoint;
 let invisiblePolygonPoint;
 let polygonPath;
 
+let selectingText = false;
 let addingRectangle = false;
 let addingPolygon = false;
 let movingImage = false;
@@ -468,6 +469,8 @@ function extractInformationFromSvg (svgString, annoJson) {
     };*/
 }
 
+
+// highlighting all annotations in yellow
 function drawAnnos(annoJson) {
     let annoXmlId;
     annoJson.forEach(annotation => {
@@ -820,7 +823,94 @@ function endModification (shape) {
     mode = Mode.View;
 };
 
+function annotateSelectedText(){
+	// check if the string is filled, because on a double click the first onmouseup
+	// will have no selection and therefore no string
+	if (window.getSelection().toString()){
+		let selection = window.getSelection();
+		let selectedText = selection.toString();
+		let selectionRange = window.getSelection().getRangeAt(0);
+		// i had extractContents at first, but that just screwed the dom i think
+		let selectionRangeContents = selectionRange.cloneContents();
+		// targetList holds all the nodes from the selection, that are <w> elements
+		let targetList = [];
+		// targetListJson is a list of all the <w> elements id to be used as targets for
+		// the web annotations; its a STRING
+		// targetListJsonAsJson is the same as targetListJson but as JSON
+		let targetsXmlIds = "";
+		let targetListJson;
+		let targetListJsonAsJson;
+		// following variables are needed to vreate a jsonish target
+		let valueId; 
+		let selectorObject;
+		let targetJson = {};
+		let targetArray = [];
+		console.log("here");
+		//console.log(event);
+		console.log(selection);
+		console.log(selectionRange);
+		console.log(selectionRangeContents);
+		
+		// storing all the <w> elements from the selection in targetList
+		selectionRangeContents.childNodes.forEach( entry => {
+			if (entry.id) {
+				console.log(entry);
+				targetList.push(entry);
+			}
+		});
+		console.log(targetList);
+		
+		// if the targetList holds only one <w> element, as only one word got selected
+		// only that will be stored in targetListJson
+		if (targetList.length === 1){
+			// storing values to build a JSON
+			valueId = "//w[@xml:id =\"" + targetList[0].id + "\"]";
+			selectorObject = {type: "XPathSelector", value: valueId};
+			targetJson = {source: currentPageId, selector: selectorObject};
+			targetListJson = targetJson;
+			targetsXmlIds = valueId;
+		// if holds multiple <w> elements, as multiple words got selected
+		} else if (targetList.length !== 0){
+			targetListJson = "[";
+			targetList.forEach( item => {
+				// storing values to build a JSON and convert it to a STRING
+				valueId = "//w[@xml:id =\"" + item.id + "\"]";
+				selectorObject = {type: "XPathSelector", value: valueId};
+				targetJson = {source: currentPageId, selector: selectorObject};
+				targetListJson = targetListJson + JSON.stringify(targetJson) + ",";
+				targetsXmlIds = targetsXmlIds + valueId + "§"; 
+			});
+			// slice removes the last komma, as its not needed; and then remove the "\"
+			targetListJson = (targetListJson.slice(0,-1) + "]").replaceAll("\\","");
+			targetsXmlIds = targetsXmlIds.slice(0,-1);
+			
+			/*targetList.forEach( item => {
+				// storing values to build a JSON
+				targetJson = {};
+				valueId = "//w[@xml:id =\"" + item.id + "\"]";
+				selectorObject = {type: "XPathSelector", value: valueId};
+				targetJson = {source: currentPageId, selector: selectorObject};
+				targetArray.push(targetJson);
+				
+			});*/
+			//targetListAsJson = {target: targetArray};
+			console.log(targetListJson);
+			//console.log(JSON.stringify(targetListAsJson));
+			console.log(targetsXmlIds);
+		}
+		
+		// showing the modal/dropdown to select the annotation template, which can be populated
+		// by the user
+		const modal = document.getElementById("createAnnotation");
+	    modal.classList.toggle("show-modal");
+	    pickTemplate(targetsXmlIds, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
+	}
+};
+
 function init(annotations) {
+	
+	annoJson = JSON.parse(annotations);
+	
 	// open textcard if rightclicking on a word that is highlighted, i.e. has an annotation
 	document.getElementById("TEI").oncontextmenu = function(e) {
         e.preventDefault();
@@ -846,94 +936,13 @@ function init(annotations) {
 			// diasbling the text selection after a successfull one, ot reenable it, a user needs to click on the selectTextButton
 			//selectingText = false;}
 		
-		// check if the string is filled, because on a double click the first onmouseup
-		// will have no selection and therefore no string
-		if (window.getSelection().toString()){
-			let selection = window.getSelection();
-			let selectedText = selection.toString();
-			let selectionRange = window.getSelection().getRangeAt(0);
-			// i had extractContents at first, but that just screwed the dom i think
-			let selectionRangeContents = selectionRange.cloneContents();
-			// targetList holds all the nodes from the selection, that are <w> elements
-			let targetList = [];
-			// targetListJson is a list of all the <w> elements id to be used as targets for
-			// the web annotations; its a STRING
-			// targetListJsonAsJson is the same as targetListJson but as JSON
-			let targetsXmlIds = "";
-			let targetListJson;
-			let targetListJsonAsJson;
-			// following variables are needed to vreate a jsonish target
-			let valueId; 
-			let selectorObject;
-			let targetJson = {};
-			let targetArray = [];
-			console.log("here");
-			//console.log(event);
-			console.log(selection);
-			console.log(selectionRange);
-			console.log(selectionRangeContents);
-			
-			// storing all the <w> elements from the selection in targetList
-			selectionRangeContents.childNodes.forEach( entry => {
-				if (entry.id) {
-					console.log(entry);
-					targetList.push(entry);
-				}
-			});
-			console.log(targetList);
-			
-			// if the targetList holds only one <w> element, as only one word got selected
-			// only that will be stored in targetListJson
-			if (targetList.length === 1){
-				// storing values to build a JSON
-				valueId = "//w[@xml:id =\"" + targetList[0].id + "\"]";
-				selectorObject = {type: "XPathSelector", value: valueId};
-				targetJson = {source: currentPageId, selector: selectorObject};
-				targetListJson = targetJson;
-				targetsXmlIds = valueId;
-			// if holds multiple <w> elements, as multiple words got selected
-			} else if (targetList.length !== 0){
-				targetListJson = "[";
-				targetList.forEach( item => {
-					// storing values to build a JSON and convert it to a STRING
-					valueId = "//w[@xml:id =\"" + item.id + "\"]";
-					selectorObject = {type: "XPathSelector", value: valueId};
-					targetJson = {source: currentPageId, selector: selectorObject};
-					targetListJson = targetListJson + JSON.stringify(targetJson) + ",";
-					targetsXmlIds = targetsXmlIds + valueId + "§"; 
-				});
-				// slice removes the last komma, as its not needed; and then remove the "\"
-				targetListJson = (targetListJson.slice(0,-1) + "]").replaceAll("\\","");
-				targetsXmlIds = targetsXmlIds.slice(0,-1);
-				
-				/*targetList.forEach( item => {
-					// storing values to build a JSON
-					targetJson = {};
-					valueId = "//w[@xml:id =\"" + item.id + "\"]";
-					selectorObject = {type: "XPathSelector", value: valueId};
-					targetJson = {source: currentPageId, selector: selectorObject};
-					targetArray.push(targetJson);
-					
-				});*/
-				//targetListAsJson = {target: targetArray};
-				console.log(targetListJson);
-				//console.log(JSON.stringify(targetListAsJson));
-				console.log(targetsXmlIds);
-			}
-			
-			const modal = document.getElementById("createAnnotation");
-            modal.classList.toggle("show-modal");
-            pickTemplate(targetsXmlIds, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
-			
-			
-			
-			/*
-			{
-    "source": "http://example.org/page1.html",
-    "selector": {
-      "type": "XPathSelector",
-      "value": "/html/body/p[2]/table/tr[2]/td[3]/span"
-    }*/
+		if (mode === Mode.Create && selectingText){
+			annotateSelectedText();
+			// resetting parameters, so no new annotation can be ceated without clicking on
+			// the button at the sidebar, that enables annotation 
+			mode = Mode.View;
+			selectingText = false;
+
 			
 			/*let target = [];
 			
@@ -944,7 +953,7 @@ function init(annotations) {
             modal.classList.toggle("show-modal");
             pickTemplate(target, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
             
-            mode = Mode.View;*/
+           */
 		}
 		
 	}
