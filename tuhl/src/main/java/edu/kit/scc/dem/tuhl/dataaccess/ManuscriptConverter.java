@@ -165,9 +165,10 @@ class ManuscriptConverter {
     } else if (resourceTypeString.equals(RepositoryStrings.TEXT.getName())) {
 
       // Here comes the URL to the resource of the page
-      // just a copy of the image code from above and added ".xml" and using a TextPage object instead of ImagePage
+      // just a copy of the image code from above and added "RepositoryAccessService.FILE_EXTENSION_XML"
+      // and using a TextPage object instead of ImagePage
       String resourceUrl = repositoryAccessService.getBaseUrl() + repositoryAccessService.getStaticPath() + id
-              + RepositoryAccessService.DATA_PATH + pageNumber + ".xml";
+              + RepositoryAccessService.DATA_PATH + pageNumber + RepositoryAccessService.FILE_EXTENSION_XML;
 
       TextPage textPage = new TextPage(id, pageNumber, created, resourceUrl);
       if (sortedAnnotations == null) {

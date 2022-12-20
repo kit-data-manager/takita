@@ -148,7 +148,7 @@ public class AnnotationConverter {
         .getJSONObject(AnnotationStoreStrings.TARGET.getName())
         .getJSONObject(AnnotationStoreStrings.SELECTOR.getName())
         .getString(AnnotationStoreStrings.TYPE.getName())
-        .equals("XPathSelector")) {
+        .equals(AnnotationStoreStrings.XPATH_SELECTOR.getName())) {
 
       String fullSvg = jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName())
         .getJSONObject(AnnotationStoreStrings.SELECTOR.getName()).getString(
@@ -563,7 +563,7 @@ public class AnnotationConverter {
 	    	for (String xmlId : xmlIdList) {
 	    	    JSONObject target2 = new JSONObject();
 	    	    JSONObject selector2 = new JSONObject();
-	    	    selector2.put(AnnotationStoreStrings.TYPE.getName(), "XPathSelector");
+	    	    selector2.put(AnnotationStoreStrings.TYPE.getName(), AnnotationStoreStrings.XPATH_SELECTOR.getName());
 	  		    selector2.put(AnnotationStoreStrings.VALUE.getName(), xmlId);
 	  	        target2.put(AnnotationStoreStrings.SELECTOR.getName(), selector2);
 	  	        
@@ -573,7 +573,7 @@ public class AnnotationConverter {
 	  	          target2.put(AnnotationStoreStrings.SOURCE.getName(), repositoryAccessService.getBaseUrl()
 	  	            + repositoryAccessService.getStaticPath()
 	  	            + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
-	  	            + ".xml");
+	  	            + RepositoryAccessService.FILE_EXTENSION_XML);
 	  	        }
 	  	        targetArray.add(target2);
 	    	}
@@ -602,7 +602,7 @@ public class AnnotationConverter {
 	    	for (String xmlId : xmlIdList) {
 	    	    JSONObject target2 = new JSONObject();
 	    	    JSONObject selector2 = new JSONObject();
-	    	    selector2.put(AnnotationStoreStrings.TYPE.getName(), "XPathSelector");
+	    	    selector2.put(AnnotationStoreStrings.TYPE.getName(), AnnotationStoreStrings.XPATH_SELECTOR.getName());
 	  		    selector2.put(AnnotationStoreStrings.VALUE.getName(), xmlId);
 	  	        target2.put(AnnotationStoreStrings.SELECTOR.getName(), selector2);
 	  	        
@@ -612,7 +612,7 @@ public class AnnotationConverter {
 	  	          target2.put(AnnotationStoreStrings.SOURCE.getName(), repositoryAccessService.getBaseUrl()
 	  	            + repositoryAccessService.getStaticPath()
 	  	            + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
-	  	            + ".xml");
+	  	            + RepositoryAccessService.FILE_EXTENSION_XML);
 	  	        }
 	  	        targetArray.add(target2);
 	    	}

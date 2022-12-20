@@ -158,7 +158,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
       throws IOException, InterruptedException, JSONException {
 	  
 	  // philipp: stupid solution to decide if a page is text (and has an ".xml" file)
-	  // or if a page is an image (an has MASTER_JPG)
+	  // or if a page is an image (and has MASTER_JPG)
 	  // better solution: create a method in repoAccessService that returns the type of a page 
 	  //System.out.println(repositoryAccessService.getBaseUrl() + repositoryAccessService.getStaticPath()+ pageId);
 	  HttpResponse<String> responseDecisionHelper = httpRequestHelper.get(repositoryAccessService.getBaseUrl()
@@ -169,7 +169,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
 		  response = httpRequestHelper.get(sparqlQueryUrlPrefix
 			        + SPARQL_QUERY_ANNOTATION_BY_PAGE_1 + URLEncoder.encode(repositoryAccessService.getBaseUrl()
 			        + repositoryAccessService.getStaticPath()+ pageId + RepositoryAccessService.DATA_PATH + pageNumber
-			        + ".xml", Charset.defaultCharset())
+			        + RepositoryAccessService.FILE_EXTENSION_XML, Charset.defaultCharset())
 			        + SPARQL_QUERY_ANNOTATION_BY_PAGE_2);
 		  
 	  } else if (responseDecisionHelper.body().contains("\"typeGeneral\":\"IMAGE\"")) {

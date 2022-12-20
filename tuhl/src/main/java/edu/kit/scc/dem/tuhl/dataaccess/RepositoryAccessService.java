@@ -30,6 +30,8 @@ public class RepositoryAccessService implements IRepositoryAccessService {
   public static final String DATA_PATH = "/data/";
   public static final String THUMB_JPG = ".thumb.jpg";
   public static final String MASTER_JPG = ".master.jpg";
+  // or the xml file
+  public static final String FILE_EXTENSION_XML = ".xml";
   private static final String MANUSCRIPT_PATTERN = "<(.*?)>; rel=\"next\",";
   private static final String MANUSCRIPT_METADATA_FILE = "manuscript_metadata.xml";
   private static final String PAGES_JSON = "pages.json";
