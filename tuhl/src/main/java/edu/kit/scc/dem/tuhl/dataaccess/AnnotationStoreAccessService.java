@@ -157,37 +157,25 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   public List<JSONObject> getAnnotationsByPageId(String pageId, String pageNumber)
       throws IOException, InterruptedException, JSONException {
 	  
-	  // philipp: stupid solution to decide if a page is text (and has an ".xml" file)
-	  // or if a page is an image (and has MASTER_JPG)
-	  // better solution: create a method in repoAccessService that returns the type of a page 
-	  //System.out.println(repositoryAccessService.getBaseUrl() + repositoryAccessService.getStaticPath()+ pageId);
-	  HttpResponse<String> responseDecisionHelper = httpRequestHelper.get(repositoryAccessService.getBaseUrl()
-	            + repositoryAccessService.getStaticPath()+ pageId);
-	  //System.out.println(responseDecisionHelper.body());
 	  HttpResponse<String> response = null;
-	  if (responseDecisionHelper.body().contains("\"typeGeneral\":\"TEXT\"")){
+	  String resourceTypeGeneral = repositoryAccessService.getTypeGeneralByPageId(pageId);
+	  // the page URL differs depending on the typeGeneral of a page
+	  if (resourceTypeGeneral.equals(RepositoryStrings.TEXT.getName())) {
+		  //Sparql query to get only the annotations modified after date
 		  response = httpRequestHelper.get(sparqlQueryUrlPrefix
 			        + SPARQL_QUERY_ANNOTATION_BY_PAGE_1 + URLEncoder.encode(repositoryAccessService.getBaseUrl()
 			        + repositoryAccessService.getStaticPath()+ pageId + RepositoryAccessService.DATA_PATH + pageNumber
 			        + RepositoryAccessService.FILE_EXTENSION_XML, Charset.defaultCharset())
 			        + SPARQL_QUERY_ANNOTATION_BY_PAGE_2);
-		  
-	  } else if (responseDecisionHelper.body().contains("\"typeGeneral\":\"IMAGE\"")) {
+	  } else if (resourceTypeGeneral.equals(RepositoryStrings.IMAGE.getName())) {
+		  //Sparql query to get only the annotations modified after date
 		  response = httpRequestHelper.get(sparqlQueryUrlPrefix
 			        + SPARQL_QUERY_ANNOTATION_BY_PAGE_1 + URLEncoder.encode(repositoryAccessService.getBaseUrl()
 			        + repositoryAccessService.getStaticPath()+ pageId + RepositoryAccessService.DATA_PATH + pageNumber
 			        + RepositoryAccessService.MASTER_JPG, Charset.defaultCharset())
 			        + SPARQL_QUERY_ANNOTATION_BY_PAGE_2);
 	  }
-	  
-    //Sparql query to get only the annotations modified after date
-    /*HttpResponse<String> response = httpRequestHelper.get(sparqlQueryUrlPrefix
-        + SPARQL_QUERY_ANNOTATION_BY_PAGE_1 + URLEncoder.encode(repositoryAccessService.getBaseUrl()
-        + repositoryAccessService.getStaticPath()+ pageId + RepositoryAccessService.DATA_PATH + pageNumber
-        + RepositoryAccessService.MASTER_JPG, Charset.defaultCharset())
-        + SPARQL_QUERY_ANNOTATION_BY_PAGE_2);*/
-    // System.out.println(pageId);
-    // System.out.println(response.body());
+
     //Extracts annotations from response and adds them to the list
     return getAnnotationsFromXml(response.body());
   }

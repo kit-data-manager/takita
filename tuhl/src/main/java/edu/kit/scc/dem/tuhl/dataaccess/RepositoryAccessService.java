@@ -230,7 +230,29 @@ public class RepositoryAccessService implements IRepositoryAccessService {
     return manuscriptDate.after(isAfterDate);
   }
 
+  /**
+   * Returns the typeGeneral of a page.
+   *
+   * @param pageId page identifier as String
+   * @return typeGeneral of a page
+   * @throws JSONException if the response body could not be parsed to JSON
+   * @throws IOException if an error occurs while sending or receiving
+   * @throws InterruptedException if the get request is interrupted
+   */
+  @Override
+  public String getTypeGeneralByPageId(String pageId)
+      throws InterruptedException, JSONException, IOException {
+	  
+      HttpResponse<String> response = httpRequestHelper.get(this.getBaseUrl()
+	            + this.getStaticPath()+ pageId);
+      JSONObject pageJson = new JSONObject(response.body());
+      String resourceTypeGeneral = pageJson.getJSONObject(RepositoryStrings.RESOURCE_TYPE.getName())
+    	        .getString(RepositoryStrings.TYPE_GENERAL.getName());
 
+      return resourceTypeGeneral;
+  }
+  
+  
   /**
    * Gets the metadata of a manuscript that is given in the TEI standard.
    *
