@@ -143,10 +143,10 @@ class ManuscriptConverter {
 
     //Create the Page object depending on the resource type.
     Page page;
-    String resourceTypeString = pageJson.getJSONObject(RepositoryStrings.RESOURCE_TYPE.getName())
+    String resourceTypeGeneral = pageJson.getJSONObject(RepositoryStrings.RESOURCE_TYPE.getName())
         .getString(RepositoryStrings.TYPE_GENERAL.getName());
 
-    if (resourceTypeString.equals(RepositoryStrings.IMAGE.getName())) {
+    if (resourceTypeGeneral.equals(RepositoryStrings.IMAGE.getName())) {
       // URL to image of Page
       String resourceUrl = repositoryAccessService.getBaseUrl() + repositoryAccessService.getStaticPath() + id
           + RepositoryAccessService.DATA_PATH + pageNumber + RepositoryAccessService.MASTER_JPG;
@@ -162,7 +162,7 @@ class ManuscriptConverter {
       }
 
       page = imagePage;
-    } else if (resourceTypeString.equals(RepositoryStrings.TEXT.getName())) {
+    } else if (resourceTypeGeneral.equals(RepositoryStrings.TEXT.getName())) {
 
       // Here comes the URL to the resource of the page
       // just a copy of the image code from above and added "RepositoryAccessService.FILE_EXTENSION_XML"
@@ -179,7 +179,7 @@ class ManuscriptConverter {
 
       page = textPage;
     } else {
-      throw new IllegalStateException("Unexpected value: " + resourceTypeString);
+      throw new IllegalStateException("Unexpected value: " + resourceTypeGeneral);
     }
 
     page.setLastModified(modified);
