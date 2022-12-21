@@ -67,11 +67,6 @@
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); resetFontSize()">Reset Font Size</span>
       <span class="tooltip">Reset Font Size</span>
     </li>
-    <li class="features-item draft">
-      <i id="resetViewButton" class="bx bx-reset features-item-icon" onclick="hideExpandedSidebar(); resetView()"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); resetView()">Reset View</span>
-      <span class="tooltip">Reset View</span>
-    </li>
   </ul>
   <ul class="features-list">
       <div class="category-header">Create Mode</div>
@@ -80,50 +75,15 @@
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); selectingText = true; confirmDiscardChanges(); mode = Mode.Create; annotateSelectedText();">Select Text</span>
       <span class="tooltip">Select Text</span>
     </li>
-    <li class="features-item draft">
-      <i id="createRectangleButton" class="bx bx-shape-square features-item-icon" onclick="hideExpandedSidebar(); addingRectangle = true; confirmDiscardChanges(); mode = Mode.Create;"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); addingRectangle = true; confirmDiscardChanges(); mode = Mode.Create;">Create Square</span>
-      <span class="tooltip">Create Square</span>
-    </li>
-    <li class="features-item draft">
-      <i id="createPolygonButton" class="bx bx-shape-polygon features-item-icon" onclick="hideExpandedSidebar(); addingPolygon = true; confirmDiscardChanges(); mode = Mode.Create;"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); addingPolygon = true; confirmDiscardChanges(); mode = Mode.Create;">Create Polygon</span>
-      <span class="tooltip">Create Polygon</span>
-    </li>
-    <li class="features-item draft">
-      <i id="createPageAnnoButton" class="bx bx-note features-item-icon" onclick="hideExpandedSidebar(); confirmDiscardChanges(); mode = Mode.Create; createPageAnnotation();"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); confirmDiscardChanges(); mode = Mode.Create; createPageAnnotation();">Create Annotation</span>
-      <span class="tooltip">Create Annotation</span>
-    </li>
    </ul>
    <ul class="features-list">
        <div class="category-header">Modify Mode</div>
-    <li class="features-item star">
-      <i id="modifyButton" class="bx bx-edit features-item-icon" onclick="hideExpandedSidebar(); modifyShape();"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); modifyShape();">Modify Shape</span>
-      <span class="tooltip">Modify Shape</span>
-    </li>
-    <li class="features-item star">
-      <i id="undoButton" class="bx bx-undo features-item-icon" onclick="hideExpandedSidebar(); undo();"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); undo()">Undo</span>
-      <span class="tooltip">Undo</span>
-    </li>
-    <li class="features-item star">
-      <i id="saveButton" class="bx bx-save features-item-icon" onclick="hideExpandedSidebar(); saveShape();"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); saveShape();">Save</span>
-      <span class="tooltip">Save</span>
-    </li>
   </ul>
     <ul class="features-list">
     <li class="features-item star">
       <i id="pagesButton" class="bx bx-book-open features-item-icon" onclick="hideExpandedSidebar(); toggleOverview('pages')"></i>
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); toggleOverview('pages')">Show Book</span>
       <span class="tooltip">Show Book</span>
-    </li>
-    <li class="features-item star">
-      <i id="editortableButton" class="bx bx-list-ul features-item-icon" onclick="hideExpandedSidebar(); toggleOverview('editortable')"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); toggleOverview('editortable')">Show Annotations</span>
-      <span class="tooltip">Show Annotations</span>
     </li>
   </ul>
 </div>
