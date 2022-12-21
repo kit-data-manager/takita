@@ -491,159 +491,114 @@ public class AnnotationConverter {
    */
   private void putTarget(JSONObject jsonAnnotation, Annotation annotation, String pageNumber)
       throws JSONException {
+	
     JSONObject target = new JSONObject();
     JSONObject selector = new JSONObject();
-    System.out.println("____ ATRGET PUTTING_____");
-    System.out.println(annotation.toString());
-    if (annotation.getSvgCode() != null && !annotation.getSvgCode().trim().equals("")) {
-    	System.out.println("_____SVG CODE ______");
-    	System.out.println(annotation.getSvgCode());
-    }
-
-    if (jsonAnnotation.has(AnnotationStoreStrings.TARGET.getName())) {
-      // if target is no object and just contains the target URL
-      if (jsonAnnotation.get(AnnotationStoreStrings.TARGET.getName()) instanceof String) {
-          target.put(AnnotationStoreStrings.ID.getName(), jsonAnnotation.getString(AnnotationStoreStrings.TARGET.getName()));
-      } else {
-          target = jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName()); 
-      }
       
-      if (target.has(AnnotationStoreStrings.SELECTOR.getName())) {
-        selector = target.getJSONObject(AnnotationStoreStrings.SELECTOR.getName());
-      }
-    }
-    // svg targets
-    if (annotation.getSvgCode() != null && !annotation.getSvgCode().trim().equals("") && annotation.getSvgCode().contains("svg")){
-    	if (annotation.getSvgCode() != null && !annotation.getSvgCode().trim().equals("")) {
-    	    
-		  selector.put(AnnotationStoreStrings.TYPE.getName(),
-		          AnnotationStoreStrings.SVG_SELECTOR.getName());
-		
-	      if (!annotation.getSvgCode().contains("<svg>")) {
-	    	  selector.put(AnnotationStoreStrings.VALUE.getName(), "<svg xmlns=\"http://www.w3.org/2000/svg\">" + annotation.getSvgCode() + "</svg>");
-	      } else {
-		      String svgString = annotation.getSvgCode().substring(annotation.getSvgCode().indexOf('>') + 1, annotation.getSvgCode().lastIndexOf('<'));
-		      selector.put(AnnotationStoreStrings.VALUE.getName(), "<svg xmlns=\"http://www.w3.org/2000/svg\">" + svgString + "</svg>");
-	      };
-	          
-	      target.put(AnnotationStoreStrings.SELECTOR.getName(), selector);
-	      
-	      // source is url of page image
-	      if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
-	        target.put(AnnotationStoreStrings.TYPE.getName(),
-	          AnnotationStoreStrings.SPECIFIC_RESOURCE.getName());
-	        target.put(AnnotationStoreStrings.SOURCE.getName(), repositoryAccessService.getBaseUrl()
-	          + repositoryAccessService.getStaticPath()
-	          + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
-	          + RepositoryAccessService.MASTER_JPG);
-	      }
-	    } else {
-	       
-	        if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
-	            target.put(AnnotationStoreStrings.ID.getName(), repositoryAccessService.getBaseUrl()
-	          + repositoryAccessService.getStaticPath()
-	          + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
-	          + RepositoryAccessService.MASTER_JPG);
-	        }
-	        
-	    }
-    	jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), target);
-    	
-    	// xml targets
-    	// the svgCode (target as xmlId of an annotation) is a string with "§" to mark the beginning of a new
-    	// target
-    	// this does not work for multiple targets as takita cant handle jsonArrays for targets atm (but it can for bodies)
-    } else if (annotation.getSvgCode().contains("@xml:id") && annotation.getSvgCode() != null && !annotation.getSvgCode().trim().equals("")) {
+	// if the target of the annotation is a text, the target will be one/many XPath/s
+	// the svgCode (target as xmlId of an annotation) is a string with "§" to mark the beginning of a new target
+	// this does not work for multiple targets as takita can't handle jsonArrays for targets atm (but it can for bodies)
+    if (annotation.getSvgCode().contains("@xml:id") && annotation.getSvgCode() != null && !annotation.getSvgCode().trim().equals("")) {
     	if (this.validateXPATH(annotation.getSvgCode().split("§")[0])) {
-    		System.out.println("___________________First Java Target Creation_____________________");
-    		String[] xmlIdList = annotation.getSvgCode().split("§");
+    		String[] xPaths = annotation.getSvgCode().split("§");
 	    	ArrayList<JSONObject> targetArray = new ArrayList<JSONObject>();
 	    	
-	    	// sotring all the finished webAnno target in a targetArray
-	    	for (String xmlId : xmlIdList) {
-	    	    JSONObject target2 = new JSONObject();
-	    	    JSONObject selector2 = new JSONObject();
-	    	    selector2.put(AnnotationStoreStrings.TYPE.getName(), AnnotationStoreStrings.XPATH_SELECTOR.getName());
-	  		    selector2.put(AnnotationStoreStrings.VALUE.getName(), xmlId);
-	  	        target2.put(AnnotationStoreStrings.SELECTOR.getName(), selector2);
+	    	// storing all XPaths in JSONObjects, which follow the wadm specifications for targets, and adding them to an Array
+	    	for (String xPath : xPaths) {
+	    	    //JSONObject targetXPath = new JSONObject();
+	    	    //JSONObject selectorXPath = new JSONObject();
+	    	    selector.put(AnnotationStoreStrings.TYPE.getName(), AnnotationStoreStrings.XPATH_SELECTOR.getName());
+	  		    selector.put(AnnotationStoreStrings.VALUE.getName(), xPath);
+	  	        target.put(AnnotationStoreStrings.SELECTOR.getName(), selector);
 	  	        
 	  	        if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
-	  	          target2.put(AnnotationStoreStrings.TYPE.getName(),
+	  	          target.put(AnnotationStoreStrings.TYPE.getName(),
 	  	            AnnotationStoreStrings.SPECIFIC_RESOURCE.getName());
-	  	          target2.put(AnnotationStoreStrings.SOURCE.getName(), repositoryAccessService.getBaseUrl()
+	  	          target.put(AnnotationStoreStrings.SOURCE.getName(), repositoryAccessService.getBaseUrl()
 	  	            + repositoryAccessService.getStaticPath()
 	  	            + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
 	  	            + RepositoryAccessService.FILE_EXTENSION_XML);
 	  	        }
-	  	        targetArray.add(target2);
+	  	        targetArray.add(target);
 	    	}
 	    	
-	    	// if only one xmlid is the target add only that one object
+	    	// if only one XPath is present (meaning only one word is the target), add only that one JSONObject as target to the jsonAnnotation
 	    	if (targetArray.size() == 1) {
 	    		jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), targetArray.get(0));
 	    	} else {
 	    		JSONArray targetJsonArray = new JSONArray();
-		    	// else (if multiple ids are the target of the annotation) add an array
+		    	// else (if multiple XPaths are the target of the annotation) add an JSONArray as target to the jsonAnnotation
 		    	for (JSONObject webTarget : targetArray) {
-		    		
 		    		targetJsonArray.put(webTarget);
-		    		// add all the stuff to the jsonAnnotation jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), target);
 		    	}
 		    	jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), targetJsonArray);
 	    	}
 	    	
-    	} else if (this.validateXPATH(annotation.getSvgCode())) {
-    		System.out.println("___________________Subsequent Java Target Creation_____________________");
-    		String[] xmlIdList = null;
-    		xmlIdList[0]= annotation.getSvgCode();
-	    	ArrayList<JSONObject> targetArray = new ArrayList<JSONObject>();
-	    	
-	    	// sotring all the finished webAnno target in a targetArray
-	    	for (String xmlId : xmlIdList) {
-	    	    JSONObject target2 = new JSONObject();
-	    	    JSONObject selector2 = new JSONObject();
-	    	    selector2.put(AnnotationStoreStrings.TYPE.getName(), AnnotationStoreStrings.XPATH_SELECTOR.getName());
-	  		    selector2.put(AnnotationStoreStrings.VALUE.getName(), xmlId);
-	  	        target2.put(AnnotationStoreStrings.SELECTOR.getName(), selector2);
-	  	        
-	  	        if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
-	  	          target2.put(AnnotationStoreStrings.TYPE.getName(),
-	  	            AnnotationStoreStrings.SPECIFIC_RESOURCE.getName());
-	  	          target2.put(AnnotationStoreStrings.SOURCE.getName(), repositoryAccessService.getBaseUrl()
-	  	            + repositoryAccessService.getStaticPath()
-	  	            + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
-	  	            + RepositoryAccessService.FILE_EXTENSION_XML);
-	  	        }
-	  	        targetArray.add(target2);
-	    	}
-	    	
-	    	// if only one xmlid is the target add only that one object
-	    	if (targetArray.size() == 1) {
-	    		jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), targetArray.get(0));
-	    	} else {
-	    		JSONArray targetJsonArray = new JSONArray();
-		    	// else (if multiple ids are the target of the annotation) add an array
-		    	for (JSONObject webTarget : targetArray) {
-		    		
-		    		targetJsonArray.put(webTarget);
-		    		// add all the stuff to the jsonAnnotation jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), target);
-		    	}
-		    	jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), targetJsonArray);
-	    	}
     	}
+    	// return after the creation of a target based on an XPath.
+    	// it is needed to return early, so the svg target creation code does not execute
+    	return;
     	/* this part might be needed laterelse {
 	       
 	        if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
 	            target.put(AnnotationStoreStrings.ID.getName(), repositoryAccessService.getBaseUrl()
 	          + repositoryAccessService.getStaticPath()
 	          + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
-	          + ".xml");
+	          + RepositoryAccessService.FILE_EXTENSION_XML);
 	        }
 	        
 	    }*/
+    } else {
+    	// if the target of the annotation is an image, the target will be one svg code
+        if (jsonAnnotation.has(AnnotationStoreStrings.TARGET.getName())) {
+          // if target is no object and just contains the target URL
+          if (jsonAnnotation.get(AnnotationStoreStrings.TARGET.getName()) instanceof String) {
+              target.put(AnnotationStoreStrings.ID.getName(), jsonAnnotation.getString(AnnotationStoreStrings.TARGET.getName()));
+          } else {
+              target = jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName()); 
+          }
+          
+          if (target.has(AnnotationStoreStrings.SELECTOR.getName())) {
+            selector = target.getJSONObject(AnnotationStoreStrings.SELECTOR.getName());
+          }
+        }
+
+        if (annotation.getSvgCode() != null && !annotation.getSvgCode().trim().equals("")) {
+          selector.put(AnnotationStoreStrings.TYPE.getName(),
+              AnnotationStoreStrings.SVG_SELECTOR.getName());
+
+          if (!annotation.getSvgCode().contains("<svg>")) {
+            selector.put(AnnotationStoreStrings.VALUE.getName(), "<svg xmlns=\"http://www.w3.org/2000/svg\">" + annotation.getSvgCode() + "</svg>");
+          } else {
+            String svgString = annotation.getSvgCode().substring(annotation.getSvgCode().indexOf('>') + 1, annotation.getSvgCode().lastIndexOf('<'));
+            selector.put(AnnotationStoreStrings.VALUE.getName(), "<svg xmlns=\"http://www.w3.org/2000/svg\">" + svgString + "</svg>");
+          };
+              
+          target.put(AnnotationStoreStrings.SELECTOR.getName(), selector);
+          
+          // source is url of page image
+          if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
+            target.put(AnnotationStoreStrings.TYPE.getName(),
+              AnnotationStoreStrings.SPECIFIC_RESOURCE.getName());
+            target.put(AnnotationStoreStrings.SOURCE.getName(), repositoryAccessService.getBaseUrl()
+              + repositoryAccessService.getStaticPath()
+              + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
+              + RepositoryAccessService.MASTER_JPG);
+          }
+        } else {
+           
+            if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
+                target.put(AnnotationStoreStrings.ID.getName(), repositoryAccessService.getBaseUrl()
+              + repositoryAccessService.getStaticPath()
+              + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
+              + RepositoryAccessService.MASTER_JPG);
+            }
+            
+        }
+
+        jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), target);
     }
-    System.out.println(target);
-    
+
   }
 
   /*
