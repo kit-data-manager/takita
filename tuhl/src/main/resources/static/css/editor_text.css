@@ -1,0 +1,60 @@
+/* ------------------------------------*/
+/* LANGUAGE SPECIFICS */
+/* ------------------------------------*/
+
+/* right align right aligned languages*/
+
+tei-text[lang=hbo],
+tei-text[lang=he] {
+	text-align: right;
+	display: block; 
+}
+
+/* end of language specifics */
+/* ------------------------------------*/
+
+
+/* ------------------------------------*/
+/* TEXT STRUCTURE SPECIFICS*/
+/* ------------------------------------*/
+/* poem specifics*/
+/* ------------------------------------*/
+/* display each line in one line
+and add some sapce after each linegroup */
+
+tei-l, 
+tei-lg {
+	display: block;
+}
+
+tei-lg {
+	margin-bottom: 1rem;
+}
+
+/* end of text structure specifics */
+/* ------------------------------------*/
+
+
+/* ------------------------------------*/
+/* SUBPROJECT SPECIFICS */
+/* ------------------------------------*/
+/* B04 specifics */
+/* ------------------------------------*/
+
+/* display sandhied version above the unsandhied version */
+tei-choice {
+	display: inline-flex;
+	flex-direction: column;
+}
+
+/* make sandhied version unselectable, but keep unsandhied version selectable */
+tei-div[n="Rāmāyaṇa"] tei-l{
+	user-select: none;
+}
+
+tei-reg {
+	user-select: text;
+}
+
+/* end of subproject specifics */
+/* ------------------------------------*/

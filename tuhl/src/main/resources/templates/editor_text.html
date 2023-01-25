@@ -15,6 +15,7 @@
     <link rel="stylesheet" th:href="@{/css/tabulator_bootstrap4.min.css}">
     <link rel="stylesheet" th:href="@{/css/editor_sidebar_topbar.css}">
     <link rel="stylesheet" th:href="@{/css/modal.css}">
+    <link rel="stylesheet" th:href="@{/css/editor_text.css}">
 
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css">
     <link rel="stylesheet" href="https://unpkg.com/chota@latest">
@@ -437,6 +438,18 @@
 	      document.getElementById("prevChaptButton").disabled = true;
 	  	  // highlight all the annotated words
 		  drawAnnos(JSON.parse(document.body.getAttribute('data-field')));
+
+	  	  // B04 specific adding of a syllable marker between the unsandhied words
+	  	  var regW = document.querySelectorAll("tei-reg>tei-w");
+		  regW.forEach( word => {
+			if (word.nextElementSibling !== null){
+					// delete whitespace between the tei-reg>tei-w elements
+					if (word.nextSibling.nodeType == 3 && word.nextSibling.nodeValue.trim() === "") {
+						word.nextSibling.remove();
+					}
+					word.append("‧");
+				}
+		  });
 	    });
 
     </script>
