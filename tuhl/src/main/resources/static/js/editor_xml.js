@@ -847,48 +847,115 @@ function endModification (shape) {
     mode = Mode.View;
 };
 
+// check if the selection happened on the textworkspace/tei element
+function checkIsSelectionOnWorkspace(node){
+	if (node.parentNode.id === "TEI") {
+		return true;
+	} else if (node.parentElement != null) {
+		return checkIsSelectionOnWorkspace(node.parentElement);
+	} else {
+		return false;
+	}
+};
+
+// get one range of the selection(s)
+function getContentOfSelection(selection){
+	let selectionRangeContents = selection.getRangeAt(0).cloneContents();
+	// if there are multiple selection ranges (eg. in the B04 case)
+	// add those
+	if (selection.rangeCount > 1){
+		for (let i = 1; i < selection.rangeCount; i++) {
+			selectionRangeContents.append(selection.getRangeAt(i).cloneContents());
+		}
+	}
+	return selectionRangeContents;
+}
+
+
+// get the smallest available nodes, that have an xmlId and store them in a list
+function getXmlIds(node, nodeList){
+  if (node.children.length !== 0) {
+      Array.from(node.children).forEach(child => {
+	      getXmlIds(child, nodeList);
+    });
+  } else {
+    if (node.id) {
+			nodeList.push(node);
+	}                  
+  }
+};
 function annotateSelectedText(){
 	// check if the string is filled, because on a double click the first onmouseup
 	// will have no selection and therefore no string
-	if (window.getSelection().toString()){
-		let selection = window.getSelection();
-		let selectedText = selection.toString();
+	if (window.getSelection().toString() && checkIsSelectionOnWorkspace(window.getSelection().getRangeAt(0).commonAncestorContainer)){
 		let selectionRange = window.getSelection().getRangeAt(0);
-		// i had extractContents at first, but that just screwed the dom i think
-		let selectionRangeContents = selectionRange.cloneContents();
+		let selectionRangeContents = getContentOfSelection(window.getSelection());
+
 		// targetList holds all the nodes from the selection, that are <w> elements
 		let targetList = [];
+
+		console.log("here");
+		console.log(window.getSelection());
+		console.log(selectionRange);
+		console.log(selectionRangeContents);
+		
+		// stop the function, if the selection does not contain any text, only whitespace
+		if (selectionRangeContents.textContent.trim() == ""){
+			console.log("No text selected, therefore early return.")
+			return;
+		}
+		
+		if (selectionRangeContents.childNodes.length == 1){
+			// if a user selects only the middle part of a word (eg. "or") the selection
+			// won't return a w-element but a textNode, so we need to get the parent of
+			// that text node (which should be a w-element)
+			if (selectionRangeContents.childNodes.length == 1 && selectionRangeContents.childNodes[0].nodeType == 3) {
+				if (selectionRange.startContainer.nodeValue == selectionRange.endContainer.nodeValue &&
+					selectionRange.endContainer.nodeValue == selectionRange.commonAncestorContainer.nodeValue) {
+					if (selectionRange.commonAncestorContainer.parentNode.nodeName === "TEI-W") {
+						targetList.push(selectionRange.commonAncestorContainer.parentNode);
+					} else {
+						console.log("selectionRange.commonAncestorContainer.parentNode is not TEI-W.");
+						console.log(selectionRange.commonAncestorContainer.parentNode);
+					}
+				}
+			}
+		} else {
+			getXmlIds(selectionRangeContents, targetList);
+		}
+		
+		// "cleaning" the targetList, because sometimes an empty w-element will be included
+		// in the bgeinning or at the end of the targetList as the user selected some
+		// whitespace before/after the first word she wanted to select as well
+		if (targetList.length > 1) {
+			if (targetList[targetList.length-1].innerHTML.trim() == ""){
+				targetList.pop();
+			}
+			if (targetList[0].innerHTML.trim() == ""){
+				targetList.shift();
+			}
+		}
+		console.log("filled targetList");
+		console.log(targetList);
+		
+		
 		// targetListJson is a list of all the <w> elements id to be used as targets for
 		// the web annotations; its a STRING
 		// targetListJsonAsJson is the same as targetListJson but as JSON
 		let targetsXmlIds = "";
 		let targetListJson;
 		let targetListJsonAsJson;
-		// following variables are needed to vreate a jsonish target
+		// following variables are needed to create a jsonish target
 		let valueId; 
 		let selectorObject;
 		let targetJson = {};
 		let targetArray = [];
-		console.log("here");
-		//console.log(event);
-		console.log(selection);
-		console.log(selectionRange);
-		console.log(selectionRangeContents);
-		
-		// storing all the <w> elements from the selection in targetList
-		selectionRangeContents.childNodes.forEach( entry => {
-			if (entry.id) {
-				console.log(entry);
-				targetList.push(entry);
-			}
-		});
-		console.log(targetList);
 		
 		// if the targetList holds only one <w> element, as only one word got selected
 		// only that will be stored in targetListJson
 		if (targetList.length === 1){
 			// storing values to build a JSON
-			valueId = "//w[@xml:id =\"" + targetList[0].id + "\"]";
+			valueId = "//w[@xml:id=\"" + targetList[0].id + "\"]";
 			selectorObject = {type: "XPathSelector", value: valueId};
 			targetJson = {source: currentPageId, selector: selectorObject};
 			targetListJson = targetJson;
@@ -898,7 +965,7 @@ function annotateSelectedText(){
 			targetListJson = "[";
 			targetList.forEach( item => {
 				// storing values to build a JSON and convert it to a STRING
-				valueId = "//w[@xml:id =\"" + item.id + "\"]";
+				valueId = "//w[@xml:id=\"" + item.id + "\"]";
 				selectorObject = {type: "XPathSelector", value: valueId};
 				targetJson = {source: currentPageId, selector: selectorObject};
 				targetListJson = targetListJson + JSON.stringify(targetJson) + ",";
@@ -920,9 +987,8 @@ function annotateSelectedText(){
 			//targetListAsJson = {target: targetArray};
 			console.log(targetListJson);
 			//console.log(JSON.stringify(targetListAsJson));
-			console.log(targetsXmlIds);
 		}
-		
+		console.log(targetsXmlIds);
 		// showing the modal/dropdown to select the annotation template, which can be populated
 		// by the user
 		const modal = document.getElementById("createAnnotation");
