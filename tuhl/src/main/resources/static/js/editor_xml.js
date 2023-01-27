@@ -475,7 +475,23 @@ function drawAnnos(annoJson) {
     let annoXmlId;
     annoJson.forEach(annotation => {
 		annoXmlId = annotation.svg.split("\"")[1];
-		document.getElementById(annoXmlId).style.backgroundColor = 'yellow';
+		//console.log(annotation);
+		annotation.tags.forEach( tag => {
+			console.log(tag);
+			// different highlights for different annotation types
+			if (tag.value === "metaphor"){
+				document.getElementById(annoXmlId).style.borderBottom = 'solid';
+				document.getElementById(annoXmlId).style.borderColor = '#2196F3';
+			} else if (tag.value === "mrw"){
+				document.getElementById(annoXmlId).style.backgroundColor = '#daa3ff';
+			} else {
+				if (document.getElementById(annoXmlId).style.backgroundColor == "") {
+					document.getElementById(annoXmlId).style.backgroundColor = 'yellow';
+				}
+			}
+		});
+		// border-bottom: 6px solid #2196F3 !important;
+		
 	});
   /*for (let anno in annoJson) {
      extractInformationFromSvg(annoJson[anno].svg, annoJson[anno]);
@@ -1009,7 +1025,8 @@ function init(annotations) {
 	document.getElementById("TEI").oncontextmenu = function(e) {
         e.preventDefault();
         
-        if (e.target.style.backgroundColor == "yellow" || e.target.style.backgroundColor == "orange"){
+        if (e.target.style.backgroundColor != "" ||
+        	e.target.style.borderBottom == "medium solid rgb(33, 150, 243)"){
 			annoJson.forEach(item => {
 				if (e.target.id == item.svg.split("\"")[1]){
 					selectAnnotation(null, item.idEncoded);
