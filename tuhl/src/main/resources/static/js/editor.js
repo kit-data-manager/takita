@@ -82,7 +82,7 @@ function selectAnnotation(event, annoId) {
             annotationDiv.prepend(iconRowTop);
             
             var bodies = responseJson.tags.concat(responseJson.textCards);
-            
+
             for (let body in bodies) {
                 if (bodies[body].created) {
                     bodies[body].created = new Date(bodies[body].created.seconds * 1000 + bodies[body].created.nanos / 1000000).toISOString();
@@ -222,6 +222,29 @@ function selectAnnotation(event, annoId) {
                 formRowDiv.classList.add("is-hidden");
                 
             };
+            // adding link to the analysis tool, if 
+            // the annotation is a metaphor annotation
+            // right now its just a dummy link
+            responseJson.tags.some( tag => {
+				if (tag.value === "metaphor" && document.getElementById("buttonToAnalysisTool") == null) {
+					var buttonToAnalysisTool = document.createElement("input");
+		            buttonToAnalysisTool.classList.add("btn");
+		            buttonToAnalysisTool.classList.add("btn-primary");
+		            buttonToAnalysisTool.type = "submit";
+		            buttonToAnalysisTool.value = "Analyze";
+		            buttonToAnalysisTool.id = "buttonToAnalysisTool";
+		
+		            var linkToAnalysisTool = document.createElement("a");
+		            linkToAnalysisTool.href="/analysis/" + annoId;
+		            linkToAnalysisTool.target="_blank";
+		            linkToAnalysisTool.rel="noreferrer noopener";
+		            linkToAnalysisTool.append(buttonToAnalysisTool);
+		
+		            annotationDiv.append(linkToAnalysisTool);
+            	}
+			});
+
+
         }                
     });
 };
