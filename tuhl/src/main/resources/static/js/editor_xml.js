@@ -900,15 +900,108 @@ function getXmlIds(node, nodeList){
 	}                  
   }
 };
+
+// create a list, that contains all the selected nodes with an Id
+function createTargetList(selectionRangeContents){
+	
+	let targetList = [];
+	// check how many words/elements got selected,
+	// for some reason the selection always holds more than one element
+	// even if, only one got selected. Only if a user selects the middle part
+	// of a word, the selection holds only one elment
+	if (selectionRangeContents.childNodes.length == 1){
+		// if a user selects only the middle part of a word (eg. "or") the selection
+		// won't return a w-element but a textNode, so we need to get the parent of
+		// that text node (which should be a w-element)
+		if (selectionRangeContents.childNodes.length == 1 && selectionRangeContents.childNodes[0].nodeType == 3) {
+			if (selectionRange.startContainer.nodeValue == selectionRange.endContainer.nodeValue &&
+				selectionRange.endContainer.nodeValue == selectionRange.commonAncestorContainer.nodeValue) {
+				if (selectionRange.commonAncestorContainer.parentNode.nodeName === "TEI-W") {
+					targetList.push(selectionRange.commonAncestorContainer.parentNode);
+				} else {
+					console.log("selectionRange.commonAncestorContainer.parentNode is not TEI-W.");
+					console.log(selectionRange.commonAncestorContainer.parentNode);
+				}
+			}
+		}
+	} else {
+		getXmlIds(selectionRangeContents, targetList);
+	}
+	
+	// "cleaning" the targetList, because sometimes an empty w-element will be included
+	// in the bgeinning or at the end of the targetList as the user selected some
+	// whitespace before/after the first word she wanted to select as well
+	if (targetList.length > 1) {
+		if (targetList[targetList.length-1].innerHTML.trim() == ""){
+			targetList.pop();
+		}
+		if (targetList[0].innerHTML.trim() == ""){
+			targetList.shift();
+		}
+	}
+	//console.log("filled targetList");
+	//console.log(targetList);
+	return targetList;
+}
+
+function createListOfIds(targetList){
+	// targetListJson is a list of all the <w> elements id to be used as targets for
+	// the web annotations; its a STRING
+	// targetListJsonAsJson is the same as targetListJson but as JSON
+	let targetsXmlIds = "";
+	let targetListJson;
+	let targetListJsonAsJson;
+	// following variables are needed to create a jsonish target
+	let valueId; 
+	let selectorObject;
+	let targetJson = {};
+	let targetArray = [];
+	
+	// if the targetList holds only one <w> element, as only one word got selected
+	// only that will be stored in targetListJson
+	if (targetList.length === 1){
+		// storing values to build a JSON
+		valueId = "//w[@xml:id=\"" + targetList[0].id + "\"]";
+		selectorObject = {type: "XPathSelector", value: valueId};
+		targetJson = {source: currentPageId, selector: selectorObject};
+		targetListJson = targetJson;
+		targetsXmlIds = valueId;
+	// if holds multiple <w> elements, as multiple words got selected
+	} else if (targetList.length !== 0){
+		targetListJson = "[";
+		targetList.forEach( item => {
+			// storing values to build a JSON and convert it to a STRING
+			valueId = "//w[@xml:id=\"" + item.id + "\"]";
+			selectorObject = {type: "XPathSelector", value: valueId};
+			targetJson = {source: currentPageId, selector: selectorObject};
+			targetListJson = targetListJson + JSON.stringify(targetJson) + ",";
+			targetsXmlIds = targetsXmlIds + valueId + "§"; 
+		});
+		// slice removes the last komma, as its not needed; and then remove the "\"
+		targetListJson = (targetListJson.slice(0,-1) + "]").replaceAll("\\","");
+		targetsXmlIds = targetsXmlIds.slice(0,-1);
+		
+		/*targetList.forEach( item => {
+			// storing values to build a JSON
+			targetJson = {};
+			valueId = "//w[@xml:id =\"" + item.id + "\"]";
+			selectorObject = {type: "XPathSelector", value: valueId};
+			targetJson = {source: currentPageId, selector: selectorObject};
+			targetArray.push(targetJson);
+			
+		});*/
+		//targetListAsJson = {target: targetArray};
+		console.log(targetListJson);
+		//console.log(JSON.stringify(targetListAsJson));
+	}
+	return targetsXmlIds;
+}
 function annotateSelectedText(){
 	// check if the string is filled, because on a double click the first onmouseup
 	// will have no selection and therefore no string
 	if (window.getSelection().toString() && checkIsSelectionOnWorkspace(window.getSelection().getRangeAt(0).commonAncestorContainer)){
 		let selectionRange = window.getSelection().getRangeAt(0);
 		let selectionRangeContents = getContentOfSelection(window.getSelection());
-
-		// targetList holds all the nodes from the selection, that are <w> elements
-		let targetList = [];
 
 		console.log("here");
 		console.log(window.getSelection());
@@ -921,89 +1014,16 @@ function annotateSelectedText(){
 			return;
 		}
 		
-		if (selectionRangeContents.childNodes.length == 1){
-			// if a user selects only the middle part of a word (eg. "or") the selection
-			// won't return a w-element but a textNode, so we need to get the parent of
-			// that text node (which should be a w-element)
-			if (selectionRangeContents.childNodes.length == 1 && selectionRangeContents.childNodes[0].nodeType == 3) {
-				if (selectionRange.startContainer.nodeValue == selectionRange.endContainer.nodeValue &&
-					selectionRange.endContainer.nodeValue == selectionRange.commonAncestorContainer.nodeValue) {
-					if (selectionRange.commonAncestorContainer.parentNode.nodeName === "TEI-W") {
-						targetList.push(selectionRange.commonAncestorContainer.parentNode);
-					} else {
-						console.log("selectionRange.commonAncestorContainer.parentNode is not TEI-W.");
-						console.log(selectionRange.commonAncestorContainer.parentNode);
-					}
-				}
-			}
-		} else {
-			getXmlIds(selectionRangeContents, targetList);
-		}
-		
-		// "cleaning" the targetList, because sometimes an empty w-element will be included
-		// in the bgeinning or at the end of the targetList as the user selected some
-		// whitespace before/after the first word she wanted to select as well
-		if (targetList.length > 1) {
-			if (targetList[targetList.length-1].innerHTML.trim() == ""){
-				targetList.pop();
-			}
-			if (targetList[0].innerHTML.trim() == ""){
-				targetList.shift();
-			}
-		}
+		// targetList holds all the nodes from the selection, that are <w> elements
+		let targetList = createTargetList(selectionRangeContents);
+
 		console.log("filled targetList");
 		console.log(targetList);
 		
 		
-		// targetListJson is a list of all the <w> elements id to be used as targets for
-		// the web annotations; its a STRING
-		// targetListJsonAsJson is the same as targetListJson but as JSON
-		let targetsXmlIds = "";
-		let targetListJson;
-		let targetListJsonAsJson;
-		// following variables are needed to create a jsonish target
-		let valueId; 
-		let selectorObject;
-		let targetJson = {};
-		let targetArray = [];
+		// targetsXmlIds holds only the ids of the element in targetList
+		let targetsXmlIds = createListOfIds(targetList);
 		
-		// if the targetList holds only one <w> element, as only one word got selected
-		// only that will be stored in targetListJson
-		if (targetList.length === 1){
-			// storing values to build a JSON
-			valueId = "//w[@xml:id=\"" + targetList[0].id + "\"]";
-			selectorObject = {type: "XPathSelector", value: valueId};
-			targetJson = {source: currentPageId, selector: selectorObject};
-			targetListJson = targetJson;
-			targetsXmlIds = valueId;
-		// if holds multiple <w> elements, as multiple words got selected
-		} else if (targetList.length !== 0){
-			targetListJson = "[";
-			targetList.forEach( item => {
-				// storing values to build a JSON and convert it to a STRING
-				valueId = "//w[@xml:id=\"" + item.id + "\"]";
-				selectorObject = {type: "XPathSelector", value: valueId};
-				targetJson = {source: currentPageId, selector: selectorObject};
-				targetListJson = targetListJson + JSON.stringify(targetJson) + ",";
-				targetsXmlIds = targetsXmlIds + valueId + "§"; 
-			});
-			// slice removes the last komma, as its not needed; and then remove the "\"
-			targetListJson = (targetListJson.slice(0,-1) + "]").replaceAll("\\","");
-			targetsXmlIds = targetsXmlIds.slice(0,-1);
-			
-			/*targetList.forEach( item => {
-				// storing values to build a JSON
-				targetJson = {};
-				valueId = "//w[@xml:id =\"" + item.id + "\"]";
-				selectorObject = {type: "XPathSelector", value: valueId};
-				targetJson = {source: currentPageId, selector: selectorObject};
-				targetArray.push(targetJson);
-				
-			});*/
-			//targetListAsJson = {target: targetArray};
-			console.log(targetListJson);
-			//console.log(JSON.stringify(targetListAsJson));
-		}
 		console.log(targetsXmlIds);
 		// showing the modal/dropdown to select the annotation template, which can be populated
 		// by the user
