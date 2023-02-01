@@ -9,6 +9,9 @@ function selectAnnotation(event, annoId) {
 
         success: function(responseJson) {
             console.log(responseJson);
+            // this selectedAnnotation variable is needed for the
+            // edit/update function in editor_xml.js
+            selectedAnnotation = responseJson;
             if (responseJson.created.seconds) {
                 responseJson.created = new Date(responseJson.created.seconds * 1000 + responseJson.created.nanos / 1000000).toISOString();
                 if(responseJson.modified.seconds) {

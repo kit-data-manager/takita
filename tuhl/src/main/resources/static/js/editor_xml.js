@@ -17,6 +17,11 @@ let initiated = false;
 
 let drawingHistory = [];
 
+// selectedAnnotation stores the annotation, that gets
+// selected by right clicking on a highlighted word
+// it is needed to edit/update the target of that annotation
+let selectedAnnotation;
+
 class Mode {
   static View = new Mode("view");
   static Create = new Mode("create");
@@ -902,31 +907,37 @@ function getXmlIds(node, nodeList){
 };
 
 // create a list, that contains all the selected nodes with an Id
-function createTargetList(selectionRangeContents){
-	
+function createTargetList(selection){
+
 	let targetList = [];
-	// check how many words/elements got selected,
-	// for some reason the selection always holds more than one element
-	// even if, only one got selected. Only if a user selects the middle part
-	// of a word, the selection holds only one elment
-	if (selectionRangeContents.childNodes.length == 1){
-		// if a user selects only the middle part of a word (eg. "or") the selection
-		// won't return a w-element but a textNode, so we need to get the parent of
-		// that text node (which should be a w-element)
-		if (selectionRangeContents.childNodes.length == 1 && selectionRangeContents.childNodes[0].nodeType == 3) {
-			if (selectionRange.startContainer.nodeValue == selectionRange.endContainer.nodeValue &&
-				selectionRange.endContainer.nodeValue == selectionRange.commonAncestorContainer.nodeValue) {
-				if (selectionRange.commonAncestorContainer.parentNode.nodeName === "TEI-W") {
-					targetList.push(selectionRange.commonAncestorContainer.parentNode);
-				} else {
-					console.log("selectionRange.commonAncestorContainer.parentNode is not TEI-W.");
-					console.log(selectionRange.commonAncestorContainer.parentNode);
+	
+	for (let i = 0; i < selection.rangeCount; i++) {
+		let selectionRange = selection.getRangeAt(i);
+		let selectionRangeContents = selectionRange.cloneContents();
+		// check how many words/elements got selected,
+		// for some reason the selection always holds more than one element
+		// even if, only one got selected. Only if a user selects the middle part
+		// of a word, the selection holds only one elment
+		if (selectionRangeContents.childNodes.length == 1){
+			// if a user selects only the middle part of a word (eg. "or") the selection
+			// won't return a w-element but a textNode, so we need to get the parent of
+			// that text node (which should be a w-element)
+			if (selectionRangeContents.childNodes.length == 1 && selectionRangeContents.childNodes[0].nodeType == 3) {
+				if (selectionRange.startContainer.nodeValue == selectionRange.endContainer.nodeValue &&
+					selectionRange.endContainer.nodeValue == selectionRange.commonAncestorContainer.nodeValue) {
+					if (selectionRange.commonAncestorContainer.parentNode.nodeName === "TEI-W") {
+						targetList.push(selectionRange.commonAncestorContainer.parentNode);
+					} else {
+						console.log("selectionRange.commonAncestorContainer.parentNode is not TEI-W.");
+						console.log(selectionRange.commonAncestorContainer.parentNode);
+					}
 				}
 			}
+		} else {
+			getXmlIds(selectionRangeContents, targetList);
 		}
-	} else {
-		getXmlIds(selectionRangeContents, targetList);
 	}
+
 	
 	// "cleaning" the targetList, because sometimes an empty w-element will be included
 	// in the bgeinning or at the end of the targetList as the user selected some
@@ -1000,10 +1011,62 @@ function annotateSelectedText(){
 	// check if the string is filled, because on a double click the first onmouseup
 	// will have no selection and therefore no string
 	if (window.getSelection().toString() && checkIsSelectionOnWorkspace(window.getSelection().getRangeAt(0).commonAncestorContainer)){
+		// selectionRange and selectionRangeContents are not used anymore and can 
+		// be removed
 		let selectionRange = window.getSelection().getRangeAt(0);
 		let selectionRangeContents = getContentOfSelection(window.getSelection());
 
 		console.log("here");
+		console.log(window.getSelection());
+		console.log(selectionRange);
+		console.log(selectionRangeContents);
+		
+		// stop the function, if the selection does not contain any text, only whitespace
+		if (getContentOfSelection(window.getSelection()).textContent.trim() == ""){
+			console.log("No text selected, therefore early return.")
+			return;
+		}
+		
+		// targetList holds all the nodes from the selection, that are <w> elements
+		let targetList = createTargetList(window.getSelection());
+
+		console.log("filled targetList");
+		console.log(targetList);
+		
+		
+		// targetsXmlIds holds only the ids of the element in targetList
+		let targetsXmlIds = createListOfIds(targetList);
+		
+		console.log(targetsXmlIds);
+		// showing the modal/dropdown to select the annotation template, which can be populated
+		// by the user
+		const modal = document.getElementById("createAnnotation");
+	    modal.classList.toggle("show-modal");
+	    pickTemplate(targetsXmlIds, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
+    	// resetting parameters, so no new annotation can be created without clicking on
+		// the button at the sidebar, that enables annotation 
+		mode = Mode.View;
+		selectingText = false;
+	}
+};
+
+function modifySelection(){
+
+	if (selectedAnnotation === undefined) {
+		mode = Mode.View;
+		selectingText = false;
+		return;
+	}
+	console.log(selectedAnnotation);
+	
+}
+
+function saveModification(){
+	if (window.getSelection().toString() && checkIsSelectionOnWorkspace(window.getSelection().getRangeAt(0).commonAncestorContainer)){
+		let selectionRange = window.getSelection().getRangeAt(0);
+		let selectionRangeContents = getContentOfSelection(window.getSelection());
+
+		console.log("hereSaveMod");
 		console.log(window.getSelection());
 		console.log(selectionRange);
 		console.log(selectionRangeContents);
@@ -1022,20 +1085,39 @@ function annotateSelectedText(){
 		
 		
 		// targetsXmlIds holds only the ids of the element in targetList
-		let targetsXmlIds = createListOfIds(targetList);
+		let newTargetsXmlIds = createListOfIds(targetList);
 		
-		console.log(targetsXmlIds);
-		// showing the modal/dropdown to select the annotation template, which can be populated
-		// by the user
-		const modal = document.getElementById("createAnnotation");
+		console.log(newTargetsXmlIds);
+		
+		// ask user if the new selection should be saved
+		let oldSelectedText = document.getElementById(selectedAnnotation.svgCode.split("\"")[1]).textContent;
+		let newSelectedText = document.getElementById(newTargetsXmlIds.split("\"")[1]).textContent;
+		
+		
+		// modal stuff should be optimised
+		document.getElementById("oldSelectedText").innerHTML = "Current Selecion: " + oldSelectedText;
+		document.getElementById("newSelectedText").innerHTML = "New Selecion: " + newSelectedText;
+		const modal = document.getElementById("updateSelection");
 	    modal.classList.toggle("show-modal");
-	    pickTemplate(targetsXmlIds, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
-    	// resetting parameters, so no new annotation can be ceated without clicking on
-		// the button at the sidebar, that enables annotation 
+		/*
+		show old selection (selectedAnnotation)
+		show new selection (newTargetsXmlIds)
+		button save
+		*/
+		
+		// update the annotations target by sending a put request
+		// to takita core
+		if (newTargetsXmlIds != selectedAnnotation.svgCode){
+			// put request
+		}
 		mode = Mode.View;
 		selectingText = false;
 	}
-};
+}
+
+function updateTarget(){
+	
+}
 
 function init(annotations) {
 	
@@ -1064,6 +1146,20 @@ function init(annotations) {
 		// only get a selection, if a user actually wants to select text		
 		if (mode === Mode.Create && selectingText){
 			annotateSelectedText();
+			
+			/*let target = [];
+			
+			for (element in selection) {
+				target.push(element);
+			}
+			const modal = document.getElementById("createAnnotation");
+            modal.classList.toggle("show-modal");
+            pickTemplate(target, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
+            
+           */
+		}
+		if (mode === Mode.Modify && selectingText){
+			modifySelection();
 			
 			/*let target = [];
 			
@@ -1378,6 +1474,15 @@ document.getElementById('closeButtonAnno').addEventListener('click', function (e
 // adding the closing functionality to body creation modal
 document.getElementById('closeButton').addEventListener('click', function (e) {
     document.getElementById("createBody").classList.toggle("show-modal");
+	// disabling the option to create an annotation. needed, because selecting text
+	// can be done before the mode was set to create by clicking the button after the text selection process
+    mode = Mode.View;
+	selectingText = false;
+});
+
+// adding the closing functionality to text selection update modal
+document.getElementById('closeButtonUpdate').addEventListener('click', function (e) {
+    document.getElementById("updateSelection").classList.toggle("show-modal");
 	// disabling the option to create an annotation. needed, because selecting text
 	// can be done before the mode was set to create by clicking the button after the text selection process
     mode = Mode.View;

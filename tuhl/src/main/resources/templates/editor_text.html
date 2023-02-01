@@ -79,6 +79,21 @@
    </ul>
    <ul class="features-list">
        <div class="category-header">Modify Mode</div>
+    <li class="features-item star">
+      <i id="modifyButton" class="bx bx-edit features-item-icon" onclick="hideExpandedSidebar(); selectingText = true; mode = Mode.Modify; modifySelection();"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); selectingText = true; mode = Mode.Modify; modifySelection();">Modify Shape</span>
+      <span class="tooltip">Modify Selection</span>
+    </li>
+    <li class="features-item star">
+      <i id="undoButton" class="bx bx-undo features-item-icon" onclick="hideExpandedSidebar(); undo();"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); undo()">Undo</span>
+      <span class="tooltip">Undo</span>
+    </li>
+    <li class="features-item star">
+      <i id="saveButton" class="bx bx-save features-item-icon" onclick="hideExpandedSidebar(); saveModification();"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); saveModification();">Save</span>
+      <span class="tooltip">Save</span>
+    </li>
   </ul>
     <ul class="features-list">
     <li class="features-item star">
@@ -236,6 +251,15 @@
             <span class="close-button" id="closeButtonAnno">&times;</span>
             <form id="pickAnnotationTemplateForm"></form>
             <form id="createAnnotationForm"></form>
+        </div>
+    </div>
+
+    <div class="modal" id="updateSelection">
+        <div class="modal-content">
+            <span class="close-button" id="closeButtonUpdate">&times;</span>
+			<div id="oldSelectedText"></div>
+            <div id="newSelectedText"></div>
+            <input class="btn btn-primary" type="submit" value="Update + Save" id="buttonToAnalysisTool" onclick="console.log('asd');">
         </div>
     </div>
 
