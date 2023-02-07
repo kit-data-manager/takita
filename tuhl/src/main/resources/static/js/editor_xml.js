@@ -474,15 +474,24 @@ function extractInformationFromSvg (svgString, annoJson) {
     };*/
 }
 
+// remove the style from all elements
+// https://stackoverflow.com/questions/9252839/simplest-way-to-remove-all-the-styles-in-a-page
+function removeStyles(el) {
+    el.removeAttribute('style');
 
-// highlighting all annotations in yellow
+    el.childNodes.forEach(childNode => {
+        if(childNode.nodeType == 1) removeStyles(childNode)
+    });
+}
+
+// highlighting all annotations
 function drawAnnos(annoJson) {
     let annoXmlId;
     annoJson.forEach(annotation => {
 		annoXmlId = annotation.svg.split("\"")[1];
 		//console.log(annotation);
 		annotation.tags.forEach( tag => {
-			console.log(tag);
+			//console.log(tag);
 			// different highlights for different annotation types
 			if (tag.value === "metaphor"){
 				document.getElementById(annoXmlId).style.borderBottom = 'solid';
@@ -880,6 +889,7 @@ function checkIsSelectionOnWorkspace(node){
 };
 
 // get one range of the selection(s)
+// old function, not necessary any more after 01.02.2023 (commit 1267ea6)
 function getContentOfSelection(selection){
 	let selectionRangeContents = selection.getRangeAt(0).cloneContents();
 	// if there are multiple selection ranges (eg. in the B04 case)
@@ -1051,7 +1061,9 @@ function annotateSelectedText(){
 };
 
 function modifySelection(){
-
+	selectingText = true;
+	mode = Mode.Modify; 
+	document.getElementById('modifyButton').parentElement.classList.add('active');
 	if (selectedAnnotation === undefined) {
 		mode = Mode.View;
 		selectingText = false;
@@ -1066,19 +1078,25 @@ function saveModification(){
 		let selectionRange = window.getSelection().getRangeAt(0);
 		let selectionRangeContents = getContentOfSelection(window.getSelection());
 
+		/*
 		console.log("hereSaveMod");
 		console.log(window.getSelection());
 		console.log(selectionRange);
 		console.log(selectionRangeContents);
+		*/
 		
 		// stop the function, if the selection does not contain any text, only whitespace
 		if (selectionRangeContents.textContent.trim() == ""){
-			console.log("No text selected, therefore early return.")
+			console.log("No text selected, therefore early return.");
+		    document.getElementById('modifyButton').parentElement.classList.remove('active');
+            mode = Mode.View;
+			selectingText = false;
+			alert("No text selected. Please redo");
 			return;
 		}
 		
 		// targetList holds all the nodes from the selection, that are <w> elements
-		let targetList = createTargetList(selectionRangeContents);
+		let targetList = createTargetList(window.getSelection());
 
 		console.log("filled targetList");
 		console.log(targetList);
@@ -1089,34 +1107,75 @@ function saveModification(){
 		
 		console.log(newTargetsXmlIds);
 		
-		// ask user if the new selection should be saved
+		// ask user if the new selection should be saved in a modal
 		let oldSelectedText = document.getElementById(selectedAnnotation.svgCode.split("\"")[1]).textContent;
 		let newSelectedText = document.getElementById(newTargetsXmlIds.split("\"")[1]).textContent;
 		
 		
 		// modal stuff should be optimised
-		document.getElementById("oldSelectedText").innerHTML = "Current Selecion: " + oldSelectedText;
-		document.getElementById("newSelectedText").innerHTML = "New Selecion: " + newSelectedText;
+		let el = document.createElement("div");
+		el.innerHTML = oldSelectedText + " | id: " + selectedAnnotation.svgCode.split("\"")[1];
+		document.getElementById("oldSelectedText").innerHTML = "Current Selection:";
+		document.getElementById("oldSelectedText").append(el);
+		
+		let ele = document.createElement("div");
+		ele.innerHTML = newSelectedText + " | id: " + newTargetsXmlIds.split("\"")[1];
+		document.getElementById("newSelectedText").innerHTML = "New Selection:";
+		document.getElementById("newSelectedText").append(ele);
+		
 		const modal = document.getElementById("updateSelection");
 	    modal.classList.toggle("show-modal");
-		/*
-		show old selection (selectedAnnotation)
-		show new selection (newTargetsXmlIds)
-		button save
-		*/
-		
-		// update the annotations target by sending a put request
-		// to takita core
-		if (newTargetsXmlIds != selectedAnnotation.svgCode){
-			// put request
-		}
-		mode = Mode.View;
-		selectingText = false;
+	    modal.dataset.newTargetXmlId = newTargetsXmlIds;
+	    //modal.dataset.SelectedAnnotationId = selectedAnnotation.id;
 	}
 }
 
 function updateTarget(){
 	
+	const modal = document.getElementById("updateSelection");
+	let idOfAnnotationToUpdate = encodeAnnoId(selectedAnnotation.id);
+	//let idOfAnnotationToUpdate = encodeAnnoId(modal.dataset.SelectedAnnotationId);
+	let newTargetXmlId = modal.dataset.newTargetXmlId;
+	
+	// update the annotations target by sending a put request
+	// to takita core
+	//if (newTargetsXmlId != selectedAnnotation.svgCode){
+		// put request
+	//}
+	
+	let annotationDataJson = {"color" : "#89f099", "motivation" : "describing", "svgCode" : newTargetXmlId};
+	$ .ajax({
+            type : 'PUT',
+            url : '/editor_rest/annotations/' + idOfAnnotationToUpdate,
+            data : JSON.stringify(annotationDataJson),
+            headers : {
+                'Content-Type' : 'application/json'
+            },
+
+            success : function(responseData) {
+                
+                // redraw
+                removeStyles(document.getElementById("TEI"));
+                console.log(responseData);
+                // updating the annoJson
+                annoJson.forEach(anno => {
+					if (anno.id === selectedAnnotation.id){
+						anno.svg = newTargetXmlId;
+					}
+				});				
+                drawAnnos(annoJson);
+                
+                // hide modal
+                document.getElementById("updateSelection").classList.toggle("show-modal");
+                document.getElementById('modifyButton').parentElement.classList.remove('active');
+                mode = Mode.View;
+				selectingText = false;
+            },
+
+            error : function(errorData) {
+                 console.log(errorData);
+            }
+        });
 }
 
 function init(annotations) {
@@ -1483,6 +1542,7 @@ document.getElementById('closeButton').addEventListener('click', function (e) {
 // adding the closing functionality to text selection update modal
 document.getElementById('closeButtonUpdate').addEventListener('click', function (e) {
     document.getElementById("updateSelection").classList.toggle("show-modal");
+    document.getElementById('modifyButton').parentElement.classList.remove('active');
 	// disabling the option to create an annotation. needed, because selecting text
 	// can be done before the mode was set to create by clicking the button after the text selection process
     mode = Mode.View;
