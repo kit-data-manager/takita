@@ -226,26 +226,23 @@ function selectAnnotation(event, annoId) {
                 
             };
             // adding link to the analysis tool, if 
-            // the annotation is a metaphor annotation
-            // right now its just a dummy link
-            responseJson.tags.some( tag => {
-				if (tag.value === "metaphor" && document.getElementById("buttonToAnalysisTool") == null) {
-					var buttonToAnalysisTool = document.createElement("input");
-		            buttonToAnalysisTool.classList.add("btn");
-		            buttonToAnalysisTool.classList.add("btn-primary");
-		            buttonToAnalysisTool.type = "submit";
-		            buttonToAnalysisTool.value = "Analyze";
-		            buttonToAnalysisTool.id = "buttonToAnalysisTool";
-		
-		            var linkToAnalysisTool = document.createElement("a");
-		            linkToAnalysisTool.href="/analysis/" + annoId;
-		            linkToAnalysisTool.target="_blank";
-		            linkToAnalysisTool.rel="noreferrer noopener";
-		            linkToAnalysisTool.append(buttonToAnalysisTool);
-		
-		            annotationDiv.append(linkToAnalysisTool);
-            	}
-			});
+            // the annotation is a metaphor annotation	
+			if (responseJson.tags.some(tag => tag.value === "metaphor")){
+				var buttonToAnalysisTool = document.createElement("input");
+	            buttonToAnalysisTool.classList.add("btn");
+	            buttonToAnalysisTool.classList.add("btn-primary");
+	            buttonToAnalysisTool.type = "submit";
+	            buttonToAnalysisTool.value = "Analyze";
+	            buttonToAnalysisTool.id = "buttonToAnalysisTool";
+	
+	            var linkToAnalysisTool = document.createElement("a");
+	            linkToAnalysisTool.href="/analysis/" + annoId;
+	            linkToAnalysisTool.target="_blank";
+	            linkToAnalysisTool.rel="noreferrer noopener";
+	            linkToAnalysisTool.append(buttonToAnalysisTool);
+	
+	            annotationDiv.append(linkToAnalysisTool);
+			}
 
 
         }                
