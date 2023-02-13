@@ -488,22 +488,25 @@ function removeStyles(el) {
 function drawAnnos(annoJson) {
     let annoXmlId;
     annoJson.forEach(annotation => {
-		annoXmlId = annotation.svg.split("\"")[1];
 		//console.log(annotation);
-		annotation.tags.forEach( tag => {
-			//console.log(tag);
-			// different highlights for different annotation types
-			if (tag.value === "metaphor"){
-				document.getElementById(annoXmlId).style.borderBottom = 'solid';
-				document.getElementById(annoXmlId).style.borderColor = '#2196F3';
-			} else if (tag.value === "mrw"){
-				document.getElementById(annoXmlId).style.backgroundColor = '#daa3ff';
-			} else {
-				if (document.getElementById(annoXmlId).style.backgroundColor == "") {
-					document.getElementById(annoXmlId).style.backgroundColor = 'yellow';
+		annotation.svg.forEach( target => {
+			annoXmlId = target.split("\"")[1];
+			annotation.tags.forEach( tag => {
+				//console.log(tag);
+				// different highlights for different annotation types
+				if (tag.value === "metaphor"){
+					document.getElementById(annoXmlId).style.borderBottom = 'solid';
+					document.getElementById(annoXmlId).style.borderColor = '#2196F3';
+				} else if (tag.value === "mrw"){
+					document.getElementById(annoXmlId).style.backgroundColor = '#daa3ff';
+				} else {
+					if (document.getElementById(annoXmlId).style.backgroundColor == "") {
+						document.getElementById(annoXmlId).style.backgroundColor = 'yellow';
+					}
 				}
-			}
+			});
 		});
+
 		// border-bottom: 6px solid #2196F3 !important;
 		
 	});
@@ -1053,6 +1056,12 @@ function annotateSelectedText(){
 		const modal = document.getElementById("createAnnotation");
 	    modal.classList.toggle("show-modal");
 	    pickTemplate(targetsXmlIds, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
+    	
+    	// redrawing the annotations; TODO
+    	/*console.log("redrawing");
+    	removeStyles(document.getElementById("TEI"));
+    	drawAnnos(annoJson);*/
+    	
     	// resetting parameters, so no new annotation can be created without clicking on
 		// the button at the sidebar, that enables annotation 
 		mode = Mode.View;
@@ -1189,14 +1198,15 @@ function init(annotations) {
         if (e.target.style.backgroundColor != "" ||
         	e.target.style.borderBottom == "medium solid rgb(33, 150, 243)"){
 			annoJson.forEach(item => {
-				if (e.target.id == item.svg.split("\"")[1]){
-					selectAnnotation(null, item.idEncoded);
-                	if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
-                  	  toggleOverview('annotationCard');
-              	  };
-				}
+				item.svg.forEach( target => {
+					if (e.target.id == target.split("\"")[1]){
+						selectAnnotation(null, item.idEncoded);
+	                	if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
+	                  	  toggleOverview('annotationCard');
+	              	  };
+					}
+				});
 			});
-			
 		}
 	}
 	

@@ -316,12 +316,15 @@ const formObjectCreateAnnotation = {
     ]
 };
 
+// storing tags needed for highlighting; name needs to be specific so it doesn't clash with other variables
+var tagsIOP = [];
 // recursive function to store all the necessary bodies  
 // ensures sequential creation, otherwise body creation will fail due to etag mismatch
 function storeBody(responseJson, jsonObject, index) {
      
     let endpoint;
-    let bodyDataJson; 
+    let bodyDataJson;
+
     
     console.log(Object.keys(jsonObject)[index]);
     if (Object.keys(jsonObject)[index]) {
@@ -397,6 +400,9 @@ function storeBody(responseJson, jsonObject, index) {
                         
                 success: function(responseData) {
                     console.log(responseData);
+                    // putting the tag value in the tag array
+                    let responseDataJson = JSON.parse(responseData);
+                    tagsIOP.push({"value" : responseDataJson.value});
                     storeBody(responseJson, jsonObject, index + 1);
                 },
         
@@ -415,21 +421,33 @@ function storeBody(responseJson, jsonObject, index) {
             toggleOverview('annotationCard');
         };
         
+        // added "tags" to the annotation
         let newAnnotation = {"created" : new Date(responseJson.created.seconds * 1000 + responseJson.created.nanos / 1000000).toISOString(), 
             "creator" : responseJson.creators, "id" : responseJson.id, "idEncoded" : encodeAnnoId(responseJson.id), 
             "modified" : new Date(responseJson.modified.seconds * 1000 + responseJson.modified.nanos / 1000000).toISOString(), 
-            "motivation" : responseJson.motivation, "visible" : true};
+            "motivation" : responseJson.motivation, "visible" : true, "tags" : tagsIOP};
         
         if (document.getElementById("createAnnotationForm").title !== "") {
             newAnnotation.svg = document.getElementById("createAnnotationForm").title;
             //extractInformationFromSvg(newAnnotation.svg, newAnnotation);
+            // this needs to be done, so the drawAnno code works, as it epects the svg to be an array
+            var svgArray = [];
+	        if (newAnnotation.svg.includes("§")){
+				newAnnotation.svg.split("§").forEach(svgCode =>{
+					svgArray.push(svgCode);
+				});
+			} else {
+				svgArray.push(newAnnotation.svg)
+			}
+			newAnnotation.svg = svgArray;
         }; 
         
         annoJson.push(newAnnotation);
         fillMetaDataEditorTable(annoJson);
-        // highlighting the new annotation in orange
-        newAnnoXmlId = newAnnotation.svg.split("\"")[1];
-		document.getElementById(newAnnoXmlId).style.backgroundColor = 'orange';
+        
+        // redrawing all annotations
+        removeStyles(document.getElementById("TEI"));
+    	drawAnnos(annoJson);
         
         //document.getElementById('createRectangleButton').parentElement.classList.remove('active');
         //document.getElementById('createPolygonButton').parentElement.classList.remove('active');
