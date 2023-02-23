@@ -22,6 +22,9 @@ let drawingHistory = [];
 // it is needed to edit/update the target of that annotation
 let selectedAnnotation;
 
+// mrwAnnos stores the mrws that are contained in a selection
+let mrwAnnos = [];
+
 class Mode {
   static View = new Mode("view");
   static Create = new Mode("create");
@@ -1015,11 +1018,45 @@ function createListOfIds(targetList){
 			
 		});*/
 		//targetListAsJson = {target: targetArray};
-		console.log(targetListJson);
+		//console.log(targetListJson);
 		//console.log(JSON.stringify(targetListAsJson));
 	}
 	return targetsXmlIds;
 }
+
+// store all the mrw annotations that are contained in a selection
+function storeSelectedMRWAnnos(targetList){
+	// empty the mrwAnno list beforehand
+	mrwAnnos = [];
+	annoJson.forEach(annotation => {
+		//annoXmlId = annotation.svg.split("\"")[1];
+		//console.log(annotation);
+		// TODO: this iteration nesting needs to be improved; it got created due 
+		// to annotations having multiple targets
+		annotation.tags.forEach( tag => {
+			if (tag.value === "mrw"){
+				targetList.forEach( target => {
+					annotation.svg.forEach( svg => {
+						if (target.id === svg.split("\"")[1]){
+							// this iteration should not be necessary as a Set
+							// should not hold the same annotation twice
+							if (mrwAnnos.size === 0) {
+								mrwAnnos.push(annotation);
+							} else {
+								if (!mrwAnnos.some(entry => entry.id === annotation.id)){
+									mrwAnnos.push(annotation);
+								}
+							}
+							
+						}
+					});
+				});
+			}
+		});
+	});
+	console.log(mrwAnnos);
+}
+
 function annotateSelectedText(){
 	// check if the string is filled, because on a double click the first onmouseup
 	// will have no selection and therefore no string
@@ -1046,6 +1083,11 @@ function annotateSelectedText(){
 		console.log("filled targetList");
 		console.log(targetList);
 		
+		// store all the mrw annotations that are contained in a selection
+		// so they can be accessed in creation_templates_text.js to generate
+		// a list of selected mrws inside a metaphor and link the mrw annotations
+		// to the metaphor annotation
+		storeSelectedMRWAnnos(targetList);
 		
 		// targetsXmlIds holds only the ids of the element in targetList
 		let targetsXmlIds = createListOfIds(targetList);

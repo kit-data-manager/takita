@@ -42,8 +42,7 @@ function getFormModel(chosenTemplate) {
                     {
                         "key" : "tag",
                         "readOnly" : true
-                    }
-                
+                    }                
             ]};
             break;  
         
@@ -71,27 +70,77 @@ function getFormModel(chosenTemplate) {
             break;  
         
         case "METAPHOR":
-            dataModel = {
-                "type" : "object",
-                "properties" : {
-                    "tag" : {
-                        "type" : "string",
-                        "title" : "tag",
-                        "default" : "metaphor",
-                        "readOnly" : true
-                    }
-                }
-            };
-            uiForm = {
-                "type" : "fieldset",
-                "items" : [
-                    {
-                        "key" : "tag",
-                        "readOnly" : true
-                    }
-                
-            ]};
-            break;  
+			// if a user wants to create a metaphor annotation,
+	        // get all the mrws that are present in his selection
+	        // and update the enum to hold all the mrwAnnoIds, so the user can
+	        // choose a mrw to link it to a metaphor
+			//let mrwSet = new Set();
+			let mrwEnum = [];
+			// metaphorTitleMap is necessary to have the actual words displayed,
+			// but the have the annoId as a value on the submission of the form
+			let metaphorTitleMap = {};
+			let targetWord = "";
+			// TODO: this iteration nesting needs to be improved; it got created due 
+			// to annotations having multiple targets
+			mrwAnnos.forEach(anno =>{
+				//console.log(anno);
+				// getting the text
+				anno.svg.forEach( svgs => {
+					targetWord += document.getElementById(svgs.split("\"")[1]).innerHTML +
+							 " = " + svgs.split("\"")[1] + " |";
+				});
+				console.log(targetWord);
+				targetWord.slice(0, (targetWord.length-2));
+				metaphorTitleMap[anno.id] = targetWord;
+				// emptying the sring, so it can be filled during next iteration cycle
+				targetWord = "";
+				mrwEnum.push(anno.id);
+				//console.log(mrwEnum);
+	
+			});
+	        dataModel = {
+	            "type" : "object",
+	            "properties" : {
+	                "tag" : {
+	                    "type" : "string",
+	                    "title" : "tag",
+	                    "default" : "metaphor",
+	                    "readOnly" : true
+	                },
+	                "mrws" : {
+	                    "type" : "array",
+	                    "title" : "Metaphor related words:",
+	                    "items": {
+					        "type": "string",
+					        "title": "Option",
+					        "enum": mrwEnum
+					      }
+	                }
+	            }
+	        };
+			uiForm = {
+	        	"type" : "fieldset",
+	        	"items" : [
+					{
+						"type" : "fieldset",
+		                "items" : [
+		                    {
+		                        "key" : "tag",
+		                        "readOnly" : true
+		                    }
+	                	]
+	                },{
+						"type" : "fieldset",
+						"items": [
+	                    	{
+								"type" : "checkboxes",
+								"key" : "mrws",
+	                        	"titleMap": metaphorTitleMap
+	                    	}
+	                    ]
+	                }]
+	        };
+	    	break; 
         
         case "CONTEXT":
             dataModel = {
@@ -188,6 +237,8 @@ const formObjectCreateBody = {
             
             $('#createForm').metadataeditorForm(options, function onSubmitValid(value) {
                 let jsonObject = JSON.parse(value);
+                console.log(value);
+                console.log(jsonObject);
                 let endpoint;
                 if ("purpose" in jsonObject) {
                     endpoint = '/editor_rest/annotations/' + document.getElementById("createForm").title + '/bodies';
@@ -400,7 +451,7 @@ function storeBody(responseJson, jsonObject, index) {
                         
                 success: function(responseData) {
                     console.log(responseData);
-                    // putting the tag value in the tag array
+                    // putting the tag value in the tag array, so they can be stored in the annoJson later
                     let responseDataJson = JSON.parse(responseData);
                     tagsIOP.push({"value" : responseDataJson.value});
                     storeBody(responseJson, jsonObject, index + 1);
