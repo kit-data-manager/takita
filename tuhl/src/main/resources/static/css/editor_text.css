@@ -48,7 +48,9 @@ tei-choice {
 }
 
 /* make sandhied version unselectable, but keep unsandhied version selectable */
-tei-div[n="Rāmāyaṇa"] tei-l{
+/* TODO: make it targeting all B04 files */
+tei-div[n="Rāmāyaṇa"] tei-l,
+tei-div[n="Ṛgveda"] tei-l{
 	user-select: none;
 }
 
