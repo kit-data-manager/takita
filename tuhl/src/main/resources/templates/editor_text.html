@@ -68,6 +68,11 @@
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); resetFontSize()">Reset Font Size</span>
       <span class="tooltip">Reset Font Size</span>
     </li>
+    <li id="hebrewToggle" class="features-item draft is-hidden">
+      <i id="hebrewToggleButton" class="bx bx-heading features-item-icon" onclick="hideExpandedSidebar(); toggleHebrewView()"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); toggleHebrewView()">Toggle Views</span>
+      <span class="tooltip">Toggle Views</span>
+    </li>
   </ul>
   <ul class="features-list">
       <div class="category-header">Create Mode</div>
@@ -469,6 +474,20 @@
 					word.append("‧");
 				}
 		  });
+	    }).then( placeholder => {
+	    	// this is specific for files in hebrew
+	    	// it enables the hebrewToggle button, which removes/adds
+	    	// vowels from/to the displayed text
+	    	if (document.querySelector("tei-text").lang === "hbo"){
+	    		document.querySelectorAll("tei-w").forEach(word => {
+	    			if( !word.id.includes("_")) {
+	    		    	word.setAttribute("vocalized", word.innerHTML);
+	    		  		word.setAttribute("unvocalized", word.innerHTML.replace(/[\u0591-\u05C7]/g,""));
+	    		  }
+
+	    		});
+	    	document.getElementById("hebrewToggle").classList.remove("is-hidden");
+	    	}
 	    });
 
     </script>

@@ -694,6 +694,21 @@ function resetFontSize(){
 	document.getElementById("TEI").style.fontSize = "initial";
 }
 
+// hebrew specific display
+function toggleHebrewView(){
+	document.querySelectorAll("tei-w").forEach(word => {
+		if( !word.id.includes("_")) {
+			if (word.getAttribute("vocalized") || word.getAttribute("unvocalized") !== undefined) {
+				if (word.innerHTML === word.getAttribute("vocalized")){
+					word.innerHTML = word.getAttribute("unvocalized");
+				} else {
+					word.innerHTML = word.getAttribute("vocalized");
+				}
+			}
+		}
+	});
+}
+
 
 function imageZoomIn() {
     paper.currentWidth = paper.currentWidth - paper.originalWidth/10;
