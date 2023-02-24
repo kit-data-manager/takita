@@ -22,7 +22,12 @@ let drawingHistory = [];
 // it is needed to edit/update the target of that annotation
 let selectedAnnotation;
 
+// selectedText stores the selected test as a string
+// it is needed to add it to the annotations body
+let globalSelectedText;
+
 // mrwAnnos stores the mrws that are contained in a selection
+// it is needed to link mrw annotations with metaphor annotations
 let mrwAnnos = [];
 
 class Mode {
@@ -1088,7 +1093,14 @@ function annotateSelectedText(){
 		// a list of selected mrws inside a metaphor and link the mrw annotations
 		// to the metaphor annotation
 		storeSelectedMRWAnnos(targetList);
-		
+		// set selectedText so it can be displayed in the modal and remove all whitespaces
+		globalSelectedText = getContentOfSelection(window.getSelection()).
+								textContent.replace(/\s{4}|[\t\n\r]|\s/g,' ');
+		while (globalSelectedText.includes("  ")){
+			globalSelectedText = globalSelectedText.replaceAll("  ",  " ");
+		}
+		globalSelectedText = globalSelectedText.trim();
+		console.log(globalSelectedText);
 		// targetsXmlIds holds only the ids of the element in targetList
 		let targetsXmlIds = createListOfIds(targetList);
 		

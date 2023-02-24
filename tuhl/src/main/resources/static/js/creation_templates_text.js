@@ -28,7 +28,13 @@ function getFormModel(chosenTemplate) {
             dataModel = {
                 "type" : "object",
                 "properties" : {
-                    "tag" : {
+                    "selectedText": {
+						"type" : "string",
+	                    "title" : "Selected text:",
+	                    "default" : globalSelectedText,
+	                    "readOnly" : true	
+					},
+					"tag" : {
                         "type" : "string",
                         "title" : "tag",
                         "default" : "mrw",
@@ -39,6 +45,7 @@ function getFormModel(chosenTemplate) {
             uiForm = {
                 "type" : "fieldset",
                 "items" : [
+                    "selectedText",
                     {
                         "key" : "tag",
                         "readOnly" : true
@@ -87,10 +94,11 @@ function getFormModel(chosenTemplate) {
 				// getting the text
 				anno.svg.forEach( svgs => {
 					targetWord += document.getElementById(svgs.split("\"")[1]).innerHTML +
-							 " = " + svgs.split("\"")[1] + " |";
+							 " = " + svgs.split("\"")[1] + " | ";
 				});
 				console.log(targetWord);
-				targetWord.slice(0, (targetWord.length-2));
+				targetWord = targetWord.slice(0, (targetWord.length-3));
+				console.log(targetWord);
 				metaphorTitleMap[anno.id] = targetWord;
 				// emptying the sring, so it can be filled during next iteration cycle
 				targetWord = "";
@@ -101,6 +109,12 @@ function getFormModel(chosenTemplate) {
 	        dataModel = {
 	            "type" : "object",
 	            "properties" : {
+					"selectedText": {
+						"type" : "string",
+	                    "title" : "Selected text:",
+	                    "default" : globalSelectedText,
+	                    "readOnly" : true	
+					},
 	                "tag" : {
 	                    "type" : "string",
 	                    "title" : "tag",
@@ -121,6 +135,11 @@ function getFormModel(chosenTemplate) {
 			uiForm = {
 	        	"type" : "fieldset",
 	        	"items" : [
+					
+					{
+                        "key": "selectedText",
+                        "type": "textarea"
+                    },
 					{
 						"type" : "fieldset",
 		                "items" : [
