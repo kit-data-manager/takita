@@ -22,18 +22,6 @@ public class AnalysisController {
    */
   @RequestMapping("/**")
   public String analysisTool() {
-    /*try {
-      editorService.selectPage(pageId);
-      model.addAttribute("currentPage", editorService.getCurrentPage());
-      model.addAttribute("currentManuscript", editorService.getCurrentManuscript());
-      model.addAttribute("currentAnnotationsJson", 
-        getDisplayableAnnotations(editorService.getCurrentPage().getAnnotations()));
-      assistanceService.updateModel(model);
-      
-    } catch (UnsupportedEncodingException | NoSuchIndexEntryException e) {
-      return REDIRECT_ERROR + e.getMessage();
-    }
-    */
     return "analysis";
   }
 }
