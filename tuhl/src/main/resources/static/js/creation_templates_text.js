@@ -30,13 +30,13 @@ function getFormModel(chosenTemplate) {
                 "properties" : {
                     "selectedText": {
 						"type" : "string",
-	                    "title" : "Selected text:",
+	                    "title" : "Selected text",
 	                    "default" : globalSelectedText,
 	                    "readOnly" : true	
 					},
 					"tag" : {
                         "type" : "string",
-                        "title" : "tag",
+                        "title" : "Tag",
                         "default" : "mrw",
                         "readOnly" : true
                     }
@@ -59,7 +59,7 @@ function getFormModel(chosenTemplate) {
                 "properties" : {
                     "tag" : {
                         "type" : "string",
-                        "title" : "tag",
+                        "title" : "Tag",
                         "default" : "mflag",
                         "readOnly" : true
                     }
@@ -85,51 +85,59 @@ function getFormModel(chosenTemplate) {
 			let mrwEnum = [];
 			// metaphorTitleMap is necessary to have the actual words displayed,
 			// but the have the annoId as a value on the submission of the form
-			let metaphorTitleMap = {};
-			let targetWord = "";
+			let mrwTitleMap = {};
+			let targetMRW = "";
 			// TODO: this iteration nesting needs to be improved; it got created due 
 			// to annotations having multiple targets
 			mrwAnnos.forEach(anno =>{
 				//console.log(anno);
 				// getting the text
 				anno.svg.forEach( svgs => {
-					targetWord += document.getElementById(svgs.split("\"")[1]).innerHTML +
+					targetMRW += document.getElementById(svgs.split("\"")[1]).innerHTML +
 							 " = " + svgs.split("\"")[1] + " | ";
 				});
-				console.log(targetWord);
-				targetWord = targetWord.slice(0, (targetWord.length-3));
-				console.log(targetWord);
-				metaphorTitleMap[anno.id] = targetWord;
+				console.log(targetMRW);
+				targetWord = targetMRW.slice(0, (targetMRW.length-3));
+				console.log(targetMRW);
+				mrwTitleMap[anno.id] = targetMRW;
 				// emptying the sring, so it can be filled during next iteration cycle
-				targetWord = "";
+				targetMRW = "";
 				mrwEnum.push(anno.id);
 				//console.log(mrwEnum);
-	
 			});
+            // a user can either use the default label or create a humanreadable
+            // label for the metaphor annotation
+            let defaultLabel = currentPageNumber + Date.now();
+
 	        dataModel = {
 	            "type" : "object",
 	            "properties" : {
 					"selectedText": {
 						"type" : "string",
-	                    "title" : "Selected text:",
+	                    "title" : "Selected text",
 	                    "default" : globalSelectedText,
 	                    "readOnly" : true	
 					},
 	                "tag" : {
 	                    "type" : "string",
-	                    "title" : "tag",
+	                    "title" : "Tag",
 	                    "default" : "metaphor",
 	                    "readOnly" : true
 	                },
 	                "mrws" : {
 	                    "type" : "array",
-	                    "title" : "Metaphor related words:",
+	                    "title" : "Metaphor related words",
 	                    "items": {
 					        "type": "string",
 					        "title": "Option",
 					        "enum": mrwEnum
 					      }
-	                }
+	                },
+                    "label" : {
+	                    "type" : "string",
+	                    "title" : "Label",
+	                    "default" : defaultLabel
+	                },
 	            }
 	        };
 			uiForm = {
@@ -141,23 +149,19 @@ function getFormModel(chosenTemplate) {
                         "type": "textarea"
                     },
 					{
-						"type" : "fieldset",
-		                "items" : [
-		                    {
-		                        "key" : "tag",
-		                        "readOnly" : true
-		                    }
-	                	]
+						
+		                "key" : "tag",
+                        "readOnly" : true
+	                    
 	                },{
-						"type" : "fieldset",
-						"items": [
-	                    	{
-								"type" : "checkboxes",
-								"key" : "mrws",
-	                        	"titleMap": metaphorTitleMap
-	                    	}
-	                    ]
-	                }]
+						"type" : "checkboxes",
+						"key" : "mrws",
+	                    "titleMap": mrwTitleMap
+	                    	
+	                },{
+                        "key": "label"
+                    }
+                ]
 	        };
 	    	break; 
         
@@ -167,7 +171,7 @@ function getFormModel(chosenTemplate) {
                 "properties" : {
                     "tag" : {
                         "type" : "string",
-                        "title" : "tag",
+                        "title" : "Tag",
                         "default" : "context",
                         "readOnly" : true
                     }
@@ -453,8 +457,16 @@ function storeBody(responseJson, jsonObject, index) {
                 bodyDataJson = {"value" : jsonObject[Object.keys(jsonObject)[index]]};
             } else {
                 endpoint = '/editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/bodies';
+                console.log("--------------------------------------------");
+                console.log(Object.keys(jsonObject)[index]);
                 if (Object.keys(jsonObject)[index] === "transcription") {
                     bodyDataJson = {"purpose" : "tadirah:transcription", "value" : jsonObject[Object.keys(jsonObject)[index]]};
+                } else if (Object.keys(jsonObject)[index] === "selectedText"){ // storing the selected text
+                    bodyDataJson = {"purpose" : "describing", "value" : jsonObject[Object.keys(jsonObject)[index]]};       
+                } else if (Object.keys(jsonObject)[index] === "mrws"){ // linking mrw and metaphor annotation
+                    bodyDataJson = {"purpose" : "linking", "value" : jsonObject[Object.keys(jsonObject)[index]]};
+                } else if (Object.keys(jsonObject)[index] === "label"){ // human readable label
+                    bodyDataJson = {"purpose" : "identifying", "value" : jsonObject[Object.keys(jsonObject)[index]]};
                 } else {
                     bodyDataJson = {"purpose" : "classifying", "value" : jsonObject[Object.keys(jsonObject)[index]]};
                 }

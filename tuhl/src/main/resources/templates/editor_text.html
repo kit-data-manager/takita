@@ -428,7 +428,9 @@
 	<script src="/js/CETEI.js"></script>
 	<script src="/js/editor_xml.js"></script>
 	<script th:inline="javascript">
-	
+        
+        // storing currentPageNumber as its needed for the label of a metaphor annotation
+        var currentPageNumber = /*[[${currentPage.pageNumber}]]*/ "default";
 		var linkToResource = "/editor_rest/content/" + [[${currentPage.getId()}]] + "/" + [[${fileName}]];
 	    // adding the TEI file to the DOM
 	    var CETEIcean = new CETEI();
