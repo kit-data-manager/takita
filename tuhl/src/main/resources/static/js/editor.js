@@ -308,12 +308,17 @@ function deleteAnnotation(annoId) {
                     toggleOverview('annotationCard');
                 };
                 
-                paper.forEach(function(element) {
-                    if (element.annoId === annoId) {
-                        element.remove();
-                    };
-                });
-                
+                // updating the display for image annotation
+                // checking if paper is defined. it is defined for image annotation,
+                // but not for text annotation
+                if (paper != undefined){
+                    paper.forEach(function(element) {
+                        if (element.annoId === annoId) {
+                            element.remove();
+                        };
+                    });
+                }
+                               
                 for (let anno in annoJson) {
                     if (annoJson[anno].id === annoId) {
                         console.log(annoId + " this must go!")
@@ -321,6 +326,15 @@ function deleteAnnotation(annoId) {
                     };
                 };
                 
+                // updating the display for text annotation
+                // checking if TEI-element is null. it is defined for text annotation,
+                // but not for image annotation
+                if (document.getElementById("TEI") != null) {
+                    // redrawing all annotations
+                    removeStyles(document.getElementById("TEI"));
+                    drawAnnos(annoJson);
+                }
+
                 // maybe move it within the if clause?
                 console.log(annoJson);
                 fillMetaDataEditorTable(annoJson);
