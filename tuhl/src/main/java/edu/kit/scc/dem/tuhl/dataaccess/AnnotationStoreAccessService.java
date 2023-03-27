@@ -64,7 +64,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   private static final String SPARQL_QUERY_ANNOTATION_BY_PAGE_1 = URLEncoder.encode(
       "PREFIX oa: <http://www.w3.org/ns/oa#> PREFIX as: <http://www.w3.org/ns/activitystreams#>"
           + " PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> PREFIX xsd: <http://www.w3.o"
-          + "rg/2001/XMLSchema#> SELECT ?anno {GRAPH ?g {?anno oa:hasTarget/oa:hasSource <",
+          + "rg/2001/XMLSchema#> SELECT DISTINCT ?anno {GRAPH ?g {?anno oa:hasTarget/oa:hasSource <",
       Charset.defaultCharset());
 
   private static final String SPARQL_QUERY_ANNOTATION_BY_PAGE_2 = URLEncoder.encode("> . "
