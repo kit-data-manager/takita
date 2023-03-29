@@ -539,18 +539,34 @@ public class AnnotationConverter {
    */
   private void putTarget(JSONObject jsonAnnotation, Annotation annotation, String pageNumber)
       throws JSONException {
-
+	  // TODO: add distinction for text and image data, so the file extension and
+	  // the master/thumb stuff matches
+	  
 	// either create one target or multiple targets as a JSON object or array
     if (annotation.getTargets().size() > 1) {
     	JSONArray targetArray = new JSONArray();
     	for (Target target : annotation.getTargets()) {
     		// the targets' linkToResource needs to be set, as this is the first time it is present in takita core
-    		target.setLinkToResource(repositoryAccessService.getBaseUrl()
+    		// the targets' linkToResource differs for text and image file regarding their extensions
+    		if (target.getType().equals("TEXT")){
+    			target.setLinkToResource(repositoryAccessService.getBaseUrl()
 			            + repositoryAccessService.getStaticPath()
 			            + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
 			            + RepositoryAccessService.FILE_EXTENSION_XML);
-    		// add the target serialized as WADM to the list
-    		targetArray.put(target.getWADMSerialization());
+    			// add the target serialized as WADM to the list
+    			targetArray.put(target.getWADMSerialization());
+    		} else if (target.getType().equals("IMAGE")){
+    			target.setLinkToResource(repositoryAccessService.getBaseUrl()
+			            + repositoryAccessService.getStaticPath()
+			            + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
+			            + RepositoryAccessService.MASTER_JPG);
+    			// add the target serialized as WADM to the list
+    			targetArray.put(target.getWADMSerialization());
+    		} else {
+    			// TODO: this should throw an exception
+    			System.out.println("Target is neither an image or a text file.");
+    		}
+    		
         }
     	// add the targets to the JSON annotation
     	jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), targetArray);
@@ -559,11 +575,24 @@ public class AnnotationConverter {
     	// is serialized as WADM and added to the JSON annotation
     	JSONObject target = new JSONObject();
     	// the linkToResource needs to be set, as this is the first time it is present in takita core
-    	annotation.getTargets().get(0).setLinkToResource(repositoryAccessService.getBaseUrl()
-	            + repositoryAccessService.getStaticPath()
-	            + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
-	            + RepositoryAccessService.FILE_EXTENSION_XML);
-    	target = annotation.getTargets().get(0).getWADMSerialization();
+    	// the targets' linkToResource differs for text and image file regarding their extensions
+		if (annotation.getTargets().get(0).getType().equals("TEXT")){
+			annotation.getTargets().get(0).setLinkToResource(repositoryAccessService.getBaseUrl()
+		            + repositoryAccessService.getStaticPath()
+		            + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
+		            + RepositoryAccessService.FILE_EXTENSION_XML);
+	    	target = annotation.getTargets().get(0).getWADMSerialization();
+		} else if (annotation.getTargets().get(0).getType().equals("IMAGE")){
+			annotation.getTargets().get(0).setLinkToResource(repositoryAccessService.getBaseUrl()
+		            + repositoryAccessService.getStaticPath()
+		            + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
+		            + RepositoryAccessService.MASTER_JPG);
+	    	target = annotation.getTargets().get(0).getWADMSerialization();
+		} else {
+			// TODO: this should throw an exception
+			System.out.println("Target is neither an image or a text file.");
+		}
+    	
     	// add the target to the JSON annotation
     	jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), target);
     }
