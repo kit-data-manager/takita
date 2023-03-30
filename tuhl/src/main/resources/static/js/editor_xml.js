@@ -1077,6 +1077,17 @@ function storeSelectedMRWAnnos(targetList){
 	console.log(mrwAnnos);
 }
 
+function removeWhitespaceFromSelectionTextContent(text){
+    console.log("Before cleaning: " + text);
+    text = text.replace(/\s{4}|[\t\n\r]|\s/g,' ');
+    while (text.includes("  ")){
+        text = text.replaceAll("  ",  " ");
+    }
+    text = text.trim();
+    console.log("After cleaning: " + text);
+    return text;
+};
+
 function annotateSelectedText(){
 	// check if the string is filled, because on a double click the first onmouseup
 	// will have no selection and therefore no string
@@ -1109,6 +1120,7 @@ function annotateSelectedText(){
 		// to the metaphor annotation
 		storeSelectedMRWAnnos(targetList);
 		// set selectedText so it can be displayed in the modal and remove all whitespaces
+        // TODO: this should use removeWhitespaceFromSelectionTextContent()
 		globalSelectedText = getContentOfSelection(window.getSelection()).
 								textContent.replace(/\s{4}|[\t\n\r]|\s/g,' ');
 		while (globalSelectedText.includes("  ")){
@@ -1143,7 +1155,8 @@ function modifySelection(){
 	mode = Mode.Modify; 
 	document.getElementById('modifyButton').parentElement.classList.add('active');
 	if (selectedAnnotation === undefined) {
-		mode = Mode.View;
+		document.getElementById('modifyButton').parentElement.classList.remove('active');
+        mode = Mode.View;
 		selectingText = false;
 		return;
 	}
@@ -1179,25 +1192,39 @@ function saveModification(){
 		console.log("filled targetList");
 		console.log(targetList);
 		
-		
 		// targetsXmlIds holds only the ids of the element in targetList
 		let newTargetsXmlIds = createListOfIds(targetList);
 		
 		console.log(newTargetsXmlIds);
 		
 		// ask user if the new selection should be saved in a modal
-		let oldSelectedText = document.getElementById(selectedAnnotation.svgCode.split("\"")[1]).textContent;
-		let newSelectedText = document.getElementById(newTargetsXmlIds.split("\"")[1]).textContent;
-		
-		
+
+        // get the previously selected text from the respective body (purpose: describing), or reconstruct it from the target
+        let oldSelectedText = selectedAnnotation.textCards.find(textCard => textCard.purpose === "describing" );
+        if (oldSelectedText != undefined){
+            oldSelectedText = oldSelectedText.value;
+        } else {
+            let idArray = [];
+            selectedAnnotation.targets.forEach(target => {
+                idArray.push(target.selector.xPath.split("\"")[1]);
+            });
+            // this sorts the xml:ids retrieve a somehow appropriate recosntruction of the text out of the targets
+            // in cases, where the ids are not in an ascending nummerical order, the reconstruction will be off
+            idArray = idArray.sort((a, b) => {return a - b});
+            oldSelectedText = "";
+            idArray.forEach( id => {oldSelectedText += document.getElementById(id).textContent + " "});
+        }
+
+        let newSelectedText = removeWhitespaceFromSelectionTextContent(selectionRangeContents.textContent);
+
 		// modal stuff should be optimised
 		let el = document.createElement("div");
-		el.innerHTML = oldSelectedText + " | id: " + selectedAnnotation.svgCode.split("\"")[1];
+		el.innerHTML = oldSelectedText + selectedAnnotation.targets.toString(); //  + " | id: " + selectedAnnotation.svgCode.split("\"")[1];
 		document.getElementById("oldSelectedText").innerHTML = "Current Selection:";
 		document.getElementById("oldSelectedText").append(el);
 		
 		let ele = document.createElement("div");
-		ele.innerHTML = newSelectedText + " | id: " + newTargetsXmlIds.split("\"")[1];
+		ele.innerHTML = newSelectedText + " | id: " + newTargetsXmlIds;
 		document.getElementById("newSelectedText").innerHTML = "New Selection:";
 		document.getElementById("newSelectedText").append(ele);
 		
@@ -1215,12 +1242,7 @@ function updateTarget(){
 	//let idOfAnnotationToUpdate = encodeAnnoId(modal.dataset.SelectedAnnotationId);
 	let newTargetXmlId = modal.dataset.newTargetXmlId;
 	
-	// update the annotations target by sending a put request
-	// to takita core
-	//if (newTargetsXmlId != selectedAnnotation.svgCode){
-		// put request
-	//}
-	
+	// update the target of an annotation (and the "purpose:describing" body, if it exists) by sending a put request
 	let annotationDataJson = {"color" : "#89f099", "motivation" : "describing", "svgCode" : newTargetXmlId};
 	$ .ajax({
             type : 'PUT',
@@ -1232,13 +1254,65 @@ function updateTarget(){
 
             success : function(responseData) {
                 
+                console.log("Response data from succesfull target update: ", responseData);
+
+                let responseDataJson = JSON.parse(responseData);
+ 
+                // TODO: only temporary solution to update the body containing the selected text
+                // if the purpose changes, the following needs to be changed
+                let result = null;
+                result = responseDataJson.textCards.filter(textCard => textCard.purpose === "describing");
+                console.log(result);
+                if (result != null && result.length > 0) {
+                    // TODO: fix, when it goes into production, bc then the innerHTML will only be the selected text without any "|"s
+                    let newSelectedText = document.getElementById("newSelectedText").children[0].innerHTML.split("|")[0];
+                    newSelectedText.slice(0, (newSelectedText.length - 1));
+                    // TODO: should there not be a field to store, who modified the body in addition to the timestamp of the modification?                    
+                    console.log(responseDataJson.creators);
+                    let updatedBody = {"created" : new Date(responseDataJson.created.seconds * 1000 + responseDataJson.created.nanos / 1000000).toISOString(), 
+                    "creators" : responseDataJson.creators, "id" : result[0].id,
+                    "modified" : new Date(responseDataJson.modified.seconds * 1000 + responseDataJson.modified.nanos / 1000000).toISOString(), 
+                    "purpose" : result[0].purpose, "value" : newSelectedText};
+                    console.log("Updated body: ", updatedBody);
+
+                    let annoIdEncoded = encodeAnnoId(responseDataJson.id);
+                    let endpoint = '/editor_rest/annotations/' + annoIdEncoded + '/bodies/' + result[0].id;
+                    console.log("Endpoint for body update: ", endpoint);
+
+                    $ .ajax({
+                        type: 'PUT',
+                        url: endpoint,
+                        data: JSON.stringify(updatedBody),
+                        headers: {
+                            'Content-Type' : 'application/json'
+                        },
+
+                        success: function(responseData) {
+                            console.log("Response data from succesfull body update: ", responseData);
+                        },
+        
+                        error: function(errorData) {
+                            console.log("Error data from failed body update: ", errorData);
+                        }
+                    });
+                }
+                
                 // redraw
                 removeStyles(document.getElementById("TEI"));
-                console.log(responseData);
+
                 // updating the annoJson
                 annoJson.forEach(anno => {
 					if (anno.id === selectedAnnotation.id){
-						anno.svg = newTargetXmlId;
+						let newTargetArray = [];
+                        if (newTargetXmlId.includes("§")){
+                            let idList = newTargetXmlId.split("§");
+                            idList.forEach(id => {
+                                newTargetArray.push(id);
+                            });
+                        } else {
+                            newTargetArray.push(newTargetXmlId)
+                        }
+                        anno.svg = newTargetArray;
 					}
 				});				
                 drawAnnos(annoJson);
@@ -1248,10 +1322,13 @@ function updateTarget(){
                 document.getElementById('modifyButton').parentElement.classList.remove('active');
                 mode = Mode.View;
 				selectingText = false;
+
+                // show the updated annotation
+                selectAnnotation(null, encodeAnnoId(responseDataJson.id));
             },
 
             error : function(errorData) {
-                 console.log(errorData);
+                 console.log("Error data from failed target update: ", errorData);
             }
         });
 }
