@@ -97,10 +97,10 @@ function getFormModel(chosenTemplate) {
 							 " = " + svgs.split("\"")[1] + " | ";
 				});
 				console.log(targetMRW);
-				targetWord = targetMRW.slice(0, (targetMRW.length-3));
+				targetMRW = targetMRW.slice(0, (targetMRW.length-3));
 				console.log(targetMRW);
 				mrwTitleMap[anno.id] = targetMRW;
-				// emptying the sring, so it can be filled during next iteration cycle
+				// emptying the string, so it can be filled during next iteration cycle
 				targetMRW = "";
 				mrwEnum.push(anno.id);
 				//console.log(mrwEnum);
@@ -138,6 +138,10 @@ function getFormModel(chosenTemplate) {
 	                    "title" : "Label",
 	                    "default" : defaultLabel
 	                },
+                    "comment" : {
+	                    "type" : "string",
+	                    "title" : "Comment"
+	                }
 	            }
 	        };
 			uiForm = {
@@ -160,6 +164,9 @@ function getFormModel(chosenTemplate) {
 	                    	
 	                },{
                         "key": "label"
+                    },{
+                        "key": "comment",
+                        "type": "textarea"
                     }
                 ]
 	        };
@@ -332,7 +339,18 @@ const formObjectCreateAnnotation = {
             $('#createAnnotationForm').metadataeditorForm(options, function onSubmitValid(value) {
                 console.log(value);
                 let jsonObject = JSON.parse(value);
-                
+
+                // as the uris of the mrw annotations are stored in an array and the wadm does not accept an array as a value,
+                // the array will be split into multiple "key:value" pairs, with the same key (mrws)
+                if ("mrws" in jsonObject){
+                    let mrws = [...jsonObject.mrws];
+                    delete jsonObject.mrws;
+                    for (var i = 0; i < mrws.length; i++) {
+                        let keyCounter = "mrws" + i;
+                        jsonObject[keyCounter] = mrws[i];
+                    }
+                }
+
                 let color;
                 if (jsonObject.color) {
                     color = jsonObject.color;
@@ -462,11 +480,14 @@ function storeBody(responseJson, jsonObject, index) {
                 if (Object.keys(jsonObject)[index] === "transcription") {
                     bodyDataJson = {"purpose" : "tadirah:transcription", "value" : jsonObject[Object.keys(jsonObject)[index]]};
                 } else if (Object.keys(jsonObject)[index] === "selectedText"){ // storing the selected text
-                    bodyDataJson = {"purpose" : "describing", "value" : jsonObject[Object.keys(jsonObject)[index]]};       
-                } else if (Object.keys(jsonObject)[index] === "mrws"){ // linking mrw and metaphor annotation
-                    bodyDataJson = {"purpose" : "linking", "value" : jsonObject[Object.keys(jsonObject)[index]]};
+                    bodyDataJson = {"purpose" : "describing", "value" : jsonObject[Object.keys(jsonObject)[index]]};
+                } else if (Object.keys(jsonObject)[index].includes("mrws")){ // linking mrw and metaphor annotation; includes has to be used here
+                    // as there can be multiple keys=mrws, with ascending numbers appended
+                    bodyDataJson = {"purpose" : "linking", "value" : jsonObject[Object.keys(jsonObject)[index]]};         
                 } else if (Object.keys(jsonObject)[index] === "label"){ // human readable label
                     bodyDataJson = {"purpose" : "identifying", "value" : jsonObject[Object.keys(jsonObject)[index]]};
+                } else if (Object.keys(jsonObject)[index] === "comment"){ // user entered comment, if no comment given, the key will not be present and no body will be created
+                    bodyDataJson = {"purpose" : "commenting", "value" : jsonObject[Object.keys(jsonObject)[index]]};
                 } else {
                     bodyDataJson = {"purpose" : "classifying", "value" : jsonObject[Object.keys(jsonObject)[index]]};
                 }
@@ -512,7 +533,7 @@ function storeBody(responseJson, jsonObject, index) {
         if (document.getElementById("createAnnotationForm").title !== "") {
             newAnnotation.svg = document.getElementById("createAnnotationForm").title;
             //extractInformationFromSvg(newAnnotation.svg, newAnnotation);
-            // this needs to be done, so the drawAnno code works, as it epects the svg to be an array
+            // this conversion needs to be done, so the drawAnno code works, as it epects the svg to be an array
             var svgArray = [];
 	        if (newAnnotation.svg.includes("§")){
 				newAnnotation.svg.split("§").forEach(svgCode =>{
