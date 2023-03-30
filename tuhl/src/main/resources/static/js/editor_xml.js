@@ -964,8 +964,7 @@ function createTargetList(selection){
 					if (selectionRange.commonAncestorContainer.parentNode.nodeName === "TEI-W") {
 						targetList.push(selectionRange.commonAncestorContainer.parentNode);
 					} else {
-						console.log("selectionRange.commonAncestorContainer.parentNode is not TEI-W.");
-						console.log(selectionRange.commonAncestorContainer.parentNode);
+						console.log("selectionRange.commonAncestorContainer.parentNode is not TEI-W. ", selectionRange.commonAncestorContainer.parentNode);
 					}
 				}
 			}
@@ -1074,17 +1073,17 @@ function storeSelectedMRWAnnos(targetList){
 			}
 		});
 	});
-	console.log(mrwAnnos);
+	console.log("MRW annotations present in current selection: ", mrwAnnos);
 }
 
 function removeWhitespaceFromSelectionTextContent(text){
-    console.log("Before cleaning: " + text);
+    console.log("Before cleaning: ",  text);
     text = text.replace(/\s{4}|[\t\n\r]|\s/g,' ');
     while (text.includes("  ")){
         text = text.replaceAll("  ",  " ");
     }
     text = text.trim();
-    console.log("After cleaning: " + text);
+    console.log("After cleaning: ", text);
     return text;
 };
 
@@ -1097,10 +1096,9 @@ function annotateSelectedText(){
 		let selectionRange = window.getSelection().getRangeAt(0);
 		let selectionRangeContents = getContentOfSelection(window.getSelection());
 
-		console.log("here");
-		console.log(window.getSelection());
-		console.log(selectionRange);
-		console.log(selectionRangeContents);
+		console.log("Selection object: ", window.getSelection());
+		console.log("SelectionRange[0] object: ", selectionRange);
+		console.log("Contents of a Selection object: ", selectionRangeContents);
 		
 		// stop the function, if the selection does not contain any text, only whitespace
 		if (getContentOfSelection(window.getSelection()).textContent.trim() == ""){
@@ -1111,8 +1109,7 @@ function annotateSelectedText(){
 		// targetList holds all the nodes from the selection, that are <w> elements
 		let targetList = createTargetList(window.getSelection());
 
-		console.log("filled targetList");
-		console.log(targetList);
+		console.log("Filled targetList for annotation creation: ", targetList);
 		
 		// store all the mrw annotations that are contained in a selection
 		// so they can be accessed in creation_templates_text.js to generate
@@ -1127,11 +1124,11 @@ function annotateSelectedText(){
 			globalSelectedText = globalSelectedText.replaceAll("  ",  " ");
 		}
 		globalSelectedText = globalSelectedText.trim();
-		console.log(globalSelectedText);
+		console.log("GlobalSelectedText: ", globalSelectedText);
 		// targetsXmlIds holds only the ids of the element in targetList
 		let targetsXmlIds = createListOfIds(targetList);
 		
-		console.log(targetsXmlIds);
+		console.log("Xml:ids present in the selection: ", targetsXmlIds);
 		// showing the modal/dropdown to select the annotation template, which can be populated
 		// by the user
 		const modal = document.getElementById("createAnnotation");
@@ -1160,7 +1157,7 @@ function modifySelection(){
 		selectingText = false;
 		return;
 	}
-	console.log(selectedAnnotation);
+	console.log("Selected annotation: ", selectedAnnotation);
 	
 }
 
@@ -1189,13 +1186,12 @@ function saveModification(){
 		// targetList holds all the nodes from the selection, that are <w> elements
 		let targetList = createTargetList(window.getSelection());
 
-		console.log("filled targetList");
-		console.log(targetList);
+        console.log("Filled targetList for annotation target update: ", targetList);
 		
 		// targetsXmlIds holds only the ids of the element in targetList
 		let newTargetsXmlIds = createListOfIds(targetList);
-		
-		console.log(newTargetsXmlIds);
+
+        console.log("Xml:ids present in the NEW selection: ", newTargetsXmlIds);
 		
 		// ask user if the new selection should be saved in a modal
 
@@ -1262,13 +1258,12 @@ function updateTarget(){
                 // if the purpose changes, the following needs to be changed
                 let result = null;
                 result = responseDataJson.textCards.filter(textCard => textCard.purpose === "describing");
-                console.log(result);
                 if (result != null && result.length > 0) {
                     // TODO: fix, when it goes into production, bc then the innerHTML will only be the selected text without any "|"s
                     let newSelectedText = document.getElementById("newSelectedText").children[0].innerHTML.split("|")[0];
                     newSelectedText.slice(0, (newSelectedText.length - 1));
                     // TODO: should there not be a field to store, who modified the body in addition to the timestamp of the modification?                    
-                    console.log(responseDataJson.creators);
+                    // console.log(responseDataJson.creators);
                     let updatedBody = {"created" : new Date(responseDataJson.created.seconds * 1000 + responseDataJson.created.nanos / 1000000).toISOString(), 
                     "creators" : responseDataJson.creators, "id" : result[0].id,
                     "modified" : new Date(responseDataJson.modified.seconds * 1000 + responseDataJson.modified.nanos / 1000000).toISOString(), 

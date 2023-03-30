@@ -96,9 +96,8 @@ function getFormModel(chosenTemplate) {
 					targetMRW += document.getElementById(svgs.split("\"")[1]).innerHTML +
 							 " = " + svgs.split("\"")[1] + " | ";
 				});
-				console.log(targetMRW);
 				targetMRW = targetMRW.slice(0, (targetMRW.length-3));
-				console.log(targetMRW);
+				//console.log(targetMRW);
 				mrwTitleMap[anno.id] = targetMRW;
 				// emptying the string, so it can be filled during next iteration cycle
 				targetMRW = "";
@@ -340,8 +339,9 @@ const formObjectCreateAnnotation = {
                 console.log(value);
                 let jsonObject = JSON.parse(value);
 
-                // as the uris of the mrw annotations are stored in an array and the wadm does not accept an array as a value,
-                // the array will be split into multiple "key:value" pairs, with the same key (mrws)
+                // CRC 1475 specific
+                // as the uris of the mrw annotations are stored in an array and the wadm does not accept an array as a value
+                // of a textual body, the array will be split into multiple "key:value" pairs, with the same key (mrws)
                 if ("mrws" in jsonObject){
                     let mrws = [...jsonObject.mrws];
                     delete jsonObject.mrws;
@@ -475,8 +475,8 @@ function storeBody(responseJson, jsonObject, index) {
                 bodyDataJson = {"value" : jsonObject[Object.keys(jsonObject)[index]]};
             } else {
                 endpoint = '/editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/bodies';
-                console.log("--------------------------------------------");
-                console.log(Object.keys(jsonObject)[index]);
+
+                console.log("Body to store: ", Object.keys(jsonObject)[index]);
                 if (Object.keys(jsonObject)[index] === "transcription") {
                     bodyDataJson = {"purpose" : "tadirah:transcription", "value" : jsonObject[Object.keys(jsonObject)[index]]};
                 } else if (Object.keys(jsonObject)[index] === "selectedText"){ // storing the selected text
