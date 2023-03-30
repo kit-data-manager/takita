@@ -1207,6 +1207,11 @@ function saveModification(){
             // this sorts the xml:ids retrieve a somehow appropriate recosntruction of the text out of the targets
             // in cases, where the ids are not in an ascending nummerical order, the reconstruction will be off
             idArray = idArray.sort((a, b) => {return a - b});
+            idArray = idArray.sort((a, b) => {
+                const na = a.split(".").slice(-1)[0];
+                const nb = b.split(".").slice(-1)[0];
+                return na - nb;
+            });
             oldSelectedText = "";
             idArray.forEach( id => {oldSelectedText += document.getElementById(id).textContent + " "});
         }
