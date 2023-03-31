@@ -11,9 +11,17 @@
     transform: scale(1.1);
 }
 
+/* decreasing the size of the modal by 
+   reducing the size of the textareas, to prevent 
+   users not being able to close the modal */
+
+div.form-group > div.controls > textarea {
+    height: 10rem !important;
+}
+
 .modal-content {
     position: absolute;
-    top: 40%;
+    top: 50%;
     left: 75%;
     transform: translate(-50%, -50%);
     background-color: white;
