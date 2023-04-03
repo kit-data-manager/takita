@@ -1341,19 +1341,48 @@ function init(annotations) {
 	document.getElementById("TEI").oncontextmenu = function(e) {
         e.preventDefault();
         
+        let annotationOnTarget = [];
+        let annoIdEncoded;
+
         if (e.target.style.backgroundColor != "" ||
         	e.target.style.borderBottom == "medium solid rgb(33, 150, 243)"){
+            // add all the annotations targeting the selected word to an array
 			annoJson.forEach(item => {
 				item.svg.forEach( target => {
 					if (e.target.id == target.split("\"")[1]){
-						selectAnnotation(null, item.idEncoded);
-	                	if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
-	                  	  toggleOverview('annotationCard');
+                        annotationOnTarget.push(item);
 	              	  };
-					}
 				});
 			});
-		}
+            console.log("annotationsOntarget ", annotationOnTarget);
+            // check if any annotation was selected previuosly or if the target word changed and therefore
+            // the id of the previuosly selected annotation is not present in the list of annotations, that
+            // target the word on which the onClick event was triggered
+            console.log("selectedAnnotation 1: ", selectedAnnotation);
+            if (selectedAnnotation === undefined || 
+                annotationOnTarget.find(annotation => annotation.id === selectedAnnotation.id ) === undefined){
+                    console.log("first annotationsOntarget ",annotationOnTarget[0])
+                annoIdEncoded = encodeAnnoId(annotationOnTarget[0].id);
+            } else {
+                // check if the next index would be out off bounds, if yes select the first annotaiton in the list
+                // to start at the beginning of the list again and cycle through
+                if ((annotationOnTarget.findIndex(annotation => annotation.id === selectedAnnotation.id) + 1) > annotationOnTarget.length - 1){
+                    annoIdEncoded = encodeAnnoId(annotationOnTarget[0].id);
+                    console.log("first annotationsOntarget 2 ",annotationOnTarget[0]);
+                } else {
+                    annoIdEncoded = encodeAnnoId(annotationOnTarget[annotationOnTarget.findIndex(annotation => annotation.id === selectedAnnotation.id) + 1].id);
+                    console.log("2-n annotationsOntarget ", annotationOnTarget[annotationOnTarget.findIndex(annotation => annotation.id === selectedAnnotation.id) + 1]);
+                }     
+            }
+
+            console.log("select anno id encoded: ", annoIdEncoded);
+            selectAnnotation(null, annoIdEncoded);
+            //alert("asd");
+            console.log("selectedAnnotation 2: ", selectedAnnotation);
+	        if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
+	            toggleOverview('annotationCard');
+		    }
+        } 
 	}
 	
 	document.getElementById("TEI").onmouseup = function (event) {
