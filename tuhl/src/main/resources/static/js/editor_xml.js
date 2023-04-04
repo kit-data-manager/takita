@@ -954,6 +954,13 @@ function createTargetList(selection){
 		// for some reason the selection always holds more than one element
 		// even if, only one got selected. Only if a user selects the middle part
 		// of a word, the selection holds only one elment
+
+        // TODO: firefox specific problem (works in
+        // safari: just fine
+        // chrome: only because double clicking selects all syllables):
+        // double clicking on the first syllable of an unsandhied word (B04 specifc data) creates
+        // a selection containing two text nodes. therefore no elementNode will be put into 
+        // the targetList and no xml:id is present to create the annotation.
 		if (selectionRangeContents.childNodes.length == 1){
 			// if a user selects only the middle part of a word (eg. "or") the selection
 			// won't return a w-element but a textNode, so we need to get the parent of
@@ -967,7 +974,19 @@ function createTargetList(selection){
 						console.log("selectionRange.commonAncestorContainer.parentNode is not TEI-W. ", selectionRange.commonAncestorContainer.parentNode);
 					}
 				}
-			}
+			// TODO: sometimes an element "A" only has one childNode, which is a tei-w.
+            // In this case, the tei-w's id WONT be added to the targetList by calling the
+            // getXmlIds funciton on this selection. This is the case for B04 data,
+            // when the tei-reg element holds only one tei-w element)
+            // temporary solution:
+            // So if the element "A" is not a textNode, but something else (Philipp can only
+            // think, that it would be an elementNode then, in B04 its an tei-reg element),
+            // its xmlid should be retrieved and added to the targetList by calling getXmlIds()
+            } else if (selectionRangeContents.childNodes[0].nodeType == 1){
+                getXmlIds(selectionRangeContents.children[0], targetList);
+            } else {
+                console.log("The following node is neither a text nor element node. ", selectionRangeContents.childNodes[0]);
+            }
 		} else {
 			getXmlIds(selectionRangeContents, targetList);
 		}
