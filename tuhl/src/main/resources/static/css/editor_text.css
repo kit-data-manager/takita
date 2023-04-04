@@ -61,10 +61,16 @@ tei-choice {
 /* TODO: make it targeting all B04 files */
 tei-div[n="Rāmāyaṇa"] tei-l,
 tei-div[n="Ṛgveda"] tei-l{
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 	user-select: none;
 }
 
 tei-reg {
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
 	user-select: text;
 }
 
