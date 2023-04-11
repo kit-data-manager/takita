@@ -485,7 +485,13 @@ function extractInformationFromSvg (svgString, annoJson) {
 // remove the style from all elements
 // https://stackoverflow.com/questions/9252839/simplest-way-to-remove-all-the-styles-in-a-page
 function removeStyles(el) {
-    el.removeAttribute('style');
+
+    // specify the classe to remove here
+    let possibleClasses = ["mrw", "mflag", "metaphor"];
+
+    possibleClasses.forEach(entry => {
+        el.classList.remove(entry);
+    });
 
     el.childNodes.forEach(childNode => {
         if(childNode.nodeType == 1) removeStyles(childNode)
@@ -494,24 +500,25 @@ function removeStyles(el) {
 
 // highlighting all annotations
 function drawAnnos(annoJson) {
-    let annoXmlId;
+    let targetXmlId;
+
     annoJson.forEach(annotation => {
-		//console.log(annotation);
 		annotation.svg.forEach( target => {
-			annoXmlId = target.split("\"")[1];
+			targetXmlId = target.split("\"")[1];
 			annotation.tags.forEach( tag => {
-				//console.log(tag);
 				// different highlights for different annotation types
-				if (tag.value === "metaphor"){
-					document.getElementById(annoXmlId).style.borderBottom = 'solid';
-					document.getElementById(annoXmlId).style.borderColor = '#2196F3';
-				} else if (tag.value === "mrw"){
-					document.getElementById(annoXmlId).style.backgroundColor = '#daa3ff';
-				} else {
-					if (document.getElementById(annoXmlId).style.backgroundColor == "") {
-						document.getElementById(annoXmlId).style.backgroundColor = 'yellow';
-					}
-				}
+                switch (tag.value){
+                    case "metaphor":
+                        document.getElementById(targetXmlId).classList.add("metaphor");
+                        break;
+                    case "mrw":
+                        document.getElementById(targetXmlId).classList.add("mrw");
+                        break;
+                    case "mflag":
+                        document.getElementById(targetXmlId).classList.add("mflag");
+                    //default:
+                        //console.log("Tag value not matching the possible cases, no class added for:", annotation);
+                }
 			});
 		});
 
@@ -1356,15 +1363,16 @@ function init(annotations) {
 	
 	annoJson = JSON.parse(annotations);
 	
-	// open textcard if rightclicking on a word that is highlighted, i.e. has an annotation
+	// open textcard if rightclicking on a word that is highlighted due to it 
+    // having a css class, i.e. has an annotation
 	document.getElementById("TEI").oncontextmenu = function(e) {
         e.preventDefault();
         
         let annotationOnTarget = [];
         let annoIdEncoded;
-
-        if (e.target.style.backgroundColor != "" ||
-        	e.target.style.borderBottom == "medium solid rgb(33, 150, 243)"){
+        if (e.target.classList.contains("mrw") ||
+            e.target.classList.contains("metaphor") ||
+            e.target.classList.contains("mflag")){
             // add all the annotations targeting the selected word to an array
 			annoJson.forEach(item => {
 				item.svg.forEach( target => {

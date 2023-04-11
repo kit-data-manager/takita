@@ -1,9 +1,38 @@
 /* ------------------------------------*/
+/* ANNOTATION SPECIFICS */
+/* ------------------------------------*/
+
+/* highlight words annotated as mrws in purple */
+.mrw {
+	background: #daa3ff;
+}
+
+/* highlight words annotated as mflags in purple */
+.mflag {
+	background: yellow;
+}
+
+/* highlight words annotated as mrws and mflags
+ in purple and yellow */
+.mrw.mflag {
+	background: linear-gradient( to bottom, yellow 50%, #daa3ff 50% 100% )
+}
+
+/* underline words annotated as metaphors */
+.metaphor {
+	border-bottom: solid;
+	border-color: #2196F3;
+}
+
+/* end of annotation specifics */
+/* ------------------------------------*/
+
+
+/* ------------------------------------*/
 /* LANGUAGE SPECIFICS */
 /* ------------------------------------*/
 
-/* right align right aligned languages*/
-
+/* right align right aligned languages */
 tei-text[lang=hbo],
 tei-text[lang=he] {
 	text-align: right;
@@ -29,9 +58,9 @@ tei-text[lang=he] {
 /* ------------------------------------*/
 /* poem specifics*/
 /* ------------------------------------*/
+
 /* display each line in one line
 and add some sapce after each linegroup */
-
 tei-l, 
 tei-lg {
 	display: block;

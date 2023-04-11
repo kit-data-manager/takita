@@ -530,6 +530,9 @@ function storeBody(responseJson, jsonObject, index) {
             "modified" : new Date(responseJson.modified.seconds * 1000 + responseJson.modified.nanos / 1000000).toISOString(), 
             "motivation" : responseJson.motivation, "visible" : true, "tags" : tagsIOP};
         
+        // emptying the tagsIOP, so it can be filled for the next annotation
+        tagsIOP = [];
+
         if (document.getElementById("createAnnotationForm").title !== "") {
             newAnnotation.svg = document.getElementById("createAnnotationForm").title;
             //extractInformationFromSvg(newAnnotation.svg, newAnnotation);
