@@ -93,10 +93,9 @@ function getFormModel(chosenTemplate) {
 				//console.log(anno);
 				// getting the text
 				anno.svg.forEach( svgs => {
-					targetMRW += document.getElementById(svgs.split("\"")[1]).innerHTML +
-							 " = " + svgs.split("\"")[1] + " | ";
+					targetMRW += document.getElementById(svgs.split("\"")[1]).innerHTML + " ";// + " = " + svgs.split("\"")[1] + " | ";
 				});
-				targetMRW = targetMRW.slice(0, (targetMRW.length-3));
+				targetMRW = targetMRW.slice(0, (targetMRW.length-1));
 				//console.log(targetMRW);
 				mrwTitleMap[anno.id] = targetMRW;
 				// emptying the string, so it can be filled during next iteration cycle

@@ -1230,7 +1230,7 @@ function saveModification(){
             selectedAnnotation.targets.forEach(target => {
                 idArray.push(target.selector.xPath.split("\"")[1]);
             });
-            // this sorts the xml:ids retrieve a somehow appropriate recosntruction of the text out of the targets
+            // this sorts the xml:ids to retrieve a somehow appropriate reconstruction of the text out of the targets
             // in cases, where the ids are not in an ascending nummerical order, the reconstruction will be off
             idArray = idArray.sort((a, b) => {return a - b});
             idArray = idArray.sort((a, b) => {
@@ -1246,12 +1246,12 @@ function saveModification(){
 
 		// modal stuff should be optimised
 		let el = document.createElement("div");
-		el.innerHTML = oldSelectedText + selectedAnnotation.targets.toString(); //  + " | id: " + selectedAnnotation.svgCode.split("\"")[1];
+		el.innerHTML = oldSelectedText; // + selectedAnnotation.targets.toString(); //  + " | id: " + selectedAnnotation.svgCode.split("\"")[1];
 		document.getElementById("oldSelectedText").innerHTML = "Current Selection:";
 		document.getElementById("oldSelectedText").append(el);
 		
 		let ele = document.createElement("div");
-		ele.innerHTML = newSelectedText + " | id: " + newTargetsXmlIds;
+		ele.innerHTML = newSelectedText; // + " | id: " + newTargetsXmlIds;
 		document.getElementById("newSelectedText").innerHTML = "New Selection:";
 		document.getElementById("newSelectedText").append(ele);
 		
