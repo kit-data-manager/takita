@@ -39,6 +39,7 @@ tei-text[lang=he] {
 	display: block; 
 }
 
+/* hebrew */
 /* add a "maqqef" sign used in hebrew texts */
 .maqqef::after {
 	content: "־";
@@ -49,6 +50,12 @@ tei-text[lang=he] {
 	content: "׀";
 }
 
+/* early modern chinese */
+/* change font to batang */
+tei-text[lang=lzh]{
+	font-family: Batang, serif;
+}
+
 /* end of language specifics */
 /* ------------------------------------*/
 
@@ -56,6 +63,14 @@ tei-text[lang=he] {
 /* ------------------------------------*/
 /* TEXT STRUCTURE SPECIFICS*/
 /* ------------------------------------*/
+
+/* linebreak after a title */
+tei-head::after {
+	content: "\00000a";
+	white-space: pre-wrap;
+}
+
+
 /* poem specifics*/
 /* ------------------------------------*/
 
