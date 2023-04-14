@@ -65,7 +65,7 @@ function selectAnnotation(event, annoId) {
             };
             
             const headerFields = ["created", "creators", "modified", "generator", "motivation", "target", "via"];
-            const omitFields = ["type", "selector", "fullJson", "annotationId"];
+            const omitFields = ["type", "selector", "fullJson", "annotationId", "motivation", "created", "id", "purpose"];
             
             for (field in headerFields) {
                 if (responseJson[headerFields[field]]) {
