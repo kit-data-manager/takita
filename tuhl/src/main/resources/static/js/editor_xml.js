@@ -489,7 +489,7 @@ function removeStyles(el) {
     // CUSTOMISE classes to remove (linked to classes assigned in
     // drawAnnos() function)
     // specify the classe to remove here
-    let possibleClasses = ["mrw", "mflag", "metaphor"];
+    let possibleClasses = ["mrw", "mflag", "metaphor", "metaphorSecond"];
 
     possibleClasses.forEach(entry => {
         el.classList.remove(entry);
