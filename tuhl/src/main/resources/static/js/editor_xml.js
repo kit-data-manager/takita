@@ -501,15 +501,33 @@ function removeStyles(el) {
 // highlighting all annotations
 function drawAnnos(annoJson) {
     let targetXmlId;
-
+    let alreadyAnnotated;
     annoJson.forEach(annotation => {
+        // check if a target has the classe "metaphor" and
+        // therefore, is already highlighted
+        alreadyAnnotated = false;
+        annotation.svg.forEach( target => {
+			targetXmlId = target.split("\"")[1];
+            if(document.getElementById(targetXmlId).classList.contains("metaphor")){
+                alreadyAnnotated = true;
+            }
+        });
+
+        // adding classes to highlight annotations
 		annotation.svg.forEach( target => {
 			targetXmlId = target.split("\"")[1];
 			annotation.tags.forEach( tag => {
 				// different highlights for different annotation types
                 switch (tag.value){
                     case "metaphor":
-                        document.getElementById(targetXmlId).classList.add("metaphor");
+                        // if a word is not highlighted add the "metaphor" class, if it is
+                        // already highlighted add "metaphorSecond"
+                        if (!alreadyAnnotated){
+                            document.getElementById(targetXmlId).classList.add("metaphor");
+                        } else {
+                            document.getElementById(targetXmlId).classList.add("metaphorSecond");
+                        }
+                        
                         break;
                     case "mrw":
                         document.getElementById(targetXmlId).classList.add("mrw");
@@ -1372,6 +1390,7 @@ function init(annotations) {
         let annoIdEncoded;
         if (e.target.classList.contains("mrw") ||
             e.target.classList.contains("metaphor") ||
+            e.target.classList.contains("metaphorSecond") ||
             e.target.classList.contains("mflag")){
             // add all the annotations targeting the selected word to an array
 			annoJson.forEach(item => {

@@ -13,15 +13,33 @@
 }
 
 /* highlight words annotated as mrws and mflags
- in purple and yellow */
+	in purple and yellow */
 .mrw.mflag {
 	background: linear-gradient( to bottom, yellow 50%, #daa3ff 50% 100% )
 }
 
 /* underline words annotated as metaphors */
 .metaphor {
-	border-bottom: solid;
-	border-color: #2196F3;
+	box-shadow: 0px 0.2em #2196F3;
+}
+
+/* TODO: improve the comment phasing*/
+/* underline words annotated as metaphors, if 
+	another word is part of another metaphor
+	annotation and therefore, already highlighted 
+	-> only one underline */
+.metaphorSecond {
+	box-shadow: 0px 0.2em white, 0px 0.4em purple;
+	line-height: 1.75em;
+}
+
+/* underline words annotated as metaphors, if 
+	another word is part of another metaphor
+	annotation and therefore, already highlighted 
+	-> two underlines */
+.metaphor.metaphorSecond {
+	box-shadow: 0px 0.2em #2196F3, 0px 0.4em purple;
+	line-height: 1.75em;
 }
 
 /* end of annotation specifics */
@@ -75,7 +93,7 @@ tei-head::after {
 /* ------------------------------------*/
 
 /* display each line in one line
-and add some sapce after each linegroup */
+	and add some sapce after each linegroup */
 tei-l, 
 tei-lg {
 	display: block;
