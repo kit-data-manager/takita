@@ -8,6 +8,7 @@ const bodyTemplate = {
 };
 
 // enum for different annotation templates
+// CUSTOMISE available annotations (will be shown during the annotation process)
 // for adding new: include name here and add dataModel in 
 // getFormModel(chosenTemplate)
 const annotationTemplate = {
@@ -19,6 +20,8 @@ const annotationTemplate = {
 };
 
 // assigns data model needed for MetadataEditor to specific template
+// CUSTOMISE available annotations and their structure/content (dataModel)
+// and how they are displayed in the modal (uiForm)
 function getFormModel(chosenTemplate) {
     let dataModel;
     let uiForm;
@@ -476,6 +479,7 @@ function storeBody(responseJson, jsonObject, index) {
                 endpoint = '/editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/bodies';
 
                 console.log("Body to store: ", Object.keys(jsonObject)[index]);
+                // CUSTOMISE assignment of purpos to an annotation body
                 if (Object.keys(jsonObject)[index] === "transcription") {
                     bodyDataJson = {"purpose" : "tadirah:transcription", "value" : jsonObject[Object.keys(jsonObject)[index]]};
                 } else if (Object.keys(jsonObject)[index] === "selectedText"){ // storing the selected text

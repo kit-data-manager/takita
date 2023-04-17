@@ -2,6 +2,8 @@
 /* ANNOTATION SPECIFICS */
 /* ------------------------------------*/
 
+/* CUSTOMISE how annotations should be highlighted */
+
 /* highlight words annotated as mrws in purple */
 .mrw {
 	background: #daa3ff;

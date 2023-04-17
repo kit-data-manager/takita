@@ -486,6 +486,8 @@ function extractInformationFromSvg (svgString, annoJson) {
 // https://stackoverflow.com/questions/9252839/simplest-way-to-remove-all-the-styles-in-a-page
 function removeStyles(el) {
 
+    // CUSTOMISE classes to remove (linked to classes assigned in
+    // drawAnnos() function)
     // specify the classe to remove here
     let possibleClasses = ["mrw", "mflag", "metaphor"];
 
@@ -519,6 +521,8 @@ function drawAnnos(annoJson) {
 			annotation.tags.forEach( tag => {
 				// different highlights for different annotation types
                 switch (tag.value){
+                    // CUSTOMIZE highlighting of different annotations, based on the value of the tags
+                    // (linked to classes to be removed in removeStyles() funtcion)
                     case "metaphor":
                         // if a word is not highlighted add the "metaphor" class, if it is
                         // already highlighted add "metaphorSecond"
@@ -1388,6 +1392,7 @@ function init(annotations) {
         
         let annotationOnTarget = [];
         let annoIdEncoded;
+        // CUSTOMIZE textCard toggle (display of the annotation on the right side of the screen)
         if (e.target.classList.contains("mrw") ||
             e.target.classList.contains("metaphor") ||
             e.target.classList.contains("metaphorSecond") ||
