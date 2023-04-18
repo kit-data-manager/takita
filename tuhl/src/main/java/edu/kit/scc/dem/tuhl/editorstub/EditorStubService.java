@@ -6,14 +6,20 @@ import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
 import edu.kit.scc.dem.tuhl.dataaccess.AnnotationConverter;
 import edu.kit.scc.dem.tuhl.dataaccess.IAnnotationStoreAccessService;
 import edu.kit.scc.dem.tuhl.dataaccess.IRepositoryAccessService;
+import edu.kit.scc.dem.tuhl.dataaccess.RepositoryAccessService;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
+import edu.kit.scc.dem.tuhl.model.target.SVGSelector;
+import edu.kit.scc.dem.tuhl.model.target.Target;
+import edu.kit.scc.dem.tuhl.model.target.XPathSelector;
+
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -85,9 +91,52 @@ public class EditorStubService implements IEditorStubService {
     } else {
       newAnnotation.setColor(Color.DEFAULT);
     }
-
+    
+    // creation of the target
     if (svgCode != null && !svgCode.trim().equals("")) {
-      newAnnotation.setSvgCode(svgCode);
+        // TODO: the frontend should send JSONObject instead of a String
+        // this change needs to be done here as well
+        if (svgCode.contains("§")) {
+	        String[] xPaths = svgCode.split("§");
+	        /*String linkToResource = repositoryAccessService.getBaseUrl()
+	  	            + repositoryAccessService.getStaticPath()
+	  	            + pageId + RepositoryAccessService.DATA_PATH + "Example3"
+	  	            + RepositoryAccessService.FILE_EXTENSION_XML;*/
+	        for (String xPath : xPaths) {
+		    	//Target newTarget = new Target(linkToResource);
+		    	Target newTarget = new Target();
+		    	// for each svgCode create new target
+		    	if (xPath.contains("xml:id")) {
+		        	XPathSelector newSelector = new XPathSelector(xPath);
+		        	newTarget.setType("TEXT");
+		        	newTarget.setSelector(newSelector);
+		    	} else {
+		    		SVGSelector newSelector = new SVGSelector(xPath);
+		    		newTarget.setType("IMAGE");
+		        	newTarget.setSelector(newSelector);
+		    	}
+		    	//System.out.println("------------------Selector: " + newTarget.getSelector().toString());
+		    	newAnnotation.addTarget(newTarget);
+	        }
+        } else {
+        	/*String linkToResource = repositoryAccessService.getBaseUrl()
+	  	            + repositoryAccessService.getStaticPath()
+	  	            + pageId + RepositoryAccessService.DATA_PATH + "Example3"
+	  	            + RepositoryAccessService.FILE_EXTENSION_XML;*/
+		    //Target newTarget = new Target(linkToResource);
+		    Target newTarget = new Target();
+		    if (svgCode.contains("xml:id")) {
+	        	XPathSelector newSelector = new XPathSelector(svgCode);
+	        	newTarget.setType("TEXT");
+	        	newTarget.setSelector(newSelector);
+	    	} else {
+	    		SVGSelector newSelector = new SVGSelector(svgCode);
+	    		newTarget.setType("IMAGE");
+	        	newTarget.setSelector(newSelector);
+	    	}
+		    //System.out.println("------------------Selector: " + newTarget.getSelector().toString());
+		    newAnnotation.addTarget(newTarget);
+        }
     }
 
     if (motivation != null) {
@@ -145,7 +194,62 @@ public class EditorStubService implements IEditorStubService {
     }
 
     if (svgCode != null && !svgCode.trim().equals("")) {
-      updatedAnnotation.setSvgCode(svgCode);
+        // TODO: the frontend should send JSONObject instead of a String
+        // this change needs to be done here as well
+    	List<Target> newTargets = new ArrayList<>();
+    	if (svgCode.contains("§")) {
+   	        String[] xPaths = svgCode.split("§");
+	        String linkToResource = updatedAnnotation.getTargets().get(0).getLinkToResource();
+	        for (String xPath : xPaths) {
+		    	//Target newTarget = new Target(linkToResource);
+		    	Target newTarget = new Target();
+		    	// for each svgCode create new target
+		    	if (xPath.contains("xml:id")) {
+		        	XPathSelector newSelector = new XPathSelector(xPath);
+		        	newTarget.setType("TEXT");
+		        	newTarget.setSelector(newSelector);
+		    	} else {
+		    		SVGSelector newSelector = new SVGSelector(xPath);
+		    		newTarget.setType("IMAGE");
+		        	newTarget.setSelector(newSelector);
+		    	}
+		    	newTargets.add(newTarget);
+	        }
+	        updatedAnnotation.setTargets(newTargets);
+        } else {
+        	Target newTarget = new Target();
+	    	// for each svgCode create new target
+	    	if (svgCode.contains("xml:id")) {
+	        	XPathSelector newSelector = new XPathSelector(svgCode);
+	        	newTarget.setType("TEXT");
+	        	newTarget.setSelector(newSelector);
+	    	} else {
+	    		SVGSelector newSelector = new SVGSelector(svgCode);
+	    		newTarget.setType("IMAGE");
+	        	newTarget.setSelector(newSelector);
+	    	}
+	    	newTargets.add(newTarget);
+	    	updatedAnnotation.setTargets(newTargets);
+        }
+    	
+    	/*List<Target> newTargets = new ArrayList<>();
+    	for (String code : svgCode.split("d")) {
+    		//String linkToResource = "asd";
+        	Target newTarget = new Target("placeholder");
+        	// for each svgCode create new target
+        	if (svgCode.contains("xml:id")) {
+            	XPathSelector newSelector = new XPathSelector(code);
+            	newTarget.setType("TEXT");
+            	newTarget.setSelector(newSelector);
+        	} else {
+        		SVGSelector newSelector = new SVGSelector(code);
+        		newTarget.setType("IMAGE");
+            	newTarget.setSelector(newSelector);
+        	}
+        	newTargets.add(newTarget);
+    	}
+
+    	updatedAnnotation.setTargets(newTargets);*/
     }
 
     if (motivation != null) {

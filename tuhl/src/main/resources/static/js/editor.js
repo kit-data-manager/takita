@@ -9,6 +9,9 @@ function selectAnnotation(event, annoId) {
 
         success: function(responseJson) {
             console.log(responseJson);
+            // this selectedAnnotation variable is needed for the
+            // edit/update function in editor_xml.js
+            selectedAnnotation = responseJson;
             if (responseJson.created.seconds) {
                 responseJson.created = new Date(responseJson.created.seconds * 1000 + responseJson.created.nanos / 1000000).toISOString();
                 if(responseJson.modified.seconds) {
@@ -82,7 +85,7 @@ function selectAnnotation(event, annoId) {
             annotationDiv.prepend(iconRowTop);
             
             var bodies = responseJson.tags.concat(responseJson.textCards);
-            
+
             for (let body in bodies) {
                 if (bodies[body].created) {
                     bodies[body].created = new Date(bodies[body].created.seconds * 1000 + bodies[body].created.nanos / 1000000).toISOString();
@@ -222,6 +225,26 @@ function selectAnnotation(event, annoId) {
                 formRowDiv.classList.add("is-hidden");
                 
             };
+            // adding link to the analysis tool, if 
+            // the annotation is a metaphor annotation	
+			if (responseJson.tags.some(tag => tag.value === "metaphor")){
+				var buttonToAnalysisTool = document.createElement("input");
+	            buttonToAnalysisTool.classList.add("btn");
+	            buttonToAnalysisTool.classList.add("btn-primary");
+	            buttonToAnalysisTool.type = "submit";
+	            buttonToAnalysisTool.value = "Analyze";
+	            buttonToAnalysisTool.id = "buttonToAnalysisTool";
+	
+	            var linkToAnalysisTool = document.createElement("a");
+	            linkToAnalysisTool.href="/analysis/" + annoId;
+	            linkToAnalysisTool.target="_blank";
+	            linkToAnalysisTool.rel="noreferrer noopener";
+	            linkToAnalysisTool.append(buttonToAnalysisTool);
+	
+	            annotationDiv.append(linkToAnalysisTool);
+			}
+
+
         }                
     });
 };
@@ -285,12 +308,17 @@ function deleteAnnotation(annoId) {
                     toggleOverview('annotationCard');
                 };
                 
-                paper.forEach(function(element) {
-                    if (element.annoId === annoId) {
-                        element.remove();
-                    };
-                });
-                
+                // updating the display for image annotation
+                // checking if paper is defined. it is defined for image annotation,
+                // but not for text annotation
+                if (paper != undefined){
+                    paper.forEach(function(element) {
+                        if (element.annoId === annoId) {
+                            element.remove();
+                        };
+                    });
+                }
+                               
                 for (let anno in annoJson) {
                     if (annoJson[anno].id === annoId) {
                         console.log(annoId + " this must go!")
@@ -298,6 +326,15 @@ function deleteAnnotation(annoId) {
                     };
                 };
                 
+                // updating the display for text annotation
+                // checking if TEI-element is null. it is defined for text annotation,
+                // but not for image annotation
+                if (document.getElementById("TEI") != null) {
+                    // redrawing all annotations
+                    removeStyles(document.getElementById("TEI"));
+                    drawAnnos(annoJson);
+                }
+
                 // maybe move it within the if clause?
                 console.log(annoJson);
                 fillMetaDataEditorTable(annoJson);

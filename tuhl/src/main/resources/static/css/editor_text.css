@@ -1,0 +1,122 @@
+/* ------------------------------------*/
+/* ANNOTATION SPECIFICS */
+/* ------------------------------------*/
+
+/* highlight words annotated as mrws in purple */
+.mrw {
+	background: #daa3ff;
+}
+
+/* highlight words annotated as mflags in purple */
+.mflag {
+	background: yellow;
+}
+
+/* highlight words annotated as mrws and mflags
+ in purple and yellow */
+.mrw.mflag {
+	background: linear-gradient( to bottom, yellow 50%, #daa3ff 50% 100% )
+}
+
+/* underline words annotated as metaphors */
+.metaphor {
+	border-bottom: solid;
+	border-color: #2196F3;
+}
+
+/* end of annotation specifics */
+/* ------------------------------------*/
+
+
+/* ------------------------------------*/
+/* LANGUAGE SPECIFICS */
+/* ------------------------------------*/
+
+/* right align right aligned languages */
+tei-text[lang=hbo],
+tei-text[lang=he] {
+	text-align: right;
+	display: block; 
+}
+
+/* hebrew */
+/* add a "maqqef" sign used in hebrew texts */
+.maqqef::after {
+	content: "־";
+}
+
+/* add a "paseq" sign used in hebrew texts */
+.paseq::after {
+	content: "׀";
+}
+
+/* early modern chinese */
+/* change font to batang */
+tei-text[lang=lzh]{
+	font-family: Batang, serif;
+}
+
+/* end of language specifics */
+/* ------------------------------------*/
+
+
+/* ------------------------------------*/
+/* TEXT STRUCTURE SPECIFICS*/
+/* ------------------------------------*/
+
+/* linebreak after a title */
+tei-head::after {
+	content: "\00000a";
+	white-space: pre-wrap;
+}
+
+
+/* poem specifics*/
+/* ------------------------------------*/
+
+/* display each line in one line
+and add some sapce after each linegroup */
+tei-l, 
+tei-lg {
+	display: block;
+}
+
+tei-lg {
+	margin-bottom: 1rem;
+}
+
+/* end of text structure specifics */
+/* ------------------------------------*/
+
+
+/* ------------------------------------*/
+/* SUBPROJECT SPECIFICS */
+/* ------------------------------------*/
+/* B04 specifics */
+/* ------------------------------------*/
+
+/* display sandhied version above the unsandhied version */
+tei-choice {
+	display: inline-flex;
+	flex-direction: column;
+}
+
+/* make sandhied version unselectable, but keep unsandhied version selectable */
+/* TODO: make it targeting all B04 files */
+tei-div[n="Rāmāyaṇa"] tei-l,
+tei-div[n="Ṛgveda"] tei-l{
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+tei-reg {
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+}
+
+/* end of subproject specifics */
+/* ------------------------------------*/

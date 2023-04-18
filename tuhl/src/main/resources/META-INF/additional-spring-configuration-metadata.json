@@ -34,5 +34,15 @@
       "name": "devIndex.size",
       "type": "java.lang.String",
       "description": "The size of the dev index. It represents the number of manuscripts."
+    },
+    {
+      "name": "thesaurus.baseUrl",
+      "type": "java.lang.String",
+      "description": "Base URL of a thesaurus instance like Skosmos."
+    },
+    {
+      "name": "thesaurus.searchPath",
+      "type": "java.lang.String",
+      "description": "URL path which is used to query the thesaurus."
     }
   ] }

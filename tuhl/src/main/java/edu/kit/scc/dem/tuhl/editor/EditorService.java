@@ -5,6 +5,7 @@ import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
 import edu.kit.scc.dem.tuhl.dataaccess.AnnotationConverter;
 import edu.kit.scc.dem.tuhl.dataaccess.IAnnotationStoreAccessService;
 import edu.kit.scc.dem.tuhl.dataaccess.IRepositoryAccessService;
+import edu.kit.scc.dem.tuhl.dataaccess.RepositoryAccessService;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
@@ -13,12 +14,17 @@ import edu.kit.scc.dem.tuhl.model.body.Body;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import edu.kit.scc.dem.tuhl.model.page.Page;
+import edu.kit.scc.dem.tuhl.model.target.SVGSelector;
+import edu.kit.scc.dem.tuhl.model.target.Target;
+import edu.kit.scc.dem.tuhl.model.target.XPathSelector;
 
 import java.io.IOException;
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,8 +90,32 @@ public class EditorService implements IEditorService {
       newAnnotation.setColor(Color.DEFAULT);
     }
 
+    // create the target from the String sent by the frontend
+    // TODO: the frontend should send JSONObject instead of a String
+    // this change needs to be done here as well
     if (svgCode != null && !svgCode.trim().equals("")) {
-      newAnnotation.setSvgCode(svgCode);
+    	
+        if (svgCode.contains("§")) {
+	        String[] xPaths = svgCode.split("§");
+	        String linkToResource = "http://localhost:8090/"
+	  	            + "api/v1/dataresources/"
+	  	            + pageId + RepositoryAccessService.DATA_PATH + "Example3"
+	  	            + RepositoryAccessService.FILE_EXTENSION_XML;
+	        for (String xPath : xPaths) {
+		    	Target newTarget = new Target(linkToResource);
+		    	// for each svgCode create new target
+		    	if (xPath.contains("xml:id")) {
+		        	XPathSelector newSelector = new XPathSelector(xPath);
+		        	newTarget.setType("TEXT");
+		        	newTarget.setSelector(newSelector);
+		    	} else {
+		    		SVGSelector newSelector = new SVGSelector(xPath);
+		    		newTarget.setType("IMAGE");
+		        	newTarget.setSelector(newSelector);
+		    	}
+		    	newAnnotation.addTarget(newTarget);
+	        }
+        }
     }
 
     if (motivation != null) {
@@ -141,8 +171,30 @@ public class EditorService implements IEditorService {
       updatedAnnotation.setColor(Color.DEFAULT);
     }
 
+    // update the target from the String sent by the frontend
+    // TODO: the frontend should send JSONObject instead of a String
+    // this change needs to be done here as well
     if (svgCode != null && !svgCode.trim().equals("")) {
-      updatedAnnotation.setSvgCode(svgCode);
+    	if (svgCode.contains("§")) {
+    		List<Target> newTargets = new ArrayList<>();
+	        String[] xPaths = svgCode.split("§");
+	        String linkToResource = updatedAnnotation.getTargets().get(0).getLinkToResource();
+	        for (String xPath : xPaths) {
+		    	Target newTarget = new Target(linkToResource);
+		    	// for each svgCode create new target
+		    	if (xPath.contains("xml:id")) {
+		        	XPathSelector newSelector = new XPathSelector(xPath);
+		        	newTarget.setType("TEXT");
+		        	newTarget.setSelector(newSelector);
+		    	} else {
+		    		SVGSelector newSelector = new SVGSelector(xPath);
+		    		newTarget.setType("IMAGE");
+		        	newTarget.setSelector(newSelector);
+		    	}
+		    	newTargets.add(newTarget);
+	        }
+	        updatedAnnotation.setTargets(newTargets);
+        }
     }
 
     if (motivation != null) {

@@ -11,12 +11,6 @@ const bodyTemplate = {
 // for adding new: include name here and add dataModel in 
 // getFormModel(chosenTemplate)
 const annotationTemplate = {
-    DIAGRAM : "diagram",
-    GLOSS : "gloss",
-    PAGEREGION : "pageregion",
-    MAINTEXT : "maintext",
-    TARGETAUDIENCE : "targetaudience",
-    NOTEMPLATE : "notemplate",
     MRW : "mrw",
     MFLAG : "mFlag",
     METAPHOR : "metaphor",
@@ -34,9 +28,15 @@ function getFormModel(chosenTemplate) {
             dataModel = {
                 "type" : "object",
                 "properties" : {
-                    "tag" : {
+                    "selectedText": {
+						"type" : "string",
+	                    "title" : "Selected text",
+	                    "default" : globalSelectedText,
+	                    "readOnly" : true	
+					},
+					"tag" : {
                         "type" : "string",
-                        "title" : "tag",
+                        "title" : "Tag",
                         "default" : "mrw",
                         "readOnly" : true
                     }
@@ -45,11 +45,11 @@ function getFormModel(chosenTemplate) {
             uiForm = {
                 "type" : "fieldset",
                 "items" : [
+                    "selectedText",
                     {
                         "key" : "tag",
                         "readOnly" : true
-                    }
-                
+                    }                
             ]};
             break;  
         
@@ -59,7 +59,7 @@ function getFormModel(chosenTemplate) {
                 "properties" : {
                     "tag" : {
                         "type" : "string",
-                        "title" : "tag",
+                        "title" : "Tag",
                         "default" : "mflag",
                         "readOnly" : true
                     }
@@ -77,27 +77,98 @@ function getFormModel(chosenTemplate) {
             break;  
         
         case "METAPHOR":
-            dataModel = {
-                "type" : "object",
-                "properties" : {
-                    "tag" : {
-                        "type" : "string",
-                        "title" : "tag",
-                        "default" : "metaphor",
+			// if a user wants to create a metaphor annotation,
+	        // get all the mrws that are present in his selection
+	        // and update the enum to hold all the mrwAnnoIds, so the user can
+	        // choose a mrw to link it to a metaphor
+			//let mrwSet = new Set();
+			let mrwEnum = [];
+			// metaphorTitleMap is necessary to have the actual words displayed,
+			// but the have the annoId as a value on the submission of the form
+			let mrwTitleMap = {};
+			let targetMRW = "";
+			// TODO: this iteration nesting needs to be improved; it got created due 
+			// to annotations having multiple targets
+			mrwAnnos.forEach(anno =>{
+				//console.log(anno);
+				// getting the text
+				anno.svg.forEach( svgs => {
+					targetMRW += document.getElementById(svgs.split("\"")[1]).innerHTML + " ";// + " = " + svgs.split("\"")[1] + " | ";
+				});
+				targetMRW = targetMRW.slice(0, (targetMRW.length-1));
+				//console.log(targetMRW);
+				mrwTitleMap[anno.id] = targetMRW;
+				// emptying the string, so it can be filled during next iteration cycle
+				targetMRW = "";
+				mrwEnum.push(anno.id);
+				//console.log(mrwEnum);
+			});
+            // a user can either use the default label or create a humanreadable
+            // label for the metaphor annotation
+            let defaultLabel = currentPageNumber + Date.now();
+
+	        dataModel = {
+	            "type" : "object",
+	            "properties" : {
+					"selectedText": {
+						"type" : "string",
+	                    "title" : "Selected text",
+	                    "default" : globalSelectedText,
+	                    "readOnly" : true	
+					},
+	                "tag" : {
+	                    "type" : "string",
+	                    "title" : "Tag",
+	                    "default" : "metaphor",
+	                    "readOnly" : true
+	                },
+	                "mrws" : {
+	                    "type" : "array",
+	                    "title" : "Metaphor related words",
+	                    "items": {
+					        "type": "string",
+					        "title": "Option",
+					        "enum": mrwEnum
+					      }
+	                },
+                    "label" : {
+	                    "type" : "string",
+	                    "title" : "Label",
+	                    "default" : defaultLabel
+	                },
+                    "comment" : {
+	                    "type" : "string",
+	                    "title" : "Comment"
+	                }
+	            }
+	        };
+			uiForm = {
+	        	"type" : "fieldset",
+	        	"items" : [
+					
+					{
+                        "key": "selectedText",
+                        "type": "textarea"
+                    },
+					{
+						
+		                "key" : "tag",
                         "readOnly" : true
+	                    
+	                },{
+						"type" : "checkboxes",
+						"key" : "mrws",
+	                    "titleMap": mrwTitleMap
+	                    	
+	                },{
+                        "key": "label"
+                    },{
+                        "key": "comment",
+                        "type": "textarea"
                     }
-                }
-            };
-            uiForm = {
-                "type" : "fieldset",
-                "items" : [
-                    {
-                        "key" : "tag",
-                        "readOnly" : true
-                    }
-                
-            ]};
-            break;  
+                ]
+	        };
+	    	break; 
         
         case "CONTEXT":
             dataModel = {
@@ -105,7 +176,7 @@ function getFormModel(chosenTemplate) {
                 "properties" : {
                     "tag" : {
                         "type" : "string",
-                        "title" : "tag",
+                        "title" : "Tag",
                         "default" : "context",
                         "readOnly" : true
                     }
@@ -150,187 +221,7 @@ function getFormModel(chosenTemplate) {
                 "required" : ["purpose", "value"]
             };
             break;
-        case "GLOSS":
-            dataModel = {
-                "type" : "object",
-                "properties" : {
-                    "reference" : {
-                        "type" : "string",
-                        "title" : "Bekker reference"
-                    },
-                    "anchor" : {
-                        "type" : "string",
-                        "title" : "annotated content"
-                    },
-                    "transcription" : {
-                        "type" : "string",
-                        "title" : "transcription"
-                    },
-                    "classification" : {
-                        "type" : "string",
-                        "title" : "classification",
-                        "enum" : ["", "Interlinearglosse", "Marginalglosse", "Scholie", "Kommentar"]
-                    },
-                    "color" : {
-                        "type" : "string",
-                        "title" : "color",
-                        "default" : "#00edff",
-                        "readOnly" : true
-                    }
-                }
-            };
-            uiForm = {
-                "type" : "fieldset",
-                "items" : [
-                    "reference",
-                    "anchor",
-                    {
-                        "key": "transcription",
-                        "type": "textarea"
-                    },
-                    "classification",
-                    {
-                        "key" : "color",
-                        "readOnly" : true
-                    }
-                
-            ]};
-            break;
-        case "DIAGRAM":
-            dataModel = {
-                "type" : "object",
-                "properties" : {
-                    "reference" : {
-                        "type" : "string",
-                        "title" : "Bekker reference"
-                    },
-                    "tag" : {
-                        "type" : "string",
-                        "title" : "tag"
-                    },
-                    "transcription" : {
-                        "type" : "string",
-                        "title" : "transcription"
-                    },
-                    "classification" : {
-                        "type" : "string",
-                        "title" : "classification",
-                        "enum" :["", "Syllogiusmusschema (1. Figur)", "Syllogiusmusschema (2. Figur)", "Syllogiusmusschema (3. Figur)", "Dihairese", "Kreuzdiagramm", "sonstiges erklärendes Diagramm/Schema"]
-                    },
-                    "color" : {
-                        "type" : "string",
-                        "title" : "color",
-                        "default" : "#2e8da6",
-                        "readOnly" : true
-                    }
-                }
-            };
-            uiForm = {
-                "type" : "fieldset",
-                "items" : [
-                    "reference",
-                    "tag",
-                    {
-                        "key": "transcription",
-                        "type": "textarea"
-                    },
-                    "classification",
-                    {
-                        "key" : "color",
-                        "readOnly" : true
-                    }
-                
-            ]};
-            break;
-        case "PAGEREGION":
-            dataModel = {
-                "type" : "object",
-                "properties" : {
-                    "color" : {
-                        "type" : "string",
-                        "title" : "color",
-                        "default" : "#e2b8f7",
-                        "readOnly" : true
-                    }
-                }
-            };
-            uiForm = {
-                "type" : "fieldset",
-                "items" : [
-                    {
-                        "key" : "color",
-                        "readOnly" : true
-                    }
-                ]
-            };
-            break;
-        case "MAINTEXT":
-            dataModel = {
-                "type" : "object",
-                "properties" : {
-                    "color" : {
-                        "type" : "string",
-                        "title" : "color",
-                        "default" : "#00edff",
-                        "readOnly" : true
-                    }
-                }
-            };
-            uiForm = {
-                "type" : "fieldset",
-                "items" : [
-                    {
-                        "key" : "color",
-                        "readOnly" : true
-                    }
-                ]
-            };
-            break;
-            case "TARGETAUDIENCE":
-            dataModel = {
-                "type" : "object",
-                "properties" : {
-                    "transcription" : {
-                        "type" : "string",
-                        "title" : "transcription"
-                    },
-                    "tag" : {
-                        "type" : "string",
-                        "title" : "tag",
-                        "default" : "Zielgruppe",
-                        "readOnly" : true
-                    }
-                }
-            };
-            uiForm = {
-                "type" : "fieldset",
-                "items" : [
-                    {
-                        "key": "transcription",
-                        "type": "textarea"
-                    },
-                    {
-                        "key" : "tag",
-                        "readOnly" : true
-                    }
-                
-            ]};
-            break;     
-        case "NOTEMPLATE":
-            dataModel = {
-                "type" : "object",
-                "properties" : {
-                    "hidden" : {
-                        "type" : "string",
-                        "title" : "hiddenObject"
-                    }
-                }
-            };
-            uiForm = {
-                "type" : "fieldset",
-                "items" : []
-            };
-            break;
+
     }
     
     console.log(dataModel);
@@ -374,6 +265,8 @@ const formObjectCreateBody = {
             
             $('#createForm').metadataeditorForm(options, function onSubmitValid(value) {
                 let jsonObject = JSON.parse(value);
+                console.log(value);
+                console.log(jsonObject);
                 let endpoint;
                 if ("purpose" in jsonObject) {
                     endpoint = '/editor_rest/annotations/' + document.getElementById("createForm").title + '/bodies';
@@ -444,7 +337,19 @@ const formObjectCreateAnnotation = {
             $('#createAnnotationForm').metadataeditorForm(options, function onSubmitValid(value) {
                 console.log(value);
                 let jsonObject = JSON.parse(value);
-                
+
+                // CRC 1475 specific
+                // as the uris of the mrw annotations are stored in an array and the wadm does not accept an array as a value
+                // of a textual body, the array will be split into multiple "key:value" pairs, with the same key (mrws)
+                if ("mrws" in jsonObject){
+                    let mrws = [...jsonObject.mrws];
+                    delete jsonObject.mrws;
+                    for (var i = 0; i < mrws.length; i++) {
+                        let keyCounter = "mrws" + i;
+                        jsonObject[keyCounter] = mrws[i];
+                    }
+                }
+
                 let color;
                 if (jsonObject.color) {
                     color = jsonObject.color;
@@ -467,29 +372,25 @@ const formObjectCreateAnnotation = {
                     },
                     
                     success : function(responseData) {
-                        console.log(responseData);
-                        console.log("stop");
                         let responseJson = JSON.parse(responseData);
+                        // philipp: why does the id not exist? i needed to add it here manually
+                        // philipp: what did i mean here?
                         
                         // if needed: store the annotation ID within the 
                         // corresponding shape
-                        console.log(annotationDataJson.svgCode);
+                        /*this might be needed later to highlight a selection
                         let shape;
                         paper.forEach(function(element) {
                             if (element.type === "rect" || element.type === "path") {
-                                
                                 shape = element;
-                                
                             }
                         });
                         if (document.getElementById("createAnnotationForm").title !== "") {
-                            console.log(shape);
-                            console.log(responseJson);
                             shape.annoId = responseJson.id;
                             shape.annoIdEncoded = encodeAnnoId(responseJson.id);
                             shape.attr({'stroke': color, 'fill': color});
                             toggleShapeSelect(shape);
-                        };
+                        };*/
                         
                         // trigger the body creation according to the template
                         storeBody(responseJson, jsonObject, 0);
@@ -506,12 +407,15 @@ const formObjectCreateAnnotation = {
     ]
 };
 
+// storing tags needed for highlighting; name needs to be specific so it doesn't clash with other variables
+var tagsIOP = [];
 // recursive function to store all the necessary bodies  
 // ensures sequential creation, otherwise body creation will fail due to etag mismatch
 function storeBody(responseJson, jsonObject, index) {
      
     let endpoint;
-    let bodyDataJson; 
+    let bodyDataJson;
+
     
     console.log(Object.keys(jsonObject)[index]);
     if (Object.keys(jsonObject)[index]) {
@@ -570,8 +474,19 @@ function storeBody(responseJson, jsonObject, index) {
                 bodyDataJson = {"value" : jsonObject[Object.keys(jsonObject)[index]]};
             } else {
                 endpoint = '/editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/bodies';
+
+                console.log("Body to store: ", Object.keys(jsonObject)[index]);
                 if (Object.keys(jsonObject)[index] === "transcription") {
                     bodyDataJson = {"purpose" : "tadirah:transcription", "value" : jsonObject[Object.keys(jsonObject)[index]]};
+                } else if (Object.keys(jsonObject)[index] === "selectedText"){ // storing the selected text
+                    bodyDataJson = {"purpose" : "describing", "value" : jsonObject[Object.keys(jsonObject)[index]]};
+                } else if (Object.keys(jsonObject)[index].includes("mrws")){ // linking mrw and metaphor annotation; includes has to be used here
+                    // as there can be multiple keys=mrws, with ascending numbers appended
+                    bodyDataJson = {"purpose" : "linking", "value" : jsonObject[Object.keys(jsonObject)[index]]};         
+                } else if (Object.keys(jsonObject)[index] === "label"){ // human readable label
+                    bodyDataJson = {"purpose" : "identifying", "value" : jsonObject[Object.keys(jsonObject)[index]]};
+                } else if (Object.keys(jsonObject)[index] === "comment"){ // user entered comment, if no comment given, the key will not be present and no body will be created
+                    bodyDataJson = {"purpose" : "commenting", "value" : jsonObject[Object.keys(jsonObject)[index]]};
                 } else {
                     bodyDataJson = {"purpose" : "classifying", "value" : jsonObject[Object.keys(jsonObject)[index]]};
                 }
@@ -587,6 +502,9 @@ function storeBody(responseJson, jsonObject, index) {
                         
                 success: function(responseData) {
                     console.log(responseData);
+                    // putting the tag value in the tag array, so they can be stored in the annoJson later
+                    let responseDataJson = JSON.parse(responseData);
+                    tagsIOP.push({"value" : responseDataJson.value});
                     storeBody(responseJson, jsonObject, index + 1);
                 },
         
@@ -598,27 +516,46 @@ function storeBody(responseJson, jsonObject, index) {
         
     } else {
         // if no more body needs to be created, hide modal and update global annotation list
+        // and highlight the new annotation
         document.getElementById('createAnnotation').classList.toggle("show-modal");
         selectAnnotation(null, encodeAnnoId(responseJson.id));
         if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
             toggleOverview('annotationCard');
         };
         
+        // added "tags" to the annotation
         let newAnnotation = {"created" : new Date(responseJson.created.seconds * 1000 + responseJson.created.nanos / 1000000).toISOString(), 
             "creator" : responseJson.creators, "id" : responseJson.id, "idEncoded" : encodeAnnoId(responseJson.id), 
             "modified" : new Date(responseJson.modified.seconds * 1000 + responseJson.modified.nanos / 1000000).toISOString(), 
-            "motivation" : responseJson.motivation, "visible" : true};
+            "motivation" : responseJson.motivation, "visible" : true, "tags" : tagsIOP};
         
+        // emptying the tagsIOP, so it can be filled for the next annotation
+        tagsIOP = [];
+
         if (document.getElementById("createAnnotationForm").title !== "") {
             newAnnotation.svg = document.getElementById("createAnnotationForm").title;
-            extractInformationFromSvg(newAnnotation.svg, newAnnotation);
+            //extractInformationFromSvg(newAnnotation.svg, newAnnotation);
+            // this conversion needs to be done, so the drawAnno code works, as it epects the svg to be an array
+            var svgArray = [];
+	        if (newAnnotation.svg.includes("§")){
+				newAnnotation.svg.split("§").forEach(svgCode =>{
+					svgArray.push(svgCode);
+				});
+			} else {
+				svgArray.push(newAnnotation.svg)
+			}
+			newAnnotation.svg = svgArray;
         }; 
         
         annoJson.push(newAnnotation);
         fillMetaDataEditorTable(annoJson);
         
-        document.getElementById('createRectangleButton').parentElement.classList.remove('active');
-        document.getElementById('createPolygonButton').parentElement.classList.remove('active');
+        // redrawing all annotations
+        removeStyles(document.getElementById("TEI"));
+    	drawAnnos(annoJson);
+        
+        //document.getElementById('createRectangleButton').parentElement.classList.remove('active');
+        //document.getElementById('createPolygonButton').parentElement.classList.remove('active');
         document.getElementById("createAnnotationForm").removeAttribute('title');
         
         newRectangle = undefined;

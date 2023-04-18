@@ -15,6 +15,7 @@
     <link rel="stylesheet" th:href="@{/css/tabulator_bootstrap4.min.css}">
     <link rel="stylesheet" th:href="@{/css/editor_sidebar_topbar.css}">
     <link rel="stylesheet" th:href="@{/css/modal.css}">
+    <link rel="stylesheet" th:href="@{/css/editor_text.css}">
 
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css">
     <link rel="stylesheet" href="https://unpkg.com/chota@latest">
@@ -32,6 +33,7 @@
 
 </head>
 <body class="container-fluid p-0" th:data-field="${currentAnnotationsJson}"
+    onload="init(document.body.getAttribute('data-field'))"
     onresize="resizeViewbox()">
 
 <div id="sideBar" class="anno-side-bar annocollapse">
@@ -52,64 +54,44 @@
   <ul class="features-list">
       <div class="category-header">View Mode</div>
     <li class="features-item draft">
-      <i id="zoomInButton" class="bx bx-zoom-in features-item-icon" onclick="hideExpandedSidebar(); imageZoomIn()"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); imageZoomIn()">Zoom In</span>
-      <span class="tooltip">Zoom In</span>
+      <i id="fontIncreaseButton" class="bx bx-zoom-in features-item-icon" onclick="hideExpandedSidebar(); increaseFontSize()"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); increaseFontSize()">Increase Font Size</span>
+      <span class="tooltip">Increase Font Size</span>
     </li>
     <li class="features-item draft">
-      <i id="zoomOutButton" class="bx bx-zoom-out features-item-icon" onclick="hideExpandedSidebar(); imageZoomOut()"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); imageZoomOut()">Zoom Out</span>
-      <span class="tooltip">Zoom Out</span>
+      <i id="fontDecreaseButton" class="bx bx-zoom-out features-item-icon" onclick="hideExpandedSidebar(); decreaseFontSize()"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); decreaseFontSize()">Decrease Font Size</span>
+      <span class="tooltip">Decrease Font Size</span>
     </li>
     <li class="features-item draft">
-      <i id="moveImageButton" class="bx bx-move features-item-icon" onclick="hideExpandedSidebar(); movingImage = true;"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); movingImage = true">Move Image</span>
-      <span class="tooltip">Move Image</span>
+      <i id="resetFontButton" class="bx bx-font-size features-item-icon" onclick="hideExpandedSidebar(); resetFontSize()"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); resetFontSize()">Reset Font Size</span>
+      <span class="tooltip">Reset Font Size</span>
     </li>
-    <li class="features-item draft">
-      <i id="hideShapeButton" class="bx bx-low-vision features-item-icon" onclick="hideExpandedSidebar(); hideShape()"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); hideShape()">Hide Shape</span>
-      <span class="tooltip">Hide Shape</span>
-    </li>
-    <li class="features-item draft">
-      <i id="resetViewButton" class="bx bx-reset features-item-icon" onclick="hideExpandedSidebar(); resetView()"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); resetView()">Reset View</span>
-      <span class="tooltip">Reset View</span>
+    <li id="hebrewToggle" class="features-item draft is-hidden">
+      <i id="hebrewToggleButton" class="bx bx-heading features-item-icon" onclick="hideExpandedSidebar(); toggleHebrewView()"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); toggleHebrewView()">Toggle Views</span>
+      <span class="tooltip">Toggle Views</span>
     </li>
   </ul>
   <ul class="features-list">
       <div class="category-header">Create Mode</div>
-    <li class="features-item draft">
-      <i id="createRectangleButton" class="bx bx-shape-square features-item-icon" onclick="hideExpandedSidebar(); addingRectangle = true; confirmDiscardChanges(); mode = Mode.Create;"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); addingRectangle = true; confirmDiscardChanges(); mode = Mode.Create;">Create Square</span>
-      <span class="tooltip">Create Square</span>
-    </li>
-    <li class="features-item draft">
-      <i id="createPolygonButton" class="bx bx-shape-polygon features-item-icon" onclick="hideExpandedSidebar(); addingPolygon = true; confirmDiscardChanges(); mode = Mode.Create;"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); addingPolygon = true; confirmDiscardChanges(); mode = Mode.Create;">Create Polygon</span>
-      <span class="tooltip">Create Polygon</span>
-    </li>
-    <li class="features-item draft">
-      <i id="createPageAnnoButton" class="bx bx-note features-item-icon" onclick="hideExpandedSidebar(); confirmDiscardChanges(); mode = Mode.Create; createPageAnnotation();"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); confirmDiscardChanges(); mode = Mode.Create; createPageAnnotation();">Create Annotation</span>
-      <span class="tooltip">Create Annotation</span>
+	<li class="features-item draft">
+      <i id="selectTextButton" class="bx bx-highlight features-item-icon" onclick="hideExpandedSidebar(); selectingText = true; confirmDiscardChanges(); mode = Mode.Create; annotateSelectedText();"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); selectingText = true; confirmDiscardChanges(); mode = Mode.Create; annotateSelectedText();">Select Text</span>
+      <span class="tooltip">Select Text</span>
     </li>
    </ul>
    <ul class="features-list">
        <div class="category-header">Modify Mode</div>
     <li class="features-item star">
-      <i id="modifyButton" class="bx bx-edit features-item-icon" onclick="hideExpandedSidebar(); modifyShape();"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); modifyShape();">Modify Shape</span>
-      <span class="tooltip">Modify Shape</span>
+      <i id="modifyButton" class="bx bx-edit features-item-icon" onclick="hideExpandedSidebar(); modifySelection();"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); modifySelection();">Modify Selection</span>
+      <span class="tooltip">Modify Selection</span>
     </li>
     <li class="features-item star">
-      <i id="undoButton" class="bx bx-undo features-item-icon" onclick="hideExpandedSidebar(); undo();"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); undo()">Undo</span>
-      <span class="tooltip">Undo</span>
-    </li>
-    <li class="features-item star">
-      <i id="saveButton" class="bx bx-save features-item-icon" onclick="hideExpandedSidebar(); saveShape();"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); saveShape();">Save</span>
+      <i id="saveButton" class="bx bx-save features-item-icon" onclick="hideExpandedSidebar(); saveModification();"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); saveModification();">Save</span>
       <span class="tooltip">Save</span>
     </li>
   </ul>
@@ -119,11 +101,6 @@
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); toggleOverview('pages')">Show Book</span>
       <span class="tooltip">Show Book</span>
     </li>
-    <li class="features-item star">
-      <i id="editortableButton" class="bx bx-list-ul features-item-icon" onclick="hideExpandedSidebar(); toggleOverview('editortable')"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); toggleOverview('editortable')">Show Annotations</span>
-      <span class="tooltip">Show Annotations</span>
-    </li>
   </ul>
 </div>
 
@@ -131,7 +108,7 @@
         <div class="col-1"></div>
         <div class="col-1 is-vertical-align is-horizontal-align"> <i class="bx bx-home" onclick="goHome();"></i> </div>
         <div class="col-4 is-vertical-align is-horizontal-align" th:text="${currentManuscript.title}"></div>
-        <div class="col-5 is-vertical-align is-horizontal-align">
+        <div class="col-4 is-vertical-align is-horizontal-align">
             <div class="row input-group">
                 <input class="form-control col-9 is-vertical-align"
                 th:placeholder="#{label.pseudonym}"
@@ -147,6 +124,26 @@
             </div>
         </div>
         <div class="col-1 is-vertical-align is-horizontal-align"> <i class="bx bx-help-circle" onclick="console.log('ZoomIn!')"></i> </div>
+        <div class="col-1 is-vertical-align is-horizontal-align issueWrap" style="display: inline-block;flex: 0 0 32px;">
+            <a href="mailto:gitlab-incoming+sfb1475-inf-annotool-prototype-8605-issue-@ruhr-uni-bochum.de"
+               rel="noopener noreferrer" target="_blank" class="issueLink XfoRM">
+                <button label="Feedback" class="issueButton">
+                    <div class="issueDiv icon" size="32">
+                        <svg fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round"
+                            stroke-miterlimit="1.414" xmlns="http://www.w3.org/2000/svg"
+                            aria-labelledby="title" viewBox="0 0 32 32"
+                            preserveAspectRatio="xMidYMid meet" class="issueSvg">
+                            <title id="title">feedback</title>
+                            <g>
+                                <path
+                                    d="m16.913 2.4326a1.9968 1.9968 0 0 0-1.877 0l-11.981 6.3897a1.9968 1.9968 0 0 0-1.0583 1.7612v1.6314l6.4596 3.8738a5.5111 5.5111 0 0 0-0.46525 2.0507l-5.9944-3.5942v11.448l6.9468-4.1673c0.29952 0.54912 0.66893 1.1042 1.1142 1.6573l-7.9912 4.7963a1.9968 1.9968 0 0 0 1.9269 1.4736h23.962a1.9968 1.9968 0 0 0 1.9269-1.4736l-7.9912-4.7943c0.44528-0.55511 0.81469-1.1102 1.1142-1.6593l6.9468 4.1673v-11.45l-5.9944 3.5962a5.5111 5.5111 0 0 0-0.46525-2.0487l6.4596-3.8758v-1.6314a1.9968 1.9968 0 0 0-1.0583-1.7612zm-2.8155-1.7632a3.9936 3.9936 0 0 1 3.758 0l11.981 6.3897a3.9936 3.9936 0 0 1 2.1126 3.5243v17.172a3.9936 3.9936 0 0 1-3.9936 3.9936h-23.962a3.9936 3.9936 0 0 1-3.9936-3.9936v-17.172a3.9936 3.9936 0 0 1 2.1146-3.5243l11.981-6.3897zm1.877 15.092c3.3227-3.4165 11.631 2.5619 0 10.248-11.631-7.6877-3.3227-13.664 0-10.248z"
+                                    stroke-width="1.9968" fill-rule="evenodd"/>
+                            </g>
+                        </svg>
+                    </div>
+                </button>
+            </a>
+        </div>
     </div>
     <div class="row is-full-width"><div class="col-12"></div></div>
     <div class="row is-full-width">
@@ -191,9 +188,9 @@
         <div class="col-7">
             <div id="textWorkspace" class="is-full-width">
                 <script th:inline="javascript">
-                    var currentPageId = [[${currentPage.getResourceUrl()}]];
+                    const currentPageId = [[${currentPage.getResourceUrl()}]];
                 </script>
-                <div id="TEI" th:if="${currentPage.resourceType == (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).TEXT)}">
+                <div id="TEI" th:if="${currentPage.resourceType == (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).TEXT)}">Please wait until your text is loaded. If it doesn´t load, contact the developers.
                 </div>
                 <div th:if="${currentPage.resourceType != (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).TEXT)}">
                 	Something went wrong. Most likely you want to display something, that is not text.
@@ -274,6 +271,15 @@
             <span class="close-button" id="closeButtonAnno">&times;</span>
             <form id="pickAnnotationTemplateForm"></form>
             <form id="createAnnotationForm"></form>
+        </div>
+    </div>
+
+    <div class="modal" id="updateSelection">
+        <div class="modal-content">
+            <span class="close-button" id="closeButtonUpdate">&times;</span>
+			<div id="oldSelectedText"></div>
+            <div id="newSelectedText"></div>
+            <input class="btn btn-primary" type="submit" value="Update + Save" id="buttonToAnalysisTool" onclick="updateTarget()">
         </div>
     </div>
 
@@ -376,7 +382,7 @@
 		// hence there is no more chapter in front of the previousChapter
    		function showPreviousChapter(event) {
    			
-   			const currentChapter = document.querySelector('tei-div[type="chapter"]:not(.is-hidden)');
+   			const currentChapter = document.querySelector('tei-div[type="' + divisionType +'"]:not(.is-hidden)');
    			const previousChapter = currentChapter.previousElementSibling;
    			
    			if (previousChapter !== null){
@@ -394,7 +400,7 @@
 		// hence there is no more chapter after the nextChapter
    		function showNextChapter(event) {
    			
-   			const currentChapter = document.querySelector('tei-div[type="chapter"]:not(.is-hidden)');
+   			const currentChapter = document.querySelector('tei-div[type="' + divisionType +'"]:not(.is-hidden)');
    			const nextChapter = currentChapter.nextElementSibling;
    				
    			if (nextChapter !== null){
@@ -413,9 +419,9 @@
 		// because there is no more chapter after/in front of the previousChapter
    		function goToChapter(event) {
    			
-   			const currentChapter = document.querySelector('tei-div[type="chapter"]:not(.is-hidden)');
+   			const currentChapter = document.querySelector('tei-div[type="' + divisionType +'"]:not(.is-hidden)');
    			const desiredChapterNumber = document.getElementById("chapterSelect").value;
-   			const chapters = document.querySelectorAll('tei-div[type="chapter"]');
+   			const chapters = document.querySelectorAll('tei-div[type="' + divisionType +'"]');
    			// checking if the desired chapter is available (is present in chapterSelect),
    			// if yes and if it is different from the currentChapter showing it
    			// the `...` is a spread operator to convert the nodeList into an array, that can be filtered
@@ -430,24 +436,48 @@
    		}
    			
    	</script>
+
+	<script src="/js/raphael.js"></script>
     <script src="/js/ajv7.js"></script>
     <script src="/js/underscore.js"></script>
     <script src="/js/jsonform.js"></script>
     <script src="/js/tabulator.min.js"></script>
     <script src="/js/metadataeditor.js"></script>
     <script src="/js/editor.js"></script>
-    <script src="/js/creation_templates.js"></script>
+    <script src="/js/creation_templates_text.js"></script>
 	<script src="/js/CETEI.js"></script>
+	<script src="/js/editor_xml.js"></script>
 	<script th:inline="javascript">
-	
+        
+        // variables to store the type of the division used in a text
+        // it is used for the navigation
+        let divisionType = "default";
+        // list of possible divisions used in the texts, add possibilities here
+        let possibleDivisionTypes = ["chapter", "section"];
+
+        // storing currentPageNumber as its needed for the label of a metaphor annotation
+        var currentPageNumber = /*[[${currentPage.pageNumber}]]*/ "default";
 		var linkToResource = "/editor_rest/content/" + [[${currentPage.getId()}]] + "/" + [[${fileName}]];
+
 	    // adding the TEI file to the DOM
 	    var CETEIcean = new CETEI();
 	    var teiContent = CETEIcean.getHTML5(linkToResource).then(data => {
 			document.getElementById("TEI").innerHTML = "";
 			const text = document.getElementById("TEI").appendChild(data);
+            
+            // setting divisionType based on the divisions used in the text
+            possibleDivisionTypes.forEach( possibility => {
+                if (document.querySelector('tei-div[type="' + possibility + '"]') != null){
+                    divisionType = possibility;
+                }
+            });
+            if (divisionType === "default"){
+                console.log("As the text does not have division type listed in:", possibleDivisionTypes, 
+                "it remains:", divisionType);
+            }
+
 			// hiding all chapters besides the first one. needed for navigation
-			const chapters = text.querySelectorAll('tei-div[type="chapter"]');
+			const chapters = text.querySelectorAll('tei-div[type="' + divisionType +'"]');
 			const chapterSelect = document.getElementById("chapterSelect");
 			chapters.forEach( chapter => {
 				chapter.classList.add('is-hidden');
@@ -459,18 +489,61 @@
 				chapterSelect.appendChild(option);
 			});
 	     	chapters[0].classList.remove('is-hidden');
-	      // enabling nextChaptButton and goToChaptButton if there is more than one chapter
-	      if (chapters[1] !== undefined) {
-	    	document.getElementById("nextChaptButton").addEventListener("mousedown", showNextChapter);
-	    	document.getElementById("nextChaptButton").disabled = false;
-	    	document.getElementById("goToChaptButton").addEventListener("mousedown", goToChapter);
-	    	document.getElementById("goToChaptButton").disabled = false;
-	      } else {
-	    	document.getElementById("nextChaptButton").disabled = true;
-	    	document.getElementById("goToChaptButton").disabled = true;
-	      }
-	      // disabling the prevChaptButton as the first chapter will be displayed
-	      document.getElementById("prevChaptButton").disabled = true;
+            // enabling nextChaptButton and goToChaptButton if there is more than one chapter
+            if (chapters[1] !== undefined) {
+                document.getElementById("nextChaptButton").addEventListener("mousedown", showNextChapter);
+                document.getElementById("nextChaptButton").disabled = false;
+                document.getElementById("goToChaptButton").addEventListener("mousedown", goToChapter);
+                document.getElementById("goToChaptButton").disabled = false;
+            } else {
+                document.getElementById("nextChaptButton").disabled = true;
+                document.getElementById("goToChaptButton").disabled = true;
+            }
+            // disabling the prevChaptButton as the first chapter will be displayed
+            document.getElementById("prevChaptButton").disabled = true;
+            // highlight all the annotated words
+            drawAnnos(JSON.parse(document.body.getAttribute('data-field')));
+
+            // B04 specific adding of a syllable marker between the unsandhied words
+            var regW = document.querySelectorAll("tei-reg>tei-w");
+            regW.forEach( word => {
+                if (word.nextElementSibling !== null){
+                        // delete whitespace between the tei-reg>tei-w elements
+                        if (word.nextSibling.nodeType == 3 && word.nextSibling.nodeValue.trim() === "") {
+                            word.nextSibling.remove();
+                        }
+                        word.append("‧");
+                    }
+            });
+	    }).then( placeholder => {
+	    	// this is specific for files in hebrew
+	    	// it enables the hebrewToggle button, which removes/adds
+	    	// vowels from/to the displayed text
+	    	// the "paseq" sign "׀" will be removed as well, but it needs to be displayed
+	    	// so any word followed by a "paseq" will get a class "paseq", so the css rule applies
+	    	if (document.querySelector("tei-text").lang === "hbo"){
+	    		document.querySelectorAll("tei-w").forEach(word => {
+	    			if( !word.id.includes("_")) {
+	    		    	word.setAttribute("vocalized", word.innerHTML);
+	    		  		word.setAttribute("unvocalized", word.innerHTML.replace(/[\u0591-\u05C7]/g,""));
+	    		  		//if (word.nextElementSibling !== null && word.nextElementSibling.localName === "tei-pc"){
+	    		  		/*if (word.nextElementSibling !== null && word.nextElementSibling.innerHTML === "־"){
+	    		  			word.classList.add("maqqef");
+	    		  		}*/
+	    		  		if (word.nextElementSibling !== null && word.nextElementSibling.innerHTML === "׀"){
+	    		  			word.classList.add("paseq");
+	    		  		}
+	    		  }
+	    		});
+	    		// delete all the "paseq" signs as they will be rendered via css
+	    		document.querySelectorAll("tei-pc").forEach(punct => {
+	    			// if (punct.innerHTML === "־" || punct.innerHTML === "׀"){
+	    			if (punct.innerHTML === "׀"){
+	    				punct.remove();
+	    			}
+	    		});
+	    	document.getElementById("hebrewToggle").classList.remove("is-hidden");
+	    	}
 	    });
 
     </script>

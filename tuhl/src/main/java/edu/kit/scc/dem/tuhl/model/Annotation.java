@@ -2,6 +2,7 @@ package edu.kit.scc.dem.tuhl.model;
 
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
+import edu.kit.scc.dem.tuhl.model.target.Target;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -37,7 +38,7 @@ public class Annotation {
   private String canonical;
 
   private Color color;
-  private String svgCode;
+  private List<Target> targets;
 
   private String motivation;
   
@@ -54,6 +55,7 @@ public class Annotation {
     textCards = new ArrayList<>();
     tags = new ArrayList<>();
     creators = new ArrayList<>();
+    targets = new ArrayList<>();
   }
 
   /**
@@ -261,21 +263,33 @@ public class Annotation {
   }
 
   /**
-   * Gets SVG code of annotation.
+   * Gets targets of annotation.
    *
-   * @return svg code
+   * @return targets
    */
-  public String getSvgCode() {
-    return svgCode;
+  public List<Target> getTargets() {
+    return this.targets;
   }
 
   /**
-   * Sets SVG code of annotation.
+   * Sets all targets of annotation.
    *
-   * @param svgCode to be set
+   * @param targets to be set
    */
-  public void setSvgCode(String svgCode) {
-    this.svgCode = svgCode;
+  public void setTargets(List<Target> targets) {
+    this.targets = targets;
+  }
+  
+  /**
+   * Adds one target to the annotation.
+   *
+   * @param target to be added
+   */
+  public void addTarget(Target target) {
+    if (this.targets == null) {
+        this.targets = new ArrayList<>();
+      }
+      this.targets.add(target);
   }
 
   /**
@@ -383,7 +397,7 @@ public class Annotation {
       return getClass().getSimpleName() + id + ": { " + "pageId: " + pageId + 
               ", modified: " + modified + ", created: " + created +
               ", via: " + via + ", canonical: " + canonical +
-              ", color: " + color + ", svgCode: " + svgCode + 
+              ", color: " + color + ", svgCode: " + targets.toString() + 
               ", motivation: " + motivation + ", etag: " + etag +
               ", isAlgorithmAnnotation: " + isAlgorithmAnnotation +
               ", creators: " + creators.toString() + 

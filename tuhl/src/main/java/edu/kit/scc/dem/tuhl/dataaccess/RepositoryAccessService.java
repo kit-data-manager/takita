@@ -30,6 +30,8 @@ public class RepositoryAccessService implements IRepositoryAccessService {
   public static final String DATA_PATH = "/data/";
   public static final String THUMB_JPG = ".thumb.jpg";
   public static final String MASTER_JPG = ".master.jpg";
+  // or the xml file
+  public static final String FILE_EXTENSION_XML = ".xml";
   private static final String MANUSCRIPT_PATTERN = "<(.*?)>; rel=\"next\",";
   private static final String MANUSCRIPT_METADATA_FILE = "manuscript_metadata.xml";
   private static final String PAGES_JSON = "pages.json";
@@ -228,7 +230,29 @@ public class RepositoryAccessService implements IRepositoryAccessService {
     return manuscriptDate.after(isAfterDate);
   }
 
+  /**
+   * Returns the typeGeneral of a page.
+   *
+   * @param pageId page identifier as String
+   * @return typeGeneral of a page
+   * @throws JSONException if the response body could not be parsed to JSON
+   * @throws IOException if an error occurs while sending or receiving
+   * @throws InterruptedException if the get request is interrupted
+   */
+  @Override
+  public String getTypeGeneralByPageId(String pageId)
+      throws InterruptedException, JSONException, IOException {
+	  
+      HttpResponse<String> response = httpRequestHelper.get(this.getBaseUrl()
+	            + this.getStaticPath()+ pageId);
+      JSONObject pageJson = new JSONObject(response.body());
+      String resourceTypeGeneral = pageJson.getJSONObject(RepositoryStrings.RESOURCE_TYPE.getName())
+    	        .getString(RepositoryStrings.TYPE_GENERAL.getName());
 
+      return resourceTypeGeneral;
+  }
+  
+  
   /**
    * Gets the metadata of a manuscript that is given in the TEI standard.
    *

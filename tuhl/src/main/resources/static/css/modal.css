@@ -11,14 +11,25 @@
     transform: scale(1.1);
 }
 
+/* decreasing the size of the modal by 
+   reducing the size of the textareas, to prevent 
+   users not being able to close the modal;
+   needs to be !important as the jsonForm
+   library adds inline CSS and it needs to
+   be overwritten */
+
+div.form-group > div.controls > textarea {
+    height: 10rem !important;
+}
+
 .modal-content {
     position: absolute;
-    top: 40%;
+    top: 50%;
     left: 75%;
     transform: translate(-50%, -50%);
     background-color: white;
     padding: 1rem 1.5rem;
-    width: 24rem;
+    width: 42rem;
     border-radius: 0.5rem;
 }
 

@@ -367,7 +367,7 @@ public class  SearchIndexService implements ISearchIndexService {
   }
 
   /**
-   * Updates an annotation in the search index.
+   * Updates an annotation in the search index AND THE DATABASE??? (PHILIPP).
    *
    * @param annotation updated Annotation
    * @return updated annotation
@@ -530,7 +530,9 @@ public class  SearchIndexService implements ISearchIndexService {
   private TextCard findTextCardInManuscriptById(Manuscript manuscript, String id)
       throws NoSuchIndexEntryException {
     for (Page page : manuscript.getPages()) {
-      if (page.getResourceType() == ResourceType.IMAGE) {
+      // the reasoning for this if-clause remains unclear (29.03.2023)
+      // TODO: investigate, if this if-clause is necessary
+      if (page.getResourceType() == ResourceType.IMAGE || page.getResourceType() == ResourceType.TEXT) {
         for (Annotation annotation : page.getAnnotations()) {
           for (TextCard card : annotation.getTextCards()) {
             if (card.getId().equals(id)) {

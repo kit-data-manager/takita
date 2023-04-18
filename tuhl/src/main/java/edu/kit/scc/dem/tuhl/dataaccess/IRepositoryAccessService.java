@@ -76,6 +76,17 @@ public interface IRepositoryAccessService {
       throws InterruptedException, JSONException, IOException, ParseException;
 
   /**
+   * Returns the typeGeneral of a page.
+   *
+   * @param pageId page identifier as String
+   * @return typeGeneral of a page
+   * @throws JSONException if the response body could not be parsed to JSON
+   * @throws IOException if an error occurs while sending or receiving
+   * @throws InterruptedException if the get request is interrupted
+   */
+  String getTypeGeneralByPageId(String pageId) throws InterruptedException, JSONException, IOException;
+  
+  /**
    * Gets the metadata of a manuscript that is given in the TEI standard.
    *
    * @param manuscriptId the id of the manuscript

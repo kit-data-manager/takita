@@ -28,6 +28,7 @@ public enum AnnotationStoreStrings {
   TEXTUAL_BODY("TextualBody"),
   SELECTOR("selector"),
   SVG_SELECTOR("SvgSelector"),
+  XPATH_SELECTOR("XPathSelector"),
   SOURCE("source"),
   MOTIVATION("motivation"),
 

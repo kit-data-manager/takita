@@ -9,12 +9,26 @@ let firstPolygonPoint;
 let invisiblePolygonPoint;
 let polygonPath;
 
+let selectingText = false;
 let addingRectangle = false;
 let addingPolygon = false;
 let movingImage = false;
 let initiated = false;
 
 let drawingHistory = [];
+
+// selectedAnnotation stores the annotation, that gets
+// selected by right clicking on a highlighted word
+// it is needed to edit/update the target of that annotation
+let selectedAnnotation;
+
+// selectedText stores the selected test as a string
+// it is needed to add it to the annotations body
+let globalSelectedText;
+
+// mrwAnnos stores the mrws that are contained in a selection
+// it is needed to link mrw annotations with metaphor annotations
+let mrwAnnos = [];
 
 class Mode {
   static View = new Mode("view");
@@ -434,7 +448,7 @@ let changeCursor = function(e, mouseX, mouseY) {
 
 function extractInformationFromSvg (svgString, annoJson) {
     const svgDoc = new DOMParser().parseFromString(svgString, "text/xml");
-    let svgRect = svgDoc.getElementsByTagName('rect')[0];
+    /*let svgRect = svgDoc.getElementsByTagName('rect')[0];
     let svgPolygon = svgDoc.getElementsByTagName('polygon')[0];
     if (svgRect) {
         annoJson.x = Math.round(parseInt(svgRect.getAttribute('x')));
@@ -465,12 +479,53 @@ function extractInformationFromSvg (svgString, annoJson) {
         annoJson.height = Math.round(polygonPath.getBBox().height);
         annoJson.width = Math.round(polygonPath.getBBox().width);
         polygonPath.remove();
-    };
+    };*/
 }
 
+// remove the style from all elements
+// https://stackoverflow.com/questions/9252839/simplest-way-to-remove-all-the-styles-in-a-page
+function removeStyles(el) {
+
+    // specify the classe to remove here
+    let possibleClasses = ["mrw", "mflag", "metaphor"];
+
+    possibleClasses.forEach(entry => {
+        el.classList.remove(entry);
+    });
+
+    el.childNodes.forEach(childNode => {
+        if(childNode.nodeType == 1) removeStyles(childNode)
+    });
+}
+
+// highlighting all annotations
 function drawAnnos(annoJson) {
-    console.log(annoJson);
-  for (let anno in annoJson) {
+    let targetXmlId;
+
+    annoJson.forEach(annotation => {
+		annotation.svg.forEach( target => {
+			targetXmlId = target.split("\"")[1];
+			annotation.tags.forEach( tag => {
+				// different highlights for different annotation types
+                switch (tag.value){
+                    case "metaphor":
+                        document.getElementById(targetXmlId).classList.add("metaphor");
+                        break;
+                    case "mrw":
+                        document.getElementById(targetXmlId).classList.add("mrw");
+                        break;
+                    case "mflag":
+                        document.getElementById(targetXmlId).classList.add("mflag");
+                    //default:
+                        //console.log("Tag value not matching the possible cases, no class added for:", annotation);
+                }
+			});
+		});
+
+		// border-bottom: 6px solid #2196F3 !important;
+		
+	});
+  /*for (let anno in annoJson) {
      extractInformationFromSvg(annoJson[anno].svg, annoJson[anno]);
   };
 
@@ -517,7 +572,7 @@ function drawAnnos(annoJson) {
             };
         };
       };
-  };
+  };*/
 
   fillMetaDataEditorTable(annoJson);
 }
@@ -622,6 +677,45 @@ function createPageAnnotation() {
     modal.classList.toggle("show-modal");
     pickTemplate("", "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
 };
+
+
+// font manipulation functions called by sidebar buttons
+function changeFontSize(id, changeFactor){
+	txt = document.getElementById(id);
+    style = window.getComputedStyle(txt, null).getPropertyValue('font-size');
+    currentSize = parseFloat(style);
+    txt.style.fontSize = (currentSize + changeFactor) + 'px';
+}
+
+function increaseFontSize(){
+	changeFontSize("TEI", 1);
+	
+}
+
+function decreaseFontSize(){
+	changeFontSize("TEI", -1);
+	
+}
+
+function resetFontSize(){
+	document.getElementById("TEI").style.fontSize = "initial";
+}
+
+// hebrew specific display
+function toggleHebrewView(){
+	document.querySelectorAll("tei-w").forEach(word => {
+		if( !word.id.includes("_")) {
+			if (word.getAttribute("vocalized") || word.getAttribute("unvocalized") !== undefined) {
+				if (word.innerHTML === word.getAttribute("vocalized")){
+					word.innerHTML = word.getAttribute("unvocalized");
+				} else {
+					word.innerHTML = word.getAttribute("vocalized");
+				}
+			}
+		}
+	});
+}
+
 
 function imageZoomIn() {
     paper.currentWidth = paper.currentWidth - paper.originalWidth/10;
@@ -816,7 +910,543 @@ function endModification (shape) {
     mode = Mode.View;
 };
 
+// check if the selection happened on the textworkspace/tei element
+function checkIsSelectionOnWorkspace(node){
+	if (node.parentNode.id === "TEI") {
+		return true;
+	} else if (node.parentElement != null) {
+		return checkIsSelectionOnWorkspace(node.parentElement);
+	} else {
+		return false;
+	}
+};
+
+// get one range of the selection(s)
+// old function, not necessary any more after 01.02.2023 (commit 1267ea6)
+function getContentOfSelection(selection){
+	let selectionRangeContents = selection.getRangeAt(0).cloneContents();
+	// if there are multiple selection ranges (eg. in the B04 case)
+	// add those
+	if (selection.rangeCount > 1){
+		for (let i = 1; i < selection.rangeCount; i++) {
+			selectionRangeContents.append(selection.getRangeAt(i).cloneContents());
+		}
+	}
+	return selectionRangeContents;
+}
+
+
+// get the smallest available nodes, that have an xmlId and store them in a list
+function getXmlIds(node, nodeList){
+  if (node.children.length !== 0) {
+      Array.from(node.children).forEach(child => {
+	      getXmlIds(child, nodeList);
+    });
+  } else {
+    if (node.id) {
+			nodeList.push(node);
+	}                  
+  }
+};
+
+// create a list, that contains all the selected nodes with an Id
+function createTargetList(selection){
+
+	let targetList = [];
+	
+	for (let i = 0; i < selection.rangeCount; i++) {
+		let selectionRange = selection.getRangeAt(i);
+		let selectionRangeContents = selectionRange.cloneContents();
+		// check how many words/elements got selected,
+		// for some reason the selection always holds more than one element
+		// even if, only one got selected. Only if a user selects the middle part
+		// of a word, the selection holds only one elment
+
+        // TODO: firefox specific problem (works in
+        // safari: just fine
+        // chrome: only because double clicking selects all syllables):
+        // double clicking on the first syllable of an unsandhied word (B04 specifc data) creates
+        // a selection containing two text nodes. therefore no elementNode will be put into 
+        // the targetList and no xml:id is present to create the annotation.
+		if (selectionRangeContents.childNodes.length == 1){
+			// if a user selects only the middle part of a word (eg. "or") the selection
+			// won't return a w-element but a textNode, so we need to get the parent of
+			// that text node (which should be a w-element)
+			if (selectionRangeContents.childNodes.length == 1 && selectionRangeContents.childNodes[0].nodeType == 3) {
+				if (selectionRange.startContainer.nodeValue == selectionRange.endContainer.nodeValue &&
+					selectionRange.endContainer.nodeValue == selectionRange.commonAncestorContainer.nodeValue) {
+					if (selectionRange.commonAncestorContainer.parentNode.nodeName === "TEI-W") {
+						targetList.push(selectionRange.commonAncestorContainer.parentNode);
+					} else {
+						console.log("selectionRange.commonAncestorContainer.parentNode is not TEI-W. ", selectionRange.commonAncestorContainer.parentNode);
+					}
+				}
+			// TODO: sometimes an element "A" only has one childNode, which is a tei-w.
+            // In this case, the tei-w's id WONT be added to the targetList by calling the
+            // getXmlIds funciton on this selection. This is the case for B04 data,
+            // when the tei-reg element holds only one tei-w element)
+            // temporary solution:
+            // So if the element "A" is not a textNode, but something else (Philipp can only
+            // think, that it would be an elementNode then, in B04 its an tei-reg element),
+            // its xmlid should be retrieved and added to the targetList by calling getXmlIds()
+            } else if (selectionRangeContents.childNodes[0].nodeType == 1){
+                getXmlIds(selectionRangeContents.children[0], targetList);
+            } else {
+                console.log("The following node is neither a text nor element node. ", selectionRangeContents.childNodes[0]);
+            }
+		} else {
+			getXmlIds(selectionRangeContents, targetList);
+		}
+	}
+
+	
+	// "cleaning" the targetList, because sometimes an empty w-element will be included
+	// in the bgeinning or at the end of the targetList as the user selected some
+	// whitespace before/after the first word she wanted to select as well
+	if (targetList.length > 1) {
+		if (targetList[targetList.length-1].innerHTML.trim() == ""){
+			targetList.pop();
+		}
+		if (targetList[0].innerHTML.trim() == ""){
+			targetList.shift();
+		}
+	}
+	//console.log("filled targetList");
+	//console.log(targetList);
+	return targetList;
+}
+
+function createListOfIds(targetList){
+	// targetListJson is a list of all the <w> elements id to be used as targets for
+	// the web annotations; its a STRING
+	// targetListJsonAsJson is the same as targetListJson but as JSON
+	let targetsXmlIds = "";
+	let targetListJson;
+	let targetListJsonAsJson;
+	// following variables are needed to create a jsonish target
+	let valueId; 
+	let selectorObject;
+	let targetJson = {};
+	let targetArray = [];
+	
+	// if the targetList holds only one <w> element, as only one word got selected
+	// only that will be stored in targetListJson
+	if (targetList.length === 1){
+		// storing values to build a JSON
+		valueId = "//w[@xml:id=\"" + targetList[0].id + "\"]";
+		selectorObject = {type: "XPathSelector", value: valueId};
+		targetJson = {source: currentPageId, selector: selectorObject};
+		targetListJson = targetJson;
+		targetsXmlIds = valueId;
+	// if holds multiple <w> elements, as multiple words got selected
+	} else if (targetList.length !== 0){
+		targetListJson = "[";
+		targetList.forEach( item => {
+			// storing values to build a JSON and convert it to a STRING
+			valueId = "//w[@xml:id=\"" + item.id + "\"]";
+			selectorObject = {type: "XPathSelector", value: valueId};
+			targetJson = {source: currentPageId, selector: selectorObject};
+			targetListJson = targetListJson + JSON.stringify(targetJson) + ",";
+			targetsXmlIds = targetsXmlIds + valueId + "§"; 
+		});
+		// slice removes the last komma, as its not needed; and then remove the "\"
+		targetListJson = (targetListJson.slice(0,-1) + "]").replaceAll("\\","");
+		targetsXmlIds = targetsXmlIds.slice(0,-1);
+		
+		/*targetList.forEach( item => {
+			// storing values to build a JSON
+			targetJson = {};
+			valueId = "//w[@xml:id =\"" + item.id + "\"]";
+			selectorObject = {type: "XPathSelector", value: valueId};
+			targetJson = {source: currentPageId, selector: selectorObject};
+			targetArray.push(targetJson);
+			
+		});*/
+		//targetListAsJson = {target: targetArray};
+		//console.log(targetListJson);
+		//console.log(JSON.stringify(targetListAsJson));
+	}
+	return targetsXmlIds;
+}
+
+// store all the mrw annotations that are contained in a selection
+function storeSelectedMRWAnnos(targetList){
+	// empty the mrwAnno list beforehand
+	mrwAnnos = [];
+	annoJson.forEach(annotation => {
+		//annoXmlId = annotation.svg.split("\"")[1];
+		//console.log(annotation);
+		// TODO: this iteration nesting needs to be improved; it got created due 
+		// to annotations having multiple targets
+		annotation.tags.forEach( tag => {
+			if (tag.value === "mrw"){
+				targetList.forEach( target => {
+					annotation.svg.forEach( svg => {
+						if (target.id === svg.split("\"")[1]){
+							// this iteration should not be necessary as a Set
+							// should not hold the same annotation twice
+							if (mrwAnnos.size === 0) {
+								mrwAnnos.push(annotation);
+							} else {
+								if (!mrwAnnos.some(entry => entry.id === annotation.id)){
+									mrwAnnos.push(annotation);
+								}
+							}
+							
+						}
+					});
+				});
+			}
+		});
+	});
+	console.log("MRW annotations present in current selection: ", mrwAnnos);
+}
+
+function removeWhitespaceFromSelectionTextContent(text){
+    console.log("Before cleaning: ",  text);
+    text = text.replace(/\s{4}|[\t\n\r]|\s/g,' ');
+    while (text.includes("  ")){
+        text = text.replaceAll("  ",  " ");
+    }
+    text = text.trim();
+    console.log("After cleaning: ", text);
+    return text;
+};
+
+function annotateSelectedText(){
+	// check if the string is filled, because on a double click the first onmouseup
+	// will have no selection and therefore no string
+	if (window.getSelection().toString() && checkIsSelectionOnWorkspace(window.getSelection().getRangeAt(0).commonAncestorContainer)){
+		// selectionRange and selectionRangeContents are not used anymore and can 
+		// be removed
+		let selectionRange = window.getSelection().getRangeAt(0);
+		let selectionRangeContents = getContentOfSelection(window.getSelection());
+
+		console.log("Selection object: ", window.getSelection());
+		console.log("SelectionRange[0] object: ", selectionRange);
+		console.log("Contents of a Selection object: ", selectionRangeContents);
+		
+		// stop the function, if the selection does not contain any text, only whitespace
+		if (getContentOfSelection(window.getSelection()).textContent.trim() == ""){
+			console.log("No text selected, therefore early return.")
+			return;
+		}
+		
+		// targetList holds all the nodes from the selection, that are <w> elements
+		let targetList = createTargetList(window.getSelection());
+
+		console.log("Filled targetList for annotation creation: ", targetList);
+		
+		// store all the mrw annotations that are contained in a selection
+		// so they can be accessed in creation_templates_text.js to generate
+		// a list of selected mrws inside a metaphor and link the mrw annotations
+		// to the metaphor annotation
+		storeSelectedMRWAnnos(targetList);
+		// set selectedText so it can be displayed in the modal and remove all whitespaces
+        // TODO: this should use removeWhitespaceFromSelectionTextContent()
+		globalSelectedText = getContentOfSelection(window.getSelection()).
+								textContent.replace(/\s{4}|[\t\n\r]|\s/g,' ');
+		while (globalSelectedText.includes("  ")){
+			globalSelectedText = globalSelectedText.replaceAll("  ",  " ");
+		}
+		globalSelectedText = globalSelectedText.trim();
+		console.log("GlobalSelectedText: ", globalSelectedText);
+		// targetsXmlIds holds only the ids of the element in targetList
+		let targetsXmlIds = createListOfIds(targetList);
+		
+		console.log("Xml:ids present in the selection: ", targetsXmlIds);
+		// showing the modal/dropdown to select the annotation template, which can be populated
+		// by the user
+		const modal = document.getElementById("createAnnotation");
+	    modal.classList.toggle("show-modal");
+	    pickTemplate(targetsXmlIds, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
+    	
+    	// redrawing the annotations; TODO
+    	/*console.log("redrawing");
+    	removeStyles(document.getElementById("TEI"));
+    	drawAnnos(annoJson);*/
+    	
+    	// resetting parameters, so no new annotation can be created without clicking on
+		// the button at the sidebar, that enables annotation 
+		mode = Mode.View;
+		selectingText = false;
+	}
+};
+
+function modifySelection(){
+	selectingText = true;
+	mode = Mode.Modify; 
+	document.getElementById('modifyButton').parentElement.classList.add('active');
+	if (selectedAnnotation === undefined) {
+		document.getElementById('modifyButton').parentElement.classList.remove('active');
+        mode = Mode.View;
+		selectingText = false;
+		return;
+	}
+	console.log("Selected annotation: ", selectedAnnotation);
+	
+}
+
+function saveModification(){
+	if (window.getSelection().toString() && checkIsSelectionOnWorkspace(window.getSelection().getRangeAt(0).commonAncestorContainer)){
+		let selectionRange = window.getSelection().getRangeAt(0);
+		let selectionRangeContents = getContentOfSelection(window.getSelection());
+
+		/*
+		console.log("hereSaveMod");
+		console.log(window.getSelection());
+		console.log(selectionRange);
+		console.log(selectionRangeContents);
+		*/
+		
+		// stop the function, if the selection does not contain any text, only whitespace
+		if (selectionRangeContents.textContent.trim() == ""){
+			console.log("No text selected, therefore early return.");
+		    document.getElementById('modifyButton').parentElement.classList.remove('active');
+            mode = Mode.View;
+			selectingText = false;
+			alert("No text selected. Please redo");
+			return;
+		}
+		
+		// targetList holds all the nodes from the selection, that are <w> elements
+		let targetList = createTargetList(window.getSelection());
+
+        console.log("Filled targetList for annotation target update: ", targetList);
+		
+		// targetsXmlIds holds only the ids of the element in targetList
+		let newTargetsXmlIds = createListOfIds(targetList);
+
+        console.log("Xml:ids present in the NEW selection: ", newTargetsXmlIds);
+		
+		// ask user if the new selection should be saved in a modal
+
+        // get the previously selected text from the respective body (purpose: describing), or reconstruct it from the target
+        let oldSelectedText = selectedAnnotation.textCards.find(textCard => textCard.purpose === "describing" );
+        if (oldSelectedText != undefined){
+            oldSelectedText = oldSelectedText.value;
+        } else {
+            let idArray = [];
+            selectedAnnotation.targets.forEach(target => {
+                idArray.push(target.selector.xPath.split("\"")[1]);
+            });
+            // this sorts the xml:ids to retrieve a somehow appropriate reconstruction of the text out of the targets
+            // in cases, where the ids are not in an ascending nummerical order, the reconstruction will be off
+            idArray = idArray.sort((a, b) => {return a - b});
+            idArray = idArray.sort((a, b) => {
+                const na = a.split(".").slice(-1)[0];
+                const nb = b.split(".").slice(-1)[0];
+                return na - nb;
+            });
+            oldSelectedText = "";
+            idArray.forEach( id => {oldSelectedText += document.getElementById(id).textContent + " "});
+        }
+
+        let newSelectedText = removeWhitespaceFromSelectionTextContent(selectionRangeContents.textContent);
+
+		// modal stuff should be optimised
+		let el = document.createElement("div");
+		el.innerHTML = oldSelectedText; // + selectedAnnotation.targets.toString(); //  + " | id: " + selectedAnnotation.svgCode.split("\"")[1];
+		document.getElementById("oldSelectedText").innerHTML = "Current Selection:";
+		document.getElementById("oldSelectedText").append(el);
+		
+		let ele = document.createElement("div");
+		ele.innerHTML = newSelectedText; // + " | id: " + newTargetsXmlIds;
+		document.getElementById("newSelectedText").innerHTML = "New Selection:";
+		document.getElementById("newSelectedText").append(ele);
+		
+		const modal = document.getElementById("updateSelection");
+	    modal.classList.toggle("show-modal");
+	    modal.dataset.newTargetXmlId = newTargetsXmlIds;
+	    //modal.dataset.SelectedAnnotationId = selectedAnnotation.id;
+	}
+}
+
+function updateTarget(){
+	
+	const modal = document.getElementById("updateSelection");
+	let idOfAnnotationToUpdate = encodeAnnoId(selectedAnnotation.id);
+	//let idOfAnnotationToUpdate = encodeAnnoId(modal.dataset.SelectedAnnotationId);
+	let newTargetXmlId = modal.dataset.newTargetXmlId;
+	
+	// update the target of an annotation (and the "purpose:describing" body, if it exists) by sending a put request
+	let annotationDataJson = {"color" : "#89f099", "motivation" : "describing", "svgCode" : newTargetXmlId};
+	$ .ajax({
+            type : 'PUT',
+            url : '/editor_rest/annotations/' + idOfAnnotationToUpdate,
+            data : JSON.stringify(annotationDataJson),
+            headers : {
+                'Content-Type' : 'application/json'
+            },
+
+            success : function(responseData) {
+                
+                console.log("Response data from succesfull target update: ", responseData);
+
+                let responseDataJson = JSON.parse(responseData);
+ 
+                // TODO: only temporary solution to update the body containing the selected text
+                // if the purpose changes, the following needs to be changed
+                let result = null;
+                result = responseDataJson.textCards.filter(textCard => textCard.purpose === "describing");
+                if (result != null && result.length > 0) {
+                    // TODO: fix, when it goes into production, bc then the innerHTML will only be the selected text without any "|"s
+                    let newSelectedText = document.getElementById("newSelectedText").children[0].innerHTML.split("|")[0];
+                    newSelectedText.slice(0, (newSelectedText.length - 1));
+                    // TODO: should there not be a field to store, who modified the body in addition to the timestamp of the modification?                    
+                    // console.log(responseDataJson.creators);
+                    let updatedBody = {"created" : new Date(responseDataJson.created.seconds * 1000 + responseDataJson.created.nanos / 1000000).toISOString(), 
+                    "creators" : responseDataJson.creators, "id" : result[0].id,
+                    "modified" : new Date(responseDataJson.modified.seconds * 1000 + responseDataJson.modified.nanos / 1000000).toISOString(), 
+                    "purpose" : result[0].purpose, "value" : newSelectedText};
+                    console.log("Updated body: ", updatedBody);
+
+                    let annoIdEncoded = encodeAnnoId(responseDataJson.id);
+                    let endpoint = '/editor_rest/annotations/' + annoIdEncoded + '/bodies/' + result[0].id;
+                    console.log("Endpoint for body update: ", endpoint);
+
+                    $ .ajax({
+                        type: 'PUT',
+                        url: endpoint,
+                        data: JSON.stringify(updatedBody),
+                        headers: {
+                            'Content-Type' : 'application/json'
+                        },
+
+                        success: function(responseData) {
+                            console.log("Response data from succesfull body update: ", responseData);
+                        },
+        
+                        error: function(errorData) {
+                            console.log("Error data from failed body update: ", errorData);
+                        }
+                    });
+                }
+                
+                // redraw
+                removeStyles(document.getElementById("TEI"));
+
+                // updating the annoJson
+                annoJson.forEach(anno => {
+					if (anno.id === selectedAnnotation.id){
+						let newTargetArray = [];
+                        if (newTargetXmlId.includes("§")){
+                            let idList = newTargetXmlId.split("§");
+                            idList.forEach(id => {
+                                newTargetArray.push(id);
+                            });
+                        } else {
+                            newTargetArray.push(newTargetXmlId)
+                        }
+                        anno.svg = newTargetArray;
+					}
+				});				
+                drawAnnos(annoJson);
+                
+                // hide modal
+                document.getElementById("updateSelection").classList.toggle("show-modal");
+                document.getElementById('modifyButton').parentElement.classList.remove('active');
+                mode = Mode.View;
+				selectingText = false;
+
+                // show the updated annotation
+                selectAnnotation(null, encodeAnnoId(responseDataJson.id));
+            },
+
+            error : function(errorData) {
+                 console.log("Error data from failed target update: ", errorData);
+            }
+        });
+}
+
 function init(annotations) {
+	
+	annoJson = JSON.parse(annotations);
+	
+	// open textcard if rightclicking on a word that is highlighted due to it 
+    // having a css class, i.e. has an annotation
+	document.getElementById("TEI").oncontextmenu = function(e) {
+        e.preventDefault();
+        
+        let annotationOnTarget = [];
+        let annoIdEncoded;
+        if (e.target.classList.contains("mrw") ||
+            e.target.classList.contains("metaphor") ||
+            e.target.classList.contains("mflag")){
+            // add all the annotations targeting the selected word to an array
+			annoJson.forEach(item => {
+				item.svg.forEach( target => {
+					if (e.target.id == target.split("\"")[1]){
+                        annotationOnTarget.push(item);
+	              	  };
+				});
+			});
+            console.log("annotationsOntarget ", annotationOnTarget);
+            // check if any annotation was selected previuosly or if the target word changed and therefore
+            // the id of the previuosly selected annotation is not present in the list of annotations, that
+            // target the word on which the onClick event was triggered
+            console.log("selectedAnnotation 1: ", selectedAnnotation);
+            if (selectedAnnotation === undefined || 
+                annotationOnTarget.find(annotation => annotation.id === selectedAnnotation.id ) === undefined){
+                    console.log("first annotationsOntarget ",annotationOnTarget[0])
+                annoIdEncoded = encodeAnnoId(annotationOnTarget[0].id);
+            } else {
+                // check if the next index would be out off bounds, if yes select the first annotaiton in the list
+                // to start at the beginning of the list again and cycle through
+                if ((annotationOnTarget.findIndex(annotation => annotation.id === selectedAnnotation.id) + 1) > annotationOnTarget.length - 1){
+                    annoIdEncoded = encodeAnnoId(annotationOnTarget[0].id);
+                    console.log("first annotationsOntarget 2 ",annotationOnTarget[0]);
+                } else {
+                    annoIdEncoded = encodeAnnoId(annotationOnTarget[annotationOnTarget.findIndex(annotation => annotation.id === selectedAnnotation.id) + 1].id);
+                    console.log("2-n annotationsOntarget ", annotationOnTarget[annotationOnTarget.findIndex(annotation => annotation.id === selectedAnnotation.id) + 1]);
+                }     
+            }
+
+            console.log("select anno id encoded: ", annoIdEncoded);
+            selectAnnotation(null, annoIdEncoded);
+            //alert("asd");
+            console.log("selectedAnnotation 2: ", selectedAnnotation);
+	        if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
+	            toggleOverview('annotationCard');
+		    }
+        } 
+	}
+	
+	document.getElementById("TEI").onmouseup = function (event) {
+		
+		// only get a selection, if a user actually wants to select text		
+		if (mode === Mode.Create && selectingText){
+			annotateSelectedText();
+			
+			/*let target = [];
+			
+			for (element in selection) {
+				target.push(element);
+			}
+			const modal = document.getElementById("createAnnotation");
+            modal.classList.toggle("show-modal");
+            pickTemplate(target, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
+            
+           */
+		}
+		if (mode === Mode.Modify && selectingText){
+			modifySelection();
+			
+			/*let target = [];
+			
+			for (element in selection) {
+				target.push(element);
+			}
+			const modal = document.getElementById("createAnnotation");
+            modal.classList.toggle("show-modal");
+            pickTemplate(target, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
+            
+           */
+		}
+		
+	}
+	// this if check stops the code to fail on the editor_text as there is no image present
+	if (document.getElementById('pageImage') !== null){
   let image = document.getElementById('pageImage');
   image.style.width = document.getElementById('imageWorkspace').clientWidth + 'px';
   paper = Raphael("canvas", image.width, image.height);
@@ -1041,9 +1671,8 @@ function init(annotations) {
         };
     };
 
-    // Drawing anno svgs on first opening of page
-    annoJson = JSON.parse(annotations);
-    drawAnnos(annoJson);
+    // Drawing anno svgs on first opening of page moved to CETEIcean call in editor_text.html
+    }
 }
 
 function confirmDiscardChanges() {
@@ -1092,22 +1721,6 @@ window.addEventListener("beforeunload", function (e) {
 
 });
 
-window.addEventListener("wheel", function(e) {
-    if (e.ctrlKey) {
-      e.preventDefault();
-      let sign = Math.sign(e.deltaY);
-      if (sign > 0) {
-          imageZoomIn();
-          console.log("Zooming in!");
-      } else {
-          imageZoomOut();
-          console.log("Zooming out!");
-      }
-    }
-}, {
-  passive: false
-});
-
 // adding the closing functionality to annotation creation modal
 document.getElementById('closeButtonAnno').addEventListener('click', function (e) {
     document.getElementById("createAnnotation").classList.toggle("show-modal");
@@ -1123,11 +1736,29 @@ document.getElementById('closeButtonAnno').addEventListener('click', function (e
         polygonPath.remove();
         document.getElementById('createPolygonButton').parentElement.classList.remove('active');
     };
+    // disabling the option to create an annotation. needed, because selecting text
+	// can be done before the mode was set to create by clicking the button after the text selection process
+    mode = Mode.View;
+	selectingText = false;
 });
 
 // adding the closing functionality to body creation modal
 document.getElementById('closeButton').addEventListener('click', function (e) {
     document.getElementById("createBody").classList.toggle("show-modal");
+	// disabling the option to create an annotation. needed, because selecting text
+	// can be done before the mode was set to create by clicking the button after the text selection process
+    mode = Mode.View;
+	selectingText = false;
+});
+
+// adding the closing functionality to text selection update modal
+document.getElementById('closeButtonUpdate').addEventListener('click', function (e) {
+    document.getElementById("updateSelection").classList.toggle("show-modal");
+    document.getElementById('modifyButton').parentElement.classList.remove('active');
+	// disabling the option to create an annotation. needed, because selecting text
+	// can be done before the mode was set to create by clicking the button after the text selection process
+    mode = Mode.View;
+	selectingText = false;
 });
 
 function hideExpandedSidebar() {

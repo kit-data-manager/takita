@@ -4,8 +4,10 @@ import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
+import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import edu.kit.scc.dem.tuhl.model.page.ResourceType;
+import edu.kit.scc.dem.tuhl.model.target.Target;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -305,7 +307,14 @@ public class EditorController {
         String encodedId = URLEncoder.encode(annotations.get(i).getId(), StandardCharsets.UTF_8.toString());
         String encodedIdDouble = URLEncoder.encode(encodedId, StandardCharsets.UTF_8.toString());
         thisAnno.put("idEncoded", encodedIdDouble);
-        thisAnno.put("svg", annotations.get(i).getSvgCode());
+        
+        // adding the targets
+        JSONArray targets = new JSONArray();
+        for (Target target : annotations.get(i).getTargets()) {
+        	targets.put(target.getSelector().toString());
+        }
+        thisAnno.put("svg", targets);
+        
         if (annotations.get(i).getColor() != null) {
             thisAnno.put("color", annotations.get(i).getColor().getColorHex());
         }
@@ -315,6 +324,24 @@ public class EditorController {
         thisAnno.put("modified", annotations.get(i).getModified());
         thisAnno.put("motivation", annotations.get(i).getMotivation());
         thisAnno.put("via", annotations.get(i).getVia());
+        
+        // adding tags to the model
+        try {
+        	JSONArray tagsJson = new JSONArray();
+        	List<Tag> tags = annotations.get(i).getTags();
+        	
+        	for (Tag tag : tags) {
+        		JSONObject value = new JSONObject();
+        		value.put("value", tag.getValue());
+        		tagsJson.put(value);
+        	}
+        	
+        	thisAnno.put("tags", tagsJson);
+        } catch (Exception e) {
+        	System.out.println(e);
+        	System.out.println("No tags available");
+        }
+        
 
         displayable.put(i, thisAnno);
       }
