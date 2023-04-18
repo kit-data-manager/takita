@@ -486,8 +486,11 @@ function extractInformationFromSvg (svgString, annoJson) {
 // https://stackoverflow.com/questions/9252839/simplest-way-to-remove-all-the-styles-in-a-page
 function removeStyles(el) {
 
+    // CUSTOMISE classes to remove (linked to classes assigned in
+    // drawAnnos() function)
     // specify the classe to remove here
-    let possibleClasses = ["mrw", "mflag", "metaphor"];
+    let possibleClasses = ["mrw", 
+                            "mflag", "metaphor", "metaphorSecond"];
 
     possibleClasses.forEach(entry => {
         el.classList.remove(entry);
@@ -501,17 +504,43 @@ function removeStyles(el) {
 // highlighting all annotations
 function drawAnnos(annoJson) {
     let targetXmlId;
-
+    let alreadyAnnotated;
     annoJson.forEach(annotation => {
+        // check if a target has the classe "metaphor" and
+        // therefore, is already highlighted
+        alreadyAnnotated = false;
+        annotation.svg.forEach( target => {
+			targetXmlId = target.split("\"")[1];
+            if(document.getElementById(targetXmlId).classList.contains("metaphor")){
+                alreadyAnnotated = true;
+            }
+        });
+
+        // adding classes to highlight annotations
 		annotation.svg.forEach( target => {
 			targetXmlId = target.split("\"")[1];
 			annotation.tags.forEach( tag => {
 				// different highlights for different annotation types
                 switch (tag.value){
+                    // CUSTOMIZE highlighting of different annotations, based on the value of the tags
+                    // (linked to classes to be removed in removeStyles() funtcion)
                     case "metaphor":
-                        document.getElementById(targetXmlId).classList.add("metaphor");
+                        // if a word is not highlighted add the "metaphor" class, if it is
+                        // already highlighted add "metaphorSecond"
+                        if (!alreadyAnnotated){
+                            document.getElementById(targetXmlId).classList.add("metaphor");
+                        } else {
+                            document.getElementById(targetXmlId).classList.add("metaphorSecond");
+                        }
+                        
                         break;
-                    case "mrw":
+                    case "mrw (direct)":
+                        document.getElementById(targetXmlId).classList.add("mrw");
+                        break;
+                    case "mrw (indirect)":
+                        document.getElementById(targetXmlId).classList.add("mrw");
+                        break;
+                    case "mrw (implicit)":
                         document.getElementById(targetXmlId).classList.add("mrw");
                         break;
                     case "mflag":
@@ -1079,7 +1108,10 @@ function storeSelectedMRWAnnos(targetList){
 		// TODO: this iteration nesting needs to be improved; it got created due 
 		// to annotations having multiple targets
 		annotation.tags.forEach( tag => {
-			if (tag.value === "mrw"){
+			if (tag.value === "mrw (direct)" || 
+                tag.value === "mrw (indirect)" || 
+                tag.value === "mrw (implicit)" || 
+                tag.value === "mflag"){
 				targetList.forEach( target => {
 					annotation.svg.forEach( svg => {
 						if (target.id === svg.split("\"")[1]){
@@ -1370,9 +1402,13 @@ function init(annotations) {
         
         let annotationOnTarget = [];
         let annoIdEncoded;
-        if (e.target.classList.contains("mrw") ||
+        // CUSTOMIZE textCard toggle (display of the annotation on the right side of the screen)
+        if (e.target.classList.contains("mrw (direct)") ||
+            e.target.classList.contains("mrw (indirect)") ||
+            e.target.classList.contains("mrw (implicit") ||
+            e.target.classList.contains("mflag") ||
             e.target.classList.contains("metaphor") ||
-            e.target.classList.contains("mflag")){
+            e.target.classList.contains("metaphorSecond")){
             // add all the annotations targeting the selected word to an array
 			annoJson.forEach(item => {
 				item.svg.forEach( target => {
