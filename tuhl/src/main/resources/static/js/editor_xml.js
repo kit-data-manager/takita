@@ -489,7 +489,8 @@ function removeStyles(el) {
     // CUSTOMISE classes to remove (linked to classes assigned in
     // drawAnnos() function)
     // specify the classe to remove here
-    let possibleClasses = ["mrw", "mflag", "metaphor", "metaphorSecond"];
+    let possibleClasses = ["mrw", 
+                            "mflag", "metaphor", "metaphorSecond"];
 
     possibleClasses.forEach(entry => {
         el.classList.remove(entry);
@@ -533,7 +534,13 @@ function drawAnnos(annoJson) {
                         }
                         
                         break;
-                    case "mrw":
+                    case "mrw (direct)":
+                        document.getElementById(targetXmlId).classList.add("mrw");
+                        break;
+                    case "mrw (indirect)":
+                        document.getElementById(targetXmlId).classList.add("mrw");
+                        break;
+                    case "mrw (implicit)":
                         document.getElementById(targetXmlId).classList.add("mrw");
                         break;
                     case "mflag":
@@ -1101,7 +1108,10 @@ function storeSelectedMRWAnnos(targetList){
 		// TODO: this iteration nesting needs to be improved; it got created due 
 		// to annotations having multiple targets
 		annotation.tags.forEach( tag => {
-			if (tag.value === "mrw"){
+			if (tag.value === "mrw (direct)" || 
+                tag.value === "mrw (indirect)" || 
+                tag.value === "mrw (implicit)" || 
+                tag.value === "mflag"){
 				targetList.forEach( target => {
 					annotation.svg.forEach( svg => {
 						if (target.id === svg.split("\"")[1]){
@@ -1393,10 +1403,12 @@ function init(annotations) {
         let annotationOnTarget = [];
         let annoIdEncoded;
         // CUSTOMIZE textCard toggle (display of the annotation on the right side of the screen)
-        if (e.target.classList.contains("mrw") ||
+        if (e.target.classList.contains("mrw (direct)") ||
+            e.target.classList.contains("mrw (indirect)") ||
+            e.target.classList.contains("mrw (implicit") ||
+            e.target.classList.contains("mflag") ||
             e.target.classList.contains("metaphor") ||
-            e.target.classList.contains("metaphorSecond") ||
-            e.target.classList.contains("mflag")){
+            e.target.classList.contains("metaphorSecond")){
             // add all the annotations targeting the selected word to an array
 			annoJson.forEach(item => {
 				item.svg.forEach( target => {

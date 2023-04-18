@@ -12,8 +12,10 @@ const bodyTemplate = {
 // for adding new: include name here and add dataModel in 
 // getFormModel(chosenTemplate)
 const annotationTemplate = {
-    MRW : "mrw",
-    MFLAG : "mFlag",
+    MRWDIRECT : "mrwdirect",
+    MRWINDIRECT : "mrwindirect",
+    MRWIMPLICIT : "mrwimplicit",
+    MFLAG : "mflag",
     METAPHOR : "metaphor",
     CONTEXT : "context"
     
@@ -27,7 +29,7 @@ function getFormModel(chosenTemplate) {
     let uiForm;
     
     switch (chosenTemplate) {
-        case "MRW":
+        case "MRWDIRECT":
             dataModel = {
                 "type" : "object",
                 "properties" : {
@@ -40,7 +42,36 @@ function getFormModel(chosenTemplate) {
 					"tag" : {
                         "type" : "string",
                         "title" : "Tag",
-                        "default" : "mrw",
+                        "default" : "mrw (direct)",
+                        "readOnly" : true
+                    }
+                }
+            };
+            uiForm = {
+                "type" : "fieldset",
+                "items" : [
+                    "selectedText",
+                    {
+                        "key" : "tag",
+                        "readOnly" : true
+                    }                
+            ]};
+            break;
+
+        case "MRWINDIRECT":
+            dataModel = {
+                "type" : "object",
+                "properties" : {
+                    "selectedText": {
+                        "type" : "string",
+                        "title" : "Selected text",
+                        "default" : globalSelectedText,
+                        "readOnly" : true	
+                    },
+                    "tag" : {
+                        "type" : "string",
+                        "title" : "Tag",
+                        "default" : "mrw (indirect)",
                         "readOnly" : true
                     }
                 }
@@ -55,11 +86,46 @@ function getFormModel(chosenTemplate) {
                     }                
             ]};
             break;  
-        
+
+        case "MRWIMPLICIT":
+            dataModel = {
+                "type" : "object",
+                "properties" : {
+                    "selectedText": {
+                        "type" : "string",
+                        "title" : "Selected text",
+                        "default" : globalSelectedText,
+                        "readOnly" : true	
+                    },
+                    "tag" : {
+                        "type" : "string",
+                        "title" : "Tag",
+                        "default" : "mrw (implicit)",
+                        "readOnly" : true
+                    }
+                }
+            };
+            uiForm = {
+                "type" : "fieldset",
+                "items" : [
+                    "selectedText",
+                    {
+                        "key" : "tag",
+                        "readOnly" : true
+                    }                
+            ]};
+            break;
+
         case "MFLAG":
             dataModel = {
                 "type" : "object",
                 "properties" : {
+                    "selectedText": {
+						"type" : "string",
+	                    "title" : "Selected text",
+	                    "default" : globalSelectedText,
+	                    "readOnly" : true	
+					},
                     "tag" : {
                         "type" : "string",
                         "title" : "Tag",
@@ -71,6 +137,7 @@ function getFormModel(chosenTemplate) {
             uiForm = {
                 "type" : "fieldset",
                 "items" : [
+                    "selectedText",
                     {
                         "key" : "tag",
                         "readOnly" : true
@@ -100,7 +167,10 @@ function getFormModel(chosenTemplate) {
 				});
 				targetMRW = targetMRW.slice(0, (targetMRW.length-1));
 				//console.log(targetMRW);
-				mrwTitleMap[anno.id] = targetMRW;
+                // adding the tag value to the text; check if the tag has a value given in relevantTags
+                // and add that value to the text
+                const relevantTags = ["mrw (direct)", "mrw (indirect)", "mrw (implicit)", "mflag"];
+				mrwTitleMap[anno.id] = targetMRW + " | " + anno.tags.filter(tag => relevantTags.includes(tag.value))[0].value;
 				// emptying the string, so it can be filled during next iteration cycle
 				targetMRW = "";
 				mrwEnum.push(anno.id);
@@ -127,7 +197,7 @@ function getFormModel(chosenTemplate) {
 	                },
 	                "mrws" : {
 	                    "type" : "array",
-	                    "title" : "Metaphor related words",
+	                    "title" : "Metaphor related words (direct, indirect, implicit and mflags)",
 	                    "items": {
 					        "type": "string",
 					        "title": "Option",
@@ -479,7 +549,7 @@ function storeBody(responseJson, jsonObject, index) {
                 endpoint = '/editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/bodies';
 
                 console.log("Body to store: ", Object.keys(jsonObject)[index]);
-                // CUSTOMISE assignment of purpos to an annotation body
+                // CUSTOMISE assignment of purpose to an annotation body
                 if (Object.keys(jsonObject)[index] === "transcription") {
                     bodyDataJson = {"purpose" : "tadirah:transcription", "value" : jsonObject[Object.keys(jsonObject)[index]]};
                 } else if (Object.keys(jsonObject)[index] === "selectedText"){ // storing the selected text
