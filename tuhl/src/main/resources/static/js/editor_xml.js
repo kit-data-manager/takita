@@ -1403,9 +1403,7 @@ function init(annotations) {
         let annotationOnTarget = [];
         let annoIdEncoded;
         // CUSTOMIZE textCard toggle (display of the annotation on the right side of the screen)
-        if (e.target.classList.contains("mrw (direct)") ||
-            e.target.classList.contains("mrw (indirect)") ||
-            e.target.classList.contains("mrw (implicit") ||
+        if (e.target.classList.contains("mrw") ||
             e.target.classList.contains("mflag") ||
             e.target.classList.contains("metaphor") ||
             e.target.classList.contains("metaphorSecond")){
