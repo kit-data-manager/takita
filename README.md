@@ -1,5 +1,7 @@
 # Readme
 
+For some major changes from image-annotation takita to text-annoation check the end of the document.
+
 #### Executing the Program
 In order for the program to run properly there are two major requirements:
 * Java Runtime Environment 11 or higher needs to be installed
@@ -68,3 +70,18 @@ Set a custom port for the elasticsearch server. The default port is 9200.
 ##### User Repository
 * `--spring.datasource.url = <myUrl>`    
 Set a custom source url for user repository. The default source url is `jdbc:h2:file:~/db/userdb`
+
+## Changes from image annotation
+
+Chronologically ordered from oldest to latest changes:
+
+- tAkita now distinguishes between manuscript and page DO´s by its "resourceType"/"value" instead of "resourceType"/"typeGeneral" (see [084d25f9b9ee34efc7849bdd0198d873be1ab0dc](https://git.scc.kit.edu/sfb980/takita/-/commit/084d25f9b9ee34efc7849bdd0198d873be1ab0dc))
+  - previously it used to handle DO´s with `"typeGeneral": "IMAGE"` as page and DO´s withs `"typeGeneral": "TEXT"` as manuscript DO´s
+- tAkita's js doesn't access the base-repo directly any longer to get the data of a page DO´s, but uses an endpoint provided by the java code(see [commit b07b7f10229619f1fa9881aae06790ea839c97a1](https://git.scc.kit.edu/sfb980/takita/-/commit/b07b7f10229619f1fa9881aae06790ea839c97a1)))
+  - this currently only is true for text/xml files
+- since [commit b18196b0e71206d42a62b50c2a0df9827d4d554a](https://git.scc.kit.edu/sfb980/takita/-/commit/b18196b0e71206d42a62b50c2a0df9827d4d554a) you need to a reference to a SKOMSOS instance in the application properties. You don't need to run a SKOSMOS instacne somewhere, bt can just copy the following lines:
+
+```
+thesaurus.baseUrl = https://URL
+thesaurus.searchPath = rest/v1/ct/search
+```
