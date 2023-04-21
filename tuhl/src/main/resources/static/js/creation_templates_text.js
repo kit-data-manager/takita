@@ -2,9 +2,7 @@
 // for adding new: include name here and add dataModel in 
 // getFormModel(chosenTemplate)
 const bodyTemplate = {
-    TAG : "tag",
-    TEXTBODY : "textbody"
-    
+    COMMENT : "comment"
 };
 
 // enum for different annotation templates
@@ -16,9 +14,7 @@ const annotationTemplate = {
     MRWINDIRECT : "mrwindirect",
     MRWIMPLICIT : "mrwimplicit",
     MFLAG : "mflag",
-    METAPHOR : "metaphor",
-    CONTEXT : "context"
-    
+    METAPHOR : "metaphor"
 };
 
 // assigns data model needed for MetadataEditor to specific template
@@ -266,32 +262,33 @@ function getFormModel(chosenTemplate) {
             ]};
             break;  
                 
-        case "TAG":
-            dataModel = {
-                "type" : "object",
-                "properties" : {
-                    "value" : {
-                        "type" : "string",
-                        "title" : "value"
-                    }
-                },
-                "required" : ["value"]
-            };
-            break;
-        case "TEXTBODY":
+        case "COMMENT":
             dataModel = {
                 "type" : "object",
                 "properties" : {
                     "purpose" : {
                         "type" : "string",
-                        "title" : "purpose"
+                        "title" : "purpose",
+                        "default": "commenting",
+                        "readonly": true
                     },
                     "value" : {
                         "type" : "string",
-                        "title" : "value"
+                        "title" : "Comment"
                     }
                 },
                 "required" : ["purpose", "value"]
+            };
+            uiForm = {
+                "type" : "fieldset",
+                "items" : [
+                    "purpose",
+                    {
+                        "key": "value",
+                        "type": "textarea",
+                        "label": "Comment"
+                    }
+                ]
             };
             break;
 
@@ -329,9 +326,16 @@ const formObjectCreateBody = {
             }
             
             if(!value) {return;};
-            let dataModel = getFormModel(value);
-            
-            let options = {operation: "CREATE", dataModel: dataModel[0], uiForm: "*"};
+            let formModel = getFormModel(value);
+            console.log(formModel);
+            // if no uiForm is given in getFormModel() for a body template, a wildcard is used.
+            // previously a wildcard was always used, but the change in this commit changed the
+            // following options variable
+            if (formModel[1] === undefined){
+                formModel[1] = "*";
+            }
+
+            let options = {operation: "CREATE", dataModel: formModel[0], uiForm: formModel[1]};
             
             // preventing form submission to allow customized handling
             createFormElement.addEventListener('submit', function(e) {e.preventDefault();});
