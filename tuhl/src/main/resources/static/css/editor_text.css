@@ -4,6 +4,12 @@
 
 /* CUSTOMISE how annotations should be highlighted */
 
+/* TODO: improve the comment phrasing */
+/* default: highlight words annotated as anything not specified in purple */
+.defaulthighlight{
+	background: lightgreen;
+}
+
 /* highlight words annotated as mrws in purple */
 .mrw {
 	background: #daa3ff;
@@ -14,10 +20,21 @@
 	background: yellow;
 }
 
-/* highlight words annotated as mrws and mflags
-	in purple and yellow */
+/* possible combinations of the rules from above */
 .mrw.mflag {
 	background: linear-gradient( to bottom, yellow 50%, #daa3ff 50% 100% )
+}
+
+.defaulthighlight.mrw{
+	background: linear-gradient( to bottom, lightgreen 50%, #daa3ff 50% 100% )
+}
+
+.defaulthighlight.mflag{
+	background: linear-gradient( to bottom, lightgreen 50%, yellow 50% 100% )
+}
+
+.defaulthighlight.mrw.mflag{
+	background: linear-gradient( to bottom, lightgreen 33%, yellow 33% 66%, #daa3ff 66% 100% )
 }
 
 /* underline words annotated as metaphors */
@@ -25,7 +42,7 @@
 	box-shadow: 0px 0.2em #2196F3;
 }
 
-/* TODO: improve the comment phasing*/
+/* TODO: improve the comment phrasing */
 /* underline words annotated as metaphors, if 
 	another word is part of another metaphor
 	annotation and therefore, already highlighted 

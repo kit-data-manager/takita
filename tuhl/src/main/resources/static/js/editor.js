@@ -65,7 +65,7 @@ function selectAnnotation(event, annoId) {
             };
             
             const headerFields = ["created", "creators", "modified", "generator", "motivation", "target", "via"];
-            const omitFields = ["type", "selector", "fullJson", "annotationId", "motivation", "created", "id", "purpose"];
+            const omitFields = ["type", "selector", "fullJson", "annotationId", "motivation", "created"];
             
             for (field in headerFields) {
                 if (responseJson[headerFields[field]]) {
@@ -163,7 +163,7 @@ function selectAnnotation(event, annoId) {
                 };
                 
                 for (let key in bodies[body]) {
-                    console.log(key);
+                    //console.log(key);
                     if(bodies[body].hasOwnProperty(key)) {
                         formDataModel = completeFormDataModel(bodies[body], formBodyDataModel, key, omitFields);
                         if (key !== "value" && omitFields.indexOf(key) === -1) {
@@ -211,6 +211,32 @@ function selectAnnotation(event, annoId) {
                         success: function(responseData) {
                             console.log(responseData);
                             selectAnnotation(null, annoIdEncoded);
+                            // TODO: this is just a bandaid for now as it only updates the first 
+                            // entry of the tags array and not only the updated tag
+                            // For now in (CRC1475) an annotation only has one tag anyways.
+
+                            // updating the display for text annotation
+                            // checking if TEI-element is null. it is defined for text annotation,
+                            // but not for image annotation
+                            if (document.getElementById("TEI") != null) {
+                                // update the tags of the annotation in 
+                                // annoJson as they are the basis for the highlighting
+                                let responseDataJson = JSON.parse(responseData);
+                                console.log(responseDataJson);
+                                // if a tag got modified, the purpose is tagging
+                                // (if a textCard is modified the purpose is different and can be ignored
+                                // as textCards are not responsible for the highlighting)
+                                if (responseDataJson.purpose === "tagging") {
+                                    // update the tag of the annotation, that got its body modified
+                                    annoJson
+                                        .filter(anno => anno.id === responseDataJson.annotationId)
+                                        [0].tags[0].value = responseDataJson.value;
+                                }
+
+                                // redrawing all annotations
+                                removeStyles(document.getElementById("TEI"));
+                                drawAnnos(annoJson);
+                            }
                         },
         
                         error: function(errorData) {
@@ -265,6 +291,14 @@ function deleteBodyFromAnnotation(annoId, bodyId) {
             success: function(responseData) {
                 console.log(responseData);
                 selectAnnotation(null, annoIdEncoded);
+                // updating the display for text annotation
+                // checking if TEI-element is null. it is defined for text annotation,
+                // but not for image annotation
+                if (document.getElementById("TEI") != null) {
+                    // redrawing all annotations
+                    removeStyles(document.getElementById("TEI"));
+                    drawAnnos(annoJson);
+                }
             },
         
             error: function(errorData) {
@@ -277,6 +311,26 @@ function deleteBodyFromAnnotation(annoId, bodyId) {
                     success: function(responseData) {
                         console.log(responseData);
                         selectAnnotation(null, annoIdEncoded);
+                        // TODO: this is just a bandaid for now as it empties the tags array completly
+                        // so if there would be multiple tags none would be left, even if only one got
+                        // deleted. For now in (CRC1475) an annotation only has one tag anyways.
+                        
+                        // updating the display for text annotation
+                        // checking if TEI-element is null. it is defined for text annotation,
+                        // but not for image annotation
+                        if (document.getElementById("TEI") != null) {
+                            // update the tags of the annotation in 
+                            // annoJson as they are the basis for the highlighting
+                            console.log(responseDataJson);
+                            // emptying the tags array of the annotation, that got its body modified
+                            annoJson
+                                .filter(anno => anno.idEncoded === annoIdEncoded)
+                                [0].tags = [];
+
+                            // redrawing all annotations
+                            removeStyles(document.getElementById("TEI"));
+                            drawAnnos(annoJson);
+                        }
                     }
                 });    
             }

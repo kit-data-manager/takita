@@ -489,8 +489,7 @@ function removeStyles(el) {
     // CUSTOMISE classes to remove (linked to classes assigned in
     // drawAnnos() function)
     // specify the classe to remove here
-    let possibleClasses = ["mrw", 
-                            "mflag", "metaphor", "metaphorSecond"];
+    let possibleClasses = ["mrw", "mflag", "metaphor", "metaphorSecond", "defaulthighlight"];
 
     possibleClasses.forEach(entry => {
         el.classList.remove(entry);
@@ -519,36 +518,54 @@ function drawAnnos(annoJson) {
         // adding classes to highlight annotations
 		annotation.svg.forEach( target => {
 			targetXmlId = target.split("\"")[1];
-			annotation.tags.forEach( tag => {
-				// different highlights for different annotation types
-                switch (tag.value){
-                    // CUSTOMIZE highlighting of different annotations, based on the value of the tags
-                    // (linked to classes to be removed in removeStyles() funtcion)
-                    case "metaphor":
-                        // if a word is not highlighted add the "metaphor" class, if it is
-                        // already highlighted add "metaphorSecond"
-                        if (!alreadyAnnotated){
-                            document.getElementById(targetXmlId).classList.add("metaphor");
-                        } else {
-                            document.getElementById(targetXmlId).classList.add("metaphorSecond");
-                        }
-                        
-                        break;
-                    case "mrw (direct)":
-                        document.getElementById(targetXmlId).classList.add("mrw");
-                        break;
-                    case "mrw (indirect)":
-                        document.getElementById(targetXmlId).classList.add("mrw");
-                        break;
-                    case "mrw (implicit)":
-                        document.getElementById(targetXmlId).classList.add("mrw");
-                        break;
-                    case "mflag":
-                        document.getElementById(targetXmlId).classList.add("mflag");
-                    //default:
-                        //console.log("Tag value not matching the possible cases, no class added for:", annotation);
-                }
-			});
+            // if tags are available assign css class
+            if (annotation.tags.length > 0) {
+                annotation.tags.forEach( tag => {
+                    // different highlights for different annotation types
+                    switch (tag.value){
+                        // CUSTOMIZE highlighting of different annotations, based on the value of the tags
+                        // (linked to classes to be removed in removeStyles() funtcion)
+                        case "metaphor":
+                            // if a word is not highlighted add the "metaphor" class, if it is
+                            // already highlighted add "metaphorSecond"
+                            if (!alreadyAnnotated){
+                                document.getElementById(targetXmlId).classList.add("metaphor");
+                            } else {
+                                document.getElementById(targetXmlId).classList.add("metaphorSecond");
+                            }
+                            
+                            break;
+                        case "mrw (direct)":
+                            document.getElementById(targetXmlId).classList.add("mrw");
+                            break;
+                        case "mrw (indirect)":
+                            document.getElementById(targetXmlId).classList.add("mrw");
+                            break;
+                        case "mrw (implicit)":
+                            document.getElementById(targetXmlId).classList.add("mrw");
+                            break;
+                        case "mflag":
+                            document.getElementById(targetXmlId).classList.add("mflag");
+                            break;
+                        default:
+                            // this is not ideal, but without the if clause, most of words
+                            // will get the defaulthighlighting class
+                            if (tag.value === "metaphor" ||
+                                tag.value === "mrw (direct)" ||
+                                tag.value === "mrw (indirect)" ||
+                                tag.value === "mrw (implicit)" ||
+                                tag.value === "mflag"){
+                                    // nothing will happen
+                                } else {
+                                    document.getElementById(targetXmlId).classList.add("defaulthighlight");
+                                    //console.log("Tag value not matching the possible cases, 'defaulthighlight' class added for:", annotation);
+                                }
+                    }
+                });
+            } else { // if no tags are given (might be due to the tagging body being delted), assign default
+                document.getElementById(targetXmlId).classList.add("defaulthighlight");
+            }
+			
 		});
 
 		// border-bottom: 6px solid #2196F3 !important;
@@ -1406,7 +1423,8 @@ function init(annotations) {
         if (e.target.classList.contains("mrw") ||
             e.target.classList.contains("mflag") ||
             e.target.classList.contains("metaphor") ||
-            e.target.classList.contains("metaphorSecond")){
+            e.target.classList.contains("metaphorSecond") ||
+            e.target.classList.contains("defaulthighlight")){
             // add all the annotations targeting the selected word to an array
 			annoJson.forEach(item => {
 				item.svg.forEach( target => {

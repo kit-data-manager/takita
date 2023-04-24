@@ -582,7 +582,15 @@ function storeBody(responseJson, jsonObject, index) {
                     console.log(responseData);
                     // putting the tag value in the tag array, so they can be stored in the annoJson later
                     let responseDataJson = JSON.parse(responseData);
-                    tagsIOP.push({"value" : responseDataJson.value});
+                    // CUSTOMIZE storing the value of the tags
+                    // (only tags and not textCards should be stored)
+                    if (responseDataJson.value === "metaphor" ||
+                        responseDataJson.value === "mrw (direct)" ||
+                        responseDataJson.value === "mrw (indirect)" ||
+                        responseDataJson.value === "mrw (implicit)" ||
+                        responseDataJson.value === "mflag") {
+                        tagsIOP.push({"value" : responseDataJson.value});
+                    }
                     storeBody(responseJson, jsonObject, index + 1);
                 },
         
