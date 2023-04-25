@@ -76,9 +76,9 @@
   </ul>
   <ul class="features-list">
       <div class="category-header">Create Mode</div>
-	<li class="features-item draft">
-      <i id="selectTextButton" class="bx bx-highlight features-item-icon" onclick="hideExpandedSidebar(); selectingText = true; confirmDiscardChanges(); mode = Mode.Create; annotateSelectedText();"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); selectingText = true; confirmDiscardChanges(); mode = Mode.Create; annotateSelectedText();">Select Text</span>
+	<li id="selectTextListItem" class="features-item draft">
+      <i id="selectTextButton" class="bx bx-highlight features-item-icon"></i>
+      <span class="features-item-text annocollapse">Select Text</span>
       <span class="tooltip">Select Text</span>
     </li>
    </ul>
@@ -447,6 +447,21 @@
     <script src="/js/creation_templates_text.js"></script>
 	<script src="/js/CETEI.js"></script>
 	<script src="/js/editor_xml.js"></script>
+    <script th:inline="javascript">
+            // Adding/Binding eventhandlers to buttons
+
+            // adding eventhandler for text selection
+            function onclickSelectText(event) {
+                hideExpandedSidebar();
+                selectingText = true;
+                confirmDiscardChanges();
+                mode = Mode.Create;
+                annotateSelectedText();
+            };
+            document.getElementById("selectTextListItem").addEventListener("mousedown", onclickSelectText);
+
+
+    </script>
 	<script th:inline="javascript">
         
         // CUSTOMISE the division type used in a text (this is used for the navigation bar)
