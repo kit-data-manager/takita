@@ -487,9 +487,15 @@
                     divisionType = possibility;
                 }
             });
+
+            // check if divisionType was changed, if yes change the label of the navigation bar buttons based on division type
             if (divisionType === "default"){
                 console.log("As the text does not have division type listed in:", possibleDivisionTypes, 
                 "it remains:", divisionType);
+            } else {
+                document.getElementById("prevChaptButton").innerHTML = "Previous " + divisionType;
+                document.getElementById("goToChaptButton").innerHTML = "Go to " + divisionType;
+                document.getElementById("nextChaptButton").innerHTML = "Next " + divisionType;
             }
 
 			// hiding all chapters besides the first one. needed for navigation
