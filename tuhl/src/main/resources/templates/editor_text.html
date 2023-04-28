@@ -358,23 +358,34 @@
 		// if no next/previous chapter is available
 		function toggleButtonActivity(targetChapter) {
 			
-			const previousChapter = targetChapter.previousElementSibling;
-			const nextChapter = targetChapter.nextElementSibling;
+			// const previousChapter = targetChapter.previousElementSibling;
+			// const nextChapter = targetChapter.nextElementSibling;
 			
    			if (targetChapter.previousElementSibling !== null){
-   				prevChaptButton.addEventListener("mousedown", showPreviousChapter);
-   				prevChaptButton.disabled = false;
-   			} else {
-   				prevChaptButton.removeEventListener("mousedown", showPreviousChapter);
-   				prevChaptButton.disabled = true;
-   			}
+                if (targetChapter.previousElementSibling.getAttribute("type")  === divisionType){
+                    prevChaptButton.addEventListener("mousedown", showPreviousChapter);
+                    prevChaptButton.disabled = false;
+                } else {
+                    prevChaptButton.removeEventListener("mousedown", showPreviousChapter);
+                    prevChaptButton.disabled = true;
+                }
+            } else {
+                    prevChaptButton.removeEventListener("mousedown", showNextChapter);
+                    prevChaptButton.disabled = true;
+            }
+
    			if (targetChapter.nextElementSibling !== null){
-   				nextChaptButton.addEventListener("mousedown", showNextChapter);
-   				nextChaptButton.disabled = false;
-   			} else {
-   				nextChaptButton.removeEventListener("mousedown", showNextChapter);
-   				nextChaptButton.disabled = true;
-   			}
+                if (targetChapter.nextElementSibling.getAttribute("type")  === divisionType){
+                    nextChaptButton.addEventListener("mousedown", showNextChapter);
+                    nextChaptButton.disabled = false;
+                } else {
+                    nextChaptButton.removeEventListener("mousedown", showNextChapter);
+                    nextChaptButton.disabled = true;
+                }
+            } else {
+                    nextChaptButton.removeEventListener("mousedown", showNextChapter);
+                    nextChaptButton.disabled = true;
+            }
    		}
    		
 		// function to show the previousChapter after the prevChaptButton was clicked
@@ -385,10 +396,12 @@
    			const currentChapter = document.querySelector('tei-div[type="' + divisionType +'"]:not(.is-hidden)');
    			const previousChapter = currentChapter.previousElementSibling;
    			
-   			if (previousChapter !== null){
-   				previousChapter.classList.remove("is-hidden");
-    			currentChapter.classList.add("is-hidden");
-   			}
+            if (previousChapter !== null) {
+                if (previousChapter.getAttribute("type")  === divisionType) {
+   				    previousChapter.classList.remove("is-hidden");
+    			    currentChapter.classList.add("is-hidden");
+   			    }
+            }
    			toggleButtonActivity(previousChapter);
    			//nextChaptButton.addEventListener("mousedown", showNextChapter);
    			//nextChaptButton.disabled = false;
@@ -404,8 +417,10 @@
    			const nextChapter = currentChapter.nextElementSibling;
    				
    			if (nextChapter !== null){
-   				nextChapter.classList.remove("is-hidden");
-    			currentChapter.classList.add("is-hidden");
+                if (nextChapter.getAttribute("type")  === divisionType) {
+                    nextChapter.classList.remove("is-hidden");
+                    currentChapter.classList.add("is-hidden");
+                }
    			}
    			
    			toggleButtonActivity(nextChapter);
@@ -487,9 +502,15 @@
                     divisionType = possibility;
                 }
             });
+
+            // check if divisionType was changed, if yes change the label of the navigation bar buttons based on division type
             if (divisionType === "default"){
                 console.log("As the text does not have division type listed in:", possibleDivisionTypes, 
                 "it remains:", divisionType);
+            } else {
+                document.getElementById("prevChaptButton").innerHTML = "Previous " + divisionType;
+                document.getElementById("goToChaptButton").innerHTML = "Go to " + divisionType;
+                document.getElementById("nextChaptButton").innerHTML = "Next " + divisionType;
             }
 
 			// hiding all chapters besides the first one. needed for navigation
