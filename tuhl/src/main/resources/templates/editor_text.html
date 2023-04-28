@@ -89,9 +89,9 @@
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); modifySelection();">Modify Selection</span>
       <span class="tooltip">Modify Selection</span>
     </li>
-    <li class="features-item star">
-      <i id="saveButton" class="bx bx-save features-item-icon" onclick="hideExpandedSidebar(); saveModification();"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); saveModification();">Save</span>
+    <li id="saveModificationListItem" class="features-item star">
+      <i id="saveButton" class="bx bx-save features-item-icon"></i>
+      <span class="features-item-text annocollapse">Save</span>
       <span class="tooltip">Save</span>
     </li>
   </ul>
@@ -463,18 +463,24 @@
 	<script src="/js/CETEI.js"></script>
 	<script src="/js/editor_xml.js"></script>
     <script th:inline="javascript">
-            // Adding/Binding eventhandlers to buttons
+        // Adding/Binding eventhandlers to buttons
 
-            // adding eventhandler for text selection
-            function onclickSelectText(event) {
-                hideExpandedSidebar();
-                selectingText = true;
-                confirmDiscardChanges();
-                mode = Mode.Create;
-                annotateSelectedText();
-            };
-            document.getElementById("selectTextListItem").addEventListener("mousedown", onclickSelectText);
+        // adding eventhandler for text selection
+        function onclickSelectText(event) {
+            hideExpandedSidebar();
+            selectingText = true;
+            confirmDiscardChanges();
+            mode = Mode.Create;
+            annotateSelectedText();
+        };
+        document.getElementById("selectTextListItem").addEventListener("mousedown", onclickSelectText);
 
+        // adding eventHandler for saving of modification to a text selection
+        function onclickSaveModification(event) {
+            hideExpandedSidebar();
+            saveModification();
+        }
+        document.getElementById("saveModificationListItem").addEventListener("mousedown", onclickSaveModification);
 
     </script>
 	<script th:inline="javascript">
