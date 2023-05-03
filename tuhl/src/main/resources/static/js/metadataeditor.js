@@ -254,12 +254,12 @@ showModal = (type, message, link) => {
     } else if (type === modalType.FAILED) {
         modelId = "#" + modal.failed.id;
         $(modelId + " .btn").on('click', function () {
-            window.location.href = link;
+            window.location.href = "." + link;
         });
     } else if (type === modalType.SUCCESS) {
         modelId = "#" + modal.success.id;
         $(modelId + " .btn").on('click', function () {
-            window.location.href = link;
+            window.location.href = "." + link;
         });
     } else {
         _throw(type + ": Unknown model type!");

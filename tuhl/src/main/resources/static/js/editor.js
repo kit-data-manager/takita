@@ -1,7 +1,7 @@
 function selectAnnotation(event, annoId) {
     $ .ajax({
         type: 'GET',
-        url: '/editor_rest/annotations/' + annoId,
+        url: contextpath + 'editor_rest/annotations/' + annoId,
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
@@ -195,9 +195,9 @@ function selectAnnotation(event, annoId) {
                     console.log(document.activeElement);
                     
                     if (jsonObject.purpose==="tagging") {
-                        endpoint = '/editor_rest/annotations/' + annoIdEncoded + '/tags/' + jsonObject.id;
+                        endpoint = contextpath + 'editor_rest/annotations/' + annoIdEncoded + '/tags/' + jsonObject.id;
                     } else {
-                        endpoint = '/editor_rest/annotations/' + annoIdEncoded + '/bodies/' + jsonObject.id;
+                        endpoint = contextpath + 'editor_rest/annotations/' + annoIdEncoded + '/bodies/' + jsonObject.id;
                     };
                     
                     $ .ajax({
@@ -262,7 +262,7 @@ function selectAnnotation(event, annoId) {
 	            buttonToAnalysisTool.id = "buttonToAnalysisTool";
 	
 	            var linkToAnalysisTool = document.createElement("a");
-	            linkToAnalysisTool.href="/analysis/" + annoId;
+	            linkToAnalysisTool.href= contextpath + "analysis/" + annoId;
 	            linkToAnalysisTool.target="_blank";
 	            linkToAnalysisTool.rel="noreferrer noopener";
 	            linkToAnalysisTool.append(buttonToAnalysisTool);
@@ -286,7 +286,7 @@ function deleteBodyFromAnnotation(annoId, bodyId) {
     
         $ .ajax({
             type: 'DELETE',
-            url: '/editor_rest/annotations/' + annoIdEncoded + '/bodies/' + bodyId,
+            url: contextpath + 'editor_rest/annotations/' + annoIdEncoded + '/bodies/' + bodyId,
 
             success: function(responseData) {
                 console.log(responseData);
@@ -306,7 +306,7 @@ function deleteBodyFromAnnotation(annoId, bodyId) {
             
                 $ .ajax({
                     type: 'DELETE',
-                    url: '/editor_rest/annotations/' + annoIdEncoded + '/tags/' + bodyId,
+                    url: contextpath + 'editor_rest/annotations/' + annoIdEncoded + '/tags/' + bodyId,
 
                     success: function(responseData) {
                         console.log(responseData);
@@ -354,7 +354,7 @@ function deleteAnnotation(annoId) {
         
         $ .ajax({
             type : 'DELETE',
-            url : '/editor_rest/annotations/' + annoIdEncoded,
+            url : contextpath + 'editor_rest/annotations/' + annoIdEncoded,
             
             success: function(responseData) {
                 console.log(responseData);
@@ -506,7 +506,7 @@ function completeFormDataModel (responseJson, formDataModel, addition, omitField
 
 // returning to table view of repository data
 function goHome() {
-    location.href="/";
+    location.href= contextpath;
 };
 
 // toggling the side bar

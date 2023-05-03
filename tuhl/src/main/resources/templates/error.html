@@ -30,9 +30,9 @@
         </div>
     </div>
 
-    <script>
+    <script th:inline="javascript">
         function backToMain() {
-            location.href = "/";
+            location.href = /*[[@{/}]]*/ "/";
         }
     </script>
 </body>

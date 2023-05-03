@@ -896,7 +896,7 @@ function saveShape() {
 
         $ .ajax({
             type : 'PUT',
-            url : '/editor_rest/annotations/' + modifiedShape.annoIdEncoded,
+            url : './editor_rest/annotations/' + modifiedShape.annoIdEncoded,
             data : JSON.stringify(annotationDataJson),
             headers : {
                 'Content-Type' : 'application/json'
@@ -1322,7 +1322,7 @@ function updateTarget(){
 	let annotationDataJson = {"color" : "#89f099", "motivation" : "describing", "svgCode" : newTargetXmlId};
 	$ .ajax({
             type : 'PUT',
-            url : '/editor_rest/annotations/' + idOfAnnotationToUpdate,
+            url : contextpath + 'editor_rest/annotations/' + idOfAnnotationToUpdate,
             data : JSON.stringify(annotationDataJson),
             headers : {
                 'Content-Type' : 'application/json'
@@ -1351,7 +1351,7 @@ function updateTarget(){
                     console.log("Updated body: ", updatedBody);
 
                     let annoIdEncoded = encodeAnnoId(responseDataJson.id);
-                    let endpoint = '/editor_rest/annotations/' + annoIdEncoded + '/bodies/' + result[0].id;
+                    let endpoint = contextpath + 'editor_rest/annotations/' + annoIdEncoded + '/bodies/' + result[0].id;
                     console.log("Endpoint for body update: ", endpoint);
 
                     $ .ajax({

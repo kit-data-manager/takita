@@ -27,5 +27,5 @@ $('#thumbnails').change(function () {
 
 //go to dashboard call
 function backToDashboard() {
-    $('#dashboard').load('/dashboard/contentview/dashboard');
+    $('#dashboard').load('./dashboard/contentview/dashboard');
 }
