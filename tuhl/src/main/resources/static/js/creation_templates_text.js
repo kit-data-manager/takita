@@ -433,8 +433,10 @@ const formObjectCreateAnnotation = {
                 } else {
                     color = "#89f099";
                 }
-                
-                let annotationDataJson = {"pageId" : window.location.pathname.split('/')[2], "color" : color, "motivation" : "describing"};
+               
+		// window.location.pathname.split('/').pop() returns the last part of the url, which is the pageId, which is required
+		// to create an annotation
+                let annotationDataJson = {"pageId" : window.location.pathname.split('/').pop(), "color" : color, "motivation" : "describing"};
                 if (document.getElementById("createAnnotationForm").title !== "") {
                     annotationDataJson.svgCode = document.getElementById("createAnnotationForm").title;
                 }
