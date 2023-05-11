@@ -164,7 +164,7 @@
     </div>
 
 	<div class="row is-full-width"><div class="col-12"></div></div>
-	<div class="textNavBar row is-full-width">
+	<div id="textNavBar" class="textNavBar row is-full-width is-hidden">
         <div class="col-1"></div>
         <div class="col-1"><button type="button" id="prevChaptButton">Previous chapter</button></div>
         <div class="col-2">
@@ -482,16 +482,66 @@
         }
         document.getElementById("saveModificationListItem").addEventListener("mousedown", onclickSaveModification);
 
+        // enable/modify the navigation bar
+        function modifyNavBar(){
+            // CUSTOMISE the division type used in a text (this is used for the navigation bar)
+            // variables to store the type of the division used in a text
+            // it is used for the navigation
+            let divisionType = "default";
+            // list of possible divisions used in the texts, add possibilities here
+            const possibleDivisionTypes = ["chapter", "section"];
+                        // setting divisionType based on the divisions used in the text
+                        possibleDivisionTypes.forEach( possibility => {
+                if (document.querySelector('tei-div[type="' + possibility + '"]') != null){
+                    divisionType = possibility;
+                }
+            });
+
+            // check if divisionType was changed, if yes change the label of the navigation bar buttons based on division type
+            if (divisionType === "default"){
+                console.log("As the text does not have division type listed in:", possibleDivisionTypes, 
+                "it remains:", divisionType, "and the navigation bar will remain hidden.");
+            } else {
+                document.getElementById("prevChaptButton").innerHTML = "Previous " + divisionType;
+                document.getElementById("goToChaptButton").innerHTML = "Go to " + divisionType;
+                document.getElementById("nextChaptButton").innerHTML = "Next " + divisionType;
+
+                const chapters = document.querySelectorAll('tei-div[type="' + divisionType +'"]');
+
+                // if a text is segmented into chapterlike segments and has more than one segment, enable the navigation bar
+                if (chapters.length > 1) {
+                    // showing the navBar
+                    document.getElementById("textNavBar").classList.remove("is-hidden");
+                    // hiding all chapters besides the first one. needed for navigation
+                    const chapterSelect = document.getElementById("chapterSelect");
+                    chapters.forEach( chapter => {
+                        chapter.classList.add('is-hidden');
+                        // adding an option (entry) to the chapterSelect options for all the chapter
+                        const option = document.createElement("option");
+                        option.value = chapter.attributes.n.nodeValue;
+                        const text = document.createTextNode(chapter.attributes.n.nodeValue);
+                        option.appendChild(text);
+                        chapterSelect.appendChild(option);
+                    });
+                    chapters[0].classList.remove('is-hidden');
+                    // enabling nextChaptButton and goToChaptButton if there is more than one chapter
+                    if (chapters[1] !== undefined) {
+                        document.getElementById("nextChaptButton").addEventListener("mousedown", showNextChapter);
+                        document.getElementById("nextChaptButton").disabled = false;
+                        document.getElementById("goToChaptButton").addEventListener("mousedown", goToChapter);
+                        document.getElementById("goToChaptButton").disabled = false;
+                    } else {
+                        document.getElementById("nextChaptButton").disabled = true;
+                        document.getElementById("goToChaptButton").disabled = true;
+                    }
+                    // disabling the prevChaptButton as the first chapter will be displayed
+                    document.getElementById("prevChaptButton").disabled = true;
+                }
+            }
+        }
     </script>
 	<script th:inline="javascript">
         
-        // CUSTOMISE the division type used in a text (this is used for the navigation bar)
-        // variables to store the type of the division used in a text
-        // it is used for the navigation
-        let divisionType = "default";
-        // list of possible divisions used in the texts, add possibilities here
-        let possibleDivisionTypes = ["chapter", "section"];
-
         // storing currentPageNumber as its needed for the label of a metaphor annotation
         var currentPageNumber = /*[[${currentPage.pageNumber}]]*/ "default";
 		var linkToResource = "/editor_rest/content/" + [[${currentPage.getId()}]] + "/" + [[${fileName}]];
@@ -501,49 +551,10 @@
 	    var teiContent = CETEIcean.getHTML5(linkToResource).then(data => {
 			document.getElementById("TEI").innerHTML = "";
 			const text = document.getElementById("TEI").appendChild(data);
-            
-            // setting divisionType based on the divisions used in the text
-            possibleDivisionTypes.forEach( possibility => {
-                if (document.querySelector('tei-div[type="' + possibility + '"]') != null){
-                    divisionType = possibility;
-                }
-            });
 
-            // check if divisionType was changed, if yes change the label of the navigation bar buttons based on division type
-            if (divisionType === "default"){
-                console.log("As the text does not have division type listed in:", possibleDivisionTypes, 
-                "it remains:", divisionType);
-            } else {
-                document.getElementById("prevChaptButton").innerHTML = "Previous " + divisionType;
-                document.getElementById("goToChaptButton").innerHTML = "Go to " + divisionType;
-                document.getElementById("nextChaptButton").innerHTML = "Next " + divisionType;
-            }
+            // enable/modify the navigation bar
+            modifyNavBar();
 
-			// hiding all chapters besides the first one. needed for navigation
-			const chapters = text.querySelectorAll('tei-div[type="' + divisionType +'"]');
-			const chapterSelect = document.getElementById("chapterSelect");
-			chapters.forEach( chapter => {
-				chapter.classList.add('is-hidden');
-				// adding an option (entry) to the chapterSelect options for all the chapter
-				const option = document.createElement("option");
-				option.value = chapter.attributes.n.nodeValue;
-				const text = document.createTextNode(chapter.attributes.n.nodeValue);
-				option.appendChild(text);
-				chapterSelect.appendChild(option);
-			});
-	     	chapters[0].classList.remove('is-hidden');
-            // enabling nextChaptButton and goToChaptButton if there is more than one chapter
-            if (chapters[1] !== undefined) {
-                document.getElementById("nextChaptButton").addEventListener("mousedown", showNextChapter);
-                document.getElementById("nextChaptButton").disabled = false;
-                document.getElementById("goToChaptButton").addEventListener("mousedown", goToChapter);
-                document.getElementById("goToChaptButton").disabled = false;
-            } else {
-                document.getElementById("nextChaptButton").disabled = true;
-                document.getElementById("goToChaptButton").disabled = true;
-            }
-            // disabling the prevChaptButton as the first chapter will be displayed
-            document.getElementById("prevChaptButton").disabled = true;
             // highlight all the annotated words
             drawAnnos(JSON.parse(document.body.getAttribute('data-field')));
 
