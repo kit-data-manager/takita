@@ -101,12 +101,32 @@ tei-text[lang=lzh]{
 /* TEXT STRUCTURE SPECIFICS*/
 /* ------------------------------------*/
 
-/* linebreak after a title */
-tei-head::after {
+/* linebreak after a title and a paragraph */
+tei-head::after, 
+tei-p::after {
 	content: "\00000a";
 	white-space: pre-wrap;
 }
 
+/* linebreak before the start of a new line */
+tei-lb::before{
+    content: "\00000a";
+    white-space: pre-wrap;
+}
+
+/* quotation marks around direct speech */
+tei-said::before, 
+tei-said::after {
+    content: "\"";
+}
+
+/* french quotation marks around quotes */
+tei-quote::before {
+    content: "»";
+}
+tei-quote::after {
+    content: "«";
+}
 
 /* poem specifics*/
 /* ------------------------------------*/
