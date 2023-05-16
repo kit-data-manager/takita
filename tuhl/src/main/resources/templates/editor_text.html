@@ -291,7 +291,7 @@
 
     <script th:inline="javascript">
         // setting contextpath
-        const contextpath = /*[[@{/}]]*/ "/";
+        window.CONTEXTPATH = /*[[@{/}]]*/ "/";
     </script>
     <script th:inline="javascript">
 
@@ -299,7 +299,7 @@
             console.log("click de");
             $.ajax({
                 type: 'GET',
-                url: './assistance/lang/de',
+                url: window.CONTEXTPATH + 'assistance/lang/de',
                 dataType: 'text',
             })
             return true;
@@ -309,7 +309,7 @@
             console.log("click en");
             $.ajax({
                 type: 'GET',
-                url: './assistance/lang/en',
+                url: window.CONTEXTPATH + 'assistance/lang/en',
                 dataType: 'text',
             })
 
@@ -317,7 +317,7 @@
         }
 
         function getHelp(){
-            location.href = './assistance/help';
+            location.href = window.CONTEXTPATH + 'assistance/help';
         }
 
         function clickButton(){
@@ -498,7 +498,7 @@
 
         // storing currentPageNumber as its needed for the label of a metaphor annotation
         var currentPageNumber = /*[[${currentPage.pageNumber}]]*/ "default";
-		var linkToResource = contextpath + "editor_rest/content/" + [[${currentPage.getId()}]] + "/" + [[${fileName}]];
+		var linkToResource = window.CONTEXTPATH + "editor_rest/content/" + [[${currentPage.getId()}]] + "/" + [[${fileName}]];
 
 	    // adding the TEI file to the DOM
 	    var CETEIcean = new CETEI();

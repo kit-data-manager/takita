@@ -43,7 +43,10 @@
 
 <div id="searchresults"></div>
 
-
+<script th:inline="javascript">
+    // setting contextpath and storing it
+    window.CONTEXTPATH = /*[[@{/}]]*/ "";
+</script>
 <script th:src="@{js/table_view.js}"></script>
 <script th:inline="javascript">
 
@@ -167,7 +170,7 @@
                 success: function (responseData) {
                     if(responseData === "error"){
                         /*<![CDATA[*/
-                        location.href = "./error/" + [[${errorMessage}]];
+                        location.href = window.CONTEXTPATH + "error/" + [[${errorMessage}]];
                         /*]]>*/
                     }
                 }
@@ -188,11 +191,11 @@
         height: 800,
         pagination:"remote",
         movableColumns: true, //enable user movable columns
-        ajaxURL:"./tableview/sort", //set url for ajax request
+        ajaxURL: window.CONTEXTPATH + "tableview/sort", //set url for ajax request
         ajaxResponse:function(url, params, response){
             if(response === "error"){
                 /*<![CDATA[*/
-                location.href = "./error/" + [[${errorMessage}]];
+                location.href = window.CONTEXTPATH + "error/" + [[${errorMessage}]];
                 /*]]>*/
             }
             return response; //return the response data to tabulator
@@ -325,7 +328,7 @@
                 subtitleRow.setAttribute('class', 'row mb-2 mt-1 justify-content-center');
                 let link = document.createElement('a');
                 link.setAttribute('class', 'btn-sm btn-secondary col-auto')
-                link.setAttribute('href', './editor/' + item.id);
+                link.setAttribute('href', window.CONTEXTPATH + 'editor/' + item.id);
                 let icon = document.createElement('i');
                 icon.setAttribute('class', 'fa fa-pencil');
                 link.appendChild(icon);
@@ -345,7 +348,7 @@
     }
 
     function hideThumbnails(row) {
-        $.get( "./assistance/removeRow/" + row.getData().id, function( data ) {
+        $.get( window.CONTEXTPATH + "assistance/removeRow/" + row.getData().id, function( data ) {
             let id = row.getData().id;
             document.getElementById('holder' + id).remove();
         });
@@ -373,13 +376,13 @@ function setHeaderMenues(){
 function callEditor(manId){
     $.ajax({
         type: 'GET',
-        url: './tableview/getFirstPage/' + manId,
+        url: window.CONTEXTPATH + 'tableview/getFirstPage/' + manId,
         dataType: 'text',
 
         success: function (responseData) {
             if(responseData === "error"){
                 /*<![CDATA[*/
-                location.href = "./error/" + [[${errorMessage}]];
+                location.href = window.CONTEXTPATH + "error/" + [[${errorMessage}]];
                 /*]]>*/
             }
             location.href = "editor/" + responseData;
