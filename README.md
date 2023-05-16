@@ -86,4 +86,4 @@ thesaurus.baseUrl = https://URL
 thesaurus.searchPath = rest/v1/ct/search
 ```
 
-- commits 965e93d57fd5d140146548388c3539799efe6c72 till e680249ea134ea3cc2ba2425701eb6b2f449f52d (more commits might be added) are relevant for the context-path changes and most of them adjust the paths in the js to the endpoints. For these changes to work the application.properties of takita, wap-server and base-repo need to be adjusted (more information coming soon)
+- commits 965e93d57fd5d140146548388c3539799efe6c72 till 762dc9c2d7c491394bd0198e9ef7f54ccdf58a65 are relevant for the context-path changes and most of them adjust the paths in the html and js to the endpoints. You can now use `server.servlet.context-path = /context/path` (note the leading `/`) in your aplpication.properties to change the context-path of takita. 762dc9c2d7c491394bd0198e9ef7f54ccdf58a65 can act as a guide to find all the paths that have been adjusted.
