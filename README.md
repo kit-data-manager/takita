@@ -79,9 +79,11 @@ Chronologically ordered from oldest to latest changes:
   - previously it used to handle DO´s with `"typeGeneral": "IMAGE"` as page and DO´s withs `"typeGeneral": "TEXT"` as manuscript DO´s
 - tAkita's js doesn't access the base-repo directly any longer to get the data of a page DO´s, but uses an endpoint provided by the java code(see [commit b07b7f10229619f1fa9881aae06790ea839c97a1](https://git.scc.kit.edu/sfb980/takita/-/commit/b07b7f10229619f1fa9881aae06790ea839c97a1)))
   - this currently only is true for text/xml files
-- since [commit b18196b0e71206d42a62b50c2a0df9827d4d554a](https://git.scc.kit.edu/sfb980/takita/-/commit/b18196b0e71206d42a62b50c2a0df9827d4d554a) you need to a reference to a SKOMSOS instance in the application properties. You don't need to run a SKOSMOS instacne somewhere, bt can just copy the following lines:
+- since [commit b18196b0e71206d42a62b50c2a0df9827d4d554a](https://git.scc.kit.edu/sfb980/takita/-/commit/b18196b0e71206d42a62b50c2a0df9827d4d554a) you need to a reference to a SKOMSOS instance in the application properties. You don't need to run a SKOSMOS instacne somewhere, but can just copy the following lines:
 
 ```
 thesaurus.baseUrl = https://URL
 thesaurus.searchPath = rest/v1/ct/search
 ```
+
+- commits 965e93d57fd5d140146548388c3539799efe6c72 till e680249ea134ea3cc2ba2425701eb6b2f449f52d (more commits might be added) are relevant for the context-path changes and most of them adjust the paths in the js to the endpoints. For these changes to work the application.properties of takita, wap-server and base-repo need to be adjusted (more information coming soon)

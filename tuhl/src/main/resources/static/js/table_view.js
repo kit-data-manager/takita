@@ -19,7 +19,7 @@ $('#thumbnails').change(function () {
 
     $.ajax({
         type: 'GET',
-        url: "assistance/toggleCheckThumbs",
+        url: window.CONTEXTPATH + "assistance/toggleCheckThumbs",
         dataType: 'text',
     });
 
@@ -27,5 +27,5 @@ $('#thumbnails').change(function () {
 
 //go to dashboard call
 function backToDashboard() {
-    $('#dashboard').load('/dashboard/contentview/dashboard');
+    $('#dashboard').load(window.CONTEXTPATH + 'dashboard/contentview/dashboard');
 }

@@ -96,7 +96,7 @@ public class EditorController {
         // so the javascript in there can call the RestController endpoint (/editor_rest/pageId) and fetch the data.
     	// The filename and fileextension get extracted from the resourceUrl.
     	String[] parts = editorService.getCurrentPage().getResourceUrl().split("/");
-    	String fileName = parts[8];
+    	String fileName = parts[parts.length - 1];
     	model.addAttribute("fileName", fileName);
     	return "editor_text";
     } else {

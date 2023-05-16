@@ -8,13 +8,14 @@
     <meta name="description" content="Metaphor Analysis Tool" />
     <link rel="manifest" href="/manifest.json" />
     <title>Metaphor Analysis Tool</title>
-    <script defer="defer" src="/js/analysis-main.js"></script>
-    <link href="/css/analysis-main.css" rel="stylesheet">
+    <script defer="defer" th:src="@{/js/analysis-main.js}"></script>
+    <link th:href="@{/css/analysis-main.css}" rel="stylesheet">
 </head>
 <body><noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script th:inline="javascript">
-        window.API_URL = "/analysis_api";
+	window.ANALYSIS_TOOL_BASENAME = /*[[@{/}]]*/ ;
+    	window.ANALYSIS_TOOL_API_URL = /*[[@{/analysis_api}]]*/ ;
     </script>
 </body>
 </html>

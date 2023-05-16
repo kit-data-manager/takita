@@ -17,12 +17,16 @@
             th:data-view="${key}"
             onclick="choose(this.getAttribute('data-view'))"> </button>
   </div>
+  <script th:inline="javascript">
+      // setting contextpath
+      window.CONTEXTPATH = /*[[@{/}]]*/ "/";
+  </script>
   <script>
       function choose(contentView) {
-          $('#dashboard').load('/dashboard/contentview/' + contentView)
+          $('#dashboard').load(window.CONTEXTPATH + 'dashboard/contentview/' + contentView)
       }
       window.onload = function() {
-          $('#dashboard').load('/dashboard/contentview')
+          $('#dashboard').load(window.CONTEXTPATH + 'dashboard/contentview')
       }
   </script>
 </div>
