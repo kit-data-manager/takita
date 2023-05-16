@@ -106,9 +106,13 @@
     </div>
 </div>
 
-    <script>
+    <script th:inline="javascript">
+        // setting contextpath
+        window.CONTEXTPATH = /*[[@{/}]]*/ "/";
+    </script>
+    <script th:inline="javascript">
         function backToMain() {
-            location.href = "/";
+            location.href = window.CONTEXTPATH;
         }
     </script>
 </body>

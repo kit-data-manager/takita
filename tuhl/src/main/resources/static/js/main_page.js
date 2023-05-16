@@ -8,10 +8,10 @@ function setSearchTerm(event) {
     }
 
     if (searchTerm != null) {
-        $.get( "/tableview/getFirst", function( data ) {
+        $.get( "./tableview/getFirst", function( data ) {
             $ .ajax({
                 type: 'POST',
-                url: '/search',
+                url: './search',
                 headers: {
                     'Accept': 'application/json',
                     'Content-Type': 'application/json'
@@ -20,7 +20,7 @@ function setSearchTerm(event) {
                 data: searchTerm,
 
                 success: function() {
-                    location.href="/"
+                    location.href="./"
                 }
             });
         });

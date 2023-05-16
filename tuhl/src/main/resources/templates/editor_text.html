@@ -290,12 +290,16 @@
     </div>
 
     <script th:inline="javascript">
+        // setting contextpath
+        window.CONTEXTPATH = /*[[@{/}]]*/ "/";
+    </script>
+    <script th:inline="javascript">
 
         function clickDe(){
             console.log("click de");
             $.ajax({
                 type: 'GET',
-                url: '/assistance/lang/de',
+                url: window.CONTEXTPATH + 'assistance/lang/de',
                 dataType: 'text',
             })
             return true;
@@ -305,7 +309,7 @@
             console.log("click en");
             $.ajax({
                 type: 'GET',
-                url: '/assistance/lang/en',
+                url: window.CONTEXTPATH + 'assistance/lang/en',
                 dataType: 'text',
             })
 
@@ -313,7 +317,7 @@
         }
 
         function getHelp(){
-            location.href = '/assistance/help';
+            location.href = window.CONTEXTPATH + 'assistance/help';
         }
 
         function clickButton(){
@@ -452,16 +456,16 @@
    			
    	</script>
 
-	<script src="/js/raphael.js"></script>
-    <script src="/js/ajv7.js"></script>
-    <script src="/js/underscore.js"></script>
-    <script src="/js/jsonform.js"></script>
-    <script src="/js/tabulator.min.js"></script>
-    <script src="/js/metadataeditor.js"></script>
-    <script src="/js/editor.js"></script>
-    <script src="/js/creation_templates_text.js"></script>
-	<script src="/js/CETEI.js"></script>
-	<script src="/js/editor_xml.js"></script>
+	<script th:src="@{/js/raphael.js}"></script>
+	<script th:src="@{/js/ajv7.js}"></script>
+    <script th:src="@{/js/underscore.js}"></script>
+    <script th:src="@{/js/jsonform.js}"></script>
+    <script th:src="@{/js/tabulator.min.js}"></script>
+    <script th:src="@{/js/metadataeditor.js}"></script>
+    <script th:src="@{/js/editor.js}"></script>
+    <script th:src="@{/js/creation_templates_text.js}"></script>
+    <script th:src="@{/js/CETEI.js}"></script>
+	<script th:src="@{/js/editor_xml.js}"></script>
     <script th:inline="javascript">
         // Adding/Binding eventhandlers to buttons
 
@@ -544,7 +548,7 @@
         
         // storing currentPageNumber as its needed for the label of a metaphor annotation
         var currentPageNumber = /*[[${currentPage.pageNumber}]]*/ "default";
-		var linkToResource = "/editor_rest/content/" + [[${currentPage.getId()}]] + "/" + [[${fileName}]];
+		var linkToResource = window.CONTEXTPATH + "editor_rest/content/" + [[${currentPage.getId()}]] + "/" + [[${fileName}]];
 
 	    // adding the TEI file to the DOM
 	    var CETEIcean = new CETEI();

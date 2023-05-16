@@ -346,9 +346,9 @@ const formObjectCreateBody = {
                 console.log(jsonObject);
                 let endpoint;
                 if ("purpose" in jsonObject) {
-                    endpoint = '/editor_rest/annotations/' + document.getElementById("createForm").title + '/bodies';
+                    endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + document.getElementById("createForm").title + '/bodies';
                 } else {
-                    endpoint = '/editor_rest/annotations/' + document.getElementById("createForm").title + '/tags';
+                    endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + document.getElementById("createForm").title + '/tags';
                 };
                 
                 $ .ajax({
@@ -433,8 +433,10 @@ const formObjectCreateAnnotation = {
                 } else {
                     color = "#89f099";
                 }
-                
-                let annotationDataJson = {"pageId" : window.location.pathname.split('/')[2], "color" : color, "motivation" : "describing"};
+               
+		// window.location.pathname.split('/').pop() returns the last part of the url, which is the pageId, which is required
+		// to create an annotation
+                let annotationDataJson = {"pageId" : window.location.pathname.split('/').pop(), "color" : color, "motivation" : "describing"};
                 if (document.getElementById("createAnnotationForm").title !== "") {
                     annotationDataJson.svgCode = document.getElementById("createAnnotationForm").title;
                 }
@@ -442,7 +444,7 @@ const formObjectCreateAnnotation = {
                 
                 $ .ajax({
                     type : 'POST',
-                    url : '/editor_rest/annotations',
+                    url : window.CONTEXTPATH + 'editor_rest/annotations',
                     data : JSON.stringify(annotationDataJson),
                     headers : {
                             'Content-Type' : 'application/json'
@@ -497,7 +499,7 @@ function storeBody(responseJson, jsonObject, index) {
     console.log(Object.keys(jsonObject)[index]);
     if (Object.keys(jsonObject)[index]) {
         if (Object.keys(jsonObject)[index] === 'color') {
-            endpoint = '/editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/bodies';
+            endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/bodies';
             switch(jsonObject.color) {
                 case "#e2b8f7":
                     bodyDataJson = {"purpose" : "classifying", "subject" : "PageRegion"};
@@ -547,10 +549,10 @@ function storeBody(responseJson, jsonObject, index) {
         } else {
             // defines the correct endpoints and purposes for the AJAX call
             if (Object.keys(jsonObject)[index] === "reference" || Object.keys(jsonObject)[index] === "anchor" || Object.keys(jsonObject)[index] === "tag") {
-                endpoint = '/editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/tags';
+                endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/tags';
                 bodyDataJson = {"value" : jsonObject[Object.keys(jsonObject)[index]]};
             } else {
-                endpoint = '/editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/bodies';
+                endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/bodies';
 
                 console.log("Body to store: ", Object.keys(jsonObject)[index]);
                 // CUSTOMISE assignment of purpose to an annotation body
