@@ -288,7 +288,6 @@
             <img th:src="@{/images/Book.gif}"/>
         </div>
     </div>
-
     <script th:inline="javascript">
         // setting contextpath
         window.CONTEXTPATH = /*[[@{/}]]*/ "/";
@@ -358,36 +357,48 @@
    		const nextChaptButton = document.getElementById("nextChaptButton");
 		const prevChaptButton = document.getElementById("prevChaptButton");
    			
+        // helperfunctions, that allow divisionType to be passed as a parameter
+        // in an addEventListener call
+        function helperShowPreviousChapter (event){
+            showPreviousChapter(event, divisionType);
+        }
+        function helperShowNextChapter (event){
+            showNextChapter(event, divisionType);
+        }
+        function helperGoToChapter (event){
+            goToChapter(event, divisionType);
+        }
+
 		// function to disable/enable the next/prevChaptButtons, 
 		// if no next/previous chapter is available
-		function toggleButtonActivity(targetChapter) {
+		function toggleButtonActivity(targetChapter, divisionType) {
 			
 			// const previousChapter = targetChapter.previousElementSibling;
 			// const nextChapter = targetChapter.nextElementSibling;
 			
    			if (targetChapter.previousElementSibling !== null){
                 if (targetChapter.previousElementSibling.getAttribute("type")  === divisionType){
-                    prevChaptButton.addEventListener("mousedown", showPreviousChapter);
+                    prevChaptButton.addEventListener("mousedown", helperShowPreviousChapter);
                     prevChaptButton.disabled = false;
                 } else {
-                    prevChaptButton.removeEventListener("mousedown", showPreviousChapter);
+                    prevChaptButton.removeEventListener("mousedown", helperShowPreviousChapter);
                     prevChaptButton.disabled = true;
                 }
             } else {
-                    prevChaptButton.removeEventListener("mousedown", showNextChapter);
+                    prevChaptButton.removeEventListener("mousedown", helperShowNextChapter);
                     prevChaptButton.disabled = true;
             }
 
    			if (targetChapter.nextElementSibling !== null){
                 if (targetChapter.nextElementSibling.getAttribute("type")  === divisionType){
-                    nextChaptButton.addEventListener("mousedown", showNextChapter);
+                    nextChaptButton.addEventListener("mousedown", helperShowNextChapter);
                     nextChaptButton.disabled = false;
                 } else {
-                    nextChaptButton.removeEventListener("mousedown", showNextChapter);
+                    nextChaptButton.removeEventListener("mousedown", helperShowNextChapter);
                     nextChaptButton.disabled = true;
                 }
             } else {
-                    nextChaptButton.removeEventListener("mousedown", showNextChapter);
+                    nextChaptButton.removeEventListener("mousedown", helperShowNextChapter);
                     nextChaptButton.disabled = true;
             }
    		}
@@ -395,7 +406,7 @@
 		// function to show the previousChapter after the prevChaptButton was clicked
 		// it will disable that button if the previousChapter is the first chapter
 		// hence there is no more chapter in front of the previousChapter
-   		function showPreviousChapter(event) {
+   		function showPreviousChapter(event, divisionType) {
    			
    			const currentChapter = document.querySelector('tei-div[type="' + divisionType +'"]:not(.is-hidden)');
    			const previousChapter = currentChapter.previousElementSibling;
@@ -406,7 +417,7 @@
     			    currentChapter.classList.add("is-hidden");
    			    }
             }
-   			toggleButtonActivity(previousChapter);
+   			toggleButtonActivity(previousChapter, divisionType);
    			//nextChaptButton.addEventListener("mousedown", showNextChapter);
    			//nextChaptButton.disabled = false;
    			document.getElementById("chapterSelect").value = previousChapter.attributes.n.nodeValue;
@@ -415,7 +426,7 @@
    		// function to show the nextChapter after the nextChaptButton was clicked
 		// it will disable that button if the nextChapter is the last chapter
 		// hence there is no more chapter after the nextChapter
-   		function showNextChapter(event) {
+   		function showNextChapter(event, divisionType) {
    			
    			const currentChapter = document.querySelector('tei-div[type="' + divisionType +'"]:not(.is-hidden)');
    			const nextChapter = currentChapter.nextElementSibling;
@@ -427,16 +438,16 @@
                 }
    			}
    			
-   			toggleButtonActivity(nextChapter);
+   			toggleButtonActivity(nextChapter, divisionType);
    			//prevChaptButton.addEventListener("mousedown", showPreviousChapter);
    			//prevChaptButton.disabled = false;
    			document.getElementById("chapterSelect").value = nextChapter.attributes.n.nodeValue;
-     		}
+     	}
    			
    		// function to show the desiredChapter chosen in the chapterSelect after the goToChaptButton was clicked.
 		// it will disable the corresponding next/prevChapterButtons, if the desiredChapter is the last/first chapter,
 		// because there is no more chapter after/in front of the previousChapter
-   		function goToChapter(event) {
+   		function goToChapter(event, divisionType) {
    			
    			const currentChapter = document.querySelector('tei-div[type="' + divisionType +'"]:not(.is-hidden)');
    			const desiredChapterNumber = document.getElementById("chapterSelect").value;
@@ -449,7 +460,7 @@
    					if (currentChapter !== chapter) {
 	   					chapter.classList.remove("is-hidden");
 	   					currentChapter.classList.add("is-hidden");
-	   					toggleButtonActivity(chapter);
+	   					toggleButtonActivity(chapter, divisionType);
 	   				}
    				});
    		}
@@ -457,14 +468,14 @@
    	</script>
 
 	<script th:src="@{/js/raphael.js}"></script>
-	<script th:src="@{/js/ajv7.js}"></script>
+    <script th:src="@{/js/ajv7.js}"></script>
     <script th:src="@{/js/underscore.js}"></script>
     <script th:src="@{/js/jsonform.js}"></script>
     <script th:src="@{/js/tabulator.min.js}"></script>
     <script th:src="@{/js/metadataeditor.js}"></script>
     <script th:src="@{/js/editor.js}"></script>
     <script th:src="@{/js/creation_templates_text.js}"></script>
-    <script th:src="@{/js/CETEI.js}"></script>
+	<script th:src="@{/js/CETEI.js}"></script>
 	<script th:src="@{/js/editor_xml.js}"></script>
     <script th:inline="javascript">
         // Adding/Binding eventhandlers to buttons
@@ -487,19 +498,7 @@
         document.getElementById("saveModificationListItem").addEventListener("mousedown", onclickSaveModification);
 
         // enable/modify the navigation bar
-        function modifyNavBar(){
-            // CUSTOMISE the division type used in a text (this is used for the navigation bar)
-            // variables to store the type of the division used in a text
-            // it is used for the navigation
-            let divisionType = "default";
-            // list of possible divisions used in the texts, add possibilities here
-            const possibleDivisionTypes = ["chapter", "section"];
-                        // setting divisionType based on the divisions used in the text
-                        possibleDivisionTypes.forEach( possibility => {
-                if (document.querySelector('tei-div[type="' + possibility + '"]') != null){
-                    divisionType = possibility;
-                }
-            });
+        function modifyNavBar(divisionType, possibleDivisionTypes){
 
             // check if divisionType was changed, if yes change the label of the navigation bar buttons based on division type
             if (divisionType === "default"){
@@ -530,9 +529,9 @@
                     chapters[0].classList.remove('is-hidden');
                     // enabling nextChaptButton and goToChaptButton if there is more than one chapter
                     if (chapters[1] !== undefined) {
-                        document.getElementById("nextChaptButton").addEventListener("mousedown", showNextChapter);
+                        document.getElementById("nextChaptButton").addEventListener("mousedown", helperShowNextChapter);
                         document.getElementById("nextChaptButton").disabled = false;
-                        document.getElementById("goToChaptButton").addEventListener("mousedown", goToChapter);
+                        document.getElementById("goToChaptButton").addEventListener("mousedown", helperGoToChapter);
                         document.getElementById("goToChaptButton").disabled = false;
                     } else {
                         document.getElementById("nextChaptButton").disabled = true;
@@ -549,15 +548,28 @@
         // storing currentPageNumber as its needed for the label of a metaphor annotation
         var currentPageNumber = /*[[${currentPage.pageNumber}]]*/ "default";
 		var linkToResource = window.CONTEXTPATH + "editor_rest/content/" + [[${currentPage.getId()}]] + "/" + [[${fileName}]];
+        // variable to store the type of the division used in a text
+        // it is used for the navigation
+        let divisionType = "default";
 
 	    // adding the TEI file to the DOM
 	    var CETEIcean = new CETEI();
 	    var teiContent = CETEIcean.getHTML5(linkToResource).then(data => {
 			document.getElementById("TEI").innerHTML = "";
 			const text = document.getElementById("TEI").appendChild(data);
+        
+            // CUSTOMISE the division type used in a text (this is used for the navigation bar)
+            // list of possible divisions used in the texts in div[@type], add possibilities here
+            const possibleDivisionTypes = ["chapter", "section"];
+            // setting divisionType based on the divisions used in the text
+            possibleDivisionTypes.forEach( possibility => {
+                if (document.querySelector('tei-div[type="' + possibility + '"]') != null){
+                    divisionType = possibility;
+                }
+            });
 
             // enable/modify the navigation bar
-            modifyNavBar();
+            modifyNavBar(divisionType, possibleDivisionTypes);
 
             // highlight all the annotated words
             drawAnnos(JSON.parse(document.body.getAttribute('data-field')));
@@ -573,7 +585,7 @@
                         word.append("‧");
                     }
             });
-	    }).then( placeholder => {
+	    }).then( () => {
 	    	// this is specific for files in hebrew
 	    	// it enables the hebrewToggle button, which removes/adds
 	    	// vowels from/to the displayed text
