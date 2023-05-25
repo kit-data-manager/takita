@@ -69,13 +69,6 @@
 /* LANGUAGE SPECIFICS */
 /* ------------------------------------*/
 
-/* right align right aligned languages */
-tei-text[lang=hbo],
-tei-text[lang=he] {
-	text-align: right;
-	display: block; 
-}
-
 /* hebrew */
 /* add a "maqqef" sign used in hebrew texts */
 .maqqef::after {

@@ -586,6 +586,13 @@
                     }
             });
 	    }).then( () => {
+            // displaying right to left languages accordingly
+            if (document.querySelector("tei-text").lang === "hbo" ||
+                document.querySelector("tei-text").lang === "he" ||
+                document.querySelector("tei-text").lang === "arb"){
+                document.getElementById("TEI").dir="rtl";
+            }
+
 	    	// this is specific for files in hebrew
 	    	// it enables the hebrewToggle button, which removes/adds
 	    	// vowels from/to the displayed text
