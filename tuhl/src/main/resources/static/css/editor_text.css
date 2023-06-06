@@ -66,6 +66,37 @@
 
 
 /* ------------------------------------*/
+/* TEXTCARD DISPLAY */
+/* ------------------------------------*/
+
+/* displaying textcard display right beside
+	the text regardless of scroll position */
+/* positioning the column div wrapping 
+	everything relatively so #viewerHolder
+	can have a sticky position */
+#annotationCardColumn {
+	position: relative;
+}
+
+/* stikcy positioning and setting the width */
+#viewerHolder {
+	position: sticky;
+	top: 20%;
+	width: 38vw;
+	padding-left: 15px;
+}
+
+/* making textcard display scrollable */
+#annotationCard {
+	max-height: 60vh;
+	overflow-y: auto;
+}
+   
+/* end of textcard display */
+/* ------------------------------------*/
+
+
+/* ------------------------------------*/
 /* LANGUAGE SPECIFICS */
 /* ------------------------------------*/
 
@@ -122,6 +153,7 @@ tei-said::after {
 tei-quote::before {
     content: "»";
 }
+
 tei-quote::after {
     content: "«";
 }
