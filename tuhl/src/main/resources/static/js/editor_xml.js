@@ -1363,6 +1363,8 @@ function updateTarget(){
                         },
 
                         success: function(responseData) {
+                            // show the updated annotation
+                            selectAnnotation(null, encodeAnnoId(responseDataJson.id));
                             console.log("Response data from succesfull body update: ", responseData);
                         },
         
