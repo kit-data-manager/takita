@@ -31,6 +31,10 @@ div.form-group > div.controls > textarea {
     padding: 1rem 1.5rem;
     width: 42rem;
     border-radius: 0.5rem;
+    /* making the modal scrollable to fit
+       onto the page */
+    max-height: 80vh;
+    overflow-y: auto;
 }
 
 .modal-loading {
