@@ -1075,21 +1075,21 @@ function createListOfIds(targetList){
 	let targetJson = {};
 	let targetArray = [];
 	
-	// if the targetList holds only one <w> element, as only one word got selected
+	// if the targetList holds only one element, as only one element got selected
 	// only that will be stored in targetListJson
 	if (targetList.length === 1){
 		// storing values to build a JSON
-		valueId = "//w[@xml:id=\"" + targetList[0].id + "\"]";
+		valueId = "//*[@xml:id=\"" + targetList[0].id + "\"]";
 		selectorObject = {type: "XPathSelector", value: valueId};
 		targetJson = {source: currentPageId, selector: selectorObject};
 		targetListJson = targetJson;
 		targetsXmlIds = valueId;
-	// if holds multiple <w> elements, as multiple words got selected
+	// if holds multiple elements, as multiple elements got selected
 	} else if (targetList.length !== 0){
 		targetListJson = "[";
 		targetList.forEach( item => {
 			// storing values to build a JSON and convert it to a STRING
-			valueId = "//w[@xml:id=\"" + item.id + "\"]";
+			valueId = "//*[@xml:id=\"" + item.id + "\"]";
 			selectorObject = {type: "XPathSelector", value: valueId};
 			targetJson = {source: currentPageId, selector: selectorObject};
 			targetListJson = targetListJson + JSON.stringify(targetJson) + ",";
@@ -1102,7 +1102,7 @@ function createListOfIds(targetList){
 		/*targetList.forEach( item => {
 			// storing values to build a JSON
 			targetJson = {};
-			valueId = "//w[@xml:id =\"" + item.id + "\"]";
+			valueId = "//*[@xml:id =\"" + item.id + "\"]";
 			selectorObject = {type: "XPathSelector", value: valueId};
 			targetJson = {source: currentPageId, selector: selectorObject};
 			targetArray.push(targetJson);
@@ -1363,6 +1363,8 @@ function updateTarget(){
                         },
 
                         success: function(responseData) {
+                            // show the updated annotation
+                            selectAnnotation(null, encodeAnnoId(responseDataJson.id));
                             console.log("Response data from succesfull body update: ", responseData);
                         },
         

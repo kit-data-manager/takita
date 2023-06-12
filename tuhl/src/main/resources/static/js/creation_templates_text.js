@@ -17,6 +17,26 @@ const annotationTemplate = {
     METAPHOR : "metaphor"
 };
 
+// function to check/uncheck all inputs
+function toggleCheckedInputs(inputs){
+    // to select/unselect all inputs the first input will be checked,
+    // wether it is selected or not. Based on that all inputs will be
+    // checked or unchecked
+    let isInputChecked = false;
+
+    if(inputs[0].checked){
+        isInputChecked = true;
+    }
+
+    inputs.forEach(input => {
+        if(isInputChecked){
+        input.checked = false;
+        } else {
+        input.checked = true;
+        }
+    })
+}
+
 // assigns data model needed for MetadataEditor to specific template
 // CUSTOMISE available annotations and their structure/content (dataModel)
 // and how they are displayed in the modal (uiForm)
@@ -230,6 +250,19 @@ function getFormModel(chosenTemplate) {
 	                    "titleMap": mrwTitleMap
 	                    	
 	                },{
+                        "type": "button",
+                        "title": "Select/unselect all mrws",
+                        "onClick": function (e){
+                            // select all input fields, where the name starts with "mrws"
+                            // the input fields storing the mrws present in a selection
+                            // get their name from the ordering in the mrws-array: 
+                            // name="mrws[0]" and name="mrws[1]" etc.
+                            // to get the changing name I refered to
+                            // https://stackoverflow.com/questions/16791527/how-to-use-a-regular-expression-in-queryselectorall
+                            const inputs = document.querySelectorAll('input[name^=mrws')
+                            toggleCheckedInputs(inputs);
+                        }
+                    },{
                         "key": "label"
                     },{
                         "key": "comment",
