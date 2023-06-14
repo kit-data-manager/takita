@@ -623,6 +623,36 @@ function drawAnnos(annoJson) {
   fillMetaDataEditorTable(annoJson);
 }
 
+// get all displayable annotations and store them in the annoJson
+// this function is used to get an updated annoJson after an 
+// annotation got created/modified/deleted
+async function getAnnoJson() {
+    const response = await fetch(window.CONTEXTPATH + 'editor/' + window.CURRENTPAGEID + '/displayableAnnotationsJSON', {
+      method: 'GET',
+      headers: {
+        'Accept': 'application/json'
+      }
+    });
+    return await response.json();
+  }
+
+// update the display of the textEditor
+async function updateDisplay() {
+    try {
+        // update annoJson to get the current tagging-body-values
+        // as they are the basis for the highlighting
+        annoJson = await getAnnoJson();
+        // remove all styling/highlighting 
+        removeStyles(document.getElementById("TEI"));
+        // highlight all annotated words
+        drawAnnos(annoJson);
+        console.log("Display and annoJson: ", annoJson, " updated successfully.");
+    } catch (error){
+        console.error("Display update failed ", error);
+    }
+
+}
+
 function fillMetaDataEditorTable(annoJson) {
 
     if (document.getElementById('editor-buttons')) {
@@ -1081,7 +1111,7 @@ function createListOfIds(targetList){
 		// storing values to build a JSON
 		valueId = "//*[@xml:id=\"" + targetList[0].id + "\"]";
 		selectorObject = {type: "XPathSelector", value: valueId};
-		targetJson = {source: currentPageId, selector: selectorObject};
+		targetJson = {source: window.CURRENTPAGEURL, selector: selectorObject};
 		targetListJson = targetJson;
 		targetsXmlIds = valueId;
 	// if holds multiple elements, as multiple elements got selected
@@ -1091,7 +1121,7 @@ function createListOfIds(targetList){
 			// storing values to build a JSON and convert it to a STRING
 			valueId = "//*[@xml:id=\"" + item.id + "\"]";
 			selectorObject = {type: "XPathSelector", value: valueId};
-			targetJson = {source: currentPageId, selector: selectorObject};
+			targetJson = {source: window.CURRENTPAGEURL, selector: selectorObject};
 			targetListJson = targetListJson + JSON.stringify(targetJson) + ",";
 			targetsXmlIds = targetsXmlIds + valueId + "§"; 
 		});
@@ -1104,7 +1134,7 @@ function createListOfIds(targetList){
 			targetJson = {};
 			valueId = "//*[@xml:id =\"" + item.id + "\"]";
 			selectorObject = {type: "XPathSelector", value: valueId};
-			targetJson = {source: currentPageId, selector: selectorObject};
+			targetJson = {source: window.CURRENTPAGEURL, selector: selectorObject};
 			targetArray.push(targetJson);
 			
 		});*/
@@ -1375,24 +1405,7 @@ function updateTarget(){
                 }
                 
                 // redraw
-                removeStyles(document.getElementById("TEI"));
-
-                // updating the annoJson
-                annoJson.forEach(anno => {
-					if (anno.id === selectedAnnotation.id){
-						let newTargetArray = [];
-                        if (newTargetXmlId.includes("§")){
-                            let idList = newTargetXmlId.split("§");
-                            idList.forEach(id => {
-                                newTargetArray.push(id);
-                            });
-                        } else {
-                            newTargetArray.push(newTargetXmlId)
-                        }
-                        anno.svg = newTargetArray;
-					}
-				});				
-                drawAnnos(annoJson);
+                updateDisplay();
                 
                 // hide modal
                 document.getElementById("updateSelection").classList.toggle("show-modal");

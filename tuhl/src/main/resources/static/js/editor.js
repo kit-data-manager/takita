@@ -219,23 +219,8 @@ function selectAnnotation(event, annoId) {
                             // checking if TEI-element is null. it is defined for text annotation,
                             // but not for image annotation
                             if (document.getElementById("TEI") != null) {
-                                // update the tags of the annotation in 
-                                // annoJson as they are the basis for the highlighting
-                                let responseDataJson = JSON.parse(responseData);
-                                console.log(responseDataJson);
-                                // if a tag got modified, the purpose is tagging
-                                // (if a textCard is modified the purpose is different and can be ignored
-                                // as textCards are not responsible for the highlighting)
-                                if (responseDataJson.purpose === "tagging") {
-                                    // update the tag of the annotation, that got its body modified
-                                    annoJson
-                                        .filter(anno => anno.id === responseDataJson.annotationId)
-                                        [0].tags[0].value = responseDataJson.value;
-                                }
-
-                                // redrawing all annotations
-                                removeStyles(document.getElementById("TEI"));
-                                drawAnnos(annoJson);
+                                // redraw
+                                updateDisplay();
                             }
                         },
         
@@ -296,8 +281,7 @@ function deleteBodyFromAnnotation(annoId, bodyId) {
                 // but not for image annotation
                 if (document.getElementById("TEI") != null) {
                     // redrawing all annotations
-                    removeStyles(document.getElementById("TEI"));
-                    drawAnnos(annoJson);
+                    updateDisplay();
                 }
             },
         
@@ -319,17 +303,8 @@ function deleteBodyFromAnnotation(annoId, bodyId) {
                         // checking if TEI-element is null. it is defined for text annotation,
                         // but not for image annotation
                         if (document.getElementById("TEI") != null) {
-                            // update the tags of the annotation in 
-                            // annoJson as they are the basis for the highlighting
-                            // console.log(responseDataJson);
-                            // emptying the tags array of the annotation, that got its body modified
-                            annoJson
-                                .filter(anno => anno.idEncoded === annoIdEncoded)
-                                [0].tags = [];
-
                             // redrawing all annotations
-                            removeStyles(document.getElementById("TEI"));
-                            drawAnnos(annoJson);
+                            updateDisplay();
                         }
                     }
                 });    
@@ -372,7 +347,10 @@ function deleteAnnotation(annoId) {
                         };
                     });
                 }
-                               
+                            
+                // this for-loop is unnecessary for the textEditor
+                // as the updateDisplay()-function updates the annoJson as well
+                // the imageEditor still needs the for-loop
                 for (let anno in annoJson) {
                     if (annoJson[anno].id === annoId) {
                         console.log(annoId + " this must go!")
@@ -385,8 +363,7 @@ function deleteAnnotation(annoId) {
                 // but not for image annotation
                 if (document.getElementById("TEI") != null) {
                     // redrawing all annotations
-                    removeStyles(document.getElementById("TEI"));
-                    drawAnnos(annoJson);
+                    updateDisplay();
                 }
 
                 // maybe move it within the if clause?

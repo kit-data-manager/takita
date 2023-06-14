@@ -194,7 +194,7 @@ function getFormModel(chosenTemplate) {
 			});
             // a user can either use the default label or create a humanreadable
             // label for the metaphor annotation
-            let defaultLabel = currentPageNumber + Date.now();
+            let defaultLabel = window.CURRENTPAGENUMBER + Date.now();
 
 	        dataModel = {
 	            "type" : "object",
@@ -519,8 +519,6 @@ const formObjectCreateAnnotation = {
     ]
 };
 
-// storing tags needed for highlighting; name needs to be specific so it doesn't clash with other variables
-var tagsIOP = [];
 // recursive function to store all the necessary bodies  
 // ensures sequential creation, otherwise body creation will fail due to etag mismatch
 function storeBody(responseJson, jsonObject, index) {
@@ -614,18 +612,6 @@ function storeBody(responseJson, jsonObject, index) {
                 },
                         
                 success: function(responseData) {
-                    console.log(responseData);
-                    // putting the tag value in the tag array, so they can be stored in the annoJson later
-                    let responseDataJson = JSON.parse(responseData);
-                    // CUSTOMIZE storing the value of the tags
-                    // (only tags and not textCards should be stored)
-                    if (responseDataJson.value === "metaphor" ||
-                        responseDataJson.value === "mrw (direct)" ||
-                        responseDataJson.value === "mrw (indirect)" ||
-                        responseDataJson.value === "mrw (implicit)" ||
-                        responseDataJson.value === "mflag") {
-                        tagsIOP.push({"value" : responseDataJson.value});
-                    }
                     storeBody(responseJson, jsonObject, index + 1);
                 },
         
@@ -644,37 +630,15 @@ function storeBody(responseJson, jsonObject, index) {
             toggleOverview('annotationCard');
         };
         
-        // added "tags" to the annotation
         let newAnnotation = {"created" : new Date(responseJson.created.seconds * 1000 + responseJson.created.nanos / 1000000).toISOString(), 
             "creator" : responseJson.creators, "id" : responseJson.id, "idEncoded" : encodeAnnoId(responseJson.id), 
             "modified" : new Date(responseJson.modified.seconds * 1000 + responseJson.modified.nanos / 1000000).toISOString(), 
-            "motivation" : responseJson.motivation, "visible" : true, "tags" : tagsIOP};
-        
-        // emptying the tagsIOP, so it can be filled for the next annotation
-        tagsIOP = [];
-
-        if (document.getElementById("createAnnotationForm").title !== "") {
-            newAnnotation.svg = document.getElementById("createAnnotationForm").title;
-            //extractInformationFromSvg(newAnnotation.svg, newAnnotation);
-            // this conversion needs to be done, so the drawAnno code works, as it epects the svg to be an array
-            var svgArray = [];
-	        if (newAnnotation.svg.includes("§")){
-				newAnnotation.svg.split("§").forEach(svgCode =>{
-					svgArray.push(svgCode);
-				});
-			} else {
-				svgArray.push(newAnnotation.svg)
-			}
-			newAnnotation.svg = svgArray;
-        }; 
-        
-        annoJson.push(newAnnotation);
-        fillMetaDataEditorTable(annoJson);
+            "motivation" : responseJson.motivation, "visible" : true};
         
         // redrawing all annotations
-        removeStyles(document.getElementById("TEI"));
-    	drawAnnos(annoJson);
-        
+        updateDisplay();
+
+        fillMetaDataEditorTable(annoJson);
         //document.getElementById('createRectangleButton').parentElement.classList.remove('active');
         //document.getElementById('createPolygonButton').parentElement.classList.remove('active');
         document.getElementById("createAnnotationForm").removeAttribute('title');

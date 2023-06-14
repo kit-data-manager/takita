@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +30,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -102,6 +104,27 @@ public class EditorController {
     } else {
     	return "editor";
     }
+  }
+  
+  /**
+   * Serves all displayable annotations (annoJson) of a page
+   * 
+   * @param pageId Identifier in the editor of the page that should be displayed
+   * @return HTTP entity sent back, either ok for a success including the 
+   * 	JSON object containing all all displayable annotations (annoJson) of a page
+   * 	or 500, if something went wrong
+   */
+  @RequestMapping(value = "/{pageId}/displayableAnnotationsJSON", method = RequestMethod.GET, produces = "application/json")
+  public ResponseEntity getDisplayableAnnotationsJSON(@PathVariable("pageId") String pageId) {
+	  JSONArray annoJson = new JSONArray();
+	  
+	  try {
+		  editorService.selectPage(pageId);
+		  annoJson =  getDisplayableAnnotations(editorService.getCurrentPage().getAnnotations());
+	  } catch (Exception e) {
+	      return ResponseEntity.status(500).body(e.getMessage());
+	  }
+	  return ResponseEntity.ok().body(annoJson.toString());
   }
 
   /**
