@@ -259,8 +259,12 @@ function getFormModel(chosenTemplate) {
                             // name="mrws[0]" and name="mrws[1]" etc.
                             // to get the changing name I refered to
                             // https://stackoverflow.com/questions/16791527/how-to-use-a-regular-expression-in-queryselectorall
-                            const inputs = document.querySelectorAll('input[name^=mrws')
-                            toggleCheckedInputs(inputs);
+                            const inputs = document.querySelectorAll('input[name^=mrws');
+                            // checking if any mrws are present in the selection and allowing the toggle
+                            // only if there are. This prevents an error to be thrown, when no mrws are present
+                            if (inputs.length > 0) {
+                                toggleCheckedInputs(inputs);
+                            }
                         }
                     },{
                         "key": "label"
