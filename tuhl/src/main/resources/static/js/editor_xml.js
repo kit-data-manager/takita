@@ -17,10 +17,13 @@ let initiated = false;
 
 let drawingHistory = [];
 
-// selectedAnnotation stores the annotation, that gets
+// globalSelectedAnnotation stores the annotation, that gets
 // selected by right clicking on a highlighted word
-// it is needed to edit/update the target of that annotation
-let selectedAnnotation;
+// it is needed to 
+// - edit/update the target of that annotation
+// - cycle through multiple annotations on one target and select them
+// - (CRC1475: to add a mrw-annotation to a metaphor annotation)
+let globalSelectedAnnotation;
 
 // selectedText stores the selected test as a string
 // it is needed to add it to the annotations body
@@ -28,7 +31,7 @@ let globalSelectedText;
 
 // mrwAnnos stores the mrws that are contained in a selection
 // it is needed to link mrw annotations with metaphor annotations
-let mrwAnnos = [];
+let globalMrwAnnos = [];
 
 class Mode {
   static View = new Mode("view");
@@ -1148,7 +1151,7 @@ function createListOfIds(targetList){
 // store all the mrw annotations that are contained in a selection
 function storeSelectedMRWAnnos(targetList){
 	// empty the mrwAnno list beforehand
-	mrwAnnos = [];
+	let mrwAnnos = [];
 	annoJson.forEach(annotation => {
 		//annoXmlId = annotation.svg.split("\"")[1];
 		//console.log(annotation);
@@ -1179,6 +1182,8 @@ function storeSelectedMRWAnnos(targetList){
 		});
 	});
 	console.log("MRW annotations present in current selection: ", mrwAnnos);
+
+    return mrwAnnos;
 }
 
 function removeWhitespaceFromSelectionTextContent(text){
@@ -1220,7 +1225,7 @@ function annotateSelectedText(){
 		// so they can be accessed in creation_templates_text.js to generate
 		// a list of selected mrws inside a metaphor and link the mrw annotations
 		// to the metaphor annotation
-		storeSelectedMRWAnnos(targetList);
+		globalMrwAnnos = storeSelectedMRWAnnos(targetList);
 		// set selectedText so it can be displayed in the modal and remove all whitespaces
         // TODO: this should use removeWhitespaceFromSelectionTextContent()
 		globalSelectedText = getContentOfSelection(window.getSelection()).
@@ -1256,13 +1261,13 @@ function modifySelection(){
 	selectingText = true;
 	mode = Mode.Modify; 
 	document.getElementById('modifyButton').parentElement.classList.add('active');
-	if (selectedAnnotation === undefined) {
+	if (globalSelectedAnnotation === undefined) {
 		document.getElementById('modifyButton').parentElement.classList.remove('active');
         mode = Mode.View;
 		selectingText = false;
 		return;
 	}
-	console.log("Selected annotation: ", selectedAnnotation);
+	console.log("Selected annotation: ", globalSelectedAnnotation);
 	
 }
 
@@ -1301,12 +1306,12 @@ function saveModification(){
 		// ask user if the new selection should be saved in a modal
 
         // get the previously selected text from the respective body (purpose: describing), or reconstruct it from the target
-        let oldSelectedText = selectedAnnotation.textCards.find(textCard => textCard.purpose === "describing" );
+        let oldSelectedText = globalSelectedAnnotation.textCards.find(textCard => textCard.purpose === "describing" );
         if (oldSelectedText != undefined){
             oldSelectedText = oldSelectedText.value;
         } else {
             let idArray = [];
-            selectedAnnotation.targets.forEach(target => {
+            globalSelectedAnnotation.targets.forEach(target => {
                 idArray.push(target.selector.xPath.split("\"")[1]);
             });
             // this sorts the xml:ids to retrieve a somehow appropriate reconstruction of the text out of the targets
@@ -1325,7 +1330,7 @@ function saveModification(){
 
 		// modal stuff should be optimised
 		let el = document.createElement("div");
-		el.innerHTML = oldSelectedText; // + selectedAnnotation.targets.toString(); //  + " | id: " + selectedAnnotation.svgCode.split("\"")[1];
+		el.innerHTML = oldSelectedText; // + globalSelectedAnnotation.targets.toString(); //  + " | id: " + globalSelectedAnnotation.svgCode.split("\"")[1];
 		document.getElementById("oldSelectedText").innerHTML = "Current Selection:";
 		document.getElementById("oldSelectedText").append(el);
 		
@@ -1344,7 +1349,7 @@ function saveModification(){
 function updateTarget(){
 	
 	const modal = document.getElementById("updateSelection");
-	let idOfAnnotationToUpdate = encodeAnnoId(selectedAnnotation.id);
+	let idOfAnnotationToUpdate = encodeAnnoId(globalSelectedAnnotation.id);
 	//let idOfAnnotationToUpdate = encodeAnnoId(modal.dataset.SelectedAnnotationId);
 	let newTargetXmlId = modal.dataset.newTargetXmlId;
 	
@@ -1452,27 +1457,27 @@ function init(annotations) {
             // check if any annotation was selected previuosly or if the target word changed and therefore
             // the id of the previuosly selected annotation is not present in the list of annotations, that
             // target the word on which the onClick event was triggered
-            console.log("selectedAnnotation 1: ", selectedAnnotation);
-            if (selectedAnnotation === undefined || 
-                annotationOnTarget.find(annotation => annotation.id === selectedAnnotation.id ) === undefined){
+            console.log("selectedAnnotation 1: ", globalSelectedAnnotation);
+            if (globalSelectedAnnotation === undefined || 
+                annotationOnTarget.find(annotation => annotation.id === globalSelectedAnnotation.id ) === undefined){
                     console.log("first annotationsOntarget ",annotationOnTarget[0])
                 annoIdEncoded = encodeAnnoId(annotationOnTarget[0].id);
             } else {
                 // check if the next index would be out off bounds, if yes select the first annotaiton in the list
                 // to start at the beginning of the list again and cycle through
-                if ((annotationOnTarget.findIndex(annotation => annotation.id === selectedAnnotation.id) + 1) > annotationOnTarget.length - 1){
+                if ((annotationOnTarget.findIndex(annotation => annotation.id === globalSelectedAnnotation.id) + 1) > annotationOnTarget.length - 1){
                     annoIdEncoded = encodeAnnoId(annotationOnTarget[0].id);
                     console.log("first annotationsOntarget 2 ",annotationOnTarget[0]);
                 } else {
-                    annoIdEncoded = encodeAnnoId(annotationOnTarget[annotationOnTarget.findIndex(annotation => annotation.id === selectedAnnotation.id) + 1].id);
-                    console.log("2-n annotationsOntarget ", annotationOnTarget[annotationOnTarget.findIndex(annotation => annotation.id === selectedAnnotation.id) + 1]);
+                    annoIdEncoded = encodeAnnoId(annotationOnTarget[annotationOnTarget.findIndex(annotation => annotation.id === globalSelectedAnnotation.id) + 1].id);
+                    console.log("2-n annotationsOntarget ", annotationOnTarget[annotationOnTarget.findIndex(annotation => annotation.id === globalSelectedAnnotation.id) + 1]);
                 }     
             }
 
             console.log("select anno id encoded: ", annoIdEncoded);
             selectAnnotation(null, annoIdEncoded);
             //alert("asd");
-            console.log("selectedAnnotation 2: ", selectedAnnotation);
+            console.log("selectedAnnotation 2: ", globalSelectedAnnotation);
 	        if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
 	            toggleOverview('annotationCard');
 		    }
