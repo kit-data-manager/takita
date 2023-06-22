@@ -62,28 +62,27 @@ const selectMRWButton = {
 
 // takes a list of mrwAnnos and returns 
 // - an enum holding all the ids of these annotations
-// - a titleMap linking the ids to the tag values
+// - a titleMap linking the ids to the tag values and targeted strings
 function getEnumAndTitleMap(mrwAnnos){
-    let idEnum = [];
-    let mrwTitleMap = {};
-    let targetMRW = "";
-    // TODO: this iteration nesting needs to be improved; it got created due 
-    // to annotations having multiple targets
+    const idEnum = mrwAnnos.map(anno => anno.id);
+    const mrwTitleMap = {};
+
     mrwAnnos.forEach(anno =>{
-        // getting the text
-        anno.svg.forEach( svgs => {
-            targetMRW += document.getElementById(svgs.split("\"")[1]).innerHTML + " ";// + " = " + svgs.split("\"")[1] + " | ";
-        });
-        targetMRW = targetMRW.slice(0, (targetMRW.length-1));
-        //console.log(targetMRW);
-        // adding the tag value to the text; check if the tag has a value given in relevantTags
+        // getting the words targetted by the annotation
+        // and concatenate them into one string
+        const targetedString = anno.svg
+            .map(svgs => {
+                const id = svgs.split("\"")[1];
+                return document.getElementById(id).innerHTML;
+            })
+            .join(" ");
+
+        // adding the tag value to the string, that will be displayed in the modal.
+        // Check if the tag has a value given in relevantTags
         // and add that value to the text
         const relevantTags = ["mrw (direct)", "mrw (indirect)", "mrw (implicit)", "mflag"];
-        mrwTitleMap[anno.id] = targetMRW + " | " + anno.tags.filter(tag => relevantTags.includes(tag.value))[0].value;
-        // emptying the string, so it can be filled during next iteration cycle
-        targetMRW = "";
-        idEnum.push(anno.id);
-        //console.log(mrwEnum);
+        const tagValue = anno.tags.filter(tag => relevantTags.includes(tag.value))[0].value;
+        mrwTitleMap[anno.id] = targetedString + " | " + tagValue;
     });
 
     return [idEnum, mrwTitleMap];
@@ -94,12 +93,11 @@ function getEnumAndTitleMap(mrwAnnos){
 function spreadMRWArray(jsonObject){
     let mrws = [...jsonObject.mrws];
     delete jsonObject.mrws;
-    for (var i = 0; i < mrws.length; i++) {
-        let keyCounter = "mrws" + i;
-        jsonObject[keyCounter] = mrws[i];
-    }
+    mrws.forEach((mrw, index) => jsonObject["mrws"+index] = mrw );
+
     return jsonObject;
 }
+
 // assigns data model needed for MetadataEditor to specific template
 // CUSTOMISE available annotations and their structure/content (dataModel)
 // and how they are displayed in the modal (uiForm)
@@ -378,11 +376,7 @@ function getFormModel(chosenTemplate) {
             // multiple times
             globalSelectedAnnotation.textCards.forEach(textCard => {
                 if (textCard.purpose === "linking") {
-                    mrwAnnosForBody.forEach(anno => {
-                        if (textCard.value === anno.id) {
-                            mrwAnnosForBody.splice(mrwAnnosForBody.indexOf(anno), 1);
-                        }
-                    })
+                    mrwAnnosForBody = mrwAnnosForBody.filter(anno => textCard.value !== anno.id);
                 }
             })
 
