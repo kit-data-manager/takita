@@ -38,26 +38,36 @@ function toggleCheckedInputs(inputs){
     })
 }
 
-// this button is used by 
+// returns a button to select/unselect all mrws; is used by 
 // - the METAPHOR annotation template
 // - the MRW body template
-const selectMRWButton = {
-    "type": "button",
-    "title": "Select/unselect all mrws",
-    "onClick": function (e){
-        // select all input fields, where the name starts with "mrws"
-        // the input fields storing the mrws present in a selection
-        // get their name from the ordering in the mrws-array: 
-        // name="mrws[0]" and name="mrws[1]" etc.
-        // to get the changing name I refered to
-        // https://stackoverflow.com/questions/16791527/how-to-use-a-regular-expression-in-queryselectorall
-        const inputs = document.querySelectorAll('input[name^=mrws');
-        // checking if any mrws are present in the selection and allowing the toggle
-        // only if there are. This prevents an error to be thrown, when no mrws are present
-        if (inputs.length > 0) {
-            toggleCheckedInputs(inputs);
+function getSelectMRWButton(mrwEnum){
+    const selectMRWButton = {
+        "type": "button",
+        "title": "Select/unselect all mrws",
+        "onClick": function (e){
+            // select all input fields, where the name starts with "mrws"
+            // the input fields storing the mrws present in a selection
+            // get their name from the ordering in the mrws-array: 
+            // name="mrws[0]" and name="mrws[1]" etc.
+            // to get the changing name I refered to
+            // https://stackoverflow.com/questions/16791527/how-to-use-a-regular-expression-in-queryselectorall
+            const inputs = document.querySelectorAll('input[name^=mrws');
+            // checking if any mrws are present in the selection and allowing the toggle
+            // only if there are. This prevents an error to be thrown, when no mrws are present
+            if (inputs.length > 0) {
+                toggleCheckedInputs(inputs);
+            }
         }
     }
+    // if less than two mrws are present in the selection, the
+    // "is-hidden"-class (defined in chota.css) is added to the button and
+    // the button won't be displayed
+    if(mrwEnum.length < 2){
+        selectMRWButton["htmlClass"] = "is-hidden";
+    }
+
+    return selectMRWButton;
 }
 
 // takes a list of mrwAnnos and returns 
@@ -237,6 +247,7 @@ function getFormModel(chosenTemplate) {
             // a user can either use the default label or create a humanreadable
             // label for the metaphor annotation
             let defaultLabel = window.CURRENTPAGENUMBER + Date.now();
+            let selectMRWButton = getSelectMRWButton(mrwEnum);
 
 	        dataModel = {
 	            "type" : "object",
@@ -385,6 +396,7 @@ function getFormModel(chosenTemplate) {
 			// mrwTitleMapForBody is necessary to have the actual words displayed,
 			// but the have the annoId as a value on the submission of the form
             let mrwTitleMapForBody = enumAndTitleMapForBody[1];
+            let selectMRWButtonForBody = getSelectMRWButton(mrwEnumForBody);
 
             dataModel = {
                 "type" : "object",
@@ -409,7 +421,7 @@ function getFormModel(chosenTemplate) {
 						"key" : "mrws",
                         "titleMap": mrwTitleMapForBody
                     }, 
-                    selectMRWButton
+                    selectMRWButtonForBody
                 ]
             };
             break;
