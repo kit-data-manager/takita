@@ -11,7 +11,7 @@ function selectAnnotation(event, annoId) {
             console.log(responseJson);
             // this selectedAnnotation variable is needed for the
             // edit/update function in editor_xml.js
-            selectedAnnotation = responseJson;
+            globalSelectedAnnotation = responseJson;
             if (responseJson.created.seconds) {
                 responseJson.created = new Date(responseJson.created.seconds * 1000 + responseJson.created.nanos / 1000000).toISOString();
                 if(responseJson.modified.seconds) {
@@ -23,8 +23,8 @@ function selectAnnotation(event, annoId) {
             
             //var responseJson = JSON.parse(responseData);
             var annotationDiv = document.getElementById("annotationCard");
-            console.log(annotationDiv);
-            console.log(annotationDiv.childElementCount);
+            //console.log(annotationDiv);
+            //console.log(annotationDiv.childElementCount);
             while (annotationDiv.lastElementChild) {
               annotationDiv.removeChild(annotationDiv.lastElementChild);  
             };
@@ -38,7 +38,7 @@ function selectAnnotation(event, annoId) {
             addBody.classList.add("bx");
             addBody.classList.add("bx-plus");
             addBody.onclick = function() {
-                console.log("create");
+                //console.log("create");
                 //var modal = document.createElement("div");
                 //modal.classList.add("modal");
                 //modal.style.display = "block";
@@ -69,17 +69,17 @@ function selectAnnotation(event, annoId) {
             
             for (field in headerFields) {
                 if (responseJson[headerFields[field]]) {
-                    console.log(responseJson[headerFields[field]]);
+                    //console.log(responseJson[headerFields[field]]);
                     formDataModel = completeFormDataModel(responseJson, formDataModel, headerFields[field], omitFields);    
                 };
             };
             
-            console.log(formDataModel);
+            //console.log(formDataModel);
             
             options = {operation: "READ", dataModel: formDataModel, uiForm: "*", resource: responseJson};
             
             $('#annotationCard').metadataeditorForm(options, function onSubmitValid(value) {
-                console.log(value);
+                //console.log(value);
             });
             
             annotationDiv.prepend(iconRowTop);
@@ -97,7 +97,7 @@ function selectAnnotation(event, annoId) {
                     bodies[body].modified = new Date(bodies[body].modified.seconds * 1000 + bodies[body].modified.nanos / 1000000).toISOString();
                 };
                 
-                console.log(bodies[body]);
+                //console.log(bodies[body]);
                 
                 var bodyCard = document.createElement("div");
                 bodyCard.classList.add("card");
@@ -114,7 +114,7 @@ function selectAnnotation(event, annoId) {
                 bodyDiv.classList.add("is-left");
                 bodyDiv.classList.add("col");
                 bodyRowDiv.append(bodyDiv);
-                console.log(bodyDiv.id);
+                //console.log(bodyDiv.id);
                 
                 var formRowDiv = document.createElement("div");
                 formRowDiv.classList.add("row");
@@ -180,19 +180,19 @@ function selectAnnotation(event, annoId) {
                     };
                 };
                 
-                console.log(uiForm);
+                //console.log(uiForm);
                 
-                console.log(formBodyDataModel);
+                //console.log(formBodyDataModel);
                 
                 options = {operation: "UPDATE", dataModel: formBodyDataModel, uiForm: uiForm, resource: bodies[body]};
             
                 $('#form' + bodies[body].id).metadataeditorForm(options, function onSubmitValid(value) {
-                    console.log(value);
+                    //console.log(value);
                     var jsonObject = JSON.parse(value);
     
                     var endpoint;
                     var annoIdEncoded = encodeAnnoId(document.getElementById("iconRowTop").title);
-                    console.log(document.activeElement);
+                    //console.log(document.activeElement);
                     
                     if (jsonObject.purpose==="tagging") {
                         endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + '/tags/' + jsonObject.id;
@@ -209,7 +209,7 @@ function selectAnnotation(event, annoId) {
                         },
 
                         success: function(responseData) {
-                            console.log(responseData);
+                            //console.log(responseData);
                             selectAnnotation(null, annoIdEncoded);
                             // TODO: this is just a bandaid for now as it only updates the first 
                             // entry of the tags array and not only the updated tag
@@ -219,28 +219,13 @@ function selectAnnotation(event, annoId) {
                             // checking if TEI-element is null. it is defined for text annotation,
                             // but not for image annotation
                             if (document.getElementById("TEI") != null) {
-                                // update the tags of the annotation in 
-                                // annoJson as they are the basis for the highlighting
-                                let responseDataJson = JSON.parse(responseData);
-                                console.log(responseDataJson);
-                                // if a tag got modified, the purpose is tagging
-                                // (if a textCard is modified the purpose is different and can be ignored
-                                // as textCards are not responsible for the highlighting)
-                                if (responseDataJson.purpose === "tagging") {
-                                    // update the tag of the annotation, that got its body modified
-                                    annoJson
-                                        .filter(anno => anno.id === responseDataJson.annotationId)
-                                        [0].tags[0].value = responseDataJson.value;
-                                }
-
-                                // redrawing all annotations
-                                removeStyles(document.getElementById("TEI"));
-                                drawAnnos(annoJson);
+                                // redraw
+                                updateDisplay();
                             }
                         },
         
                         error: function(errorData) {
-                            console.log(errorData);
+                            //console.log(errorData);
                         }
                     });
                 });
@@ -279,8 +264,8 @@ function deleteBodyFromAnnotation(annoId, bodyId) {
     let confirmation = confirm("Are you sure to delete this body?");
     
     if (confirmation) {
-        console.log(annoId);
-        console.log(bodyId);
+        //console.log(annoId);
+        //console.log(bodyId);
     
         let annoIdEncoded = encodeAnnoId(annoId);
     
@@ -289,27 +274,26 @@ function deleteBodyFromAnnotation(annoId, bodyId) {
             url: window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + '/bodies/' + bodyId,
 
             success: function(responseData) {
-                console.log(responseData);
+                //console.log(responseData);
                 selectAnnotation(null, annoIdEncoded);
                 // updating the display for text annotation
                 // checking if TEI-element is null. it is defined for text annotation,
                 // but not for image annotation
                 if (document.getElementById("TEI") != null) {
                     // redrawing all annotations
-                    removeStyles(document.getElementById("TEI"));
-                    drawAnnos(annoJson);
+                    updateDisplay();
                 }
             },
         
             error: function(errorData) {
-                console.log(errorData);
+                //console.log(errorData);
             
                 $ .ajax({
                     type: 'DELETE',
                     url: window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + '/tags/' + bodyId,
 
                     success: function(responseData) {
-                        console.log(responseData);
+                        //console.log(responseData);
                         selectAnnotation(null, annoIdEncoded);
                         // TODO: this is just a bandaid for now as it empties the tags array completly
                         // so if there would be multiple tags none would be left, even if only one got
@@ -319,17 +303,8 @@ function deleteBodyFromAnnotation(annoId, bodyId) {
                         // checking if TEI-element is null. it is defined for text annotation,
                         // but not for image annotation
                         if (document.getElementById("TEI") != null) {
-                            // update the tags of the annotation in 
-                            // annoJson as they are the basis for the highlighting
-                            // console.log(responseDataJson);
-                            // emptying the tags array of the annotation, that got its body modified
-                            annoJson
-                                .filter(anno => anno.idEncoded === annoIdEncoded)
-                                [0].tags = [];
-
                             // redrawing all annotations
-                            removeStyles(document.getElementById("TEI"));
-                            drawAnnos(annoJson);
+                            updateDisplay();
                         }
                     }
                 });    
@@ -340,9 +315,9 @@ function deleteBodyFromAnnotation(annoId, bodyId) {
 
 function encodeAnnoId(annoId) {
     var annoIdEncoded = encodeURIComponent(annoId);
-    console.log(annoIdEncoded);
+    //console.log(annoIdEncoded);
     var annoIdEncodedDouble = encodeURIComponent(annoIdEncoded);
-    console.log(annoIdEncodedDouble);
+    //console.log(annoIdEncodedDouble);
     return annoIdEncodedDouble;
 }
 
@@ -357,7 +332,7 @@ function deleteAnnotation(annoId) {
             url : window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded,
             
             success: function(responseData) {
-                console.log(responseData);
+                //console.log(responseData);
                 if (!document.getElementById('annotationCard').classList.contains('is-hidden')) {
                     toggleOverview('annotationCard');
                 };
@@ -372,10 +347,13 @@ function deleteAnnotation(annoId) {
                         };
                     });
                 }
-                               
+                            
+                // this for-loop is unnecessary for the textEditor
+                // as the updateDisplay()-function updates the annoJson as well
+                // the imageEditor still needs the for-loop
                 for (let anno in annoJson) {
                     if (annoJson[anno].id === annoId) {
-                        console.log(annoId + " this must go!")
+                        //console.log(annoId + " this must go!")
                         annoJson.splice(anno, 1);
                     };
                 };
@@ -385,12 +363,11 @@ function deleteAnnotation(annoId) {
                 // but not for image annotation
                 if (document.getElementById("TEI") != null) {
                     // redrawing all annotations
-                    removeStyles(document.getElementById("TEI"));
-                    drawAnnos(annoJson);
+                    updateDisplay();
                 }
 
                 // maybe move it within the if clause?
-                console.log(annoJson);
+                //console.log(annoJson);
                 fillMetaDataEditorTable(annoJson);
             }
         });

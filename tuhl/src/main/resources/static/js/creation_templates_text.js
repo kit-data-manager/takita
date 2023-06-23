@@ -2,7 +2,8 @@
 // for adding new: include name here and add dataModel in 
 // getFormModel(chosenTemplate)
 const bodyTemplate = {
-    COMMENT : "comment"
+    COMMENT : "comment",
+    MRW : "mrw"
 };
 
 // enum for different annotation templates
@@ -35,6 +36,66 @@ function toggleCheckedInputs(inputs){
         input.checked = true;
         }
     })
+}
+
+// this button is used by 
+// - the METAPHOR annotation template
+// - the MRW body template
+const selectMRWButton = {
+    "type": "button",
+    "title": "Select/unselect all mrws",
+    "onClick": function (e){
+        // select all input fields, where the name starts with "mrws"
+        // the input fields storing the mrws present in a selection
+        // get their name from the ordering in the mrws-array: 
+        // name="mrws[0]" and name="mrws[1]" etc.
+        // to get the changing name I refered to
+        // https://stackoverflow.com/questions/16791527/how-to-use-a-regular-expression-in-queryselectorall
+        const inputs = document.querySelectorAll('input[name^=mrws');
+        // checking if any mrws are present in the selection and allowing the toggle
+        // only if there are. This prevents an error to be thrown, when no mrws are present
+        if (inputs.length > 0) {
+            toggleCheckedInputs(inputs);
+        }
+    }
+}
+
+// takes a list of mrwAnnos and returns 
+// - an enum holding all the ids of these annotations
+// - a titleMap linking the ids to the tag values and targeted strings
+function getEnumAndTitleMap(mrwAnnos){
+    const idEnum = mrwAnnos.map(anno => anno.id);
+    const mrwTitleMap = {};
+
+    mrwAnnos.forEach(anno =>{
+        // getting the words targetted by the annotation
+        // and concatenate them into one string
+        const targetedString = anno.svg
+            .map(svgs => {
+                const id = svgs.split("\"")[1];
+                return document.getElementById(id).innerHTML;
+            })
+            .join(" ");
+
+        // adding the tag value to the string, that will be displayed in the modal.
+        // Check if the tag has a value given in relevantTags
+        // and add that value to the text
+        const relevantTags = ["mrw (direct)", "mrw (indirect)", "mrw (implicit)", "mflag"];
+        const tagValue = anno.tags.filter(tag => relevantTags.includes(tag.value))[0].value;
+        mrwTitleMap[anno.id] = targetedString + " | " + tagValue;
+    });
+
+    return [idEnum, mrwTitleMap];
+}
+
+// as the uris of the mrw annotations are stored in an array and the wadm does not accept an array as a value
+// of a textual body, the array will be split into multiple "key:value" pairs, with the same key (mrws0-n)
+function spreadMRWArray(jsonObject){
+    let mrws = [...jsonObject.mrws];
+    delete jsonObject.mrws;
+    mrws.forEach((mrw, index) => jsonObject["mrws"+index] = mrw );
+
+    return jsonObject;
 }
 
 // assigns data model needed for MetadataEditor to specific template
@@ -164,37 +225,18 @@ function getFormModel(chosenTemplate) {
         
         case "METAPHOR":
 			// if a user wants to create a metaphor annotation,
-	        // get all the mrws that are present in his selection
-	        // and update the enum to hold all the mrwAnnoIds, so the user can
+	        // get all the mrws that are present in his selection (globalMrwAnnos)
+	        // and store them in the enum to hold all the mrwAnnoIds, so the user can
 	        // choose a mrw to link it to a metaphor
-			//let mrwSet = new Set();
-			let mrwEnum = [];
+            
+            let enumAndTitleMap = getEnumAndTitleMap(globalMrwAnnos);
+			let mrwEnum = enumAndTitleMap[0];
 			// metaphorTitleMap is necessary to have the actual words displayed,
 			// but the have the annoId as a value on the submission of the form
-			let mrwTitleMap = {};
-			let targetMRW = "";
-			// TODO: this iteration nesting needs to be improved; it got created due 
-			// to annotations having multiple targets
-			mrwAnnos.forEach(anno =>{
-				//console.log(anno);
-				// getting the text
-				anno.svg.forEach( svgs => {
-					targetMRW += document.getElementById(svgs.split("\"")[1]).innerHTML + " ";// + " = " + svgs.split("\"")[1] + " | ";
-				});
-				targetMRW = targetMRW.slice(0, (targetMRW.length-1));
-				//console.log(targetMRW);
-                // adding the tag value to the text; check if the tag has a value given in relevantTags
-                // and add that value to the text
-                const relevantTags = ["mrw (direct)", "mrw (indirect)", "mrw (implicit)", "mflag"];
-				mrwTitleMap[anno.id] = targetMRW + " | " + anno.tags.filter(tag => relevantTags.includes(tag.value))[0].value;
-				// emptying the string, so it can be filled during next iteration cycle
-				targetMRW = "";
-				mrwEnum.push(anno.id);
-				//console.log(mrwEnum);
-			});
+			let mrwTitleMap = enumAndTitleMap[1];
             // a user can either use the default label or create a humanreadable
             // label for the metaphor annotation
-            let defaultLabel = currentPageNumber + Date.now();
+            let defaultLabel = window.CURRENTPAGENUMBER + Date.now();
 
 	        dataModel = {
 	            "type" : "object",
@@ -244,27 +286,18 @@ function getFormModel(chosenTemplate) {
 		                "key" : "tag",
                         "readOnly" : true
 	                    
-	                },{
+	                },
+                    {
 						"type" : "checkboxes",
 						"key" : "mrws",
 	                    "titleMap": mrwTitleMap
 	                    	
-	                },{
-                        "type": "button",
-                        "title": "Select/unselect all mrws",
-                        "onClick": function (e){
-                            // select all input fields, where the name starts with "mrws"
-                            // the input fields storing the mrws present in a selection
-                            // get their name from the ordering in the mrws-array: 
-                            // name="mrws[0]" and name="mrws[1]" etc.
-                            // to get the changing name I refered to
-                            // https://stackoverflow.com/questions/16791527/how-to-use-a-regular-expression-in-queryselectorall
-                            const inputs = document.querySelectorAll('input[name^=mrws')
-                            toggleCheckedInputs(inputs);
-                        }
-                    },{
+	                }, 
+                    selectMRWButton,
+                    {
                         "key": "label"
-                    },{
+                    },
+                    {
                         "key": "comment",
                         "type": "textarea"
                     }
@@ -325,10 +358,66 @@ function getFormModel(chosenTemplate) {
             };
             break;
 
+        case "MRW":
+            // if a user wants to link another mrw annotation to a metaphor annotation,
+	        // get all the mrws that share their target with the metaphor annotation
+	        // and store them in the enum to hold all the mrwAnnoIds, so the user can
+	        // choose a mrw to link it to a metaphor
+
+            // store all elements targeted by the metaphor annotation and mrw annotations
+            let elementsTargeted = [];
+            globalSelectedAnnotation.targets.forEach(target => {
+                elementsTargeted.push(document.getElementById(target.selector.xPath.split("\"")[1]));
+            });
+            // get all mrwAnnos that target the same words as the metaphor annotation
+            let mrwAnnosForBody = storeSelectedMRWAnnos(elementsTargeted);
+            // remove all mrw annotations, which are linked to the metaphor annotation already
+            // from mrwAnnosForBody to prevent users from linking the same mrwAnno
+            // multiple times
+            globalSelectedAnnotation.textCards.forEach(textCard => {
+                if (textCard.purpose === "linking") {
+                    mrwAnnosForBody = mrwAnnosForBody.filter(anno => textCard.value !== anno.id);
+                }
+            })
+
+            let enumAndTitleMapForBody = getEnumAndTitleMap(mrwAnnosForBody);
+            let mrwEnumForBody = enumAndTitleMapForBody[0];
+			// mrwTitleMapForBody is necessary to have the actual words displayed,
+			// but the have the annoId as a value on the submission of the form
+            let mrwTitleMapForBody = enumAndTitleMapForBody[1];
+
+            dataModel = {
+                "type" : "object",
+                "properties": {
+                    "mrws" : {
+	                    "type" : "array",
+	                    "title" : "Metaphor related words (direct, indirect, implicit and mflags)",
+	                    "items": {
+					        "type": "string",
+					        "title": "Option",
+					        "enum": mrwEnumForBody
+					      }
+	                }
+                },
+                "required" : ["mrws"]
+            };
+            uiForm = {
+                "type" : "fieldset",
+                "items" : [
+                    {
+                        "type" : "checkboxes",
+						"key" : "mrws",
+                        "titleMap": mrwTitleMapForBody
+                    }, 
+                    selectMRWButton
+                ]
+            };
+            break;
+
     }
     
-    console.log(dataModel);
-    console.log(uiForm);
+    console.log("dataModel: ", dataModel);
+    console.log("uiForm: ", uiForm);
     return [dataModel, uiForm];
     
 }
@@ -360,7 +449,7 @@ const formObjectCreateBody = {
             
             if(!value) {return;};
             let formModel = getFormModel(value);
-            console.log(formModel);
+            //console.log(formModel);
             // if no uiForm is given in getFormModel() for a body template, a wildcard is used.
             // previously a wildcard was always used, but the change in this commit changed the
             // following options variable
@@ -375,33 +464,54 @@ const formObjectCreateBody = {
             
             $('#createForm').metadataeditorForm(options, function onSubmitValid(value) {
                 let jsonObject = JSON.parse(value);
-                console.log(value);
-                console.log(jsonObject);
-                let endpoint;
-                if ("purpose" in jsonObject) {
-                    endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + document.getElementById("createForm").title + '/bodies';
-                } else {
-                    endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + document.getElementById("createForm").title + '/tags';
-                };
-                
-                $ .ajax({
-                        type: 'POST',
-                        url: endpoint,
-                        data: value,
-                        headers: {
-                            'Content-Type' : 'application/json'
-                        },
+                //console.log(value);
+                //console.log(jsonObject);
 
-                        success: function(responseData) {
-                            console.log(responseData);
-                            selectAnnotation(null, document.getElementById("createForm").title);
-                            document.getElementById('createBody').classList.toggle("show-modal");
-                        },
-        
-                        error: function(errorData) {
-                            console.log(errorData);
-                        }
-                    });
+                // CRC 1475 specific
+                // as the uris of the mrw annotations are stored in an array and the wadm does not accept an array as a value
+                // of a textual body, the array will be split into multiple "key:value" pairs, with the same key (mrws)
+                if ("mrws" in jsonObject){
+                    jsonObject = spreadMRWArray(jsonObject);
+                }
+
+                // this if condition necessary for CRC1475, it should always be skipped for NON-CRC1475 body creations
+                console.log(jsonObject);
+                if (jsonObject.mrws0 !== undefined){
+                    // the storeBody() was not implemented to be used to add more bodies to an annotation, but
+                    // it offers the needed funtionality to add more bodies, so it is used, but a "dummy" responseJson is needed.
+                    // The only thing that storeBody(responseJson, jsonObject, index) needs from the responseJson is the
+                    // id of the annotation. So a "dummy" responseJson is created holding only the annotation id.
+                    storeBody({"id": globalSelectedAnnotation.id}, jsonObject, 0);
+                    // hiding the modal. 
+                    document.getElementById('createBody').classList.toggle("show-modal");
+                } else {
+                    let endpoint;
+                    if ("purpose" in jsonObject) {
+                        endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + document.getElementById("createForm").title + '/bodies';
+                    } else {
+                        endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + document.getElementById("createForm").title + '/tags';
+                    };
+                    
+                    $ .ajax({
+                            type: 'POST',
+                            url: endpoint,
+                            data: value,
+                            headers: {
+                                'Content-Type' : 'application/json'
+                            },
+    
+                            success: function(responseData) {
+                                console.log(responseData);
+                                selectAnnotation(null, document.getElementById("createForm").title);
+                                document.getElementById('createBody').classList.toggle("show-modal");
+                            },
+            
+                            error: function(errorData) {
+                                console.log(errorData);
+                            }
+                        });
+                }
+
             });
         },
         "titleMap" : {}
@@ -452,14 +562,8 @@ const formObjectCreateAnnotation = {
                 // as the uris of the mrw annotations are stored in an array and the wadm does not accept an array as a value
                 // of a textual body, the array will be split into multiple "key:value" pairs, with the same key (mrws)
                 if ("mrws" in jsonObject){
-                    let mrws = [...jsonObject.mrws];
-                    delete jsonObject.mrws;
-                    for (var i = 0; i < mrws.length; i++) {
-                        let keyCounter = "mrws" + i;
-                        jsonObject[keyCounter] = mrws[i];
-                    }
+                    jsonObject = spreadMRWArray(jsonObject);
                 }
-
                 let color;
                 if (jsonObject.color) {
                     color = jsonObject.color;
@@ -519,17 +623,14 @@ const formObjectCreateAnnotation = {
     ]
 };
 
-// storing tags needed for highlighting; name needs to be specific so it doesn't clash with other variables
-var tagsIOP = [];
 // recursive function to store all the necessary bodies  
 // ensures sequential creation, otherwise body creation will fail due to etag mismatch
 function storeBody(responseJson, jsonObject, index) {
      
     let endpoint;
     let bodyDataJson;
-
     
-    console.log(Object.keys(jsonObject)[index]);
+    //console.log(Object.keys(jsonObject)[index]);
     if (Object.keys(jsonObject)[index]) {
         if (Object.keys(jsonObject)[index] === 'color') {
             endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/bodies';
@@ -583,6 +684,7 @@ function storeBody(responseJson, jsonObject, index) {
             // defines the correct endpoints and purposes for the AJAX call
             if (Object.keys(jsonObject)[index] === "reference" || Object.keys(jsonObject)[index] === "anchor" || Object.keys(jsonObject)[index] === "tag") {
                 endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/tags';
+                console.log("Tag to store: ", Object.keys(jsonObject)[index]);
                 bodyDataJson = {"value" : jsonObject[Object.keys(jsonObject)[index]]};
             } else {
                 endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/bodies';
@@ -614,18 +716,6 @@ function storeBody(responseJson, jsonObject, index) {
                 },
                         
                 success: function(responseData) {
-                    console.log(responseData);
-                    // putting the tag value in the tag array, so they can be stored in the annoJson later
-                    let responseDataJson = JSON.parse(responseData);
-                    // CUSTOMIZE storing the value of the tags
-                    // (only tags and not textCards should be stored)
-                    if (responseDataJson.value === "metaphor" ||
-                        responseDataJson.value === "mrw (direct)" ||
-                        responseDataJson.value === "mrw (indirect)" ||
-                        responseDataJson.value === "mrw (implicit)" ||
-                        responseDataJson.value === "mflag") {
-                        tagsIOP.push({"value" : responseDataJson.value});
-                    }
                     storeBody(responseJson, jsonObject, index + 1);
                 },
         
@@ -638,43 +728,31 @@ function storeBody(responseJson, jsonObject, index) {
     } else {
         // if no more body needs to be created, hide modal and update global annotation list
         // and highlight the new annotation
-        document.getElementById('createAnnotation').classList.toggle("show-modal");
+
+        // the following check needs to be done as this storeBody function is used since June 2023
+        // for the addition of multiple bodies to an annotation. The function was implemented to
+        // be used while creating annotations and not adding bodies, so it previously just toggled
+        // the display of the createAnnotation-modal, but now it only toggles the modal, if it
+        // is shown.
+        if (document.getElementById('createAnnotation').classList.contains("show-modal")) {
+            document.getElementById('createAnnotation').classList.toggle("show-modal");
+        }
         selectAnnotation(null, encodeAnnoId(responseJson.id));
         if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
             toggleOverview('annotationCard');
         };
         
-        // added "tags" to the annotation
-        let newAnnotation = {"created" : new Date(responseJson.created.seconds * 1000 + responseJson.created.nanos / 1000000).toISOString(), 
+        // this is not needed anymore for the textEditor since commit 0f347413a3250dd7b79c4a9171630b7556a28f9b on 14.06.23
+        // as tAkita js now gets a new annoJson from tAkita core and doesn't update it by itself
+        /* let newAnnotation = {"created" : new Date(responseJson.created.seconds * 1000 + responseJson.created.nanos / 1000000).toISOString(), 
             "creator" : responseJson.creators, "id" : responseJson.id, "idEncoded" : encodeAnnoId(responseJson.id), 
             "modified" : new Date(responseJson.modified.seconds * 1000 + responseJson.modified.nanos / 1000000).toISOString(), 
-            "motivation" : responseJson.motivation, "visible" : true, "tags" : tagsIOP};
-        
-        // emptying the tagsIOP, so it can be filled for the next annotation
-        tagsIOP = [];
-
-        if (document.getElementById("createAnnotationForm").title !== "") {
-            newAnnotation.svg = document.getElementById("createAnnotationForm").title;
-            //extractInformationFromSvg(newAnnotation.svg, newAnnotation);
-            // this conversion needs to be done, so the drawAnno code works, as it epects the svg to be an array
-            var svgArray = [];
-	        if (newAnnotation.svg.includes("§")){
-				newAnnotation.svg.split("§").forEach(svgCode =>{
-					svgArray.push(svgCode);
-				});
-			} else {
-				svgArray.push(newAnnotation.svg)
-			}
-			newAnnotation.svg = svgArray;
-        }; 
-        
-        annoJson.push(newAnnotation);
-        fillMetaDataEditorTable(annoJson);
+            "motivation" : responseJson.motivation, "visible" : true}; */
         
         // redrawing all annotations
-        removeStyles(document.getElementById("TEI"));
-    	drawAnnos(annoJson);
-        
+        updateDisplay();
+
+        fillMetaDataEditorTable(annoJson);
         //document.getElementById('createRectangleButton').parentElement.classList.remove('active');
         //document.getElementById('createPolygonButton').parentElement.classList.remove('active');
         document.getElementById("createAnnotationForm").removeAttribute('title');
