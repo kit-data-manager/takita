@@ -37,9 +37,16 @@
 	background: linear-gradient( to bottom, lightgreen 33%, yellow 33% 66%, #daa3ff 66% 100% )
 }
 
-/* underline words annotated as metaphors */
+/* underline words annotated as metaphors 
+	the box-shadows are bigger than the box
+	and the white box-shadow is necessary to
+	keep the background white */
 .metaphor {
-	box-shadow: 0px 0.2em #2196F3;
+	box-shadow: 
+		-0.175em 0em white, 
+		0.175em 0em white, 
+		-0.175em 0.2em #2196F3,
+		0.175em 0.2em #2196F3;
 }
 
 /* TODO: improve the comment phrasing */
@@ -48,7 +55,11 @@
 	annotation and therefore, already highlighted 
 	-> only one underline */
 .metaphorSecond {
-	box-shadow: 0px 0.2em white, 0px 0.4em purple;
+	box-shadow: 
+		-0.175em 0.2em white, 
+		0.175em 0.2em white, 
+		-0.175em 0.4em purple,
+		0.175em 0.4em purple;
 	line-height: 1.75em;
 }
 
@@ -57,7 +68,13 @@
 	annotation and therefore, already highlighted 
 	-> two underlines */
 .metaphor.metaphorSecond {
-	box-shadow: 0px 0.2em #2196F3, 0px 0.4em purple;
+	box-shadow: 
+		-0.175em 0em white, 
+		0.175em 0em white, 
+		-0.175em 0.2em #2196F3,
+		0.175em 0.2em #2196F3,
+		-0.175em 0.4em purple,
+		0.175em 0.4em purple;
 	line-height: 1.75em;
 }
 
