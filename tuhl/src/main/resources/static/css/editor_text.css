@@ -78,6 +78,15 @@
 	line-height: 1.75em;
 }
 
+/* draw a border around the words targeted 
+	by the selected annotation and increase
+	the line-height to keep the box-shadows intact */
+.selected {
+	border-top: 3px solid;
+	border-bottom: 3px dashed;
+	line-height: 2em;
+}
+
 /* end of annotation specifics */
 /* ------------------------------------*/
 

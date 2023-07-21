@@ -12,6 +12,16 @@ function selectAnnotation(event, annoId) {
             // this selectedAnnotation variable is needed for the
             // edit/update function in editor_xml.js
             globalSelectedAnnotation = responseJson;
+
+            // highlight words targetted by the currently selected annotation
+            // remove old highlights (TODO: include this in removeStyles(el) in editor_xml.js)
+            document.querySelectorAll(".selected").forEach(element => element.classList.remove("selected"));
+            // add a class to all the targets of the selected annotation
+            responseJson.targets.forEach(target => {
+                const targetId = target.selector.xPath.split("\"")[1];
+                document.getElementById(targetId).classList.add("selected");
+            });
+
             if (responseJson.created.seconds) {
                 responseJson.created = new Date(responseJson.created.seconds * 1000 + responseJson.created.nanos / 1000000).toISOString();
                 if(responseJson.modified.seconds) {
