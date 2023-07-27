@@ -1260,14 +1260,23 @@ function annotateSelectedText(){
 function modifySelection(){
 	selectingText = true;
 	mode = Mode.Modify; 
-	document.getElementById('modifyButton').parentElement.classList.add('active');
+	//document.getElementById('modifyButton').parentElement.classList.add('active');
 	if (globalSelectedAnnotation === undefined) {
-		document.getElementById('modifyButton').parentElement.classList.remove('active');
+		//document.getElementById('modifyButton').parentElement.classList.remove('active');
         mode = Mode.View;
 		selectingText = false;
 		return;
 	}
 	console.log("Selected annotation: ", globalSelectedAnnotation);
+    
+    // disable/enable and hide/show the buttons connected 
+    // to the modifaction of a text selection
+    document.getElementById("buttonModifySelection").disabled = true;
+    document.getElementById("buttonModifySelection").classList.add("is-hidden");
+    document.getElementById("buttonSaveModification").disabled = false;
+    document.getElementById("buttonSaveModification").classList.remove("is-hidden");
+    document.getElementById("buttonCancelModification").disabled = false;     
+    document.getElementById("buttonCancelModification").classList.remove("is-hidden");
 	
 }
 
@@ -1286,7 +1295,7 @@ function saveModification(){
 		// stop the function, if the selection does not contain any text, only whitespace
 		if (selectionRangeContents.textContent.trim() == ""){
 			console.log("No text selected, therefore early return.");
-		    document.getElementById('modifyButton').parentElement.classList.remove('active');
+		    // document.getElementById('modifyButton').parentElement.classList.remove('active');
             mode = Mode.View;
 			selectingText = false;
 			alert("No text selected. Please redo");
@@ -1414,7 +1423,7 @@ function updateTarget(){
                 
                 // hide modal
                 document.getElementById("updateSelection").classList.toggle("show-modal");
-                document.getElementById('modifyButton').parentElement.classList.remove('active');
+                //document.getElementById('modifyButton').parentElement.classList.remove('active');
                 mode = Mode.View;
 				selectingText = false;
 
@@ -1426,6 +1435,20 @@ function updateTarget(){
                  console.log("Error data from failed target update: ", errorData);
             }
         });
+}
+
+function cancelModification(){
+        // disable/enable and hiding/showing the buttons connected 
+        // to the modifaction of a text selection
+        document.getElementById("buttonModifySelection").disabled = false;
+        document.getElementById("buttonModifySelection").classList.remove("is-hidden");
+        document.getElementById("buttonSaveModification").disabled = true;
+        document.getElementById("buttonSaveModification").classList.add("is-hidden");
+        document.getElementById("buttonCancelModification").disabled = true;     
+        document.getElementById("buttonCancelModification").classList.add("is-hidden");
+
+        mode = Mode.View;
+        selectingText = false;
 }
 
 function init(annotations) {
@@ -1826,7 +1849,8 @@ document.getElementById('closeButton').addEventListener('click', function (e) {
 // adding the closing functionality to text selection update modal
 document.getElementById('closeButtonUpdate').addEventListener('click', function (e) {
     document.getElementById("updateSelection").classList.toggle("show-modal");
-    document.getElementById('modifyButton').parentElement.classList.remove('active');
+    // document.getElementById('modifyButton').parentElement.classList.remove('active');
+    cancelModification();
 	// disabling the option to create an annotation. needed, because selecting text
 	// can be done before the mode was set to create by clicking the button after the text selection process
     mode = Mode.View;

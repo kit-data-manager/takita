@@ -82,7 +82,7 @@
       <span class="tooltip">Select Text</span>
     </li>
    </ul>
-   <ul class="features-list">
+   <!--<ul class="features-list">
        <div class="category-header">Modify Mode</div>
     <li class="features-item star">
       <i id="modifyButton" class="bx bx-edit features-item-icon" onclick="hideExpandedSidebar(); modifySelection();"></i>
@@ -94,7 +94,7 @@
       <span class="features-item-text annocollapse">Save</span>
       <span class="tooltip">Save</span>
     </li>
-  </ul>
+  </ul>-->
     <ul class="features-list">
     <li class="features-item star">
       <i id="pagesButton" class="bx bx-book-open features-item-icon" onclick="hideExpandedSidebar(); toggleOverview('pages')"></i>
@@ -487,13 +487,15 @@
         };
         document.getElementById("selectTextListItem").addEventListener("mousedown", onclickSelectText);
 
+        /*
         // adding eventHandler for saving of modification to a text selection
         function onclickSaveModification(event) {
             hideExpandedSidebar();
             saveModification();
         }
         document.getElementById("saveModificationListItem").addEventListener("mousedown", onclickSaveModification);
-
+        */
+       
         // enable/modify the navigation bar
         function modifyNavBar(divisionType, possibleDivisionTypes){
 

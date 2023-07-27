@@ -118,6 +118,28 @@
 	overflow-y: auto;
 }
    
+/* displaying the "quickview" of an annotations
+	body in one line*/
+.horizontalFormDiv {
+	display: inline-flex;
+}
+/* align the label of the "quickview" */
+.horizontalFormDiv > label {
+	display: inline-flex;
+	align-items: center;
+}
+/* add some space between the form elements */
+.horizontalFormDiv > input[type="text"],
+.horizontalFormDiv > label  {
+	margin-right: 0.3em;
+}
+/* override the styling on the text done by
+	disabling the editing of the value */
+.horizontalFormDiv > input[type="text"] {
+	color: black;
+	opacity: 1;
+}
+
 /* end of textcard display */
 /* ------------------------------------*/
 
