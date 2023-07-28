@@ -27,15 +27,24 @@ function selectAnnotation(event, annoId) {
         // as it needs to await the response of a HTTP-request
         success: async function(responseJson) {
             console.log(responseJson);
-            // this selectedAnnotation variable is needed for the
-            // edit/update function in editor_xml.js
-            globalSelectedAnnotation = responseJson;
+
+            // this globalSelectedAnnotation variable is needed for the
+            // - edit/update function in editor_xml.js
+            // - for the highlighting of the words targeted by the currently 
+            //   selected annotation/displayed textCard
+            globalSelectedAnnotation = JSON.parse(JSON.stringify(responseJson));
+            // check if the annotation is compatible with the code, i.e. has
+            // one xPath for each target and not one long xPath including all targets.
+            // Make it compatible, if is are not
+            if (!checkIsTargetCompatible(globalSelectedAnnotation)){
+                makeTargetsCompatible(globalSelectedAnnotation);
+            }
 
             // highlight words targetted by the currently selected annotation
             // remove old highlights (TODO: include this in removeStyles(el) in editor_xml.js)
             document.querySelectorAll(".selected").forEach(element => element.classList.remove("selected"));
             // add a class to all the targets of the selected annotation
-            responseJson.targets.forEach(target => {
+            globalSelectedAnnotation.targets.forEach(target => {
                 const targetId = target.selector.xPath.split("\"")[1];
                 document.getElementById(targetId).classList.add("selected");
             });

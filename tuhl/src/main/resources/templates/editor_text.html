@@ -575,7 +575,18 @@
             modifyNavBar(divisionType, possibleDivisionTypes);
 
             // highlight all the annotated words
-            drawAnnos(JSON.parse(document.body.getAttribute('data-field')));
+            // check if the annotations are compatible with the code, i.e. have
+            // one xPath for each target and not one long xPath including all targets.
+            // Make them compatible, if they are not
+            drawAnnos(JSON.parse
+                (document.body.getAttribute('data-field'))
+                .map(annotation => {
+                    if (!checkIsTargetCompatible(annotation)){
+                        makeTargetsCompatible(annotation);
+                    }
+                    return annotation;
+                })
+            );
 
             // B04 specific adding of a syllable marker between the unsandhied words
             var regW = document.querySelectorAll("tei-reg>tei-w");

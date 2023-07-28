@@ -485,6 +485,100 @@ function extractInformationFromSvg (svgString, annoJson) {
     };*/
 }
 
+// converts a long concatenated/joined xPath consisting of
+// multiple xPaths into multiple xPaths
+function convertXPath(xPath){
+    let xPathArray = [];
+
+    // if the xPath contains only joined xPaths resolving to nodes
+    if (xPath.includes("|")){
+        // split the xPath into multiple xPaths and remove leading whitespace
+        // turn string:
+        // "//*[@xml:id=\"w.121\"] | //*[@xml:id=\"w.122\"]"
+        // into array:
+        // ["//*[@xml:id=\"w.121\"]", "//*[@xml:id=\"w.122\"]"]
+        let xPaths = xPath.split("|").map(x => x.trim());
+        xPaths.forEach(path => {
+            xPathArray.push(path);
+        });
+    }
+
+    // if the xPath contains concatenated xPaths resolving to a string
+    if (xPath.includes("concat(")){
+        // remove the concat function from the xPath and split it into
+        // multiple xPaths and remove leading whitespace
+        // turn string:
+        // "concat(//*[@xml:id=\"w.121\"], \" \", substring(//*[@xml:id=\"w.123\"], 1, 2))"
+        // into array:
+        // ["//*[@xml:id=\"w.121\"]", "substring(//*[@xml:id=\"w.123\"], 1, 2)"]
+        let xPathWithoutConcat = xPath.split("concat(")[1].slice(0,-1);
+        let xPaths = xPathWithoutConcat.split(", \" \",").map(x => x.trim());
+        xPaths.forEach(path => {
+            xPathArray.push(path);
+        });
+    }
+
+    return xPathArray;
+}
+
+// converts the target of an annotation, which is only one long xPath
+// (since commitXYZ, which implemented the substring selection and
+// changed how the targets look like) to multiple targets. This is needed
+// for backwards compatability until every project only has targets, which
+// are one long xPath.
+function makeTargetsCompatible(annotation){
+
+    // annotation passed to the function is part of the annoJson
+    if (annotation.svg){
+            if (annotation.svg[0].includes("xml:id")){
+                annotation.svg = convertXPath(annotation.svg[0]);
+            }
+    }
+
+    // annotation passed to the function is the globalSelectedAnnotation
+    let newTargets = [];
+    if (annotation.targets){
+        if (annotation.targets[0].selector.xPath){
+            let xPathArray = convertXPath(annotation.targets[0].selector.xPath);
+            xPathArray.forEach(xPath => {
+                let newTarget = JSON.parse(JSON.stringify(annotation.targets[0]));
+                newTarget.selector.xPath = xPath;
+                newTargets.push(newTarget);
+            });
+            annotation.targets = newTargets;
+        }
+    }
+};
+
+// check if the annotation is compatible with the code
+// returns:
+// - true, if the annotation is compatible, i.e. has one xPath for each target
+// - false, if the annotation is incompatible, i.e. has one long xPath including all targets
+function checkIsTargetCompatible(annotation){
+    
+    let targetXPath = "default";
+
+    // annotation passed to the function is part of the annoJson
+    if (annotation.svg){
+        targetXPath = annotation.svg[0];
+    }
+
+    // annotation passed to the function is the globalSelectedAnnotation
+    if (annotation.targets){
+        if (annotation.targets[0].selector.xPath){
+            targetXPath = annotation.targets[0].selector.xPath;
+        }
+    }
+
+    // check if the xPath is a joined (resolving to nodes) or concatenated
+    // (resolving to a string) one
+    if (targetXPath.includes("|") || targetXPath.includes("concat")){
+        return false;
+    }
+
+    return true;
+};
+
 // remove the style from all elements
 // https://stackoverflow.com/questions/9252839/simplest-way-to-remove-all-the-styles-in-a-page
 function removeStyles(el) {
@@ -508,7 +602,7 @@ function drawAnnos(annoJson) {
     let targetXmlId;
     let alreadyAnnotated;
     annoJson.forEach(annotation => {
-        // check if a target has the classe "metaphor" and
+        // check if a target has the class "metaphor" and
         // therefore, is already highlighted
         alreadyAnnotated = false;
         annotation.svg.forEach( target => {
@@ -645,6 +739,15 @@ async function updateDisplay() {
         // update annoJson to get the current tagging-body-values
         // as they are the basis for the highlighting
         annoJson = await getAnnoJson();
+        // check if the annotations are compatible with the code, i.e. have
+        // one xPath for each target and not one long xPath including all targets.
+        // Make them compatible, if they are not
+        annoJson = annoJson.map(annotation => {
+            if (!checkIsTargetCompatible(annotation)){
+                makeTargetsCompatible(annotation);
+            }
+            return annotation;
+        });
         // remove all styling/highlighting 
         removeStyles(document.getElementById("TEI"));
         // highlight all annotated words
@@ -1091,7 +1194,7 @@ function createTargetList(selection){
 		}
 	}
 	//console.log("filled targetList");
-	//console.log(targetList);
+	console.log("filled targetList", targetList);
 	return targetList;
 }
 
@@ -1113,9 +1216,9 @@ function createListOfIds(targetList){
 	if (targetList.length === 1){
 		// storing values to build a JSON
 		valueId = "//*[@xml:id=\"" + targetList[0].id + "\"]";
-		selectorObject = {type: "XPathSelector", value: valueId};
-		targetJson = {source: window.CURRENTPAGEURL, selector: selectorObject};
-		targetListJson = targetJson;
+		//selectorObject = {type: "XPathSelector", value: valueId};
+		//targetJson = {source: window.CURRENTPAGEURL, selector: selectorObject};
+		//targetListJson = targetJson;
 		targetsXmlIds = valueId;
 	// if holds multiple elements, as multiple elements got selected
 	} else if (targetList.length !== 0){
@@ -1123,13 +1226,13 @@ function createListOfIds(targetList){
 		targetList.forEach( item => {
 			// storing values to build a JSON and convert it to a STRING
 			valueId = "//*[@xml:id=\"" + item.id + "\"]";
-			selectorObject = {type: "XPathSelector", value: valueId};
-			targetJson = {source: window.CURRENTPAGEURL, selector: selectorObject};
-			targetListJson = targetListJson + JSON.stringify(targetJson) + ",";
-			targetsXmlIds = targetsXmlIds + valueId + "§"; 
+			//selectorObject = {type: "XPathSelector", value: valueId};
+			//targetJson = {source: window.CURRENTPAGEURL, selector: selectorObject};
+			//targetListJson = targetListJson + JSON.stringify(targetJson) + ",";
+			targetsXmlIds = targetsXmlIds + valueId + "|"; 
 		});
-		// slice removes the last komma, as its not needed; and then remove the "\"
-		targetListJson = (targetListJson.slice(0,-1) + "]").replaceAll("\\","");
+		// slice removes the last §, as its not needed; and then remove the "\"
+		//targetListJson = (targetListJson.slice(0,-1) + "]").replaceAll("\\","");
 		targetsXmlIds = targetsXmlIds.slice(0,-1);
 		
 		/*targetList.forEach( item => {
@@ -1454,6 +1557,15 @@ function cancelModification(){
 function init(annotations) {
 	
 	annoJson = JSON.parse(annotations);
+    // check if the annotations are compatible with the code, i.e. have
+    // one xPath for each target and not one long xPath including all targets.
+    // Make them compatible, if they are not
+    annoJson = annoJson.map(annotation => {
+        if (!checkIsTargetCompatible(annotation)){
+            makeTargetsCompatible(annotation);
+        }
+        return annotation;
+    });
 	
 	// open textcard if rightclicking on a word that is highlighted due to it 
     // having a css class, i.e. has an annotation
