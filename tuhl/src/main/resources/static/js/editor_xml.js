@@ -487,35 +487,42 @@ function extractInformationFromSvg (svgString, annoJson) {
 
 // converts a long concatenated/joined xPath consisting of
 // multiple xPaths into multiple xPaths
-function convertXPath(xPath){
+function convertXPath(longXPath){
     let xPathArray = [];
 
     // if the xPath contains only joined xPaths resolving to nodes
-    if (xPath.includes("|")){
+    if (longXPath.includes("|")){
         // split the xPath into multiple xPaths and remove leading whitespace
         // turn string:
         // "//*[@xml:id=\"w.121\"] | //*[@xml:id=\"w.122\"]"
         // into array:
         // ["//*[@xml:id=\"w.121\"]", "//*[@xml:id=\"w.122\"]"]
-        let xPaths = xPath.split("|").map(x => x.trim());
-        xPaths.forEach(path => {
-            xPathArray.push(path);
-        });
+        xPathArray = longXPath.split("|").map(entry => entry.trim());
     }
 
     // if the xPath contains concatenated xPaths resolving to a string
-    if (xPath.includes("concat(")){
-        // remove the concat function from the xPath and split it into
-        // multiple xPaths and remove leading whitespace
+    if (longXPath.includes("concat(")){
+        // remove the surrounding concat()-function from the long xPath 
+        // and split it at the "," to reassemble each individual xPath
         // turn string:
-        // "concat(//*[@xml:id=\"w.121\"], \" \", substring(//*[@xml:id=\"w.123\"], 1, 2))"
+        // "concat(//*[@xml:id=w.75], //*[@xml:id=pc.12], \"   \", substring(//*[@xml:id=w.76], 1, 5))"
         // into array:
-        // ["//*[@xml:id=\"w.121\"]", "substring(//*[@xml:id=\"w.123\"], 1, 2)"]
-        let xPathWithoutConcat = xPath.split("concat(")[1].slice(0,-1);
-        let xPaths = xPathWithoutConcat.split(", \" \",").map(x => x.trim());
-        xPaths.forEach(path => {
-            xPathArray.push(path);
-        });
+        // ["//*[@xml:id=w.75]", "//*[@xml:id=pc.12]", "substring(//*[@xml:id=w.76], 1, 5)"]
+        let xPaths = longXPath
+            .split("concat(")[1].slice(0,-1)
+            .split(",");
+        xPathArray = xPaths
+            // remove leading/trailing whitespace from the entries
+            .map(xPath => xPath.trim())
+            .map((xPath, index) => {
+                if (xPath.startsWith("//*[@xml:id=")){
+                    return xPath;
+                } else if (xPath.startsWith("substring(//*[@xml:id=")){
+                    // add the startingPosition and the lenght of the substring to the xPath
+                    return (xPath + ", " + xPaths[index+1] + ", " + xPaths[index+2]);
+                }})
+            // remove the "empty"/undefined entries
+            .filter(entry => entry !== undefined);
     }
 
     return xPathArray;
@@ -1119,31 +1126,57 @@ function getContentOfSelection(selection){
 
 
 // get the smallest available nodes, that have an xmlId and store them in a list
-function getXmlIds(node, nodeList){
-  if (node.children.length !== 0) {
-      Array.from(node.children).forEach(child => {
-	      getXmlIds(child, nodeList);
-    });
-  } else {
-    if (node.id) {
-			nodeList.push(node);
-	}                  
-  }
+function getSmallestNodesWithXmlIds(node, nodeList){
+    if (node.children.length !== 0) {
+        Array.from(node.children).forEach(child => {
+	        getSmallestNodesWithXmlIds(child, nodeList);
+        });
+    } else {
+        if (node.id) {
+		    nodeList.push(node);
+	    }                  
+    }
 };
 
-// create a list, that contains all the selected nodes with an Id
+// create a list, that for each selection contains a JSON-object,
+// which contains all the selected nodes with an Id and the offsets
+// of the selection
 function createTargetList(selection){
 
-	let targetList = [];
+    let targetRangeList = [];	
 	
 	for (let i = 0; i < selection.rangeCount; i++) {
+        let targetList = [];
 		let selectionRange = selection.getRangeAt(i);
 		let selectionRangeContents = selectionRange.cloneContents();
+        // selectionRangeOffsets is necessary as selectionRange.startOffset is a
+        // read-only property, but it might need to change (if the selected text starts
+        // with whitespace)
+        let selectionRangeOffsets = {
+            "startOffset" : selectionRange.startOffset,
+            "endOffset" : selectionRange.endOffset
+        }
+
+        // check if the selected text starts with whitespace (/^\s/ = regex matching any whitespace at the start of a word from
+        // https://stackoverflow.com/questions/10844294/how-to-check-whether-a-string-has-whitespace-at-the-beginning-in-javascript)
+        // or if the first childs textContent is only whitespace. If it does
+        // set the startOffest to 0 as the first selected element holding text
+        // will have its start fully selected and the startOffset is used to
+        // create the substring selector
+        // TODO: find a better solution for this as there might be a time
+        // where the first selected elment starts with whitespace for whatever reason
+        // OR there are punctuation sign/other symbols, which are not part of the first element
+        if (/^\s/.test(selectionRangeContents.textContent) &&
+            selectionRangeContents.childNodes[0].textContent.trim() === ""){
+                selectionRangeOffsets.startOffset = 0;
+                console.log("Changed the selection startOffset to: 0");
+        }
+
 		// check how many words/elements got selected,
 		// for some reason the selection always holds more than one element
 		// even if, only one got selected. Only if a user selects the middle part
 		// of a word, the selection holds only one elment
-
+        // ------
         // TODO: firefox specific problem (works in
         // safari: just fine
         // chrome: only because double clicking selects all syllables):
@@ -1158,7 +1191,14 @@ function createTargetList(selection){
 				if (selectionRange.startContainer.nodeValue == selectionRange.endContainer.nodeValue &&
 					selectionRange.endContainer.nodeValue == selectionRange.commonAncestorContainer.nodeValue) {
 					if (selectionRange.commonAncestorContainer.parentNode.nodeName === "TEI-W") {
-						targetList.push(selectionRange.commonAncestorContainer.parentNode);
+                        // as createXPath() checks if the innerText of the targetNode is the same
+                        // as of the node in the DOM with the same id to create the subStringSelector, 
+                        // the selected string needs to be saved as the innerText of the targetNode.
+                        // As the parentNode is not part of the selectionRange this step is necessary.
+                        // To replace the innerText without altering the DOM the node has to be cloned.
+                        let targetNode = selectionRange.commonAncestorContainer.parentNode.cloneNode();
+                        targetNode.innerText = selectionRangeContents.textContent;
+                        targetList.push(targetNode);
 					} else {
 						console.log("selectionRange.commonAncestorContainer.parentNode is not TEI-W. ", selectionRange.commonAncestorContainer.parentNode);
 					}
@@ -1172,32 +1212,41 @@ function createTargetList(selection){
             // think, that it would be an elementNode then, in B04 its an tei-reg element),
             // its xmlid should be retrieved and added to the targetList by calling getXmlIds()
             } else if (selectionRangeContents.childNodes[0].nodeType == 1){
-                getXmlIds(selectionRangeContents.children[0], targetList);
+                getSmallestNodesWithXmlIds(selectionRangeContents.children[0], targetList);
             } else {
                 console.log("The following node is neither a text nor element node. ", selectionRangeContents.childNodes[0]);
             }
 		} else {
-			getXmlIds(selectionRangeContents, targetList);
+			getSmallestNodesWithXmlIds(selectionRangeContents, targetList);
 		}
+
+        // "cleaning" the targetList, because sometimes an empty w-element will be included
+        // in the bgeinning or at the end of the targetList as the user selected some
+        // whitespace before/after the first word she wanted to select as well
+        if (targetList.length > 1) {
+            if (targetList[targetList.length-1].innerHTML.trim() == ""){
+                targetList.pop();
+            }
+            if (targetList[0].innerHTML.trim() == ""){
+                targetList.shift();
+            }
+        }
+
+        // add the start/end offsets/character positions of the text
+        // create the json object containing all information
+        let rangeItem = {
+            "targetList" : targetList,
+            "startOffset" : selectionRangeOffsets.startOffset,
+            "endOffset" : selectionRangeOffsets.endOffset
+        };
+        targetRangeList.push(rangeItem);
 	}
 
-	
-	// "cleaning" the targetList, because sometimes an empty w-element will be included
-	// in the bgeinning or at the end of the targetList as the user selected some
-	// whitespace before/after the first word she wanted to select as well
-	if (targetList.length > 1) {
-		if (targetList[targetList.length-1].innerHTML.trim() == ""){
-			targetList.pop();
-		}
-		if (targetList[0].innerHTML.trim() == ""){
-			targetList.shift();
-		}
-	}
-	//console.log("filled targetList");
-	console.log("filled targetList", targetList);
-	return targetList;
+	return targetRangeList;
 }
 
+// creates a concatenated list of each xPath resolving to one element, that
+// is present in the selction
 function createListOfIds(targetList){
 	// targetListJson is a list of all the <w> elements id to be used as targets for
 	// the web annotations; its a STRING
@@ -1249,6 +1298,123 @@ function createListOfIds(targetList){
 		//console.log(JSON.stringify(targetListAsJson));
 	}
 	return targetsXmlIds;
+}
+
+// get the offset/substringPosition for a selected word
+function getSubstringPosition(target, range){
+    let substringPosition = {};
+    
+    // if the target is the first word of the selectionRange use
+    // - the startOffset of the selectionRange as substringPosition.start
+    // - and the length of the word as substringPosition.end
+    // as then the startOffset of the selectionRange is the offset of the
+    // first word and the rest of the word is fully selected
+    if (target === range.targetList[0]){
+        substringPosition.start = range.startOffset;
+        substringPosition.end = document.getElementById(target.id).innerText.length;
+    }
+
+    // if the target is the last word of the selectionRange use
+    // - 0 as substringPosition.start
+    // - and the endOffset of the selectionRange as substringPosition.end
+    // as then the endOffset of the selectionRange is the offset of the
+    // last word and the rest of the word (the beginning) is fully selected
+    if (target === range.targetList[range.targetList.length - 1]){
+        substringPosition.start = 0;
+        substringPosition.end = range.endOffset;
+    }
+
+    // (if the target is the first and last word of the selectionRange)
+    // if the selectionRange holds only one word use
+    // - the startOffset of the selectionRange as substringPosition.start
+    // - and the endOffset of the selectionRange as substringPosition.end
+    // as then the offsets of the selectionRange are the offsete of the
+    // last word
+    if (range.targetList.length === 1){
+        substringPosition.start = range.startOffset;
+        substringPosition.end = range.endOffset;
+    }
+    
+    return substringPosition;
+}
+
+// get the nextSibling of a node
+function getNextSibling(node){
+    let nextSibling = node.nextSibling;
+    // if the node has no nextSibling, get the nextSibling of the parentNode
+    if (nextSibling === null){
+        nextSibling = getNextSibling(node.parentNode);
+    }
+    return nextSibling;
+}
+
+function createXPath(targetRangeList){
+    let xPaths = [];
+    let xPathContainsSubstring = false;
+    let longXPath = "";
+
+    // create an xPath for each targeted element
+    targetRangeList.forEach(range => {
+        range.targetList.forEach(target => {
+            let xPathToElement = "//*[@xml:id=\"" + target.id + "\"]";
+            // check if the targetted words are fully selected
+            if (target.innerText === document.getElementById(target.id).innerText) {
+                xPaths.push(xPathToElement);
+            } else {
+                // if they are not fully selected get the offsets/substringPosition
+                xPathContainsSubstring = true;
+                let substringPosition = getSubstringPosition(target, range);
+                // get the substring(string, start, length) function of xPath, but it works a bit different 
+                // than the offsets of a selection
+                // - it requires the start offset, but "As in other XPath functions, the position 
+                //   is not zero-based. The first character in the string has a position of 1, not 0.
+                //   https://developer.mozilla.org/en-US/docs/Web/XPath/Functions/substring ",
+                //   so the start offset needs to be incremented by 1
+                // - and it reuires the length of the substring instead of the endOffset
+                let xPathSubstring = {};
+                xPathSubstring.start = substringPosition.start + 1;
+                xPathSubstring.length = target.innerText.length;
+                xPaths.push("substring(" + 
+                            xPathToElement + ", " + 
+                            xPathSubstring.start + ", " + 
+                            xPathSubstring.length + ")");
+            }
+        });
+    });
+
+    // create the long xPath depending on the xPaths of the selected words.
+    // If a substring is present create a concatenated xPath otherwise
+    // join the xPaths together
+    if (xPathContainsSubstring){
+        if (xPaths.length === 1) {
+            longXPath = xPaths[0];
+        } else {
+            // add the trailing characters (most likely whitespace, maybe punctuation)
+            // to each xPath, so that when they will be resolved, they are trailed by the
+            // correct characters
+            xPaths = xPaths.map(xPath => {
+                let nextSibling = getNextSibling(document.getElementById(xPath.split("\"")[1]));
+                if (nextSibling.nodeType === 3){
+                     return xPath + ", \"" + nextSibling.nodeValue + "\"";
+                } else {
+                     return xPath;
+                }
+            });
+
+            // remove the string trailing the last xPath
+            xPaths = xPaths.join(",").split(",");
+            if (!xPaths[xPaths.length - 1].includes("xml")){
+                xPaths.pop();
+            }
+
+            // create the final xPath
+            longXPath = "concat(" + xPaths.join(", ") + ")";
+        }
+    } else {
+        longXPath = xPaths.join(" | ");
+    }
+
+    return longXPath;
 }
 
 // store all the mrw annotations that are contained in a selection
@@ -1319,17 +1485,25 @@ function annotateSelectedText(){
 			return;
 		}
 		
-		// targetList holds all the nodes from the selection, that are <w> elements
-		let targetList = createTargetList(window.getSelection());
-
-		console.log("Filled targetList for annotation creation: ", targetList);
+		// targetRangeList holds all the nodes from the selection, that are <w> elements
+		let targetRangeList = createTargetList(window.getSelection());
+		console.log("Filled targetRangeList for annotation creation: ", targetRangeList);
 		
-		// store all the mrw annotations that are contained in a selection
+		// targetXPath hold the xPath resolving to the elements in targeRangetList
+		let targetXPath = createXPath(targetRangeList);
+		console.log("Target/XPath of the selection: ", targetXPath);
+
+        // emptying the globalMrwAnnos array to only store the mrw
+        // annotations present in the current selection
 		// so they can be accessed in creation_templates_text.js to generate
 		// a list of selected mrws inside a metaphor and link the mrw annotations
 		// to the metaphor annotation
-		globalMrwAnnos = storeSelectedMRWAnnos(targetList);
-		// set selectedText so it can be displayed in the modal and remove all whitespaces
+        globalMrwAnnos = [];
+        targetRangeList.forEach(range => {
+            globalMrwAnnos = globalMrwAnnos.concat(storeSelectedMRWAnnos(range.targetList));
+        });
+
+		// set globalSelectedText so it can be displayed in the modal and remove all whitespaces
         // TODO: this should use removeWhitespaceFromSelectionTextContent()
 		globalSelectedText = getContentOfSelection(window.getSelection()).
 								textContent.replace(/\s{4}|[\t\n\r]|\s/g,' ');
@@ -1338,15 +1512,12 @@ function annotateSelectedText(){
 		}
 		globalSelectedText = globalSelectedText.trim();
 		console.log("GlobalSelectedText: ", globalSelectedText);
-		// targetsXmlIds holds only the ids of the element in targetList
-		let targetsXmlIds = createListOfIds(targetList);
-		
-		console.log("Xml:ids present in the selection: ", targetsXmlIds);
+
 		// showing the modal/dropdown to select the annotation template, which can be populated
 		// by the user
 		const modal = document.getElementById("createAnnotation");
 	    modal.classList.toggle("show-modal");
-	    pickTemplate(targetsXmlIds, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
+	    pickTemplate(targetXPath, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
     	
     	// redrawing the annotations; TODO
     	/*console.log("redrawing");
@@ -1398,6 +1569,8 @@ function saveModification(){
 		// stop the function, if the selection does not contain any text, only whitespace
 		if (selectionRangeContents.textContent.trim() == ""){
 			console.log("No text selected, therefore early return.");
+            // TODO: check if this causes problems. It might prevent users from saving
+            // their updated selection, if the selected whitespace once
 		    // document.getElementById('modifyButton').parentElement.classList.remove('active');
             mode = Mode.View;
 			selectingText = false;
@@ -1405,15 +1578,14 @@ function saveModification(){
 			return;
 		}
 		
-		// targetList holds all the nodes from the selection, that are <w> elements
-		let targetList = createTargetList(window.getSelection());
 
-        console.log("Filled targetList for annotation target update: ", targetList);
+		// targetRangeList holds all the nodes from the selection, that are <w> elements
+		let targetRangeList = createTargetList(window.getSelection());
+		console.log("Filled targetRangeList for annotation target update: ", targetRangeList);
 		
-		// targetsXmlIds holds only the ids of the element in targetList
-		let newTargetsXmlIds = createListOfIds(targetList);
-
-        console.log("Xml:ids present in the NEW selection: ", newTargetsXmlIds);
+		// targetXPath hold the xPath resolving to the elements in targeRangetList
+		let targetXPath = createXPath(targetRangeList);
+		console.log("Target/XPath of the NEW selection: ", targetXPath);
 		
 		// ask user if the new selection should be saved in a modal
 
@@ -1453,7 +1625,7 @@ function saveModification(){
 		
 		const modal = document.getElementById("updateSelection");
 	    modal.classList.toggle("show-modal");
-	    modal.dataset.newTargetXmlId = newTargetsXmlIds;
+	    modal.dataset.newTargetXmlId = targetXPath;
 	    //modal.dataset.SelectedAnnotationId = selectedAnnotation.id;
 	}
 }
@@ -1463,10 +1635,10 @@ function updateTarget(){
 	const modal = document.getElementById("updateSelection");
 	let idOfAnnotationToUpdate = encodeAnnoId(globalSelectedAnnotation.id);
 	//let idOfAnnotationToUpdate = encodeAnnoId(modal.dataset.SelectedAnnotationId);
-	let newTargetXmlId = modal.dataset.newTargetXmlId;
+	let targetXPath = modal.dataset.newTargetXmlId;
 	
 	// update the target of an annotation (and the "purpose:describing" body, if it exists) by sending a put request
-	let annotationDataJson = {"color" : "#89f099", "motivation" : "describing", "svgCode" : newTargetXmlId};
+	let annotationDataJson = {"color" : "#89f099", "motivation" : "describing", "svgCode" : targetXPath};
 	$ .ajax({
             type : 'PUT',
             url : window.CONTEXTPATH + 'editor_rest/annotations/' + idOfAnnotationToUpdate,
