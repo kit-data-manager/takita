@@ -492,8 +492,8 @@ function convertXPath(longXPath){
 
     // if the xPath contains only joined xPaths resolving to nodes
     if (longXPath.includes("|")){
-        // split the xPath into multiple xPaths and remove leading whitespace
-        // turn string:
+        // split the xPath into multiple xPaths and remove leading whitespace.
+        // Turn string:
         // "//*[@xml:id=\"w.121\"] | //*[@xml:id=\"w.122\"]"
         // into array:
         // ["//*[@xml:id=\"w.121\"]", "//*[@xml:id=\"w.122\"]"]
@@ -503,8 +503,8 @@ function convertXPath(longXPath){
     // if the xPath contains concatenated xPaths resolving to a string
     if (longXPath.includes("concat(")){
         // remove the surrounding concat()-function from the long xPath 
-        // and split it at the "," to reassemble each individual xPath
-        // turn string:
+        // and split it at the "," to reassemble each individual xPath.
+        // Turn string:
         // "concat(//*[@xml:id=w.75], //*[@xml:id=pc.12], \"   \", substring(//*[@xml:id=w.76], 1, 5))"
         // into array:
         // ["//*[@xml:id=w.75]", "//*[@xml:id=pc.12]", "substring(//*[@xml:id=w.76], 1, 5)"]
@@ -518,7 +518,7 @@ function convertXPath(longXPath){
                 if (xPath.startsWith("//*[@xml:id=")){
                     return xPath;
                 } else if (xPath.startsWith("substring(//*[@xml:id=")){
-                    // add the startingPosition and the lenght of the substring to the xPath
+                    // add the startingPosition and the length of the substring to the xPath
                     return (xPath + ", " + xPaths[index+1] + ", " + xPaths[index+2]);
                 }})
             // remove the "empty"/undefined entries
@@ -1401,10 +1401,13 @@ function createXPath(targetRangeList){
                 }
             });
 
-            // remove the string trailing the last xPath
-            xPaths = xPaths.join(",").split(",");
-            if (!xPaths[xPaths.length - 1].includes("xml")){
-                xPaths.pop();
+            // remove the string trailing the last xPath (there might not even be one) 
+            // as it was not selected by the user.
+            // To do that, use a regex matching the substring function without its parameters
+            // as they are different for each xPath
+            let regex = /(substring\().*\)/;
+            if (regex.test(xPaths[xPaths.length - 1])){
+                xPaths[xPaths.length - 1] = regex.exec(xPaths[xPaths.length - 1])[0];
             }
 
             // create the final xPath
