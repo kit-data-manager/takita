@@ -37,16 +37,42 @@
 	background: linear-gradient( to bottom, lightgreen 33%, yellow 33% 66%, #daa3ff 66% 100% )
 }
 
-/* underline words annotated as metaphors 
-	the box-shadows are bigger than the box
-	and the white box-shadow is necessary to
-	keep the background white */
+/* underline words annotated as metaphors.
+	The box-shadows overlap to the right/left
+	of an element, if the element is trailed
+	by whitespace. As the box-shadows might
+	overlap the white box-shadow is necessary to
+	keep te background white.
+	Every rule is needed for ltr texts (default)
+	and for rtl texts as the box-shadows 
+	always get created on the right/left side
+	regardless of text direction. */
 .metaphor {
 	box-shadow: 
-		-0.175em 0em white, 
-		0.175em 0em white, 
-		-0.175em 0.2em #2196F3,
-		0.175em 0.2em #2196F3;
+		0em 0em white, 
+		0em 0.2em #2196F3;
+}
+
+.metaphor.whitespaceAfter{
+	box-shadow: 
+		0.29em 0em white, 
+		0em 0em white, 
+		0.29em 0.2em #2196F3,
+		0em 0.2em #2196F3;
+}
+
+#TEI[dir="rtl"].metaphor {
+	box-shadow: 
+		0em 0em white, 
+		0em 0.2em #2196F3;
+}
+
+#TEI[dir="rtl"].metaphor.whitespaceAfter{
+	box-shadow: 
+		-0.29em 0em white, 
+		0em 0em white, 
+		-0.29em 0.2em #2196F3,
+		0em 0.2em #2196F3;
 }
 
 /* TODO: improve the comment phrasing */
@@ -56,10 +82,33 @@
 	-> only one underline */
 .metaphorSecond {
 	box-shadow: 
-		-0.175em 0.2em white, 
-		0.175em 0.2em white, 
-		-0.175em 0.4em purple,
-		0.175em 0.4em purple;
+		0em 0.2em white, 
+		0em 0.4em purple;
+	line-height: 1.75em;
+}
+
+.metaphorSecond.whitespaceAfter{
+	box-shadow: 
+		0.29em 0.2em white, 
+		0em 0.2em white, 
+		0.29em 0.4em purple,
+		0em 0.4em purple;
+	line-height: 1.75em;
+}
+
+#TEI[dir="rtl"].metaphorSecond {
+	box-shadow: 
+		0em 0.2em white, 
+		0em 0.4em purple;
+	line-height: 1.75em;
+}
+
+#TEI[dir="rtl"].metaphorSecond.whitespaceAfter{
+	box-shadow: 
+		-0.29em 0.2em white, 
+		0em 0.2em white, 
+		-0.29em 0.4em purple,
+		0em 0.4em purple;
 	line-height: 1.75em;
 }
 
@@ -69,12 +118,42 @@
 	-> two underlines */
 .metaphor.metaphorSecond {
 	box-shadow: 
-		-0.175em 0em white, 
-		0.175em 0em white, 
-		-0.175em 0.2em #2196F3,
-		0.175em 0.2em #2196F3,
-		-0.175em 0.4em purple,
-		0.175em 0.4em purple;
+		0.29em 0em white, 
+		0em 0em white,
+		0.29em 0.2em #2196F3,
+		0em 0.2em #2196F3, 
+		0.29em 0.4em purple,
+		0em 0.4em purple;
+	line-height: 1.75em;
+}
+
+.metaphor.metaphorSecond.whitespaceAfter{
+	box-shadow: 
+		0.29em 0em white, 
+		0em 0em white,
+		0.29em 0.2em #2196F3,
+		0em 0.2em #2196F3, 
+		0.29em 0.4em purple,
+		0em 0.4em purple;
+	line-height: 1.75em;
+}
+
+#TEI[dir="rtl"].metaphor.metaphorSecond {
+	box-shadow:
+		0em 0.2em white, 
+		0em 0.2em #2196F3,
+		0em 0.4em purple;
+	line-height: 1.75em;
+}
+
+#TEI[dir="rtl"].metaphor.metaphorSecond.whitespaceAfter{
+	box-shadow: 
+		-0.29em 0.2em white, 
+		0em 0.2em white, 
+		-0.29em 0.2em #2196F3,
+		0em 0.2em #2196F3,
+		-0.29em 0.4em purple,
+		0em 0.4em purple;
 	line-height: 1.75em;
 }
 
@@ -82,8 +161,7 @@
 	by the selected annotation and increase
 	the line-height to keep the box-shadows intact */
 .selected {
-	border-top: 3px solid;
-	border-bottom: 3px dashed;
+	border-top: 3px dotted;
 	line-height: 2em;
 }
 
@@ -123,6 +201,29 @@
 .horizontalFormDiv {
 	display: inline-flex;
 }
+
+/* input fields in cards should take all the available
+   horizontal space. */
+.horizontalFormForm > div {
+	display: flex;
+}
+.horizontalFormDiv {
+	flex-grow: 1;
+}
+.horizontalFormInput {
+	/* I believe we can leave this out! */
+	flex-grow: 0;
+}
+.horizontalFormDiv .controls {
+	flex-grow: 1;
+}
+
+/* Center card row contents vertically */
+ .formBodyDiv,
+ .horizontalFormForm {
+	margin-bottom: 0 !important;
+}
+
 /* align the label of the "quickview" */
 .horizontalFormDiv > label {
 	display: inline-flex;
@@ -139,6 +240,10 @@
 	color: black;
 	opacity: 1;
 }
+
+
+
+
 
 /* end of textcard display */
 /* ------------------------------------*/

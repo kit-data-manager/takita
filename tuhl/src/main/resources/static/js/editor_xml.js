@@ -622,6 +622,8 @@ function drawAnnos(annoJson) {
         // adding classes to highlight annotations
 		annotation.svg.forEach( target => {
 			targetXmlId = target.split("\"")[1];
+            const targetElement = document.getElementById(targetXmlId);
+
             // if tags are available assign css class
             if (annotation.tags.length > 0) {
                 annotation.tags.forEach( tag => {
@@ -633,23 +635,31 @@ function drawAnnos(annoJson) {
                             // if a word is not highlighted add the "metaphor" class, if it is
                             // already highlighted add "metaphorSecond"
                             if (!alreadyAnnotated){
-                                document.getElementById(targetXmlId).classList.add("metaphor");
+                                targetElement.classList.add("metaphor");
                             } else {
-                                document.getElementById(targetXmlId).classList.add("metaphorSecond");
+                                targetElement.classList.add("metaphorSecond");
                             }
                             
+                            // if a word is followed by whitespace add the "whitespaceAfter" class.
+                            // This is needed to create overlapping boxshadows
+                            // check if enxtSibling is null first
+                            if (targetElement.nextSibling !== null) {
+                                if (targetElement.nextSibling.textContent.trim() === ""){
+                                    targetElement.classList.add("whitespaceAfter");
+                                }
+                            }
                             break;
                         case "mrw (direct)":
-                            document.getElementById(targetXmlId).classList.add("mrw");
+                            targetElement.classList.add("mrw");
                             break;
                         case "mrw (indirect)":
-                            document.getElementById(targetXmlId).classList.add("mrw");
+                            targetElement.classList.add("mrw");
                             break;
                         case "mrw (implicit)":
-                            document.getElementById(targetXmlId).classList.add("mrw");
+                            targetElement.classList.add("mrw");
                             break;
                         case "mflag":
-                            document.getElementById(targetXmlId).classList.add("mflag");
+                            targetElement.classList.add("mflag");
                             break;
                         default:
                             // this is not ideal, but without the if clause, most of words
@@ -661,13 +671,13 @@ function drawAnnos(annoJson) {
                                 tag.value === "mflag"){
                                     // nothing will happen
                                 } else {
-                                    document.getElementById(targetXmlId).classList.add("defaulthighlight");
+                                    targetElement.classList.add("defaulthighlight");
                                     //console.log("Tag value not matching the possible cases, 'defaulthighlight' class added for:", annotation);
                                 }
                     }
                 });
             } else { // if no tags are given (might be due to the tagging body being delted), assign default
-                document.getElementById(targetXmlId).classList.add("defaulthighlight");
+                targetElement.classList.add("defaulthighlight");
             }
 			
 		});
@@ -1731,6 +1741,10 @@ function cancelModification(){
 
 function init(annotations) {
 	
+    // enable the tooltips for the sidebar
+    enableTooltips();
+
+    // fill the annoJson with the annotations passed by the java backend
 	annoJson = JSON.parse(annotations);
     // check if the annotations are compatible with the code, i.e. have
     // one xPath for each target and not one long xPath including all targets.

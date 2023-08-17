@@ -152,6 +152,7 @@ function selectAnnotation(event, annoId) {
                 bodyDiv.title = bodies[body].annotationId;
                 bodyDiv.classList.add("is-left");
                 bodyDiv.classList.add("col");
+                bodyDiv.classList.add("formBodyDiv");
                 bodyRowDiv.append(bodyDiv);
 
                 var formRowDiv = document.createElement("div");
@@ -175,6 +176,7 @@ function selectAnnotation(event, annoId) {
                 //bodyForm.style.paddingLeft = "20rem";
                 //bodyForm.classList.add("is-full-width");
                 bodyFormHorizontal.classList.add("col");
+                bodyFormHorizontal.classList.add("horizontalFormForm");
                 bodyDiv.append(bodyFormHorizontal);
                 
                 var iconRow = document.createElement("div");
@@ -388,12 +390,8 @@ function selectAnnotation(event, annoId) {
 
                 const formHorizontal = document.getElementById("formHorizontal" + bodies[body].id);
                 const inputButtonHorizontal = formHorizontal.querySelectorAll('input[type="submit"]')[0];
-                // reduce the height of the form, by decreasing its margin
-                formHorizontal.style.marginBottom = "-0.7em";
                 // display everything in one line
-                //formHorizontal.firstChild.style.display = "inline-flex";
                 // improve readibility of the value of the "disabled" input fields
-                // TODO: maybe use filter() here, but for some odd reason it didn't work, even after converting the nodeList to an array
                 formHorizontal.querySelectorAll('input[type="text"]').forEach( input => {
                     if (input.name === "value"){
                         input.style.color = "black";
@@ -401,7 +399,7 @@ function selectAnnotation(event, annoId) {
                     }
                     // enable the input submit button if the value of the input field changes
                     // from the original body value
-                    input.addEventListener("change", (event) => {
+                    input.addEventListener("input", (event) => {
                         if (input.value !== bodies[body].value){
                             inputButtonHorizontal.disabled = false;
                         } else {
@@ -409,14 +407,15 @@ function selectAnnotation(event, annoId) {
                         }
                     });
                 });
-                // TODO: use an icon instead of the "save" text to save some space
+                // TODO: maybe use an icon instead of the "save" text to save some space
                 // change the value/text of the submit "button" and if one is available (as the field can be edited)
                 // disable the button by default
                 if (inputButtonHorizontal !== undefined){
                     inputButtonHorizontal.value = "Save";
                     inputButtonHorizontal.disabled = true;
+                    inputButtonHorizontal.classList.add("horizontalFormInput");
                 }
-                // // horizontal form (collapsed "quick-view") creation start end
+                // horizontal form (collapsed "quick-view") creation end
 
                 //document.getElementById(expand.id).parentNode.previousElementSibling.classList.add("is-hidden");
                 //document.getElementById(bodyDiv.id).childNodes[0].classList.add("is-hidden");
@@ -800,6 +799,32 @@ function toggleExpand(div) {
         expandIcon.classList.remove('bx-chevron-down');
         expandIcon.classList.add('bx-chevron-right');
     };
+};
+
+// enables tooltips for the sidebar by creating a new div-element, which
+// is placed based on the item hovered by the user.
+// https://stackoverflow.com/questions/66382585/tooltip-inside-a-scrollable-component
+function enableTooltips() {
+    const
+        hoverAreas = document.querySelectorAll('.features-item'),
+        hoverTooltip = document.createElement('div');
+    hoverTooltip.className = 'hoverTooltip';
+    document.body.appendChild(hoverTooltip);
+
+    hoverAreas.forEach(hoverArea => {
+        console.log(hoverArea);
+        // Show the tooltip
+        hoverArea.addEventListener('mouseenter', () => {
+            hoverTooltip.innerHTML = hoverArea.querySelector('.tooltip').innerHTML;
+            //tooltips.style.left = `${item.offsetLeft - cardContainer.scrollLeft}px`;
+            hoverTooltip.style.top = `${hoverArea.getBoundingClientRect().top + 25}px`;
+            hoverTooltip.style.display = 'block';
+        });
+        // Hide to tooltip
+        hoverArea.addEventListener('mouseleave', () => {
+            hoverTooltip.style.display = 'none';
+        });
+    });
 };
 
 // show the animated book as loading icon whenever an ajax call is running
