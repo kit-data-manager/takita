@@ -241,9 +241,25 @@
 	opacity: 1;
 }
 
+/* adding space/margins before the buttons
+	at the end of the textcard*/
+#buttonToAnalysisTool,
+#buttonModifySelection,
+#buttonSaveModification,
+#buttonCancelModification {
+	margin-top: 0.3em;
+}
 
-
-
+/* adding space/margins between the buttons
+	at the end of the textcard*/
+#buttonToAnalysisTool{
+	margin-right: 0.5em;
+}
+#buttonModifySelection,
+#buttonSaveModification,
+#buttonCancelModification {
+	margin-right: 0.2em;
+}
 
 /* end of textcard display */
 /* ------------------------------------*/

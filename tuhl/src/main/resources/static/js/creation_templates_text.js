@@ -234,76 +234,115 @@ function getFormModel(chosenTemplate) {
             break;  
         
         case "METAPHOR":
-			// if a user wants to create a metaphor annotation,
-	        // get all the mrws that are present in his selection (globalMrwAnnos)
-	        // and store them in the enum to hold all the mrwAnnoIds, so the user can
-	        // choose a mrw to link it to a metaphor
-            
-            let enumAndTitleMap = getEnumAndTitleMap(globalMrwAnnos);
-			let mrwEnum = enumAndTitleMap[0];
-			// metaphorTitleMap is necessary to have the actual words displayed,
-			// but the have the annoId as a value on the submission of the form
-			let mrwTitleMap = enumAndTitleMap[1];
+
             // a user can either use the default label or create a humanreadable
             // label for the metaphor annotation
             let defaultLabel = window.CURRENTPAGENUMBER + Date.now();
-            let selectMRWButton = getSelectMRWButton(mrwEnum);
 
-	        dataModel = {
-	            "type" : "object",
-	            "properties" : {
-					"selectedText": {
-						"type" : "string",
-	                    "title" : "Selected text",
-	                    "default" : globalSelectedText,
-	                    "readOnly" : true	
-					},
-	                "tag" : {
-	                    "type" : "string",
-	                    "title" : "Tag",
-	                    "default" : "metaphor",
-	                    "readOnly" : true
-	                },
-	                "mrws" : {
-	                    "type" : "array",
-	                    "title" : "Metaphor related words (direct, indirect, implicit and mflags)",
-	                    "items": {
-					        "type": "string",
-					        "title": "Option",
-					        "enum": mrwEnum
-					      }
-	                },
+            let dataModelProperties = {
+                "selectedText": {
+                    "type" : "string",
+                    "title" : "Selected text",
+                    "default" : globalSelectedText,
+                    "readOnly" : true	
+                },
+                "tag" : {
+                    "type" : "string",
+                    "title" : "Tag",
+                    "default" : "metaphor",
+                    "readOnly" : true
+                },
+                "label" : {
+                    "type" : "string",
+                    "title" : "Label",
+                    "default" : defaultLabel
+                },
+                "comment" : {
+                    "type" : "string",
+                    "title" : "Comment"
+                }
+            };
+
+            let uiFormItems = [					
+                {
+                    "key": "selectedText",
+                    "type": "textarea"
+                },
+                {                    
+                    "key" : "tag",
+                    "readOnly" : true                    
+                },
+                {
+                    "key": "label"
+                },
+                {
+                    "key": "comment",
+                    "type": "textarea"
+                }
+            ];
+
+            // if there are mrw-annotations present in the current selection
+            // modify the dataModel and uiForm in a way to show a checkbox
+            // for each mrw-annotation present
+            if (globalMrwAnnos.length > 0){
+                // if a user wants to create a metaphor annotation,
+                // get all the mrws that are present in his selection (globalMrwAnnos)
+                // and store them in the enum to hold all the mrwAnnoIds, so the user can
+                // choose a mrw to link it to a metaphor
+                
+                let enumAndTitleMap = getEnumAndTitleMap(globalMrwAnnos);
+                let mrwEnum = enumAndTitleMap[0];
+                // metaphorTitleMap is necessary to have the actual words displayed,
+                // but to have the annoId as a value on the submission of the form
+                let mrwTitleMap = enumAndTitleMap[1];
+                let selectMRWButton = getSelectMRWButton(mrwEnum);
+                
+                dataModelProperties = {
+                    "selectedText": {
+                        "type" : "string",
+                        "title" : "Selected text",
+                        "default" : globalSelectedText,
+                        "readOnly" : true	
+                    },
+                    "tag" : {
+                        "type" : "string",
+                        "title" : "Tag",
+                        "default" : "metaphor",
+                        "readOnly" : true
+                    },
+                    "mrws" : {
+                        "type" : "array",
+                        "title" : "Metaphor related words (direct, indirect, implicit and mflags)",
+                        "items": {
+                            "type": "string",
+                            "title": "Option",
+                            "enum": mrwEnum
+                          }
+                    },
                     "label" : {
-	                    "type" : "string",
-	                    "title" : "Label",
-	                    "default" : defaultLabel
-	                },
+                        "type" : "string",
+                        "title" : "Label",
+                        "default" : defaultLabel
+                    },
                     "comment" : {
-	                    "type" : "string",
-	                    "title" : "Comment"
-	                }
-	            }
-	        };
-			uiForm = {
-	        	"type" : "fieldset",
-	        	"items" : [
-					
-					{
+                        "type" : "string",
+                        "title" : "Comment"
+                    }
+                };
+                uiFormItems = [					
+                    {
                         "key": "selectedText",
                         "type": "textarea"
                     },
-					{
-						
-		                "key" : "tag",
-                        "readOnly" : true
-	                    
-	                },
+                    {                        
+                        "key" : "tag",
+                        "readOnly" : true                        
+                    },
                     {
-						"type" : "checkboxes",
-						"key" : "mrws",
-	                    "titleMap": mrwTitleMap
-	                    	
-	                }, 
+                        "type" : "checkboxes",
+                        "key" : "mrws",
+                        "titleMap": mrwTitleMap                            
+                    }, 
                     selectMRWButton,
                     {
                         "key": "label"
@@ -312,9 +351,18 @@ function getFormModel(chosenTemplate) {
                         "key": "comment",
                         "type": "textarea"
                     }
-                ]
+                ];
+            }
+
+	        dataModel = {
+	            "type" : "object",
+	            "properties" : dataModelProperties
 	        };
-	    	break; 
+			uiForm = {
+	        	"type" : "fieldset",
+	        	"items" : uiFormItems
+	        };
+	    	break;
         
         case "CONTEXT":
             dataModel = {
@@ -432,6 +480,52 @@ function getFormModel(chosenTemplate) {
     console.log("uiForm: ", uiForm);
     return [dataModel, uiForm];
     
+}
+
+// preselect all checkboxes for the mrw-annos present in the current selection
+// during metaphor annotation creation via the template
+function preselectAllMRWAnnos(){
+    // select all input fields, where the name starts with "mrws"
+    // the input fields storing the mrws present in a selection
+    // get their name from the ordering in the mrws-array: 
+    // name="mrws[0]" and name="mrws[1]" etc.
+    // to get the changing name I refered to
+    // https://stackoverflow.com/questions/16791527/how-to-use-a-regular-expression-in-queryselectorall
+    const inputs = document.querySelectorAll('input[name^=mrws');
+    // checking if any mrws are present in the selection and allowing the toggle
+    // only if there are. This prevents an error to be thrown, when no mrws are present
+    if (inputs.length > 0) {
+        toggleCheckedInputs(inputs);
+    }
+}
+
+// replace the button to create an annotation with
+// a message on how to enable it
+function disableAnnotationCreation(){
+    document.querySelector("#createAnnotationForm > div:nth-child(1) > input:nth-child(2)").remove();
+    let explanationDiv = document.createElement("div");
+    explanationDiv.innerText = "Please include a mrw-annotation in your selection after closing this window." 
+    document.querySelector("#createAnnotationForm").append(explanationDiv);
+}
+
+// wrapper function to hold all functions to be called after the
+// modal to create an annotation is being displayed
+// TODO: CUSTOMISE: add code/functions to be called
+function projectSpecifics(){
+
+    // if a user wants to create a metaphor-annotation, preselect the checkboxes
+    // for the linking of mrw-annotations
+    if (globalMrwAnnos.length > 0 &&
+        document.querySelector("#pickAnnotationTemplateForm > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > select:nth-child(1)").value === "METAPHOR"){
+        preselectAllMRWAnnos();
+    }
+    
+    // if a user wants to create a metaphor-annotation, but there is no
+    // mrw-annotation present in the selection, disable annotation creation
+    //if (globalMrwAnnos.length === 0 &&
+        //document.querySelector("#pickAnnotationTemplateForm > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > select:nth-child(1)").value === "METAPHOR"){
+        //disableAnnotationCreation();
+    //}
 }
 
 // jsonForm object to create simple dropdown to choose body template
@@ -629,6 +723,7 @@ const formObjectCreateAnnotation = {
                     }           
                 });             
             });
+            projectSpecifics();
         },
         "titleMap" : {}
         }

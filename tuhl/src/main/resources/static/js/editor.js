@@ -433,6 +433,7 @@ function selectAnnotation(event, annoId) {
 	            buttonToAnalysisTool.type = "submit";
 	            buttonToAnalysisTool.value = "Analyze";
 	            buttonToAnalysisTool.id = "buttonToAnalysisTool";
+                buttonToAnalysisTool.disabled = true;
 	
 	            var linkToAnalysisTool = document.createElement("a");
 	            linkToAnalysisTool.href= window.CONTEXTPATH + "analysis/" + annoId;
@@ -441,6 +442,13 @@ function selectAnnotation(event, annoId) {
 	            linkToAnalysisTool.append(buttonToAnalysisTool);
 	
 	            annotationDiv.append(linkToAnalysisTool);
+
+                // enable the link, if no mrw-annotation is linked
+                // to the metaphor annotation
+                if (responseJson.textCards.some(textCard => textCard.purpose === "linking")){
+                    console.log("link");
+                    document.getElementById("buttonToAnalysisTool").disabled = false;
+                }
 			}
 
             // adding the functionality to modify the selected text of an annotation
@@ -464,13 +472,7 @@ function selectAnnotation(event, annoId) {
                 buttonCancelModification.style.backgroundColor = "#c82525";
                 buttonCancelModification.disabled = true;
                 buttonCancelModification.classList.add("is-hidden");
-                
-                // TODO: improve the styling/spacing of the buttons
-                // remove this placeholder element
-                var placeholderElement = document.createElement("a");
-                placeholderElement.innerHTML = " ";
 
-                annotationDiv.append(placeholderElement);
                 annotationDiv.append(buttonModifySelection);
                 document.getElementById("buttonModifySelection").addEventListener("mousedown", modifySelection);
                 annotationDiv.append(buttonSaveModification);
