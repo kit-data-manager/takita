@@ -420,8 +420,9 @@ public class AnnotationConverter {
       jsonAnnotation.put(AnnotationStoreStrings.BODY.getName(), buildJsonFromBody(annotation));
     } else {
       jsonAnnotation.put(AnnotationStoreStrings.BODY.getName(), buildJsonFromBodies(annotation));
-
-      if (annotation.getColor() != null) {
+      // TODO: the following lines are commented out, because they create a new body when the shape of an annotation
+      //	is modified. This needs more investigation. What is the purpose/function of the following code?
+      /*if (annotation.getColor() != null) {
         JSONArray bodyArray = jsonAnnotation.getJSONArray(AnnotationStoreStrings.BODY.getName());
         boolean hasColor = false;
         for (int i = 0; i < bodyArray.length(); i++) {
@@ -439,7 +440,7 @@ public class AnnotationConverter {
           buildCreator(annotation, colorBody);
           jsonAnnotation.getJSONArray(AnnotationStoreStrings.BODY.getName()).put(colorBody);
         }
-      }
+      }*/
     }
   }
 
