@@ -277,6 +277,10 @@
             <img th:src="@{/images/Book.gif}"/>
         </div>
     </div>
+    <script th:inline="javascript">
+        // setting contextpath
+        window.CONTEXTPATH = /*[[@{/}]]*/ "/";
+    </script>
 
     <!-- Copied from main_page.html - may be exchanged in the future -->
     <div class="modal" id="pseudonymInputModal">

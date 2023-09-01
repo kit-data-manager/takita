@@ -36,18 +36,21 @@ function selectAnnotation(event, annoId) {
             // check if the annotation is compatible with the code, i.e. has
             // one xPath for each target and not one long xPath including all targets.
             // Make it compatible, if is are not
-            if (!checkIsTargetCompatible(globalSelectedAnnotation)){
-                makeTargetsCompatible(globalSelectedAnnotation);
+            if (document.getElementById("TEI") != null) {
+                if (!checkIsTargetCompatible(globalSelectedAnnotation)){
+                    makeTargetsCompatible(globalSelectedAnnotation);
+                }
+                // highlight words targetted by the currently selected annotation
+                // remove old highlights (TODO: include this in removeStyles(el) in editor_xml.js)
+                document.querySelectorAll(".selected").forEach(element => element.classList.remove("selected"));
+                // add a class to all the targets of the selected annotation
+                globalSelectedAnnotation.targets.forEach(target => {
+                    const targetId = target.selector.xPath.split("\"")[1];
+                    document.getElementById(targetId).classList.add("selected");
+                });
             }
 
-            // highlight words targetted by the currently selected annotation
-            // remove old highlights (TODO: include this in removeStyles(el) in editor_xml.js)
-            document.querySelectorAll(".selected").forEach(element => element.classList.remove("selected"));
-            // add a class to all the targets of the selected annotation
-            globalSelectedAnnotation.targets.forEach(target => {
-                const targetId = target.selector.xPath.split("\"")[1];
-                document.getElementById(targetId).classList.add("selected");
-            });
+
 
             if (responseJson.created.seconds) {
                 responseJson.created = new Date(responseJson.created.seconds * 1000 + responseJson.created.nanos / 1000000).toISOString();
