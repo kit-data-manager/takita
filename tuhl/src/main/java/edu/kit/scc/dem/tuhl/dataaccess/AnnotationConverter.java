@@ -162,6 +162,20 @@ public class AnnotationConverter {
           annotation.setColor(Color.stringToColor(bodies.getJSONObject(i).getString(
               AnnotationStoreStrings.DC_SUBJECT.getName())));
         }
+        // non CRC980 annotations use a different annotation model, which stores the
+        // color relevant information in the value of the tagging (toRoll) or classifying (CRC1475) body
+        // TODO: CUSTOMISE which body is used to retrieve the color
+        // TODO: improve the color storage
+        if (bodies.getJSONObject(i).has(AnnotationStoreStrings.PURPOSE.getName())) {
+        	if (bodies.getJSONObject(i).getString(AnnotationStoreStrings.PURPOSE.getName()).equals("tagging")) {
+        		if (bodies.getJSONObject(i).has(AnnotationStoreStrings.VALUE.getName())) {
+        			annotation.setColor(Color.stringToColor(bodies.getJSONObject(i).getString(
+        	                AnnotationStoreStrings.VALUE.getName())));
+        			//logger.info("Color of the annotation: " + Color.stringToColor(bodies.getJSONObject(i).getString(
+        	                AnnotationStoreStrings.VALUE.getName())).getName());
+            	}
+        	}
+        }
       }
       //if annotation has single body
     } else {
@@ -169,6 +183,19 @@ public class AnnotationConverter {
           .has(AnnotationStoreStrings.DC_SUBJECT.getName())) {
             annotation.setColor(Color.stringToColor(jsonAnnotation.getJSONObject(AnnotationStoreStrings.BODY.getName()).getString(
             AnnotationStoreStrings.DC_SUBJECT.getName())));
+      }
+      // non CRC980 annotations use a different annotation model, which stores the
+      // color relevant information in the value of the tagging (toRoll) or classifying (CRC1475) body
+      // TODO: CUSTOMISE which body is used to retrieve the color
+      // TODO: improve the color storage
+      JSONObject body = jsonAnnotation.getJSONObject(AnnotationStoreStrings.BODY.getName());
+      if (body.has(AnnotationStoreStrings.PURPOSE.getName())) {
+      	if (body.getString(AnnotationStoreStrings.PURPOSE.getName()).equals("tagging")) {
+      		if (body.has(AnnotationStoreStrings.VALUE.getName())) {
+      			annotation.setColor(Color.stringToColor(body.getString(
+      	                AnnotationStoreStrings.VALUE.getName())));
+          	}
+      	}
       }
     }
   }
@@ -465,7 +492,6 @@ public class AnnotationConverter {
     //put bodies
     if (!(annotation.getTextCards().isEmpty() && annotation.getTags().isEmpty())) {
         // annotation.getTextCards() != null && annotation.getTags() != null
-      
       putBodies(jsonAnnotation, annotation);
     }
   
@@ -496,7 +522,7 @@ public class AnnotationConverter {
     } else {
       jsonAnnotation.put(AnnotationStoreStrings.BODY.getName(), buildJsonFromBodies(annotation));
 
-      if (annotation.getColor() != null) {
+      /*if (annotation.getColor() != null) {
         JSONArray bodyArray = jsonAnnotation.getJSONArray(AnnotationStoreStrings.BODY.getName());
         boolean hasColor = false;
         for (int i = 0; i < bodyArray.length(); i++) {
@@ -514,9 +540,10 @@ public class AnnotationConverter {
           buildCreator(annotation, colorBody);
           jsonAnnotation.getJSONArray(AnnotationStoreStrings.BODY.getName()).put(colorBody);
         }
-      }
+      }*/
     }
   }
+
 
   
   /* function to check if a string is a valid XPATH
@@ -618,7 +645,7 @@ public class AnnotationConverter {
   private JSONArray buildJsonFromBodies(Annotation annotation)
       throws JSONException {
     JSONArray jsonBodies = new JSONArray();
-
+    //logger.error("Number of bodies: " + (annotation.getTags().size() + annotation.getTextCards().size()));
     if (!annotation.getTextCards().isEmpty()) {
       for (Body body : annotation.getTextCards()) {
         jsonBodies.put(bodyToJson(body));
@@ -629,6 +656,7 @@ public class AnnotationConverter {
         jsonBodies.put(bodyToJson(body));
       }
     }
+    //logger.error("JsonBodies: " + jsonBodies);
     return jsonBodies;
   }
 
@@ -801,7 +829,7 @@ public class AnnotationConverter {
           newCreators.put(person);
         }
       }
-      logger.info(Integer.toString(newCreators.length()));
+      //logger.info(Integer.toString(newCreators.length()));
       if (newCreators.length() == 1) {
           jsonBody.put(AnnotationStoreStrings.CREATOR.getName(), newCreators.get(0));
       } else {

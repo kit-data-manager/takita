@@ -7,7 +7,7 @@ const bodyTemplate = {
 };
 
 // enum for different annotation templates
-// CUSTOMISE available annotations (will be shown during the annotation process)
+// TODO: CUSTOMISE available annotations (will be shown during the annotation process)
 // for adding new: include name here and add dataModel in 
 // getFormModel(chosenTemplate)
 const annotationTemplate = {
@@ -109,7 +109,13 @@ function spreadMRWArray(jsonObject){
 }
 
 // assigns data model needed for MetadataEditor to specific template
-// CUSTOMISE available annotations and their structure/content (dataModel)
+// TODO: CUSTOMISE available annotations and their structure/content (dataModel)
+//      (when adjusting the "color.default.value", make sure to add those to the enum in
+//      "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java" and the code in
+//      "takita/tuhl/src/main/resources/static/js/editor_xml.js" at
+//          - drawAnnos(annoJson)
+//          - getColorNameFromEnumEntry(colorEnumEntry)/getColorHexFromEnumEntry(colorEnumEntry)
+//      and that the color hexcodes match)
 // and how they are displayed in the modal (uiForm)
 function getFormModel(chosenTemplate) {
     let dataModel;
@@ -131,6 +137,12 @@ function getFormModel(chosenTemplate) {
                         "title" : "Tag",
                         "default" : "mrw (direct)",
                         "readOnly" : true
+                    },
+                    "color" : {
+                        "type" : "string",
+                        "title" : "color",
+                        "default" : "#000011",
+                        "readOnly" : true
                     }
                 }
             };
@@ -141,6 +153,11 @@ function getFormModel(chosenTemplate) {
                     {
                         "key" : "tag",
                         "readOnly" : true
+                    },
+                    {
+                        "key" : "color",
+                        "readOnly" : true,
+                        "htmlClass" : "is-hidden"
                     }                
             ]};
             break;
@@ -160,6 +177,12 @@ function getFormModel(chosenTemplate) {
                         "title" : "Tag",
                         "default" : "mrw (indirect)",
                         "readOnly" : true
+                    },
+                    "color" : {
+                        "type" : "string",
+                        "title" : "color",
+                        "default" : "#000012",
+                        "readOnly" : true
                     }
                 }
             };
@@ -170,7 +193,12 @@ function getFormModel(chosenTemplate) {
                     {
                         "key" : "tag",
                         "readOnly" : true
-                    }                
+                    },
+                    {
+                        "key" : "color",
+                        "readOnly" : true,
+                        "htmlClass" : "is-hidden"
+                    }                     
             ]};
             break;  
 
@@ -189,6 +217,12 @@ function getFormModel(chosenTemplate) {
                         "title" : "Tag",
                         "default" : "mrw (implicit)",
                         "readOnly" : true
+                    },
+                    "color" : {
+                        "type" : "string",
+                        "title" : "color",
+                        "default" : "#000013",
+                        "readOnly" : true
                     }
                 }
             };
@@ -199,7 +233,12 @@ function getFormModel(chosenTemplate) {
                     {
                         "key" : "tag",
                         "readOnly" : true
-                    }                
+                    },
+                    {
+                        "key" : "color",
+                        "readOnly" : true,
+                        "htmlClass" : "is-hidden"
+                    }                     
             ]};
             break;
 
@@ -218,6 +257,12 @@ function getFormModel(chosenTemplate) {
                         "title" : "Tag",
                         "default" : "mflag",
                         "readOnly" : true
+                    },
+                    "color" : {
+                        "type" : "string",
+                        "title" : "color",
+                        "default" : "#000014",
+                        "readOnly" : true
                     }
                 }
             };
@@ -228,7 +273,12 @@ function getFormModel(chosenTemplate) {
                     {
                         "key" : "tag",
                         "readOnly" : true
-                    }
+                    },
+                    {
+                        "key" : "color",
+                        "readOnly" : true,
+                        "htmlClass" : "is-hidden"
+                    }     
                 
             ]};
             break;  
@@ -260,6 +310,12 @@ function getFormModel(chosenTemplate) {
                 "comment" : {
                     "type" : "string",
                     "title" : "Comment"
+                },
+                "color" : {
+                    "type" : "string",
+                    "title" : "color",
+                    "default" : "#000021",
+                    "readOnly" : true
                 }
             };
 
@@ -278,7 +334,12 @@ function getFormModel(chosenTemplate) {
                 {
                     "key": "comment",
                     "type": "textarea"
-                }
+                },
+                {
+                    "key" : "color",
+                    "readOnly" : true,
+                    "htmlClass" : "is-hidden"
+                }     
             ];
 
             // if there are mrw-annotations present in the current selection
@@ -327,9 +388,15 @@ function getFormModel(chosenTemplate) {
                     "comment" : {
                         "type" : "string",
                         "title" : "Comment"
+                    },
+                    "color" : {
+                        "type" : "string",
+                        "title" : "color",
+                        "default" : "#000021",
+                        "readOnly" : true
                     }
                 };
-                uiFormItems = [					
+                uiFormItems = [
                     {
                         "key": "selectedText",
                         "type": "textarea"
@@ -350,7 +417,12 @@ function getFormModel(chosenTemplate) {
                     {
                         "key": "comment",
                         "type": "textarea"
-                    }
+                    },
+                    {
+                        "key" : "color",
+                        "readOnly" : true,
+                        "htmlClass" : "is-hidden"
+                    }     
                 ];
             }
 
@@ -737,7 +809,7 @@ function storeBody(responseJson, jsonObject, index) {
     let endpoint;
     let bodyDataJson;
     
-    //console.log(Object.keys(jsonObject)[index]);
+    console.log("Key of the json object for body-creation: ", Object.keys(jsonObject)[index]);
     if (Object.keys(jsonObject)[index]) {
         if (Object.keys(jsonObject)[index] === 'color') {
             endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/bodies';
@@ -797,7 +869,7 @@ function storeBody(responseJson, jsonObject, index) {
                 endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/bodies';
 
                 console.log("Body to store: ", Object.keys(jsonObject)[index]);
-                // CUSTOMISE assignment of purpose to an annotation body
+                // TODO: CUSTOMISE assignment of purpose to an annotation body
                 if (Object.keys(jsonObject)[index] === "transcription") {
                     bodyDataJson = {"purpose" : "tadirah:transcription", "value" : jsonObject[Object.keys(jsonObject)[index]]};
                 } else if (Object.keys(jsonObject)[index] === "selectedText"){ // storing the selected text
@@ -813,7 +885,7 @@ function storeBody(responseJson, jsonObject, index) {
                     bodyDataJson = {"purpose" : "classifying", "value" : jsonObject[Object.keys(jsonObject)[index]]};
                 }
             };
-        
+            
             $ .ajax({
                 type : 'POST',
                 url : endpoint,

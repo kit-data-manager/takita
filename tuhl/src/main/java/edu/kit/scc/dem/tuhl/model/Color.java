@@ -4,6 +4,15 @@ package edu.kit.scc.dem.tuhl.model;
  * The Color enum represents the different Colors an annotation can have.
  */
 public enum Color {
+	// TODO: CUSTOMISE which colors are used in 
+	// "takita/tuhl/src/main/resources/static/js/creation_templates(_text).js",
+	// "takita/tuhl/src/main/resources/static/js/editor_xml.js"
+	// and adjust the stringToColor()/colorToString()-functions
+	
+	// the string-VALUE in "INDEX("#COLHEX", "VALUE")" might need to be equal
+	// to the string (case insensitive) of the tagging/classifying-body assigned by
+	// creation_templates(_text).js
+	// CRC980 colors
   TEXT_REGION("#00edff", "TextRegion"),
   IMAGE_REGION("#3d3a2e", "ImageRegion"),
   LINE_DRAWING_REGION("#b7b4a7", "LineDrawingRegion"),
@@ -19,6 +28,14 @@ public enum Color {
   UNKNOWN_REGION("#89f099", "UnknownRegion"),
   CUSTOM_REGION("#23035e", "CustomRegion"),
   PAGE_REGION("#e2b8f7", "PageRegion"),
+  // CRC1475 colors
+  MRW_DIRECT("#000011", "mrw (direct)"),
+  MRW_INDIRECT("#000012", "mrw (indirect)"),
+  MRW_IMPLICIT("#000013", "mrw (implicit)"),
+  MFLAG("#000014", "mflag"),
+  METAPHOR("#000021", "metaphor"),
+  // toRoll colors
+  // default
   DEFAULT("#ff8d00", "Default");
   
 
@@ -61,35 +78,43 @@ public enum Color {
    */
   public static Color stringToColor(String stringColor) {
     if (Color.TEXT_REGION.getName().equalsIgnoreCase(stringColor)) {
-      return Color.TEXT_REGION;
+    	return Color.TEXT_REGION;
     } else if (Color.IMAGE_REGION.getName().equalsIgnoreCase(stringColor)) {
-      return Color.IMAGE_REGION;
+    	return Color.IMAGE_REGION;
     } else if (Color.PAGE_REGION.getName().equalsIgnoreCase(stringColor)) {
-      return Color.PAGE_REGION;
+    	return Color.PAGE_REGION;
     } else if (Color.LINE_DRAWING_REGION.getName().equalsIgnoreCase(stringColor)) {
-      return Color.LINE_DRAWING_REGION;
+    	return Color.LINE_DRAWING_REGION;
     } else if (Color.GRAPHIC_REGION.getName().equalsIgnoreCase(stringColor)) {
-      return Color.GRAPHIC_REGION;
+    	return Color.GRAPHIC_REGION;
     } else if (Color.TABLE_REGION.getName().equalsIgnoreCase(stringColor)) {
-      return Color.TABLE_REGION;
+    	return Color.TABLE_REGION;
     } else if (Color.CHART_REGION.getName().equalsIgnoreCase(stringColor)) {
-      return Color.CHART_REGION;
+    	return Color.CHART_REGION;
     } else if (Color.SEPARATOR_REGION.getName().equalsIgnoreCase(stringColor)) {
-      return Color.SEPARATOR_REGION;
+    	return Color.SEPARATOR_REGION;
     } else if (Color.MATHS_REGION.getName().equalsIgnoreCase(stringColor)) {
-      return Color.MATHS_REGION;
+    	return Color.MATHS_REGION;
     } else if (Color.CHEM_REGION.getName().equalsIgnoreCase(stringColor)) {
-      return Color.CHEM_REGION;
+    	return Color.CHEM_REGION;
     } else if (Color.MUSIC_REGION.getName().equalsIgnoreCase(stringColor)) {
-      return Color.MUSIC_REGION;
+    	return Color.MUSIC_REGION;
     } else if (Color.ADVERT_REGION.getName().equalsIgnoreCase(stringColor)) {
-      return Color.ADVERT_REGION;
+    	return Color.ADVERT_REGION;
     } else if (Color.NOISE_REGION.getName().equalsIgnoreCase(stringColor)) {
-      return Color.NOISE_REGION;
+    	return Color.NOISE_REGION;
     } else if (Color.UNKNOWN_REGION.getName().equalsIgnoreCase(stringColor)) {
-      return Color.UNKNOWN_REGION;
-    } else if (Color.CUSTOM_REGION.getName().equalsIgnoreCase(stringColor)) {
-      return Color.CUSTOM_REGION;
+    	return Color.UNKNOWN_REGION;
+    } else if (Color.MRW_DIRECT.getName().equalsIgnoreCase(stringColor)) {
+        return Color.MRW_DIRECT;
+    } else if (Color.MRW_INDIRECT.getName().equalsIgnoreCase(stringColor)) {
+        return Color.MRW_INDIRECT;
+    } else if (Color.MRW_IMPLICIT.getName().equalsIgnoreCase(stringColor)) {
+        return Color.MRW_IMPLICIT;
+    } else if (Color.MFLAG.getName().equalsIgnoreCase(stringColor)) {
+        return Color.MFLAG;
+    } else if (Color.METAPHOR.getName().equalsIgnoreCase(stringColor)) {
+        return Color.METAPHOR;
     } else {
       return Color.DEFAULT;
     }
@@ -127,6 +152,16 @@ public enum Color {
         return Color.UNKNOWN_REGION.getName();
       case CUSTOM_REGION:
         return Color.CUSTOM_REGION.getName();
+      case MRW_DIRECT:
+          return Color.MRW_DIRECT.getName();
+      case MRW_INDIRECT:
+          return Color.MRW_INDIRECT.getName();
+      case MRW_IMPLICIT:
+          return Color.MRW_IMPLICIT.getName();
+      case MFLAG:
+          return Color.MFLAG.getName();
+      case METAPHOR:
+          return Color.METAPHOR.getName();
       default:
         return Color.DEFAULT.getName();
     }

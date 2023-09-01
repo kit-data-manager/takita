@@ -624,115 +624,63 @@ function drawAnnos(annoJson) {
 			targetXmlId = target.split("\"")[1];
             const targetElement = document.getElementById(targetXmlId);
 
-            // if tags are available assign css class
-            if (annotation.tags.length > 0) {
-                annotation.tags.forEach( tag => {
-                    // different highlights for different annotation types
-                    switch (tag.value){
-                        // CUSTOMIZE highlighting of different annotations, based on the value of the tags
-                        // (linked to classes to be removed in removeStyles() funtcion)
-                        case "metaphor":
-                            // if a word is not highlighted add the "metaphor" class, if it is
-                            // already highlighted add "metaphorSecond"
-                            if (!alreadyAnnotated){
-                                targetElement.classList.add("metaphor");
-                            } else {
-                                targetElement.classList.add("metaphorSecond");
+            // if color is available assign css class
+            if (annotation.color) {
+                // different highlights for different annotation types
+                switch (annotation.color){
+                    // TODO: CUSTOMISE highlighting of different annotations, based on the color
+                    // see "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java"
+                    // and "takita/tuhl/src/main/resources/static/js/creation_templates_text.js"
+                    // (linked to classes to be removed in removeStyles() funtcion)
+                    case "#000021":
+                        // if a word is not highlighted add the "metaphor" class, if it is
+                        // already highlighted add "metaphorSecond"
+                        if (!alreadyAnnotated){
+                            targetElement.classList.add("metaphor");
+                        } else {
+                            targetElement.classList.add("metaphorSecond");
+                        }
+                        
+                        // if a word is followed by whitespace add the "whitespaceAfter" class.
+                        // This is needed to create overlapping boxshadows
+                        // check if enxtSibling is null first
+                        if (targetElement.nextSibling !== null) {
+                            if (targetElement.nextSibling.textContent.trim() === ""){
+                                targetElement.classList.add("whitespaceAfter");
                             }
-                            
-                            // if a word is followed by whitespace add the "whitespaceAfter" class.
-                            // This is needed to create overlapping boxshadows
-                            // check if enxtSibling is null first
-                            if (targetElement.nextSibling !== null) {
-                                if (targetElement.nextSibling.textContent.trim() === ""){
-                                    targetElement.classList.add("whitespaceAfter");
-                                }
-                            }
-                            break;
-                        case "mrw (direct)":
-                            targetElement.classList.add("mrw");
-                            break;
-                        case "mrw (indirect)":
-                            targetElement.classList.add("mrw");
-                            break;
-                        case "mrw (implicit)":
-                            targetElement.classList.add("mrw");
-                            break;
-                        case "mflag":
-                            targetElement.classList.add("mflag");
-                            break;
-                        default:
-                            // this is not ideal, but without the if clause, most of words
-                            // will get the defaulthighlighting class
-                            if (tag.value === "metaphor" ||
-                                tag.value === "mrw (direct)" ||
-                                tag.value === "mrw (indirect)" ||
-                                tag.value === "mrw (implicit)" ||
-                                tag.value === "mflag"){
-                                    // nothing will happen
-                                } else {
-                                    targetElement.classList.add("defaulthighlight");
-                                    //console.log("Tag value not matching the possible cases, 'defaulthighlight' class added for:", annotation);
-                                }
-                    }
-                });
+                        }
+                        break;
+                    case "#000011":
+                        targetElement.classList.add("mrw");
+                        break;
+                    case "#000012":
+                        targetElement.classList.add("mrw");
+                        break;
+                    case "#000013":
+                        targetElement.classList.add("mrw");
+                        break;
+                    case "#000014":
+                        targetElement.classList.add("mflag");
+                        break;
+                    default:
+                        // this is not ideal, but without the if clause, most of words
+                        // will get the defaulthighlighting class
+                        if (annotation.color === "#000021" ||
+                            annotation.color === "#000011" ||
+                            annotation.color === "#000012" ||
+                            annotation.color === "#000013" ||
+                            annotation.color === "#000014"){
+                                // nothing will happen
+                        } else {
+                            targetElement.classList.add("defaulthighlight");
+                            //console.log("Tag value not matching the possible cases, 'defaulthighlight' class added for:", annotation);
+                        }
+                }
             } else { // if no tags are given (might be due to the tagging body being delted), assign default
                 targetElement.classList.add("defaulthighlight");
             }
-			
 		});
-
-		// border-bottom: 6px solid #2196F3 !important;
-		
 	});
-  /*for (let anno in annoJson) {
-     extractInformationFromSvg(annoJson[anno].svg, annoJson[anno]);
-  };
-
-    // sort all annotations resp. the corresponding shape area (descending)
-    // annotations without shape are at the end of the array
-    let sortedAnnoJson = annoJson.sort(function(a,b) {
-        // if either anno has no width or height, then consider it as smaller
-        if (!(a.height && a.width)) {
-            return (b.height*b.width);
-        };
-        if (!(b.height && b.width)) {
-            return -(a.height*a.width);
-        };
-        return (b.height*b.width)-(a.height*a.width);
-    });
-
-    // create Raphael objects according to the shape to draw them on the canvas
-    for (let anno in sortedAnnoJson) {
-      if (sortedAnnoJson[anno]["visible"]) {
-        if (sortedAnnoJson[anno].type === "Rectangle") {
-            // if shape color has not been set, set it to default
-            // otherwise it won't be visible on the Raphael paper
-            if (!sortedAnnoJson[anno].color) {
-                sortedAnnoJson[anno].color = '#ff8d00';
-            };
-            drawRectangle(sortedAnnoJson[anno].x, sortedAnnoJson[anno].y, sortedAnnoJson[anno].width, sortedAnnoJson[anno].height, sortedAnnoJson[anno].color, sortedAnnoJson[anno].id, sortedAnnoJson[anno].idEncoded);
-        } else if (sortedAnnoJson[anno].type === "Polygon") {
-            // if shape color has not been set, set it to default
-            // otherwise it won't be visible on the Raphael paper
-            if (!sortedAnnoJson[anno].color) {
-                sortedAnnoJson[anno].color = '#ff8d00';
-            };
-            polygonPath = drawPolygon(annoJson[anno].path, sortedAnnoJson[anno].color, sortedAnnoJson[anno].id, sortedAnnoJson[anno].idEncoded);
-            for (let point in annoJson[anno].points) {
-                coordinatePair = annoJson[anno].points[point].split(',');
-                x = parseInt(coordinatePair[0]);
-                y = parseInt(coordinatePair[1]);
-                polygonPoint = paper.circle(x, y, 20)
-                                    .attr("fill", "white")
-                                    .drag(dragCircleMove, dragCircleStart, dragCircleEnd)
-                                    .hide();
-                polygonPoint.path = polygonPath;
-                polygonPath.points.push(polygonPoint);
-            };
-        };
-      };
-  };*/
 
   fillMetaDataEditorTable(annoJson);
 }
@@ -1643,6 +1591,50 @@ function saveModification(){
 	}
 }
 
+function getColorHexFromEnumEntry(colorEnumEntry){
+    let colorHex = "#89f099"
+    switch (colorEnumEntry) {
+        case "MRW_DIRECT":
+            colorHex = "#000011";
+            break;
+        case "MRW_INDIRECT":
+            colorHex = "#000012";
+            break;
+        case "MRW_IMPLICIT":
+            colorHex = "#000013";
+            break;
+        case "MFLAG":
+            colorHex = "#000014";
+            break;
+        case "METAPHOR":
+            colorHex = "#000021";
+            break;
+    }
+    return colorHex;
+}
+
+function getColorNameFromEnumEntry(colorEnumEntry){
+    let colorName = "Default"
+    switch (colorEnumEntry) {
+        case "MRW_DIRECT":
+            colorName = "mrw (direct)";
+            break;
+        case "MRW_INDIRECT":
+            colorName = "mrw (indirect)";
+            break;
+        case "MRW_IMPLICIT":
+            colorName = "mrw (implicit)";
+            break;
+        case "MFLAG":
+            colorName = "mflag";
+            break;
+        case "METAPHOR":
+            colorName = "metaphor";   
+            break;
+    }
+    return colorName;
+}
+
 function updateTarget(){
 	
 	const modal = document.getElementById("updateSelection");
@@ -1651,7 +1643,8 @@ function updateTarget(){
 	let targetXPath = modal.dataset.newTargetXmlId;
 	
 	// update the target of an annotation (and the "purpose:describing" body, if it exists) by sending a put request
-	let annotationDataJson = {"color" : "#89f099", "motivation" : "describing", "svgCode" : targetXPath};
+    let colorName = getColorNameFromEnumEntry(globalSelectedAnnotation.color);
+	let annotationDataJson = {"color" : colorName, "motivation" : "describing", "svgCode" : targetXPath};
 	$ .ajax({
             type : 'PUT',
             url : window.CONTEXTPATH + 'editor_rest/annotations/' + idOfAnnotationToUpdate,
