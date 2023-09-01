@@ -521,7 +521,8 @@ public class AnnotationConverter {
       jsonAnnotation.put(AnnotationStoreStrings.BODY.getName(), buildJsonFromBody(annotation));
     } else {
       jsonAnnotation.put(AnnotationStoreStrings.BODY.getName(), buildJsonFromBodies(annotation));
-
+      // TODO: the following lines are commented out, because they create a new body when the shape of an annotation
+      //	is modified. This needs more investigation. What is the purpose/function of the following code?
       /*if (annotation.getColor() != null) {
         JSONArray bodyArray = jsonAnnotation.getJSONArray(AnnotationStoreStrings.BODY.getName());
         boolean hasColor = false;
