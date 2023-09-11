@@ -171,8 +171,7 @@ public class AnnotationConverter {
         		if (bodies.getJSONObject(i).has(AnnotationStoreStrings.VALUE.getName())) {
         			annotation.setColor(Color.stringToColor(bodies.getJSONObject(i).getString(
         	                AnnotationStoreStrings.VALUE.getName())));
-        			//logger.info("Color of the annotation: " + Color.stringToColor(bodies.getJSONObject(i).getString(
-        	                AnnotationStoreStrings.VALUE.getName())).getName());
+        			//logger.info("Color of the annotation: " + Color.stringToColor(bodies.getJSONObject(i).getString(AnnotationStoreStrings.VALUE.getName())).getName());
             	}
         	}
         }
