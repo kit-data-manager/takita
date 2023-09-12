@@ -8,11 +8,9 @@ import edu.kit.scc.dem.tuhl.model.page.ImagePage;
 import edu.kit.scc.dem.tuhl.model.page.Page;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -108,43 +106,70 @@ public class AccessService implements IAccessService {
       throws InterruptedException, JSONException, IOException, ParseException,
       NoSuchIndexEntryException {
     logger.info("Getting all manuscripts modified after {}.", timestamp);
-    List<Manuscript> manuscripts = new ArrayList<>();
+    Set<Manuscript> manuscripts = new HashSet<>();
     List<Annotation> newAnnotations = new ArrayList<>();
+
+    //get modified annotations
     for (JSONObject jsonAnnotation :
         annotationStoreAccessService.getAnnotationsModifiedAfter(timestamp)) {
       newAnnotations.add(annotationConverter.buildAnnotationFromJson(jsonAnnotation));
     }
 
-    //checks if old manuscript has new annotations and adds those
-    for (Annotation annotation : newAnnotations) {
-      Page page = searchIndexService.getPageById(annotation.getPageId());
-      Manuscript manuscript = searchIndexService.getManuscriptById(page.getManuscriptId());
-
-      page = manuscript.getPageMap().get(page.getId()); //get real page object from manuscript you want to change
-
-      if (!page.getAnnotations().contains(annotation)) {
-        logger.debug("Number of annotations on page before {}", page.getAnnotations().size());
-        logger.info("Adding new annotation to page object {}", page.getId());
-        String changedPageID = page.getId();
-        page.addAnnotation(annotation);
-        logger.debug("Number of annotations on page after {}", page.getAnnotations().size());
-      }
-      manuscripts.add(manuscript);
-      
+    //get modified manuscripts
+    List<JSONObject> modifiedManuscriptJSONs = repositoryAccessService.getManuscriptsModifiedAfter(timestamp);
+    logger.info("Found {} modified manuscripts", modifiedManuscriptJSONs.size());
+    for (JSONObject manuscriptJson : modifiedManuscriptJSONs) {
+      Manuscript newManuscript = manuscriptConverter.buildManuscriptFromJson(manuscriptJson, null);
+      //manuscriptMap.put(newManuscript.getId(), newManuscript);
+      manuscripts.add(newManuscript);
     }
 
-    //adds new manuscripts
-    for (JSONObject manuscriptJson : repositoryAccessService
-        .getManuscriptsModifiedAfter(timestamp)) {
+    //checks if old manuscript has new annotations and adds those
+    Map<String, Page> pageMap = new HashMap<>();
+    for (Annotation annotation : newAnnotations) {
+      Page page;
+      Manuscript manuscript = null; //careful what you do here, manuscript has to be properly initialized in all cases
+      if(pageMap.containsKey(annotation.getPageId())) {
+        //Use already updated page
+        page = pageMap.get(annotation.getPageId());
+      } else {
+        try {
+          //get page from index and store it for further updates
+          page = searchIndexService.getPageById(annotation.getPageId());
+          manuscript = searchIndexService.getManuscriptById(page.getManuscriptId());
+        } catch (NoSuchIndexEntryException e) {
+          //annotation is on a page from a newly ingested manuscript
+          logger.error("Page cannot be found in the current index. Is the manuscript indexed already?");
+          //find the correct manuscript from the new manuscripts
+          for(Manuscript mToCheck: manuscripts) {
+            if(mToCheck.getPageMap().containsKey(annotation.getPageId())) {
+              manuscript = mToCheck;
+              break;
+            }
+          }
+        } finally {
+          if(manuscript == null) {
+            logger.error("Found a modified annotation on page {} but there is no corresponding manuscript for this page. SKIPPING ANNOTATION FOR INDEXING", annotation.getPageId());
+            continue;
+          }
+          page = manuscript.getPageMap().get(annotation.getPageId()); //get real page object from manuscript you want to change
+          pageMap.put(annotation.getPageId(), page);
+          manuscripts.add(manuscript);
+        }
 
-      Manuscript newManuscript = manuscriptConverter.buildManuscriptFromJson(manuscriptJson, null);
-      if (!manuscripts.contains(newManuscript)) {
-        manuscripts.add(newManuscript);
+        logger.info("Number of annotations on page before {}", page.getAnnotations().size());
+      }
+
+      if (!page.getAnnotations().contains(annotation)) {
+        logger.info("Adding new annotation {} to page object {}", annotation.getId(), page.getId());
+        String changedPageID = page.getId();
+        page.addAnnotation(annotation);
+        logger.info("Number of annotations on page after {}", page.getAnnotations().size());
       }
     }
 
     if(!manuscripts.isEmpty()) {logger.info("Found {} new or newly annotated manuscripts", manuscripts.size());}
-    return manuscripts;
+    return new ArrayList<>(manuscripts);
   }
 
   /**
