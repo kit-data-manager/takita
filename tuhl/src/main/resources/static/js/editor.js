@@ -1,15 +1,21 @@
 // gets the describing body of an annotation (mrw-annotation)
 async function getMRWAnnoSelectedText(annoId){
+    console.log("Trying to get annotation ", annoId, " which is linked to ", globalSelectedAnnotation);
     const response = await fetch(window.CONTEXTPATH + 'editor_rest/annotations/' + encodeAnnoId(annoId), {
         method: 'GET',
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
         }
     });
-    const mrwAnno = await response.json();
-    const describingBody = mrwAnno.textCards.filter(textCard => textCard.purpose === "describing")[0];
-    return describingBody.value;
+    if (response.ok){
+        const mrwAnno = await response.json();
+        const describingBody = mrwAnno.textCards.filter(textCard => textCard.purpose === "describing")[0];
+        return describingBody.value;
+    } else {
+        // if the mrw-annotation linked to the metaphor-annotation got deleted the code will end up here
+        return "Something is wrong with the linked mrw-annotation; most likely it got deleted, please contact the developers.";
+    }
 };
 
 // called when you select an annotation to display the textCard.
@@ -205,6 +211,7 @@ function selectAnnotation(event, annoId) {
                 
                 iconRow.append(expand);
                 iconRow.append(deleteBody);
+                bodyDiv.prepend(iconRow);
                 document.getElementById('annotationCard').append(bodyCard);
                 
                 var formBodyDataModel = {
@@ -422,7 +429,6 @@ function selectAnnotation(event, annoId) {
 
                 //document.getElementById(expand.id).parentNode.previousElementSibling.classList.add("is-hidden");
                 //document.getElementById(bodyDiv.id).childNodes[0].classList.add("is-hidden");
-                bodyDiv.prepend(iconRow);
                 //bodyDiv.childNodes[2].classList.add("is-hidden");
                 formRowDiv.classList.add("is-hidden");
                 
