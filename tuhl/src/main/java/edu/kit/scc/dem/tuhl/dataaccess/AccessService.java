@@ -133,6 +133,7 @@ public class AccessService implements IAccessService {
         //Use already updated page
         page = pageMap.get(annotation.getPageId());
       } else {
+        //TODO: change to a more java and less pythonian way of coding if you like :)
         try {
           //get page from index and store it for further updates
           page = searchIndexService.getPageById(annotation.getPageId());
@@ -156,16 +157,19 @@ public class AccessService implements IAccessService {
           pageMap.put(annotation.getPageId(), page);
           manuscripts.add(manuscript);
         }
-
-        logger.info("Number of annotations on page before {}", page.getAnnotations().size());
+        int oldAnnoCount = page.getAnnotations().size();
+        logger.debug("Number of annotations on page before {}", oldAnnoCount);
       }
-
-      if (!page.getAnnotations().contains(annotation)) {
-        logger.info("Adding new annotation {} to page object {}", annotation.getId(), page.getId());
-        String changedPageID = page.getId();
-        page.addAnnotation(annotation);
-        logger.info("Number of annotations on page after {}", page.getAnnotations().size());
+      
+      Optional<Annotation> existingAnno = page.getAnnotations().stream().filter(anno -> anno.getId().equals(annotation.getId())).findFirst();
+      if (existingAnno.isPresent()) {
+        logger.info("Annotation {} already exists. Replacing with new version", annotation.getId());
+        page.getAnnotations().remove(existingAnno.get());
       }
+      logger.info("Adding new annotation {} to page object {}", annotation.getId(), page.getId());
+      page.addAnnotation(annotation);
+      int newAnnoCount = page.getAnnotations().size();
+      logger.debug("Number of annotations on page after {}", newAnnoCount);
     }
 
     if(!manuscripts.isEmpty()) {logger.info("Found {} new or newly annotated manuscripts", manuscripts.size());}
