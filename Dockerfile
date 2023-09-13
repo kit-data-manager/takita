@@ -1,4 +1,4 @@
-FROM openjdk:11-stretch
+FROM openjdk:17-bullseye
 
 EXPOSE 8080
 RUN apt-get update && apt-get upgrade --assume-yes
