@@ -281,7 +281,7 @@
     <!-- Copied from main_page.html - may be exchanged in the future -->
     <div class="modal" id="pseudonymInputModal">
             <div class="modal-content">
-                <form onsubmit="setPseudonym('pseudonymInitInput')">
+                <form>
                     <div class="modal-body form-group">
                         <label for="pseudonymInitInput" th:text="#{prompt.pseudonym}"> </label>
                         <input type="text"
@@ -340,31 +340,43 @@
                 button.classList.remove('bx-check');
                 button.classList.add('bx-edit');
                 input.disabled = true;
-                setPseudonym('pseudonymInput');
+                // the "event" argument is the default event triggered by the click on "#editButton"
+                setPseudonym(event, "pseudonymInput");
             }
             /*]]>*/
         }
 
-        function setPseudonym(pseudonymForm) {
+        function setPseudonym(event, pseudonymForm) {
+            // prevent the default reload of the page on submit-events
+            event.preventDefault();
             let input = $('#' + pseudonymForm).val();
-            console.log(input);
             // $('#pseudonymInput').val();
             $.ajax({
                 type: 'GET',
                 url: '../assistance/' + input,
                 dataType: 'text',
                 success: function (responseData) {
+                    console.log("Response from succesfull pseudonym update: ", responseData);
                     //location.href = '?lang=' + responseData;
+                    // reload the page with the new pseudonym
+                    location.reload();
+                },
+                error: function (responseData) {
+                    console.error(responseData);
                 }
             });
         }
 
+        // adding eventhandler for pseudonym change to the pseudonym input modal
+        document.querySelector("#pseudonymInputModal > div:nth-child(1) > form:nth-child(1)")
+            .addEventListener("submit", (event) => setPseudonym(event, "pseudonymInitInput"));
+
         // adapted from main_page.html - may be exchanged in the future
         $(document).ready(function () {
-            if ([[${user.getName()}]] === 'default') {
+            let userName = /*[[${user.getName()}]]*/ "default";
+            if (userName === 'default') {
               document.getElementById("pseudonymInputModal").classList.toggle("show-modal");
             }
-
         });
     </script>
 
