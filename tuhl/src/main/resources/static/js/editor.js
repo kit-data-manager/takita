@@ -14,7 +14,7 @@ async function getMRWAnnoSelectedText(annoId){
         return describingBody.value;
     } else {
         // if the mrw-annotation linked to the metaphor-annotation got deleted the code will end up here
-        return "Something is wrong with the linked mrw-annotation; most likely it got deleted, please contact the developers.";
+        return "ERROR: Something is wrong with the linked mrw-annotation; most likely it got deleted, please contact the developers.";
     }
 };
 
