@@ -620,7 +620,7 @@ function drawAnnos(annoJson) {
         });
 
         // adding classes to highlight annotations
-		annotation.svg.forEach( target => {
+		annotation.svg.forEach((target, index) => {
 			targetXmlId = target.split("\"")[1];
             const targetElement = document.getElementById(targetXmlId);
 
@@ -641,13 +641,19 @@ function drawAnnos(annoJson) {
                             targetElement.classList.add("metaphorSecond");
                         }
                         
-                        // if a word is followed by whitespace add the "whitespaceAfter" class.
-                        // This is needed to create overlapping boxshadows
-                        // check if enxtSibling is null first
+                        // if a word is followed only by whitespace add the "whitespaceAfter" class
+                        // unless its the last word of the target.
+                        // TODO: this doesn't work for overlapping annotations. The "whitespaceAfter" class will
+                        // be assigned even if the word is the last target for one annotation as the word is part of multiple
+                        // annotations and it might be the last target of one annotation but not the other one
+                        // This is needed to create overlapping boxshadows.
+                        // check if nextSibling is null first
                         if (targetElement.nextSibling !== null) {
-                            if (targetElement.nextSibling.textContent.trim() === ""){
+                            if (targetElement.nextSibling.textContent.trim() === "" && !(index === (annotation.svg.length - 1))){
                                 targetElement.classList.add("whitespaceAfter");
                             }
+                        } else {
+                            targetElement.classList.add("whitespaceAfter");
                         }
                         break;
                     case "#000011":
