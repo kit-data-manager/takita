@@ -398,7 +398,7 @@ tei-q[type="Poetry"]{
 /* display the linenumbers for lines of the root text */
 tei-lg[type="root"] > tei-l::before {
 	color: grey;
-	content: attr(n)" ";
+	content: attr(n)". ";
 }
 
 /* B04 specifics */
@@ -432,9 +432,9 @@ tei-reg {
 
 /* TODO: make the following rule only apply for B05s Gilgamesh text */
 /* display the linenumbers in front of the linebeginnings */
-tei-lb::before{
+tei-lb[n]::before{
 	color: grey;
-    content: "\00000a"attr(n);
+    content: "\00000a"attr(n)". ";
     white-space: pre-wrap;
 }
 
@@ -445,6 +445,22 @@ tei-lb::before{
 tei-ab[type=qna]::after{
 	content: "\00000a";
 	white-space: pre-wrap;
+}
+
+/* C03 specifics */
+/* ------------------------------------*/
+
+/* TODO: move this to a CETEICEAN-behavior to make it use the
+	html sup-element
+	positioning the folio statement as superscript and disable
+	the selection of it*/
+tei-fw[type="folio"]{
+	vertical-align: super;
+	font-size: 70%;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 /* end of subproject specifics */
