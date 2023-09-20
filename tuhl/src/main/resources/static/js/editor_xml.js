@@ -590,7 +590,7 @@ function checkIsTargetCompatible(annotation){
 // https://stackoverflow.com/questions/9252839/simplest-way-to-remove-all-the-styles-in-a-page
 function removeStyles(el) {
 
-    // CUSTOMISE classes to remove (linked to classes assigned in
+    // TODO: CUSTOMISE classes to remove (linked to classes assigned in
     // drawAnnos() function)
     // specify the classe to remove here
     let possibleClasses = ["mrw", "mflag", "metaphor", "metaphorSecond", "defaulthighlight"];
@@ -1597,6 +1597,9 @@ function saveModification(){
 	}
 }
 
+// TODO: CUSTOMISE the colors based
+// see "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java"
+// and "takita/tuhl/src/main/resources/static/js/creation_templates_text.js"
 function getColorHexFromEnumEntry(colorEnumEntry){
     let colorHex = "#89f099"
     switch (colorEnumEntry) {
@@ -1619,6 +1622,9 @@ function getColorHexFromEnumEntry(colorEnumEntry){
     return colorHex;
 }
 
+// TODO: CUSTOMISE the colors based
+// see "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java"
+// and "takita/tuhl/src/main/resources/static/js/creation_templates_text.js"
 function getColorNameFromEnumEntry(colorEnumEntry){
     let colorName = "Default"
     switch (colorEnumEntry) {
@@ -1762,7 +1768,7 @@ function init(annotations) {
         
         let annotationOnTarget = [];
         let annoIdEncoded;
-        // CUSTOMIZE textCard toggle (display of the annotation on the right side of the screen)
+        // TODO: CUSTOMIZE textCard toggle (display of the annotation on the right side of the screen)
         if (e.target.classList.contains("mrw") ||
             e.target.classList.contains("mflag") ||
             e.target.classList.contains("metaphor") ||
