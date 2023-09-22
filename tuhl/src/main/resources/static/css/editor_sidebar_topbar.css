@@ -121,6 +121,13 @@
   opacity: 1;
 }
 
+/* the following css rules for .tooltip
+  produce a tooltip, which isn't working
+  in a scrollable sidebar as the scrollable
+  sidebar hides overflowing elements and the
+  .tooltip-element overflow. The enableTooltips()
+  creates working tooltips and are styled below 
+  at ".hoverTooltip". */
 .tooltip {
   position: absolute;
   top: -2.1rem;
@@ -146,11 +153,24 @@
 }
 
 .anno-side-bar.annocollapse {
-  width: 5rem;
+  width: 5.5rem;
 }
 
 .anno-side-bar.annocollapse .tooltip {
   display: block;
+}
+
+/* styling for the tooltips
+   created by enableTooltips() */
+.hoverTooltip {
+  background: rgba(0,0,0,.8);
+  color: #fff;
+  display: none;
+  position: fixed;
+  left: 4em;
+  border-radius: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  font-size: 1.4rem;
 }
 
 .anno-side-bar.annocollapse .logo-name,

@@ -321,7 +321,12 @@
                 imgCol.setAttribute('class', 'col');
                 let img = document.createElement('img');
                 img.setAttribute('class', 'img-thumbnail');
-                img.setAttribute('src', item.thumbNail);
+                // adds text_thumb.jpg if no thumb is provided/found
+                if (item.thumbNail === undefined){
+                    img.src = "/images/text_thumb.jpg";
+                } else {
+                    img.setAttribute('src', item.thumbNail);
+                }
                 imgCol.appendChild(img);
                 imgRow.appendChild(imgCol);
                 let subtitleRow = document.createElement('div');

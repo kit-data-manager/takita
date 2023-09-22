@@ -7,7 +7,7 @@ const bodyTemplate = {
 };
 
 // enum for different annotation templates
-// CUSTOMISE available annotations (will be shown during the annotation process)
+// TODO: CUSTOMISE available annotations (will be shown during the annotation process)
 // for adding new: include name here and add dataModel in 
 // getFormModel(chosenTemplate)
 const annotationTemplate = {
@@ -38,26 +38,36 @@ function toggleCheckedInputs(inputs){
     })
 }
 
-// this button is used by 
+// returns a button to select/unselect all mrws; is used by 
 // - the METAPHOR annotation template
 // - the MRW body template
-const selectMRWButton = {
-    "type": "button",
-    "title": "Select/unselect all mrws",
-    "onClick": function (e){
-        // select all input fields, where the name starts with "mrws"
-        // the input fields storing the mrws present in a selection
-        // get their name from the ordering in the mrws-array: 
-        // name="mrws[0]" and name="mrws[1]" etc.
-        // to get the changing name I refered to
-        // https://stackoverflow.com/questions/16791527/how-to-use-a-regular-expression-in-queryselectorall
-        const inputs = document.querySelectorAll('input[name^=mrws');
-        // checking if any mrws are present in the selection and allowing the toggle
-        // only if there are. This prevents an error to be thrown, when no mrws are present
-        if (inputs.length > 0) {
-            toggleCheckedInputs(inputs);
+function getSelectMRWButton(mrwEnum){
+    const selectMRWButton = {
+        "type": "button",
+        "title": "Select/unselect all mrws",
+        "onClick": function (e){
+            // select all input fields, where the name starts with "mrws"
+            // the input fields storing the mrws present in a selection
+            // get their name from the ordering in the mrws-array: 
+            // name="mrws[0]" and name="mrws[1]" etc.
+            // to get the changing name I refered to
+            // https://stackoverflow.com/questions/16791527/how-to-use-a-regular-expression-in-queryselectorall
+            const inputs = document.querySelectorAll('input[name^=mrws');
+            // checking if any mrws are present in the selection and allowing the toggle
+            // only if there are. This prevents an error to be thrown, when no mrws are present
+            if (inputs.length > 0) {
+                toggleCheckedInputs(inputs);
+            }
         }
     }
+    // if less than two mrws are present in the selection, the
+    // "is-hidden"-class (defined in chota.css) is added to the button and
+    // the button won't be displayed
+    if(mrwEnum.length < 2){
+        selectMRWButton["htmlClass"] = "is-hidden";
+    }
+
+    return selectMRWButton;
 }
 
 // takes a list of mrwAnnos and returns 
@@ -99,7 +109,13 @@ function spreadMRWArray(jsonObject){
 }
 
 // assigns data model needed for MetadataEditor to specific template
-// CUSTOMISE available annotations and their structure/content (dataModel)
+// TODO: CUSTOMISE available annotations and their structure/content (dataModel)
+//      (when adjusting the "color.default.value", make sure to add those to the enum in
+//      "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java" and the code in
+//      "takita/tuhl/src/main/resources/static/js/editor_xml.js" at
+//          - drawAnnos(annoJson)
+//          - getColorNameFromEnumEntry(colorEnumEntry)/getColorHexFromEnumEntry(colorEnumEntry)
+//      and that the color hexcodes match)
 // and how they are displayed in the modal (uiForm)
 function getFormModel(chosenTemplate) {
     let dataModel;
@@ -121,6 +137,12 @@ function getFormModel(chosenTemplate) {
                         "title" : "Tag",
                         "default" : "mrw (direct)",
                         "readOnly" : true
+                    },
+                    "color" : {
+                        "type" : "string",
+                        "title" : "color",
+                        "default" : "#000011",
+                        "readOnly" : true
                     }
                 }
             };
@@ -131,6 +153,11 @@ function getFormModel(chosenTemplate) {
                     {
                         "key" : "tag",
                         "readOnly" : true
+                    },
+                    {
+                        "key" : "color",
+                        "readOnly" : true,
+                        "htmlClass" : "is-hidden"
                     }                
             ]};
             break;
@@ -150,6 +177,12 @@ function getFormModel(chosenTemplate) {
                         "title" : "Tag",
                         "default" : "mrw (indirect)",
                         "readOnly" : true
+                    },
+                    "color" : {
+                        "type" : "string",
+                        "title" : "color",
+                        "default" : "#000012",
+                        "readOnly" : true
                     }
                 }
             };
@@ -160,7 +193,12 @@ function getFormModel(chosenTemplate) {
                     {
                         "key" : "tag",
                         "readOnly" : true
-                    }                
+                    },
+                    {
+                        "key" : "color",
+                        "readOnly" : true,
+                        "htmlClass" : "is-hidden"
+                    }                     
             ]};
             break;  
 
@@ -179,6 +217,12 @@ function getFormModel(chosenTemplate) {
                         "title" : "Tag",
                         "default" : "mrw (implicit)",
                         "readOnly" : true
+                    },
+                    "color" : {
+                        "type" : "string",
+                        "title" : "color",
+                        "default" : "#000013",
+                        "readOnly" : true
                     }
                 }
             };
@@ -189,7 +233,12 @@ function getFormModel(chosenTemplate) {
                     {
                         "key" : "tag",
                         "readOnly" : true
-                    }                
+                    },
+                    {
+                        "key" : "color",
+                        "readOnly" : true,
+                        "htmlClass" : "is-hidden"
+                    }                     
             ]};
             break;
 
@@ -208,6 +257,12 @@ function getFormModel(chosenTemplate) {
                         "title" : "Tag",
                         "default" : "mflag",
                         "readOnly" : true
+                    },
+                    "color" : {
+                        "type" : "string",
+                        "title" : "color",
+                        "default" : "#000014",
+                        "readOnly" : true
                     }
                 }
             };
@@ -218,81 +273,143 @@ function getFormModel(chosenTemplate) {
                     {
                         "key" : "tag",
                         "readOnly" : true
-                    }
+                    },
+                    {
+                        "key" : "color",
+                        "readOnly" : true,
+                        "htmlClass" : "is-hidden"
+                    }     
                 
             ]};
             break;  
         
         case "METAPHOR":
-			// if a user wants to create a metaphor annotation,
-	        // get all the mrws that are present in his selection (globalMrwAnnos)
-	        // and store them in the enum to hold all the mrwAnnoIds, so the user can
-	        // choose a mrw to link it to a metaphor
-            
-            let enumAndTitleMap = getEnumAndTitleMap(globalMrwAnnos);
-			let mrwEnum = enumAndTitleMap[0];
-			// metaphorTitleMap is necessary to have the actual words displayed,
-			// but the have the annoId as a value on the submission of the form
-			let mrwTitleMap = enumAndTitleMap[1];
+
             // a user can either use the default label or create a humanreadable
             // label for the metaphor annotation
             let defaultLabel = window.CURRENTPAGENUMBER + Date.now();
 
-	        dataModel = {
-	            "type" : "object",
-	            "properties" : {
-					"selectedText": {
-						"type" : "string",
-	                    "title" : "Selected text",
-	                    "default" : globalSelectedText,
-	                    "readOnly" : true	
-					},
-	                "tag" : {
-	                    "type" : "string",
-	                    "title" : "Tag",
-	                    "default" : "metaphor",
-	                    "readOnly" : true
-	                },
-	                "mrws" : {
-	                    "type" : "array",
-	                    "title" : "Metaphor related words (direct, indirect, implicit and mflags)",
-	                    "items": {
-					        "type": "string",
-					        "title": "Option",
-					        "enum": mrwEnum
-					      }
-	                },
+            let dataModelProperties = {
+                "selectedText": {
+                    "type" : "string",
+                    "title" : "Selected text",
+                    "default" : globalSelectedText,
+                    "readOnly" : true	
+                },
+                "tag" : {
+                    "type" : "string",
+                    "title" : "Tag",
+                    "default" : "metaphor",
+                    "readOnly" : true
+                },
+                "label" : {
+                    "type" : "string",
+                    "title" : "Label",
+                    "default" : defaultLabel
+                },
+                "comment" : {
+                    "type" : "string",
+                    "title" : "Comment"
+                },
+                "color" : {
+                    "type" : "string",
+                    "title" : "color",
+                    "default" : "#000021",
+                    "readOnly" : true
+                }
+            };
+
+            let uiFormItems = [					
+                {
+                    "key": "selectedText",
+                    "type": "textarea"
+                },
+                {                    
+                    "key" : "tag",
+                    "readOnly" : true                    
+                },
+                {
+                    "key": "label"
+                },
+                {
+                    "key": "comment",
+                    "type": "textarea"
+                },
+                {
+                    "key" : "color",
+                    "readOnly" : true,
+                    "htmlClass" : "is-hidden"
+                }     
+            ];
+
+            // if there are mrw-annotations present in the current selection
+            // modify the dataModel and uiForm in a way to show a checkbox
+            // for each mrw-annotation present
+            if (globalMrwAnnos.length > 0){
+                // if a user wants to create a metaphor annotation,
+                // get all the mrws that are present in his selection (globalMrwAnnos)
+                // and store them in the enum to hold all the mrwAnnoIds, so the user can
+                // choose a mrw to link it to a metaphor
+                
+                let enumAndTitleMap = getEnumAndTitleMap(globalMrwAnnos);
+                let mrwEnum = enumAndTitleMap[0];
+                // metaphorTitleMap is necessary to have the actual words displayed,
+                // but to have the annoId as a value on the submission of the form
+                let mrwTitleMap = enumAndTitleMap[1];
+                let selectMRWButton = getSelectMRWButton(mrwEnum);
+                
+                dataModelProperties = {
+                    "selectedText": {
+                        "type" : "string",
+                        "title" : "Selected text",
+                        "default" : globalSelectedText,
+                        "readOnly" : true	
+                    },
+                    "tag" : {
+                        "type" : "string",
+                        "title" : "Tag",
+                        "default" : "metaphor",
+                        "readOnly" : true
+                    },
+                    "mrws" : {
+                        "type" : "array",
+                        "title" : "Metaphor related words (direct, indirect, implicit and mflags)",
+                        "items": {
+                            "type": "string",
+                            "title": "Option",
+                            "enum": mrwEnum
+                          }
+                    },
                     "label" : {
-	                    "type" : "string",
-	                    "title" : "Label",
-	                    "default" : defaultLabel
-	                },
+                        "type" : "string",
+                        "title" : "Label",
+                        "default" : defaultLabel
+                    },
                     "comment" : {
-	                    "type" : "string",
-	                    "title" : "Comment"
-	                }
-	            }
-	        };
-			uiForm = {
-	        	"type" : "fieldset",
-	        	"items" : [
-					
-					{
+                        "type" : "string",
+                        "title" : "Comment"
+                    },
+                    "color" : {
+                        "type" : "string",
+                        "title" : "color",
+                        "default" : "#000021",
+                        "readOnly" : true
+                    }
+                };
+                uiFormItems = [
+                    {
                         "key": "selectedText",
                         "type": "textarea"
                     },
-					{
-						
-		                "key" : "tag",
-                        "readOnly" : true
-	                    
-	                },
+                    {                        
+                        "key" : "tag",
+                        "readOnly" : true                        
+                    },
                     {
-						"type" : "checkboxes",
-						"key" : "mrws",
-	                    "titleMap": mrwTitleMap
-	                    	
-	                }, 
+                        "type" : "checkboxes",
+                        "key" : "mrws",
+                        "titleMap": mrwTitleMap                            
+                    }, 
                     selectMRWButton,
                     {
                         "key": "label"
@@ -300,10 +417,24 @@ function getFormModel(chosenTemplate) {
                     {
                         "key": "comment",
                         "type": "textarea"
-                    }
-                ]
+                    },
+                    {
+                        "key" : "color",
+                        "readOnly" : true,
+                        "htmlClass" : "is-hidden"
+                    }     
+                ];
+            }
+
+	        dataModel = {
+	            "type" : "object",
+	            "properties" : dataModelProperties
 	        };
-	    	break; 
+			uiForm = {
+	        	"type" : "fieldset",
+	        	"items" : uiFormItems
+	        };
+	    	break;
         
         case "CONTEXT":
             dataModel = {
@@ -385,6 +516,7 @@ function getFormModel(chosenTemplate) {
 			// mrwTitleMapForBody is necessary to have the actual words displayed,
 			// but the have the annoId as a value on the submission of the form
             let mrwTitleMapForBody = enumAndTitleMapForBody[1];
+            let selectMRWButtonForBody = getSelectMRWButton(mrwEnumForBody);
 
             dataModel = {
                 "type" : "object",
@@ -409,7 +541,7 @@ function getFormModel(chosenTemplate) {
 						"key" : "mrws",
                         "titleMap": mrwTitleMapForBody
                     }, 
-                    selectMRWButton
+                    selectMRWButtonForBody
                 ]
             };
             break;
@@ -420,6 +552,52 @@ function getFormModel(chosenTemplate) {
     console.log("uiForm: ", uiForm);
     return [dataModel, uiForm];
     
+}
+
+// preselect all checkboxes for the mrw-annos present in the current selection
+// during metaphor annotation creation via the template
+function preselectAllMRWAnnos(){
+    // select all input fields, where the name starts with "mrws"
+    // the input fields storing the mrws present in a selection
+    // get their name from the ordering in the mrws-array: 
+    // name="mrws[0]" and name="mrws[1]" etc.
+    // to get the changing name I refered to
+    // https://stackoverflow.com/questions/16791527/how-to-use-a-regular-expression-in-queryselectorall
+    const inputs = document.querySelectorAll('input[name^=mrws');
+    // checking if any mrws are present in the selection and allowing the toggle
+    // only if there are. This prevents an error to be thrown, when no mrws are present
+    if (inputs.length > 0) {
+        toggleCheckedInputs(inputs);
+    }
+}
+
+// replace the button to create an annotation with
+// a message on how to enable it
+function disableAnnotationCreation(){
+    document.querySelector("#createAnnotationForm > div:nth-child(1) > input:nth-child(2)").remove();
+    let explanationDiv = document.createElement("div");
+    explanationDiv.innerText = "Please include a mrw-annotation in your selection after closing this window." 
+    document.querySelector("#createAnnotationForm").append(explanationDiv);
+}
+
+// wrapper function to hold all functions to be called after the
+// modal to create an annotation is being displayed
+// TODO: CUSTOMISE: add code/functions to be called
+function projectSpecifics(){
+
+    // if a user wants to create a metaphor-annotation, preselect the checkboxes
+    // for the linking of mrw-annotations
+    if (globalMrwAnnos.length > 0 &&
+        document.querySelector("#pickAnnotationTemplateForm > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > select:nth-child(1)").value === "METAPHOR"){
+        preselectAllMRWAnnos();
+    }
+    
+    // if a user wants to create a metaphor-annotation, but there is no
+    // mrw-annotation present in the selection, disable annotation creation
+    //if (globalMrwAnnos.length === 0 &&
+        //document.querySelector("#pickAnnotationTemplateForm > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > select:nth-child(1)").value === "METAPHOR"){
+        //disableAnnotationCreation();
+    //}
 }
 
 // jsonForm object to create simple dropdown to choose body template
@@ -617,6 +795,7 @@ const formObjectCreateAnnotation = {
                     }           
                 });             
             });
+            projectSpecifics();
         },
         "titleMap" : {}
         }
@@ -630,7 +809,7 @@ function storeBody(responseJson, jsonObject, index) {
     let endpoint;
     let bodyDataJson;
     
-    //console.log(Object.keys(jsonObject)[index]);
+    console.log("Key of the json object for body-creation: ", Object.keys(jsonObject)[index]);
     if (Object.keys(jsonObject)[index]) {
         if (Object.keys(jsonObject)[index] === 'color') {
             endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/bodies';
@@ -690,7 +869,7 @@ function storeBody(responseJson, jsonObject, index) {
                 endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/bodies';
 
                 console.log("Body to store: ", Object.keys(jsonObject)[index]);
-                // CUSTOMISE assignment of purpose to an annotation body
+                // TODO: CUSTOMISE assignment of purpose to an annotation body
                 if (Object.keys(jsonObject)[index] === "transcription") {
                     bodyDataJson = {"purpose" : "tadirah:transcription", "value" : jsonObject[Object.keys(jsonObject)[index]]};
                 } else if (Object.keys(jsonObject)[index] === "selectedText"){ // storing the selected text
@@ -706,7 +885,7 @@ function storeBody(responseJson, jsonObject, index) {
                     bodyDataJson = {"purpose" : "classifying", "value" : jsonObject[Object.keys(jsonObject)[index]]};
                 }
             };
-        
+            
             $ .ajax({
                 type : 'POST',
                 url : endpoint,

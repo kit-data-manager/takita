@@ -82,7 +82,7 @@
       <span class="tooltip">Select Text</span>
     </li>
    </ul>
-   <ul class="features-list">
+   <!--<ul class="features-list">
        <div class="category-header">Modify Mode</div>
     <li class="features-item star">
       <i id="modifyButton" class="bx bx-edit features-item-icon" onclick="hideExpandedSidebar(); modifySelection();"></i>
@@ -94,7 +94,7 @@
       <span class="features-item-text annocollapse">Save</span>
       <span class="tooltip">Save</span>
     </li>
-  </ul>
+  </ul>-->
     <ul class="features-list">
     <li class="features-item star">
       <i id="pagesButton" class="bx bx-book-open features-item-icon" onclick="hideExpandedSidebar(); toggleOverview('pages')"></i>
@@ -289,6 +289,27 @@
         // setting contextpath
         window.CONTEXTPATH = /*[[@{/}]]*/ "/";
     </script>
+
+    <!-- Copied from main_page.html - may be exchanged in the future -->
+    <div class="modal" id="pseudonymInputModal">
+        <div class="modal-content">
+            <form>
+                <div class="modal-body form-group">
+                    <label for="pseudonymInitInput" th:text="#{prompt.pseudonym}"> </label>
+                    <input type="text"
+                            class="form-control"
+                            id="pseudonymInitInput"
+                            th:placeholder="#{label.pseudonym}"
+                            required>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}">
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script th:inline="javascript">
 
         function clickDe(){
@@ -331,22 +352,40 @@
                 button.classList.remove('bx-check');
                 button.classList.add('bx-edit');
                 input.disabled = true;
-                setPseudonym();
+                // the "event" argument is the default event triggered by the click on "#editButton"
+                setPseudonym(event, "pseudonymInput");
             }
             /*]]>*/
         }
 
-        function setPseudonym() {
-            let input = $('#pseudonymInput').val();
+        function setPseudonym(event, pseudonymForm) {
+            // prevent the default reload of the page on submit-events
+            event.preventDefault();
+            let input = $('#' + pseudonymForm).val();
+            // $('#pseudonymInput').val();
             $.ajax({
                 type: 'GET',
                 url: '../assistance/' + input,
                 dataType: 'text',
                 success: function (responseData) {
+                    console.log("Response from succesfull pseudonym update: ", responseData);
                     //location.href = '?lang=' + responseData;
+                    // reload the page with the new pseudonym
+                    location.reload();
+                },
+                error: function (responseData) {
+                    console.error(responseData);
                 }
             });
         }
+
+        // adapted from main_page.html - may be exchanged in the future
+        $(document).ready(function () {
+            let userName = /*[[${user.getName()}]]*/ "default";
+            if (userName === 'default') {
+              document.getElementById("pseudonymInputModal").classList.toggle("show-modal");
+            }
+        });
     </script>
 	<!-- chapter navigation -->
    	<script th:inline="javascript">        		
@@ -487,13 +526,19 @@
         };
         document.getElementById("selectTextListItem").addEventListener("mousedown", onclickSelectText);
 
+        // adding eventhandler for pseudonym change to the pseudonym input modal
+        document.querySelector("#pseudonymInputModal > div:nth-child(1) > form:nth-child(1)")
+            .addEventListener("submit", (event) => setPseudonym(event, "pseudonymInitInput"));
+        
+        /*
         // adding eventHandler for saving of modification to a text selection
         function onclickSaveModification(event) {
             hideExpandedSidebar();
             saveModification();
         }
         document.getElementById("saveModificationListItem").addEventListener("mousedown", onclickSaveModification);
-
+        */
+       
         // enable/modify the navigation bar
         function modifyNavBar(divisionType, possibleDivisionTypes){
 
@@ -573,7 +618,18 @@
             modifyNavBar(divisionType, possibleDivisionTypes);
 
             // highlight all the annotated words
-            drawAnnos(JSON.parse(document.body.getAttribute('data-field')));
+            // check if the annotations are compatible with the code, i.e. have
+            // one xPath for each target and not one long xPath including all targets.
+            // Make them compatible, if they are not
+            drawAnnos(JSON.parse
+                (document.body.getAttribute('data-field'))
+                .map(annotation => {
+                    if (!checkIsTargetCompatible(annotation)){
+                        makeTargetsCompatible(annotation);
+                    }
+                    return annotation;
+                })
+            );
 
             // B04 specific adding of a syllable marker between the unsandhied words
             var regW = document.querySelectorAll("tei-reg>tei-w");

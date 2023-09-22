@@ -37,9 +37,36 @@
 	background: linear-gradient( to bottom, lightgreen 33%, yellow 33% 66%, #daa3ff 66% 100% )
 }
 
-/* underline words annotated as metaphors */
+/* underline words annotated as metaphors.
+	The box-shadows overlap to the right/left
+	of an element, if the element is trailed
+	by whitespace. As the box-shadows might
+	overlap the white box-shadow is necessary to
+	keep te background white.
+	Every rule is needed for ltr texts (default)
+	and for rtl texts as the box-shadows 
+	always get created on the right/left side
+	regardless of text direction. */
 .metaphor {
-	box-shadow: 0px 0.2em #2196F3;
+	box-shadow: 
+		0em 0em white, 
+		0em 0.2em #2196F3;
+}
+
+.metaphor.whitespaceAfter{
+	box-shadow: 
+		0.29em 0em white, 
+		0em 0em white, 
+		0.29em 0.2em #2196F3,
+		0em 0.2em #2196F3;
+}
+
+#TEI[dir="rtl"] .metaphor.whitespaceAfter{
+	box-shadow: 
+		-0.29em 0em white, 
+		0em 0em white, 
+		-0.29em 0.2em #2196F3,
+		0em 0.2em #2196F3;
 }
 
 /* TODO: improve the comment phrasing */
@@ -48,7 +75,27 @@
 	annotation and therefore, already highlighted 
 	-> only one underline */
 .metaphorSecond {
-	box-shadow: 0px 0.2em white, 0px 0.4em purple;
+	box-shadow: 
+		0em 0.2em white, 
+		0em 0.4em purple;
+	line-height: 1.75em;
+}
+
+.metaphorSecond.whitespaceAfter{
+	box-shadow: 
+		0.29em 0.2em white, 
+		0em 0.2em white, 
+		0.29em 0.4em purple,
+		0em 0.4em purple;
+	line-height: 1.75em;
+}
+
+#TEI[dir="rtl"] .metaphorSecond.whitespaceAfter{
+	box-shadow: 
+		-0.29em 0.2em white, 
+		0em 0.2em white, 
+		-0.29em 0.4em purple,
+		0em 0.4em purple;
 	line-height: 1.75em;
 }
 
@@ -57,8 +104,44 @@
 	annotation and therefore, already highlighted 
 	-> two underlines */
 .metaphor.metaphorSecond {
-	box-shadow: 0px 0.2em #2196F3, 0px 0.4em purple;
+	box-shadow: 
+		0em 0em white, 
+		0em 0em white,
+		0em 0.2em #2196F3,
+		0em 0.2em #2196F3, 
+		0em 0.4em purple,
+		0em 0.4em purple;
 	line-height: 1.75em;
+}
+
+.metaphor.metaphorSecond.whitespaceAfter{
+	box-shadow: 
+		0.29em 0em white, 
+		0em 0em white,
+		0.29em 0.2em #2196F3,
+		0em 0.2em #2196F3, 
+		0.29em 0.4em purple,
+		0em 0.4em purple;
+	line-height: 1.75em;
+}
+
+#TEI[dir="rtl"] .metaphor.metaphorSecond.whitespaceAfter{
+	box-shadow: 
+		-0.29em 0em white, 
+		0em 0em white, 
+		-0.29em 0.2em #2196F3,
+		0em 0.2em #2196F3,
+		-0.29em 0.4em purple,
+		0em 0.4em purple;
+	line-height: 1.75em;
+}
+
+/* draw a border around the words targeted 
+	by the selected annotation and increase
+	the line-height to keep the box-shadows intact */
+.selected {
+	border-top: 3px dotted;
+	line-height: 2em;
 }
 
 /* end of annotation specifics */
@@ -92,6 +175,71 @@
 	overflow-y: auto;
 }
    
+/* displaying the "quickview" of an annotations
+	body in one line*/
+.horizontalFormDiv {
+	display: inline-flex;
+}
+
+/* input fields in cards should take all the available
+   horizontal space. */
+.horizontalFormForm > div {
+	display: flex;
+}
+.horizontalFormDiv {
+	flex-grow: 1;
+}
+.horizontalFormInput {
+	/* I believe we can leave this out! */
+	flex-grow: 0;
+}
+.horizontalFormDiv .controls {
+	flex-grow: 1;
+}
+
+/* Center card row contents vertically */
+ .formBodyDiv,
+ .horizontalFormForm {
+	margin-bottom: 0 !important;
+}
+
+/* align the label of the "quickview" */
+.horizontalFormDiv > label {
+	display: inline-flex;
+	align-items: center;
+}
+/* add some space between the form elements */
+.horizontalFormDiv > input[type="text"],
+.horizontalFormDiv > label  {
+	margin-right: 0.3em;
+}
+/* override the styling on the text done by
+	disabling the editing of the value */
+.horizontalFormDiv > input[type="text"] {
+	color: black;
+	opacity: 1;
+}
+
+/* adding space/margins before the buttons
+	at the end of the textcard*/
+#buttonToAnalysisTool,
+#buttonModifySelection,
+#buttonSaveModification,
+#buttonCancelModification {
+	margin-top: 0.3em;
+}
+
+/* adding space/margins between the buttons
+	at the end of the textcard*/
+#buttonToAnalysisTool{
+	margin-right: 0.5em;
+}
+#buttonModifySelection,
+#buttonSaveModification,
+#buttonCancelModification {
+	margin-right: 0.2em;
+}
+
 /* end of textcard display */
 /* ------------------------------------*/
 
@@ -103,11 +251,13 @@
 /* hebrew */
 /* add a "maqqef" sign used in hebrew texts */
 .maqqef::after {
+	color: grey;
 	content: "־";
 }
 
 /* add a "paseq" sign used in hebrew texts */
 .paseq::after {
+	color: grey;
 	content: "׀";
 }
 
@@ -146,16 +296,62 @@ tei-lb::before{
 /* quotation marks around direct speech */
 tei-said::before, 
 tei-said::after {
-    content: "\"";
+    color: grey;
+	content: "\"";
 }
 
 /* french quotation marks around quotes */
 tei-quote::before {
+	color: grey;
     content: "»";
 }
 
 tei-quote::after {
-    content: "«";
+    color: grey;
+	content: "«";
+}
+
+/* editorial additions (Leiden-style)
+	see https://git.noc.ruhr-uni-bochum.de/sfb1475-inf/subproject-data/-/issues/14#note_116732 */
+tei-supplied::before {
+	color: grey;
+    content: "(";
+}
+tei-supplied::after {
+	color: grey;
+    content: ")";
+}
+tei-supplied[reason="augment"]::before {
+	color: grey;
+    content: "(";
+}
+tei-supplied[reason="augment"]::after {
+    color: grey;
+	content: ")";
+}
+tei-supplied[reason="lost"]::before {
+	color: grey;
+    content: "[";
+}
+tei-supplied[reason="lost"]::after {
+	color: grey;
+    content: "]";
+}
+tei-gap::after {
+	color: grey;
+    content: "[…]";
+}
+tei-gap[reason="lost"]::after {
+	color: grey;
+    content: "[…]";
+}
+tei-gap[reason="illegible"]::after {
+	color: grey;
+    content: "…";
+}
+tei-supplied > tei-gap::after {
+	color: grey;
+    content: "…";
 }
 
 /* poem specifics*/
@@ -179,6 +375,32 @@ tei-lg {
 /* ------------------------------------*/
 /* SUBPROJECT SPECIFICS */
 /* ------------------------------------*/
+
+/* A01 specifics */
+/* ------------------------------------*/
+
+/* color quotes from different sources differently */
+tei-q[type="Quran"]{
+	color: green;	
+}
+
+tei-q[type="Hadith"]{
+	color: red;	
+}
+
+tei-q[type="Poetry"]{
+	color: rgb(160, 160, 0);
+}
+
+/* A03 specifics */
+/* ------------------------------------*/
+
+/* display the linenumbers for lines of the root text */
+tei-lg[type="root"] > tei-l::before {
+	color: grey;
+	content: attr(n)". ";
+}
+
 /* B04 specifics */
 /* ------------------------------------*/
 
@@ -205,6 +427,17 @@ tei-reg {
 	user-select: text;
 }
 
+/* B05 specifics */
+/* ------------------------------------*/
+
+/* TODO: make the following rule only apply for B05s Gilgamesh text */
+/* display the linenumbers in front of the linebeginnings */
+tei-lb[n]::before{
+	color: grey;
+    content: "\00000a"attr(n)". ";
+    white-space: pre-wrap;
+}
+
 /* C01 specifics */
 /* ------------------------------------*/
 
@@ -212,6 +445,22 @@ tei-reg {
 tei-ab[type=qna]::after{
 	content: "\00000a";
 	white-space: pre-wrap;
+}
+
+/* C03 specifics */
+/* ------------------------------------*/
+
+/* TODO: move this to a CETEICEAN-behavior to make it use the
+	html sup-element
+	positioning the folio statement as superscript and disable
+	the selection of it*/
+tei-fw[type="folio"]{
+	vertical-align: super;
+	font-size: 70%;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 
 /* end of subproject specifics */
