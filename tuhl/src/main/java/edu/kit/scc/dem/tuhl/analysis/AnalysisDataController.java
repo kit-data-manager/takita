@@ -7,6 +7,8 @@ import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
+import edu.kit.scc.dem.tuhl.model.page.Page;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -29,7 +31,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 
+import edu.kit.scc.dem.tuhl.dataaccess.AnnotationConverter;
 import edu.kit.scc.dem.tuhl.dataaccess.IAnnotationStoreAccessService;
+import edu.kit.scc.dem.tuhl.dataaccess.IRepositoryAccessService;
+import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 
 
 /**
@@ -42,10 +47,21 @@ import edu.kit.scc.dem.tuhl.dataaccess.IAnnotationStoreAccessService;
 public class AnalysisDataController {
 
   private final IAnnotationStoreAccessService annotationStoreAccessService;
+  private final ISearchIndexService searchIndexService;
+  private final IRepositoryAccessService repositoryAccessService;
+  private final AnnotationConverter annotationConverter;
 
   @Autowired
-  public AnalysisDataController(IAnnotationStoreAccessService annotationStoreAccessService) {
+  public AnalysisDataController(
+    IAnnotationStoreAccessService annotationStoreAccessService,
+    IRepositoryAccessService repositoryAccessService,
+    ISearchIndexService searchIndexService
+  ) {
+    this.repositoryAccessService = repositoryAccessService;
     this.annotationStoreAccessService = annotationStoreAccessService;
+    this.searchIndexService = searchIndexService;
+
+    this.annotationConverter =  new AnnotationConverter(this.annotationStoreAccessService, this.repositoryAccessService);
   }
 
   /**
@@ -87,12 +103,16 @@ public class AnalysisDataController {
     String uri = java.net.URLDecoder.decode(id, StandardCharsets.UTF_8);
 
     try {
-      JSONObject anno = new JSONObject(analysisString);
-      String etag = anno.getString("etag");
-      JSONObject r = this.annotationStoreAccessService.updateAnnotation(uri, anno, etag);
-      annotationJson = r.toString();
+      JSONObject newAnnoData = new JSONObject(analysisString);
+      Annotation newAnnotation = this.annotationConverter.buildAnnotationFromJson(newAnnoData);
+      Annotation _storedAnnotation = this.searchIndexService.updateAnnotation(newAnnotation);
+      JSONObject storedData = this.annotationStoreAccessService.getAnnotationById(uri);
+      annotationJson = storedData.toString();
+
     } catch (IOException | InterruptedException | JSONException e) {
       return ResponseEntity.status(500).body(e.getMessage());
+    } catch (NoSuchIndexEntryException e) {
+      return ResponseEntity.status(404).body(e.getMessage());
     }
 
     // Return updated annotation.
