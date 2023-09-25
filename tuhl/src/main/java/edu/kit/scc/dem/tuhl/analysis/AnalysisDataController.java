@@ -118,41 +118,4 @@ public class AnalysisDataController {
     // Return updated annotation.
     return ResponseEntity.ok().body(annotationJson);
   }
-
-
-  /**
-   * Gets a specific analysis annotation by ID.
-   * 
-   * Currently a stub which always returns the same hardcoded object,
-   * just to ensure that the analysis tool has something to play with.
-   *
-   * @param request to access the headers from the HTTP request
-   * @param response to access the headers for the HTTP response
-   * @return HTTP entity sent back, either ok for a success including the 
-   *    annotations or 500 for an internal error
-   */
-  @RequestMapping(value = "/dummy", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  @ResponseBody
-  public ResponseEntity getDummyAnalysisForId(final WebRequest request, final HttpServletResponse response) {
-    final String newLine = System.getProperty("line.separator");
-    final String annotationsJson = String.join(
-      newLine,
-      "{\"analysis_label\":\"a taste of a poison paradise\",",
-      "\"annotator\":\"Britney Spears\",",
-      "\"date_created\":\"2022-11-29T12:43:02.930Z\",",
-      "\"date_modified\":\"2022-11-29T12:43:02.930Z\",",
-      "\"doc_title\":\"Toxic\",",
-      "\"doc_reference\":\"refrain, line 3\",",
-      "\"file_id\":12345,",
-      "\"text\":{\"value\":",
-      "\"With a taste of your lips, I'm on a ride\\nYou're toxic, I'm slippin' under\\nWith a taste of a poison paradise\\nI'm addicted to you\\nDon't you know that you're toxic?\"",
-      "},",
-      "\"propositions\":[{\"evidence\":\"explicit\",\"predicate\":\"\",\"subject\":\"you\",\"type\":\"attribute\",\"value\":\"toxic\"}],",
-      "\"open_mappings\":[{\"type\":\"open\",\"source\":\"toxic\",\"target\":\"\"}],",
-      "\"complete_mappings\":[{\"type\":\"complete\",\"source\":\"toxic\",\"target\":\"harmful\"}],",
-      "\"linkings\":[],",
-      "\"project\":\"INF\"}"
-    ) ;
-    return ResponseEntity.ok().body(annotationsJson);
-  }
 }
