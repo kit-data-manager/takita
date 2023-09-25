@@ -7,6 +7,8 @@ import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
+import edu.kit.scc.dem.tuhl.model.page.Page;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -29,7 +31,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
 
+import edu.kit.scc.dem.tuhl.dataaccess.AnnotationConverter;
 import edu.kit.scc.dem.tuhl.dataaccess.IAnnotationStoreAccessService;
+import edu.kit.scc.dem.tuhl.dataaccess.IRepositoryAccessService;
+import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 
 
 /**
@@ -42,10 +47,21 @@ import edu.kit.scc.dem.tuhl.dataaccess.IAnnotationStoreAccessService;
 public class AnalysisDataController {
 
   private final IAnnotationStoreAccessService annotationStoreAccessService;
+  private final ISearchIndexService searchIndexService;
+  private final IRepositoryAccessService repositoryAccessService;
+  private final AnnotationConverter annotationConverter;
 
   @Autowired
-  public AnalysisDataController(IAnnotationStoreAccessService annotationStoreAccessService) {
+  public AnalysisDataController(
+    IAnnotationStoreAccessService annotationStoreAccessService,
+    IRepositoryAccessService repositoryAccessService,
+    ISearchIndexService searchIndexService
+  ) {
+    this.repositoryAccessService = repositoryAccessService;
     this.annotationStoreAccessService = annotationStoreAccessService;
+    this.searchIndexService = searchIndexService;
+
+    this.annotationConverter =  new AnnotationConverter(this.annotationStoreAccessService, this.repositoryAccessService);
   }
 
   /**
@@ -87,52 +103,19 @@ public class AnalysisDataController {
     String uri = java.net.URLDecoder.decode(id, StandardCharsets.UTF_8);
 
     try {
-      JSONObject anno = new JSONObject(analysisString);
-      String etag = anno.getString("etag");
-      JSONObject r = this.annotationStoreAccessService.updateAnnotation(uri, anno, etag);
-      annotationJson = r.toString();
+      JSONObject newAnnoData = new JSONObject(analysisString);
+      Annotation newAnnotation = this.annotationConverter.buildAnnotationFromJson(newAnnoData);
+      Annotation _storedAnnotation = this.searchIndexService.updateAnnotation(newAnnotation);
+      JSONObject storedData = this.annotationStoreAccessService.getAnnotationById(uri);
+      annotationJson = storedData.toString();
+
     } catch (IOException | InterruptedException | JSONException e) {
       return ResponseEntity.status(500).body(e.getMessage());
+    } catch (NoSuchIndexEntryException e) {
+      return ResponseEntity.status(404).body(e.getMessage());
     }
 
     // Return updated annotation.
     return ResponseEntity.ok().body(annotationJson);
-  }
-
-
-  /**
-   * Gets a specific analysis annotation by ID.
-   * 
-   * Currently a stub which always returns the same hardcoded object,
-   * just to ensure that the analysis tool has something to play with.
-   *
-   * @param request to access the headers from the HTTP request
-   * @param response to access the headers for the HTTP response
-   * @return HTTP entity sent back, either ok for a success including the 
-   *    annotations or 500 for an internal error
-   */
-  @RequestMapping(value = "/dummy", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
-  @ResponseBody
-  public ResponseEntity getDummyAnalysisForId(final WebRequest request, final HttpServletResponse response) {
-    final String newLine = System.getProperty("line.separator");
-    final String annotationsJson = String.join(
-      newLine,
-      "{\"analysis_label\":\"a taste of a poison paradise\",",
-      "\"annotator\":\"Britney Spears\",",
-      "\"date_created\":\"2022-11-29T12:43:02.930Z\",",
-      "\"date_modified\":\"2022-11-29T12:43:02.930Z\",",
-      "\"doc_title\":\"Toxic\",",
-      "\"doc_reference\":\"refrain, line 3\",",
-      "\"file_id\":12345,",
-      "\"text\":{\"value\":",
-      "\"With a taste of your lips, I'm on a ride\\nYou're toxic, I'm slippin' under\\nWith a taste of a poison paradise\\nI'm addicted to you\\nDon't you know that you're toxic?\"",
-      "},",
-      "\"propositions\":[{\"evidence\":\"explicit\",\"predicate\":\"\",\"subject\":\"you\",\"type\":\"attribute\",\"value\":\"toxic\"}],",
-      "\"open_mappings\":[{\"type\":\"open\",\"source\":\"toxic\",\"target\":\"\"}],",
-      "\"complete_mappings\":[{\"type\":\"complete\",\"source\":\"toxic\",\"target\":\"harmful\"}],",
-      "\"linkings\":[],",
-      "\"project\":\"INF\"}"
-    ) ;
-    return ResponseEntity.ok().body(annotationsJson);
   }
 }
