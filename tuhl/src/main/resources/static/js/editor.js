@@ -435,7 +435,7 @@ function selectAnnotation(event, annoId) {
             };
             // adding link to the analysis tool, if 
             // the annotation is a metaphor annotation	
-			if (responseJson.tags.some(tag => tag.value === "metaphor")){
+			if (responseJson.color === "METAPHOR"){
 				var buttonToAnalysisTool = document.createElement("input");
 	            buttonToAnalysisTool.classList.add("btn");
 	            buttonToAnalysisTool.classList.add("btn-primary");
