@@ -515,9 +515,9 @@ function convertXPath(longXPath){
             // remove leading/trailing whitespace from the entries
             .map(xPath => xPath.trim())
             .map((xPath, index) => {
-                if (xPath.startsWith("//*[@xml:id=")){
+                if (xPath.startsWith("//*[@xml:id=") || xPath.startsWith("id(")){
                     return xPath;
-                } else if (xPath.startsWith("substring(//*[@xml:id=")){
+                } else if (xPath.startsWith("substring(//*[@xml:id=") || xPath.startsWith("substring(id(")){
                     // add the startingPosition and the length of the substring to the xPath
                     return (xPath + ", " + xPaths[index+1] + ", " + xPaths[index+2]);
                 }})
@@ -537,7 +537,7 @@ function makeTargetsCompatible(annotation){
 
     // annotation passed to the function is part of the annoJson
     if (annotation.svg){
-            if (annotation.svg[0].includes("xml:id")){
+            if (annotation.svg[0].includes("xml:id") || annotation.svg[0].includes("id(")){
                 annotation.svg = convertXPath(annotation.svg[0]);
             }
     }
@@ -1320,7 +1320,7 @@ function createXPath(targetRangeList){
     // create an xPath for each targeted element
     targetRangeList.forEach(range => {
         range.targetList.forEach(target => {
-            let xPathToElement = "//*[@xml:id=\"" + target.id + "\"]";
+            let xPathToElement = "id(\"" + target.id + "\")";
             // check if the targetted words are fully selected
             if (target.innerText === document.getElementById(target.id).innerText) {
                 xPaths.push(xPathToElement);
