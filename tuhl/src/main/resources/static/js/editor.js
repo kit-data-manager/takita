@@ -719,6 +719,9 @@ function completeFormDataModel (responseJson, formDataModel, addition, omitField
                     case "linking":
                         title = "Linked mrw-annotation: ";
                         break;
+                    case "classifying":
+                        title = "Classification: ";
+                        break;
                     case "describing":
                         title = "Selected text: ";
                         break;

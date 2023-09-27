@@ -1391,13 +1391,14 @@ function storeSelectedMRWAnnos(targetList){
 	annoJson.forEach(annotation => {
 		//annoXmlId = annotation.svg.split("\"")[1];
 		//console.log(annotation);
-		// TODO: this iteration nesting needs to be improved; it got created due 
-		// to annotations having multiple targets
-		annotation.tags.forEach( tag => {
-			if (tag.value === "mrw (direct)" || 
-                tag.value === "mrw (indirect)" || 
-                tag.value === "mrw (implicit)" || 
-                tag.value === "mflag"){
+        // checking if the annotation is a mrw-annotation by checking its color,
+        // which is based on the classifying body.
+        // See "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java"
+        // for the corresponding hexes/mrw-annotation types
+        if (annotation.color === "#000011" || 
+            annotation.color === "#000012" || 
+            annotation.color === "#000013" || 
+            annotation.color === "#000014"){
 				targetList.forEach( target => {
 					annotation.svg.forEach( svg => {
 						if (target.id === svg.split("\"")[1]){
@@ -1414,8 +1415,7 @@ function storeSelectedMRWAnnos(targetList){
 						}
 					});
 				});
-			}
-		});
+		}
 	});
 	console.log("MRW annotations present in current selection: ", mrwAnnos);
 
