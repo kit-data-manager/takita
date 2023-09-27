@@ -320,7 +320,7 @@ function selectAnnotation(event, annoId) {
                             uiFormHorizontal.items.push({"key" : key, "htmlClass" : "is-hidden"});
                             // TODO: CUSTOMISE decide which purpose bodies/fields should be editable
                             if (key === "purpose"){
-                                const editableFields = ["tagging", "commenting", "identifying"];
+                                const editableFields = ["tagging", "commenting", "identifying", "classifying"];
                                 if (editableFields.includes(bodies[body].purpose)) {
                                     operationHorizontal = "UPDATE";
                                 }
