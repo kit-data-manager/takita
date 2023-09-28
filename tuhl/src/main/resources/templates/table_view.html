@@ -323,7 +323,7 @@
                 img.setAttribute('class', 'img-thumbnail');
                 // adds text_thumb.jpg if no thumb is provided/found
                 if (item.thumbNail === undefined){
-                    img.src = "/images/text_thumb.jpg";
+                    img.src = window.CONTEXTPATH + "images/text_thumb.jpg";
                 } else {
                     img.setAttribute('src', item.thumbNail);
                 }
