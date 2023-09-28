@@ -320,7 +320,7 @@ function selectAnnotation(event, annoId) {
                             uiFormHorizontal.items.push({"key" : key, "htmlClass" : "is-hidden"});
                             // TODO: CUSTOMISE decide which purpose bodies/fields should be editable
                             if (key === "purpose"){
-                                const editableFields = ["tagging", "commenting", "identifying"];
+                                const editableFields = ["tagging", "commenting", "identifying", "classifying"];
                                 if (editableFields.includes(bodies[body].purpose)) {
                                     operationHorizontal = "UPDATE";
                                 }
@@ -435,7 +435,7 @@ function selectAnnotation(event, annoId) {
             };
             // adding link to the analysis tool, if 
             // the annotation is a metaphor annotation	
-			if (responseJson.tags.some(tag => tag.value === "metaphor")){
+			if (responseJson.color === "METAPHOR"){
 				var buttonToAnalysisTool = document.createElement("input");
 	            buttonToAnalysisTool.classList.add("btn");
 	            buttonToAnalysisTool.classList.add("btn-primary");
@@ -718,6 +718,9 @@ function completeFormDataModel (responseJson, formDataModel, addition, omitField
                         break;
                     case "linking":
                         title = "Linked mrw-annotation: ";
+                        break;
+                    case "classifying":
+                        title = "Classification: ";
                         break;
                     case "describing":
                         title = "Selected text: ";

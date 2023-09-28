@@ -106,7 +106,7 @@ public class EditorStubService implements IEditorStubService {
 		    	//Target newTarget = new Target(linkToResource);
 		    	Target newTarget = new Target();
 		    	// for each svgCode create new target
-		    	if (xPath.contains("xml:id")) {
+		    	if (xPath.contains("xml:id") || xPath.contains("id(")) {
 		        	XPathSelector newSelector = new XPathSelector(xPath);
 		        	newTarget.setType("TEXT");
 		        	newTarget.setSelector(newSelector);
@@ -125,7 +125,7 @@ public class EditorStubService implements IEditorStubService {
 	  	            + RepositoryAccessService.FILE_EXTENSION_XML;*/
 		    //Target newTarget = new Target(linkToResource);
 		    Target newTarget = new Target();
-		    if (svgCode.contains("xml:id")) {
+		    if (svgCode.contains("xml:id") || svgCode.contains("id(")) {
 	        	XPathSelector newSelector = new XPathSelector(svgCode);
 	        	newTarget.setType("TEXT");
 	        	newTarget.setSelector(newSelector);
@@ -204,7 +204,7 @@ public class EditorStubService implements IEditorStubService {
 		    	//Target newTarget = new Target(linkToResource);
 		    	Target newTarget = new Target();
 		    	// for each svgCode create new target
-		    	if (xPath.contains("xml:id")) {
+		    	if (xPath.contains("xml:id") || xPath.contains("id(")) {
 		        	XPathSelector newSelector = new XPathSelector(xPath);
 		        	newTarget.setType("TEXT");
 		        	newTarget.setSelector(newSelector);
@@ -219,7 +219,7 @@ public class EditorStubService implements IEditorStubService {
         } else {
         	Target newTarget = new Target();
 	    	// for each svgCode create new target
-	    	if (svgCode.contains("xml:id")) {
+	    	if (svgCode.contains("xml:id") || svgCode.contains("id(")) {
 	        	XPathSelector newSelector = new XPathSelector(svgCode);
 	        	newTarget.setType("TEXT");
 	        	newTarget.setSelector(newSelector);

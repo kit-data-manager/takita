@@ -167,7 +167,7 @@ public class AnnotationConverter {
         // TODO: CUSTOMISE which body is used to retrieve the color
         // TODO: improve the color storage
         if (bodies.getJSONObject(i).has(AnnotationStoreStrings.PURPOSE.getName())) {
-        	if (bodies.getJSONObject(i).getString(AnnotationStoreStrings.PURPOSE.getName()).equals("tagging")) {
+        	if (bodies.getJSONObject(i).getString(AnnotationStoreStrings.PURPOSE.getName()).equals("classifying")) {
         		if (bodies.getJSONObject(i).has(AnnotationStoreStrings.VALUE.getName())) {
         			annotation.setColor(Color.stringToColor(bodies.getJSONObject(i).getString(
         	                AnnotationStoreStrings.VALUE.getName())));

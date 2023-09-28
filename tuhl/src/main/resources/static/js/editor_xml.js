@@ -515,9 +515,9 @@ function convertXPath(longXPath){
             // remove leading/trailing whitespace from the entries
             .map(xPath => xPath.trim())
             .map((xPath, index) => {
-                if (xPath.startsWith("//*[@xml:id=")){
+                if (xPath.startsWith("//*[@xml:id=") || xPath.startsWith("id(")){
                     return xPath;
-                } else if (xPath.startsWith("substring(//*[@xml:id=")){
+                } else if (xPath.startsWith("substring(//*[@xml:id=") || xPath.startsWith("substring(id(")){
                     // add the startingPosition and the length of the substring to the xPath
                     return (xPath + ", " + xPaths[index+1] + ", " + xPaths[index+2]);
                 }})
@@ -537,7 +537,7 @@ function makeTargetsCompatible(annotation){
 
     // annotation passed to the function is part of the annoJson
     if (annotation.svg){
-            if (annotation.svg[0].includes("xml:id")){
+            if (annotation.svg[0].includes("xml:id") || annotation.svg[0].includes("id(")){
                 annotation.svg = convertXPath(annotation.svg[0]);
             }
     }
@@ -1320,7 +1320,7 @@ function createXPath(targetRangeList){
     // create an xPath for each targeted element
     targetRangeList.forEach(range => {
         range.targetList.forEach(target => {
-            let xPathToElement = "//*[@xml:id=\"" + target.id + "\"]";
+            let xPathToElement = "id(\"" + target.id + "\")";
             // check if the targetted words are fully selected
             if (target.innerText === document.getElementById(target.id).innerText) {
                 xPaths.push(xPathToElement);
@@ -1391,13 +1391,14 @@ function storeSelectedMRWAnnos(targetList){
 	annoJson.forEach(annotation => {
 		//annoXmlId = annotation.svg.split("\"")[1];
 		//console.log(annotation);
-		// TODO: this iteration nesting needs to be improved; it got created due 
-		// to annotations having multiple targets
-		annotation.tags.forEach( tag => {
-			if (tag.value === "mrw (direct)" || 
-                tag.value === "mrw (indirect)" || 
-                tag.value === "mrw (implicit)" || 
-                tag.value === "mflag"){
+        // checking if the annotation is a mrw-annotation by checking its color,
+        // which is based on the classifying body.
+        // See "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java"
+        // for the corresponding hexes/mrw-annotation types
+        if (annotation.color === "#000011" || 
+            annotation.color === "#000012" || 
+            annotation.color === "#000013" || 
+            annotation.color === "#000014"){
 				targetList.forEach( target => {
 					annotation.svg.forEach( svg => {
 						if (target.id === svg.split("\"")[1]){
@@ -1414,8 +1415,7 @@ function storeSelectedMRWAnnos(targetList){
 						}
 					});
 				});
-			}
-		});
+		}
 	});
 	console.log("MRW annotations present in current selection: ", mrwAnnos);
 

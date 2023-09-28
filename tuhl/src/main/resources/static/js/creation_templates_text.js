@@ -72,7 +72,8 @@ function getSelectMRWButton(mrwEnum){
 
 // takes a list of mrwAnnos and returns 
 // - an enum holding all the ids of these annotations
-// - a titleMap linking the ids to the tag values and targeted strings
+// - a titleMap linking the ids to targeted strings and the type of the mrw annotation
+//   which is set according to its color, which is based on the classifying body
 function getEnumAndTitleMap(mrwAnnos){
     const idEnum = mrwAnnos.map(anno => anno.id);
     const mrwTitleMap = {};
@@ -87,12 +88,24 @@ function getEnumAndTitleMap(mrwAnnos){
             })
             .join(" ");
 
-        // adding the tag value to the string, that will be displayed in the modal.
-        // Check if the tag has a value given in relevantTags
-        // and add that value to the text
-        const relevantTags = ["mrw (direct)", "mrw (indirect)", "mrw (implicit)", "mflag"];
-        const tagValue = anno.tags.filter(tag => relevantTags.includes(tag.value))[0].value;
-        mrwTitleMap[anno.id] = targetedString + " | " + tagValue;
+        // adding the value of the classifying body (which is stored in the color) 
+        // to the string, that will be displayed in the modal.
+        let mrwType = "DEFAULT";
+        switch (anno.color){
+            case "#000011":
+                mrwType = "mrw (direct)";
+                break;
+            case "#000012":
+                mrwType = "mrw (indirect)";
+                break;
+            case "#000013":
+                mrwType = "mrw (implicit)";
+                break;
+            case "#000014":
+                mrwType = "mflag";
+                break;
+        }
+        mrwTitleMap[anno.id] = targetedString + " | " + mrwType;
     });
 
     return [idEnum, mrwTitleMap];
@@ -132,9 +145,9 @@ function getFormModel(chosenTemplate) {
 	                    "default" : globalSelectedText,
 	                    "readOnly" : true	
 					},
-					"tag" : {
+					"classification" : {
                         "type" : "string",
-                        "title" : "Tag",
+                        "title" : "Classification",
                         "default" : "mrw (direct)",
                         "readOnly" : true
                     },
@@ -151,7 +164,7 @@ function getFormModel(chosenTemplate) {
                 "items" : [
                     "selectedText",
                     {
-                        "key" : "tag",
+                        "key" : "classification",
                         "readOnly" : true
                     },
                     {
@@ -172,9 +185,9 @@ function getFormModel(chosenTemplate) {
                         "default" : globalSelectedText,
                         "readOnly" : true	
                     },
-                    "tag" : {
+                    "classification" : {
                         "type" : "string",
-                        "title" : "Tag",
+                        "title" : "Classification",
                         "default" : "mrw (indirect)",
                         "readOnly" : true
                     },
@@ -191,7 +204,7 @@ function getFormModel(chosenTemplate) {
                 "items" : [
                     "selectedText",
                     {
-                        "key" : "tag",
+                        "key" : "classification",
                         "readOnly" : true
                     },
                     {
@@ -212,9 +225,9 @@ function getFormModel(chosenTemplate) {
                         "default" : globalSelectedText,
                         "readOnly" : true	
                     },
-                    "tag" : {
+                    "classification" : {
                         "type" : "string",
-                        "title" : "Tag",
+                        "title" : "Classification",
                         "default" : "mrw (implicit)",
                         "readOnly" : true
                     },
@@ -231,7 +244,7 @@ function getFormModel(chosenTemplate) {
                 "items" : [
                     "selectedText",
                     {
-                        "key" : "tag",
+                        "key" : "classification",
                         "readOnly" : true
                     },
                     {
@@ -252,9 +265,9 @@ function getFormModel(chosenTemplate) {
 	                    "default" : globalSelectedText,
 	                    "readOnly" : true	
 					},
-                    "tag" : {
+                    "classification" : {
                         "type" : "string",
-                        "title" : "Tag",
+                        "title" : "Classification",
                         "default" : "mflag",
                         "readOnly" : true
                     },
@@ -271,7 +284,7 @@ function getFormModel(chosenTemplate) {
                 "items" : [
                     "selectedText",
                     {
-                        "key" : "tag",
+                        "key" : "classification",
                         "readOnly" : true
                     },
                     {
@@ -296,9 +309,9 @@ function getFormModel(chosenTemplate) {
                     "default" : globalSelectedText,
                     "readOnly" : true	
                 },
-                "tag" : {
+                "classification" : {
                     "type" : "string",
-                    "title" : "Tag",
+                    "title" : "Classification",
                     "default" : "metaphor",
                     "readOnly" : true
                 },
@@ -325,7 +338,7 @@ function getFormModel(chosenTemplate) {
                     "type": "textarea"
                 },
                 {                    
-                    "key" : "tag",
+                    "key" : "classification",
                     "readOnly" : true                    
                 },
                 {
@@ -365,9 +378,9 @@ function getFormModel(chosenTemplate) {
                         "default" : globalSelectedText,
                         "readOnly" : true	
                     },
-                    "tag" : {
+                    "classification" : {
                         "type" : "string",
-                        "title" : "Tag",
+                        "title" : "Classification",
                         "default" : "metaphor",
                         "readOnly" : true
                     },
@@ -402,7 +415,7 @@ function getFormModel(chosenTemplate) {
                         "type": "textarea"
                     },
                     {                        
-                        "key" : "tag",
+                        "key" : "classification",
                         "readOnly" : true                        
                     },
                     {
@@ -440,9 +453,9 @@ function getFormModel(chosenTemplate) {
             dataModel = {
                 "type" : "object",
                 "properties" : {
-                    "tag" : {
+                    "classification" : {
                         "type" : "string",
-                        "title" : "Tag",
+                        "title" : "Classification",
                         "default" : "context",
                         "readOnly" : true
                     }
@@ -452,7 +465,7 @@ function getFormModel(chosenTemplate) {
                 "type" : "fieldset",
                 "items" : [
                     {
-                        "key" : "tag",
+                        "key" : "classification",
                         "readOnly" : true
                     }
                 
@@ -881,6 +894,8 @@ function storeBody(responseJson, jsonObject, index) {
                     bodyDataJson = {"purpose" : "identifying", "value" : jsonObject[Object.keys(jsonObject)[index]]};
                 } else if (Object.keys(jsonObject)[index] === "comment"){ // user entered comment, if no comment given, the key will not be present and no body will be created
                     bodyDataJson = {"purpose" : "commenting", "value" : jsonObject[Object.keys(jsonObject)[index]]};
+                } else if (Object.keys(jsonObject)[index] === "classification"){ // classification of the text as something (eg. mrw-direct or metaphor)
+                    bodyDataJson = {"purpose" : "classifying", "value" : jsonObject[Object.keys(jsonObject)[index]]};                
                 } else {
                     bodyDataJson = {"purpose" : "classifying", "value" : jsonObject[Object.keys(jsonObject)[index]]};
                 }
