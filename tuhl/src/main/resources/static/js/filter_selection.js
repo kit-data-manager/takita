@@ -1,7 +1,7 @@
 function remove(field) {
     $ .ajax({
         type: 'POST',
-        url: '/filter/remove',
+        url: window.CONTEXTPATH + 'filter/remove',
         headers: {
             'Accept': 'application/json',
             'Content-Type': 'application/json'
