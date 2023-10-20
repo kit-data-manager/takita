@@ -19,6 +19,8 @@ function remove(field) {
 function clearFilters() {
     $('#filterSelection').parent().load('/filter/clear', function () {
         $('.selectpicker').selectpicker();
+        // the submit()-call should be inside this callback, so it gets excecuted AFTER
+        // the load()-call is finished
+        $('#filterInput').submit();
     });
-    $('#filterInput').submit();
 }
