@@ -11,15 +11,18 @@
           th:href="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css}">
     <!-- <link href="https://www.cssscript.com/demo/sticky.css" rel="stylesheet" type="text/css">-->
 
+    <!-- external/framework css-->
     <link rel="stylesheet" th:href="@{/css/reset.css}">
     <link rel="stylesheet" th:href="@{/css/tabulator_bootstrap4.min.css}">
-    <link rel="stylesheet" th:href="@{/css/editor_sidebar_topbar.css}">
-    <link rel="stylesheet" th:href="@{/css/modal.css}">
-    <link rel="stylesheet" th:href="@{/css/editor_text.css}">
-
+    <!-- Font Awesome icons-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css">
     <link rel="stylesheet" href="https://unpkg.com/chota@latest">
-
+     <!-- internal css-->
+    <link rel="stylesheet" th:href="@{/css/editor_sidebar_topbar.css}">
+    <link rel="stylesheet" th:href="@{/css/editor_text_bottombar.css}">
+    <link rel="stylesheet" th:href="@{/css/modal.css}">
+    <link rel="stylesheet" th:href="@{/css/editor_text.css}">
 
     <!-- JS, jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
@@ -98,8 +101,8 @@
     <ul class="features-list">
     <li class="features-item star">
       <i id="pagesButton" class="bx bx-book-open features-item-icon" onclick="hideExpandedSidebar(); toggleOverview('pages')"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); toggleOverview('pages')">Show Book</span>
-      <span class="tooltip">Show Book</span>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); toggleOverview('pages')">Show Parts</span>
+      <span class="tooltip">Show Parts</span>
     </li>
   </ul>
 </div>
@@ -211,30 +214,51 @@
         </div>
     </div>
 
-    <!-- Page overview for the whole book onclick="window.open(${page.id})" no-wrap> -->
+	<!-- Part overview for the whole text onclick="window.open(${page.id})" no-wrap> -->
     <div class="collapse col-auto is-hidden is-full-width" id="pages">
         <div class="card">
             <div class="row">
                 <div class="col-auto" th:each="page : ${currentManuscript.pages}">
+                    <!-- TODO: CUSTOMISE set the boolean at the start of the "th:if"-clause to "true"/"false" to display/hide pictures -->
                     <div class="row">
                         <div class="col">
                             <img th:src="${page.thumbResourceUrl}"
                                  class="img-thumbnail"
                                  id="pageThumb"
-                                 th:if="${page.id != currentPage.id}"
+                                 th:if="${false and page.id != currentPage.id and page.thumbResourceUrl != null}"
                                  th:data-field="${page.id}"
                                  th:attr="onclick=|window.open('${page.id}')|">
-                            <img th:src="${page.thumbResourceUrl}"
-                                 class="img-thumbnail bd-error"
-                                 th:if="${page.id == currentPage.id}">
+                            <img th:src="@{/images/text_thumb.jpg}"
+                                class="img-thumbnail"
+                                id="pageThumb"
+                                th:if="${false and page.id != currentPage.id and page.thumbResourceUrl == null}"
+                                th:data-field="${page.id}"
+                                th:attr="onclick=|window.open('${page.id}')|">
+                            <img th:src="@{/images/text_thumb.jpg}"
+                                class="img-thumbnail bd-error"
+                                th:if="${false and page.id == currentPage.id}">
                         </div>
                     </div>
                     <div class="row is-center">
-                        <label class="col-auto" th:text="${page.pageNumber}"
-                        th:if="${page.id != currentPage.id}">
+                        <!-- the following classes originally stem from the DO-overview and bootstrap, which is used for
+                            the DO-overview of tAkita, but not for the textEditor, where chota is used -->
+                        <a class="btn-sm btn-secondary col-auto"
+                            id="pageThumbs"
+                            th:if="${page.id != currentPage.id}"
+                            th:data-field="${page.id}"
+                            th:attr="onclick=|window.open('${page.id}')|">
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                        <a class="btn-sm btn-secondary col-auto inactiveBtn"
+                            th:if="${page.id == currentPage.id}">
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                        <label class="col-auto m-0" th:text="${page.pageNumber}"
+                            th:if="${page.id != currentPage.id}"
+                            th:attr="onclick=|window.open('${page.id}')|">
                         </label>
-                        <label class="col-auto bg-light" th:text="${page.pageNumber}"
-                        th:if="${page.id == currentPage.id}">
+                        <label class="col-auto m-0 bg-light" th:text="${page.pageNumber}"
+                            th:if="${page.id == currentPage.id}">
                         </label>
                     </div>
                 </div>

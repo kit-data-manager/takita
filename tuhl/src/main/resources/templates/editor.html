@@ -222,12 +222,21 @@
                             <img th:src="${page.thumbResourceUrl}"
                                  class="img-thumbnail"
                                  id="pageThumb"
-                                 th:if="${page.id != currentPage.id}"
+                                 th:if="${page.id != currentPage.id and page.thumbResourceUrl != null}"
                                  th:data-field="${page.id}"
                                  th:attr="onclick=|window.open('${page.id}')|">
+                            <img th:src="@{/images/text_thumb.jpg}"
+                                class="img-thumbnail"
+                                id="pageThumb"
+                                th:if="${page.id != currentPage.id and page.thumbResourceUrl == null}"
+                                th:data-field="${page.id}"
+                                th:attr="onclick=|window.open('${page.id}')|">
                             <img th:src="${page.thumbResourceUrl}"
-                                 class="img-thumbnail bd-error"
-                                 th:if="${page.id == currentPage.id}">
+                                class="img-thumbnail bd-error"
+                                th:if="${page.id == currentPage.id and page.thumbResourceUrl != null}">
+                            <img th:src="@{/images/text_thumb.jpg}"
+                                class="img-thumbnail bd-error"
+                                th:if="${page.id == currentPage.id and page.thumbResourceUrl == null}">
                         </div>
                     </div>
                     <div class="row is-center">
