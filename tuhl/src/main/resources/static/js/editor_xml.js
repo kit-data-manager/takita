@@ -831,8 +831,7 @@ function createPageAnnotation() {
     pickTemplate("", "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
 };
 
-
-// font manipulation functions called by sidebar buttons
+// font size manipulation functions called by sidebar buttons
 function changeFontSize(id, changeFactor){
 	txt = document.getElementById(id);
     style = window.getComputedStyle(txt, null).getPropertyValue('font-size');
@@ -854,19 +853,33 @@ function resetFontSize(){
 	document.getElementById("TEI").style.fontSize = "initial";
 }
 
+// adds the "zeroOpacity" class to a list of elements, to make the affected elements
+// invisible (/hide them)
+function toggleOpacity(elements){
+    elements.forEach(element => {
+        if (element.classList.contains("zeroOpacity")){
+            element.classList.remove("zeroOpacity");
+        } else {
+            element.classList.add("zeroOpacity");
+        }
+    });
+}
+
+// alternative approach for the hebrewToggle-sidebar-button, which hides the text
+// but moves the text around
+function toggleHide(){
+    document.querySelectorAll("tei-reg").forEach(reg => {
+        if (reg.classList.contains("is-hidden")){
+            reg.classList.remove("is-hidden");
+        } else {
+            reg.classList.add("is-hidden");
+        }
+    });
+}
+
 // hebrew specific display
 function toggleHebrewView(){
-	document.querySelectorAll("tei-w").forEach(word => {
-		if( !word.id.includes("_")) {
-			if (word.getAttribute("vocalized") || word.getAttribute("unvocalized") !== undefined) {
-				if (word.innerHTML === word.getAttribute("vocalized")){
-					word.innerHTML = word.getAttribute("unvocalized");
-				} else {
-					word.innerHTML = word.getAttribute("vocalized");
-				}
-			}
-		}
-	});
+    toggleOpacity(document.querySelectorAll("tei-reg"));
 }
 
 

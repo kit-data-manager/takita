@@ -652,14 +652,12 @@
 
 	    	// this is specific for files in hebrew
 	    	// it enables the hebrewToggle button, which removes/adds
-	    	// vowels from/to the displayed text
+	    	// the unvocalized version of the text to the display
 	    	// the "paseq" sign "׀" will be removed as well, but it needs to be displayed
 	    	// so any word followed by a "paseq" will get a class "paseq", so the css rule applies
 	    	if (document.querySelector("tei-text").lang === "hbo"){
 	    		document.querySelectorAll("tei-w").forEach(word => {
 	    			if( !word.id.includes("_")) {
-	    		    	word.setAttribute("vocalized", word.innerHTML);
-	    		  		word.setAttribute("unvocalized", word.innerHTML.replace(/[\u0591-\u05C7]/g,""));
 	    		  		//if (word.nextElementSibling !== null && word.nextElementSibling.localName === "tei-pc"){
 	    		  		/*if (word.nextElementSibling !== null && word.nextElementSibling.innerHTML === "־"){
 	    		  			word.classList.add("maqqef");
@@ -677,6 +675,8 @@
 	    			}
 	    		});
 	    	document.getElementById("hebrewToggle").classList.remove("is-hidden");
+            // trigger the button to hide the unvocalized version on page load
+            toggleOpacity(document.querySelectorAll("tei-reg"));
 	    	}
 	    });
 

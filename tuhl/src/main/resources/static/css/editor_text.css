@@ -401,6 +401,35 @@ tei-lg[type="root"] > tei-l::before {
 	content: attr(n)". ";
 }
 
+/* B03 specifics */
+/* ------------------------------------*/
+
+/* display vocalized version above the unvocalized version */
+tei-choice {
+	display: inline-flex;
+	flex-direction: column;
+}
+
+/* make unvocalized version unselectable, but keep vocalized version selectable */
+tei-text[lang="hbo"] tei-choice{
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+tei-text[lang="hbo"] tei-orig{
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+}
+
+/* hides the unvocalized version */
+.zeroOpacity{
+	opacity: 0;
+}
+
 /* B04 specifics */
 /* ------------------------------------*/
 
@@ -412,15 +441,15 @@ tei-choice {
 
 /* make sandhied version unselectable, but keep unsandhied version selectable */
 /* TODO: make it targeting all B04 files */
-tei-div[n="Rāmāyaṇa"] tei-l,
-tei-div[n="Ṛgveda"] tei-l{
+tei-text[lang="sa-Latn"] tei-l,
+tei-text[lang="sa-Latn"] tei-l{
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
 }
 
-tei-reg {
+tei-text[lang="sa-Latn"] tei-reg {
 	-webkit-user-select: text;
 	-moz-user-select: text;
 	-ms-user-select: text;
