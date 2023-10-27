@@ -1413,7 +1413,7 @@ function storeSelectedMRWAnnos(targetList){
 						if (target.id === svg.split("\"")[1]){
 							// this iteration should not be necessary as a Set
 							// should not hold the same annotation twice
-							if (mrwAnnos.size === 0) {
+							if (mrwAnnos.length === 0) {
 								mrwAnnos.push(annotation);
 							} else {
 								if (!mrwAnnos.some(entry => entry.id === annotation.id)){
@@ -1476,7 +1476,15 @@ function annotateSelectedText(){
 		// to the metaphor annotation
         globalMrwAnnos = [];
         targetRangeList.forEach(range => {
-            globalMrwAnnos = globalMrwAnnos.concat(storeSelectedMRWAnnos(range.targetList));
+            // to prevent duplicates in the globalMrwAnnos array, it has to be cleaned
+            // after more mrw-annotations got included, which might be duplicates. This is needed, because
+            // for some texts multiple ranges get created and then for each individual
+            // range the globalMrwAnno array is appended, which can cause duplicates
+            // https://medium.com/@rivoltafilippo/javascript-merge-arrays-without-duplicates-3fbd8f4881be
+            // TODO: this can be improved by using a set. This will affect storeSelectedMRWAnnos() and
+            // the opints in the creation_templates_text.js where the globalMrwAnno array is used.
+            const tmpMrwAnnos = globalMrwAnnos.concat(storeSelectedMRWAnnos(range.targetList));
+            globalMrwAnnos = tmpMrwAnnos.filter((item, idx) => tmpMrwAnnos.indexOf(item) === idx)
         });
 
 		// set globalSelectedText so it can be displayed in the modal and remove all whitespaces
