@@ -441,8 +441,7 @@ tei-choice {
 
 /* make sandhied version unselectable, but keep unsandhied version selectable */
 /* TODO: make it targeting all B04 files */
-tei-text[lang="sa-Latn"] tei-l,
-tei-text[lang="sa-Latn"] tei-l{
+tei-text[lang="sa-Latn"] tei-choice{
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
@@ -454,6 +453,12 @@ tei-text[lang="sa-Latn"] tei-reg {
 	-moz-user-select: text;
 	-ms-user-select: text;
 	user-select: text;
+}
+
+/* display the sandhi syllable marker after unsandhied words*/
+.sandhiSyllableMarkerAfter::after{
+	content: "‧";
+	color: gray;
 }
 
 /* B05 specifics */

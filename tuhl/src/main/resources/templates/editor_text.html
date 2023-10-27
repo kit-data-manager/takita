@@ -71,9 +71,9 @@
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); resetFontSize()">Reset Font Size</span>
       <span class="tooltip">Reset Font Size</span>
     </li>
-    <li id="hebrewToggle" class="features-item draft is-hidden">
-      <i id="hebrewToggleButton" class="bx bx-heading features-item-icon" onclick="hideExpandedSidebar(); toggleHebrewView()"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); toggleHebrewView()">Toggle Views</span>
+    <li id="toggleViews" class="features-item draft is-hidden">
+      <i id="toggleViewsButton" class="bx bx-toggle-left features-item-icon" onclick="hideExpandedSidebar();"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar();">Toggle Views</span>
       <span class="tooltip">Toggle Views</span>
     </li>
   </ul>
@@ -654,32 +654,43 @@
                     return annotation;
                 })
             );
-
-            // B04 specific adding of a syllable marker between the unsandhied words
-            var regW = document.querySelectorAll("tei-reg>tei-w");
-            regW.forEach( word => {
-                if (word.nextElementSibling !== null){
-                        // delete whitespace between the tei-reg>tei-w elements
-                        if (word.nextSibling.nodeType == 3 && word.nextSibling.nodeValue.trim() === "") {
-                            word.nextSibling.remove();
-                        }
-                        word.append("‧");
-                    }
-            });
 	    }).then( () => {
+            // store the language of a text
+            const textLanguage = document.querySelector("tei-text").lang;
             // displaying right to left languages accordingly
-            if (document.querySelector("tei-text").lang === "hbo" ||
-                document.querySelector("tei-text").lang === "he" ||
-                document.querySelector("tei-text").lang === "arb"){
+            if (textLanguage === "hbo" ||
+                textLanguage === "he" ||
+                textLanguage === "arb"){
                 document.getElementById("TEI").dir="rtl";
             }
 
+            if(document.querySelector("tei-choice") != undefined){
+                // B04 specific adding of a syllable marker between the unsandhied words
+                // and activating the toggleViews button, which removes/adds
+	    	    // the sandhied version of the text to the display
+                if (textLanguage === "sa-Latn" ||
+                    document.querySelector("tei-choice").n === "sandhi"){
+                    var regW = document.querySelectorAll("tei-reg>tei-w");
+                    regW.forEach( word => {
+                        if (word.nextElementSibling !== null){
+                                // delete whitespace between the tei-reg>tei-w elements
+                                if (word.nextSibling.nodeType == 3 && word.nextSibling.nodeValue.trim() === "") {
+                                    word.nextSibling.remove();
+                                }
+                                word.classList.add("sandhiSyllableMarkerAfter");
+                            }
+                    });
+                    document.getElementById("toggleViews").classList.remove("is-hidden");
+                    document.getElementById("toggleViewsButton").addEventListener("click", toggleSanskritView);
+                }
+            }
+
 	    	// this is specific for files in hebrew
-	    	// it enables the hebrewToggle button, which removes/adds
+	    	// it enables the toggleViews button, which removes/adds
 	    	// the unvocalized version of the text to the display
 	    	// the "paseq" sign "׀" will be removed as well, but it needs to be displayed
 	    	// so any word followed by a "paseq" will get a class "paseq", so the css rule applies
-	    	if (document.querySelector("tei-text").lang === "hbo"){
+	    	if (textLanguage === "hbo"){
 	    		document.querySelectorAll("tei-w").forEach(word => {
 	    			if( !word.id.includes("_")) {
 	    		  		//if (word.nextElementSibling !== null && word.nextElementSibling.localName === "tei-pc"){
@@ -698,9 +709,11 @@
 	    				punct.remove();
 	    			}
 	    		});
-	    	document.getElementById("hebrewToggle").classList.remove("is-hidden");
-            // trigger the button to hide the unvocalized version on page load
-            toggleOpacity(document.querySelectorAll("tei-reg"));
+                document.getElementById("toggleViews").classList.remove("is-hidden");
+                document.getElementById("toggleViewsButton").addEventListener("click", toggleHebrewView);
+                // trigger the button to hide the unvocalized version on page load
+                document.getElementById("toggleViewsButton").click();
+                //toggleOpacity(document.querySelectorAll("tei-reg"));
 	    	}
 	    });
 

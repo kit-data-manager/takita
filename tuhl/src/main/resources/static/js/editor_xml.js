@@ -841,45 +841,41 @@ function changeFontSize(id, changeFactor){
 
 function increaseFontSize(){
 	changeFontSize("TEI", 1);
-	
 }
 
 function decreaseFontSize(){
 	changeFontSize("TEI", -1);
-	
 }
 
 function resetFontSize(){
 	document.getElementById("TEI").style.fontSize = "initial";
 }
 
-// adds the "zeroOpacity" class to a list of elements, to make the affected elements
-// invisible (/hide them)
-function toggleOpacity(elements){
-    elements.forEach(element => {
-        if (element.classList.contains("zeroOpacity")){
-            element.classList.remove("zeroOpacity");
-        } else {
-            element.classList.add("zeroOpacity");
-        }
-    });
-}
-
-// alternative approach for the hebrewToggle-sidebar-button, which hides the text
-// but moves the text around
-function toggleHide(){
-    document.querySelectorAll("tei-reg").forEach(reg => {
-        if (reg.classList.contains("is-hidden")){
-            reg.classList.remove("is-hidden");
-        } else {
-            reg.classList.add("is-hidden");
-        }
-    });
+// adds one box-icon and removes the other one from an element
+function toggleBoxIcon(element, iconA, iconB){
+    element.classList.toggle(iconA);
+    element.classList.toggle(iconB);
 }
 
 // hebrew specific display
 function toggleHebrewView(){
-    toggleOpacity(document.querySelectorAll("tei-reg"));
+    // adds the "zeroOpacity" class to a list of elements, to make the affected elements
+    // invisible (/hide them)
+    document.querySelectorAll("tei-reg").forEach(element =>{
+        element.classList.toggle("zeroOpacity");
+    });
+    // slide the toggle button to the other side
+    toggleBoxIcon(document.getElementById("toggleViewsButton"),"bx-toggle-left","bx-toggle-right");
+}
+
+// sanskrit specific display
+function toggleSanskritView(){
+    // hides elements/text by adding the "is-hidden" class (form chota), but moves the text around a bit
+    document.querySelectorAll("tei-orig").forEach(element =>{
+        element.classList.toggle("is-hidden");
+    });
+    // slide the toggle button to the other side
+    toggleBoxIcon(document.getElementById("toggleViewsButton"),"bx-toggle-left","bx-toggle-right");
 }
 
 
