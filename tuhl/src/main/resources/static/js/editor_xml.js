@@ -831,8 +831,7 @@ function createPageAnnotation() {
     pickTemplate("", "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
 };
 
-
-// font manipulation functions called by sidebar buttons
+// font size manipulation functions called by sidebar buttons
 function changeFontSize(id, changeFactor){
 	txt = document.getElementById(id);
     style = window.getComputedStyle(txt, null).getPropertyValue('font-size');
@@ -842,31 +841,41 @@ function changeFontSize(id, changeFactor){
 
 function increaseFontSize(){
 	changeFontSize("TEI", 1);
-	
 }
 
 function decreaseFontSize(){
 	changeFontSize("TEI", -1);
-	
 }
 
 function resetFontSize(){
 	document.getElementById("TEI").style.fontSize = "initial";
 }
 
+// adds one box-icon and removes the other one from an element
+function toggleBoxIcon(element, iconA, iconB){
+    element.classList.toggle(iconA);
+    element.classList.toggle(iconB);
+}
+
 // hebrew specific display
 function toggleHebrewView(){
-	document.querySelectorAll("tei-w").forEach(word => {
-		if( !word.id.includes("_")) {
-			if (word.getAttribute("vocalized") || word.getAttribute("unvocalized") !== undefined) {
-				if (word.innerHTML === word.getAttribute("vocalized")){
-					word.innerHTML = word.getAttribute("unvocalized");
-				} else {
-					word.innerHTML = word.getAttribute("vocalized");
-				}
-			}
-		}
-	});
+    // adds the "zeroOpacity" class to a list of elements, to make the affected elements
+    // invisible (/hide them)
+    document.querySelectorAll("tei-reg").forEach(element =>{
+        element.classList.toggle("zeroOpacity");
+    });
+    // slide the toggle button to the other side
+    toggleBoxIcon(document.getElementById("toggleViewsButton"),"bx-toggle-left","bx-toggle-right");
+}
+
+// sanskrit specific display
+function toggleSanskritView(){
+    // hides elements/text by adding the "is-hidden" class (form chota), but moves the text around a bit
+    document.querySelectorAll("tei-orig").forEach(element =>{
+        element.classList.toggle("is-hidden");
+    });
+    // slide the toggle button to the other side
+    toggleBoxIcon(document.getElementById("toggleViewsButton"),"bx-toggle-left","bx-toggle-right");
 }
 
 
@@ -1404,7 +1413,7 @@ function storeSelectedMRWAnnos(targetList){
 						if (target.id === svg.split("\"")[1]){
 							// this iteration should not be necessary as a Set
 							// should not hold the same annotation twice
-							if (mrwAnnos.size === 0) {
+							if (mrwAnnos.length === 0) {
 								mrwAnnos.push(annotation);
 							} else {
 								if (!mrwAnnos.some(entry => entry.id === annotation.id)){
@@ -1467,7 +1476,15 @@ function annotateSelectedText(){
 		// to the metaphor annotation
         globalMrwAnnos = [];
         targetRangeList.forEach(range => {
-            globalMrwAnnos = globalMrwAnnos.concat(storeSelectedMRWAnnos(range.targetList));
+            // to prevent duplicates in the globalMrwAnnos array, it has to be cleaned
+            // after more mrw-annotations got included, which might be duplicates. This is needed, because
+            // for some texts multiple ranges get created and then for each individual
+            // range the globalMrwAnno array is appended, which can cause duplicates
+            // https://medium.com/@rivoltafilippo/javascript-merge-arrays-without-duplicates-3fbd8f4881be
+            // TODO: this can be improved by using a set. This will affect storeSelectedMRWAnnos() and
+            // the opints in the creation_templates_text.js where the globalMrwAnno array is used.
+            const tmpMrwAnnos = globalMrwAnnos.concat(storeSelectedMRWAnnos(range.targetList));
+            globalMrwAnnos = tmpMrwAnnos.filter((item, idx) => tmpMrwAnnos.indexOf(item) === idx)
         });
 
 		// set globalSelectedText so it can be displayed in the modal and remove all whitespaces

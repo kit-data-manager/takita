@@ -69,6 +69,7 @@
             {
                 title: [[#{col_name.id}]],
                 field: "id",
+                visible: false,
             },
             {
                 title: [[#{col_name.title}]],
@@ -99,13 +100,6 @@
                 field: "noPages",
                 headerMenu: headerMenu(),
                 visible: true,
-            },
-            {
-                title: [[#{col_name.hasAlgoAnnos}]],
-                field: "hasAlgorithmAnnotations",
-                headerMenu: headerMenu(),
-                visible: true,
-                formatter:"tickCross"
             },
             {
                 title: [[#{col_name.created}]],
@@ -312,23 +306,29 @@
             cardBody.setAttribute('class', 'card card-body no-wrap');
             let outerRow = document.createElement('div');
             outerRow.setAttribute('class', 'row');
+            // TODO: CUSTOMISE set displayImages to "true", if you want to have images displayed
+            // in the DO-overview table
+            const displayImages = false;
             thumbnails.forEach(function (item, index) {
                 let col = document.createElement('div');
                 col.setAttribute('class', 'mx-1 col-auto');
-                let imgRow = document.createElement('div');
-                imgRow.setAttribute('class', 'row');
-                let imgCol = document.createElement('div');
-                imgCol.setAttribute('class', 'col');
-                let img = document.createElement('img');
-                img.setAttribute('class', 'img-thumbnail');
-                // adds text_thumb.jpg if no thumb is provided/found
-                if (item.thumbNail === undefined){
-                    img.src = window.CONTEXTPATH + "images/text_thumb.jpg";
-                } else {
-                    img.setAttribute('src', item.thumbNail);
+                if (displayImages) {
+                    let imgRow = document.createElement('div');
+                    imgRow.setAttribute('class', 'row');
+                    let imgCol = document.createElement('div');
+                    imgCol.setAttribute('class', 'col');
+                    let img = document.createElement('img');
+                    img.setAttribute('class', 'img-thumbnail');
+                    // adds text_thumb.jpg if no thumb is provided/found
+                    if (item.thumbNail === undefined){
+                        img.src = window.CONTEXTPATH + "images/text_thumb.jpg";
+                    } else {
+                        img.setAttribute('src', item.thumbNail);
+                    }
+                    imgCol.appendChild(img);
+                    imgRow.appendChild(imgCol);
+                    col.appendChild(imgRow);
                 }
-                imgCol.appendChild(img);
-                imgRow.appendChild(imgCol);
                 let subtitleRow = document.createElement('div');
                 subtitleRow.setAttribute('class', 'row mb-2 mt-1 justify-content-center');
                 let link = document.createElement('a');
@@ -342,7 +342,6 @@
                 label.innerText = item.pageNumber;
                 subtitleRow.appendChild(link);
                 subtitleRow.appendChild(label);
-                col.appendChild(imgRow);
                 col.appendChild(subtitleRow);
                 outerRow.appendChild(col);
             })
