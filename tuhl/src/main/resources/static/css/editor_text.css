@@ -280,11 +280,17 @@ tei-head {
 	font-weight: bold;
 }
 
-/* linebreak after a title and a paragraph */
-tei-head::after, 
-tei-p::after {
-	content: "\00000a";
-	white-space: pre-wrap;
+/* linebreak after a title, a paragraph
+	chapter/part */
+tei-head, 
+tei-p,
+tei-div,
+tei-ab {
+	display: block;
+}
+
+tei-ab {
+	margin-bottom: .5em;
 }
 
 /* linebreak before the start of a new line */
@@ -495,6 +501,37 @@ tei-fw[type="folio"]{
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+}
+
+/* C04 specifics */
+/* ------------------------------------*/
+
+tei-div[type=replies] {
+    margin-left: 1em;
+    border-left: 1px solid gray;
+    padding-left: .5em;
+}
+
+tei-div[type=orphan-posts]::before {
+    content: "Orphan Posts: "
+}
+
+tei-post {
+    display: block;
+    border-bottom: 1px solid purple;
+    padding: .5em 0;
+    margin-bottom: 1em;
+}
+
+tei-post:before {
+    content: attr(who);
+    color: gray;
+}
+
+tei-numeric::before {
+    content: "Score: " attr(value);
+    padding-bottom: 1em;
+    color: gray;
 }
 
 /* end of subproject specifics */
