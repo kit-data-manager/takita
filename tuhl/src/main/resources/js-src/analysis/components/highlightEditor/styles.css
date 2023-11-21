@@ -1,0 +1,54 @@
+.ql-toolbar.toolbar {
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    background: white;
+}
+
+.ql-toolbar.toolbar button.ql-mrw-direct,
+.ql-toolbar.toolbar button.ql-mrw-mflag,
+.ql-toolbar.toolbar button.ql-mrw-implicit,
+.ql-toolbar.toolbar button.ql-mrw-indirect {
+    width: 72px;
+    height: 48px;
+    border: 1px solid lightgray;
+    border-radius: 5px;
+    margin: 1px;
+    padding: 5px 8px;
+    text-align: center;
+}
+.ql-snow.ql-toolbar button.ql-mrw-direct:hover,
+.ql-snow.ql-toolbar button.ql-mrw-mflag:hover,
+.ql-snow.ql-toolbar button.ql-mrw-implicit:hover,
+.ql-snow.ql-toolbar button.ql-mrw-indirect:hover,
+.ql-toolbar.toolbar button.ql-mrw-direct.ql-active,
+.ql-toolbar.toolbar button.ql-mrw-mflag.ql-active,
+.ql-toolbar.toolbar button.ql-mrw-implicit.ql-active,
+.ql-toolbar.toolbar button.ql-mrw-indirect.ql-active {
+    background-color: var(--highlight-border-color);
+}
+
+.ql-container {
+    background: white;
+    font-size: 16px;
+}
+
+.ql-editor .mrw-direct,
+.ql-editor .mrw-implicit,
+.ql-editor .mrw-indirect,
+.ql-editor .mrw-mflag {
+    border-radius: 3px;
+    padding: 4px 2px 1px;
+}
+
+.ql-editor .mrw-direct {
+    background-color: var(--mrw-direct-bg-color);
+}
+.ql-editor .mrw-implicit {
+    background-color: var(--mrw-implicit-bg-color);
+}
+.ql-editor .mrw-indirect {
+    background-color: var(--mrw-indirect-bg-color);
+}
+.ql-editor .mrw-mflag {
+    background-color: var(--mrw-mflag-bg-color);
+}

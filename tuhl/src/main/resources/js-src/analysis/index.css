@@ -1,0 +1,126 @@
+/**
+ * All the CSS variables to be used by the various styled components:
+ */
+:root {
+  --default-color: black;
+  --sidebar-color: #b5b5be;
+  --placeholder-color: #666;
+  --primary-color: : #fafafb;;
+  --secondary-color: : #fafafb;;
+  --highlight-color: white;
+
+  --default-bg-color: white;
+  --page-bg-color: #ededed;
+  --sidebar-bg-color: #292932;
+  --primary-bg-color: darkblue;
+  --secondary-bg-color: magenta;
+  --highlight-bg-color: #333;
+  --error-bg-color: #e6d8d8;
+
+  --default-border-color: #ccc;
+  --primary-border-color: darkblue;
+  --secondary-border-color: magenta;
+  --highlight-border-color: #ededed;
+
+  --mrw-direct-bg-color: #ffd3fc;
+  --mrw-implicit-bg-color: lightblue;
+  --mrw-indirect-bg-color: #daa3ff;
+  --mrw-mflag-bg-color: #fafa88;
+
+  --max-content-width: 960px;
+}
+
+.debug {
+  display: none;
+}
+
+/**
+ * CSS reset and global styles.
+ * 
+ * Note: the vast majority of styling happens in the actual components.
+ */
+
+* {
+  border: 0;
+  box-sizing: inherit;
+  -webkit-font-smoothing: auto;
+  font-weight: inherit;
+  margin: 0;
+  outline: 0;
+  padding: 0;
+  text-decoration: none;
+  text-rendering: optimizeLegibility;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+html {
+  display: flex;
+  min-height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 16px;
+  line-height: 1.5;
+  background-color: var(--page-bg-color);
+  color: var(--default-color);
+  padding: 0;
+  margin: 0;
+  -webkit-font-smoothing: auto;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  font-family: Sora, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', Helvetica, sans-serif;
+}
+body {
+  background: var(--page-bg-color);
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+  box-sizing: border-box;
+  width: 100%;
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+}
+#root {
+  height: 100vh;
+  position: relative;
+}
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  monospace;
+}
+a {
+  color: currentColor;
+  text-decoration: none;
+}
+a:hover {
+  cursor: pointer;
+}
+textarea {
+  resize: none;
+}
+::-moz-selection {
+  /* Code for Firefox */
+  background: var(--highlight-bg-color);
+  color: var(--highlight-color);
+}
+::selection {
+  background: var(--highlight-bg-color);
+  color: var(--highlight-color);
+}
+::-webkit-input-placeholder {
+  /* WebKit, Blink, Edge */
+  color: var(--placeholder-color);
+}
+:-moz-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: var(--placeholder-color);
+  opacity: 1;
+}
+::-moz-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: var(--placeholder-color);
+  opacity: 1;
+}
+:-ms-input-placeholder {
+  /* Internet Explorer 10-11 */
+  color: var(--placeholder-color);
+}

@@ -8,14 +8,15 @@
     <meta name="description" content="Metaphor Analysis Tool" />
     <link rel="manifest" href="/manifest.json" />
     <title>Metaphor Analysis Tool</title>
-    <script defer="defer" th:src="@{/js/analysis-main.js}"></script>
-    <link th:href="@{/css/analysis-main.css}" rel="stylesheet">
+    <script defer="defer" th:src="@{/js/analysis.js}"></script>
+    <link href="https://cdn.quilljs.com/1.0.0/quill.snow.css" rel="stylesheet" />
+    <link th:href="@{/css/analysis.css}" rel="stylesheet">
 </head>
 <body><noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
     <script th:inline="javascript">
-	window.ANALYSIS_TOOL_BASENAME = /*[[@{/}]]*/ ;
-    	window.ANALYSIS_TOOL_API_URL = /*[[@{/analysis_api}]]*/ ;
+        window.ANALYSIS_TOOL_BASENAME = /*[[@{/}]]*/ ;
+        window.ANALYSIS_TOOL_API_URL = /*[[@{/analysis_api}]]*/ ;
     </script>
 </body>
 </html>
