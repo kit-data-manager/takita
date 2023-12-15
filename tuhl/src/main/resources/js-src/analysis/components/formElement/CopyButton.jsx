@@ -3,8 +3,7 @@ import React from 'react';
 import { IconButton } from '../button';
 import { Icon } from '../icon';
 
-
-export const CopyButton = ({value}) => {
+export const CopyButton = ({ value }) => {
   const handleClick = async (ev) => {
     ev.preventDefault();
     try {

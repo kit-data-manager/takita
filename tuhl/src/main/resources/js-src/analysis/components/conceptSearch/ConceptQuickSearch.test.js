@@ -8,7 +8,6 @@ import { DetailedConcept } from '../../data/models/appstate';
 // SUT
 import { ConceptQuickSearch } from './ConceptQuickSearch';
 
-
 let container = null;
 beforeEach(() => {
   container = document.createElement('div');
@@ -28,8 +27,7 @@ it('throws without searchFunction', () => {
   jest.spyOn(console, 'error');
   console.error.mockImplementation(() => {});
 
-  expect(() => render(<ConceptQuickSearch onAdd={() => undefined}/>, container))
-    .toThrow();
+  expect(() => render(<ConceptQuickSearch onAdd={() => undefined} />, container)).toThrow();
 
   console.error.mockRestore();
 });
@@ -38,8 +36,7 @@ it('throws without onAdd', () => {
   jest.spyOn(console, 'error');
   console.error.mockImplementation(() => {});
 
-  expect(() => render(<ConceptQuickSearch searchFunction={() => undefined}/>, container))
-    .toThrow();
+  expect(() => render(<ConceptQuickSearch searchFunction={() => undefined} />, container)).toThrow();
 
   console.error.mockRestore();
 });

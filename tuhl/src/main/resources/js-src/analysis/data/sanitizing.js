@@ -4,7 +4,7 @@
  * the response data is not properly escaped, so it is not valid JSON.
  * Until WAPS is fixed, we try to work around this issue with crude
  * string replacement heuristics. :/
- * 
+ *
  * See https://git.noc.ruhr-uni-bochum.de/sfb1475-inf/takita/-/issues/132 for details.
  */
 
@@ -17,14 +17,13 @@
  * @param {String} lookingFor character which potentially is a matching bracket
  * @returns {Number} position of matching bracket; returns null if there is no match
  */
-export const findMatchingBracket = (string, start, matchingFor='[', lookingFor=']') => {
+export const findMatchingBracket = (string, start, matchingFor = '[', lookingFor = ']') => {
   let idx = start + 1;
   let count = 1;
   while (idx < string.length) {
     if (string[idx] === lookingFor) {
       count--;
-    }
-    else if (string[idx] === matchingFor) {
+    } else if (string[idx] === matchingFor) {
       count++;
     }
     if (count === 0) {
@@ -40,12 +39,12 @@ export const findMatchingBracket = (string, start, matchingFor='[', lookingFor='
  */
 export const extractAuxText = (analysisString) => {
   // Extract auxiliaryText data:
-  const auxStart = analysisString.indexOf('"auxiliaryText":{') + '"auxiliaryText":{'.length-1;
+  const auxStart = analysisString.indexOf('"auxiliaryText":{') + '"auxiliaryText":{'.length - 1;
   const auxEnd = findMatchingBracket(analysisString, auxStart, '{', '}') + 1; // +1 to include the matching bracket!
   return {
     before: analysisString.substring(0, auxStart),
     auxText: analysisString.substring(auxStart, auxEnd),
-    after: analysisString.substring(auxEnd)
+    after: analysisString.substring(auxEnd),
   };
 };
 
@@ -54,32 +53,27 @@ export const extractAuxText = (analysisString) => {
  */
 export const extractTertiaComment = (analysisString) => {
   const startPattern = '"tertiaComment":"';
-  const start = analysisString.indexOf(startPattern) + startPattern.length-1;
-  const endPatterns = [
-    '","propositions"',
-    '","auxiliaryText"',
-    '","mappings"',
-    '","linkings"',
-    '"}',
-  ];
+  const start = analysisString.indexOf(startPattern) + startPattern.length - 1;
+  const endPatterns = ['","propositions"', '","auxiliaryText"', '","mappings"', '","linkings"', '"}'];
   let end;
   for (const pattern of endPatterns) {
     end = analysisString.indexOf(pattern, start);
-    if (end !== -1) { break; }
-  };
+    if (end !== -1) {
+      break;
+    }
+  }
   // Extract the tertiaComment segment, including the JSON-field-delimiting quotes.
   return {
     before: analysisString.substring(0, start),
-    tertiaComment: analysisString.substring(start, end+1),
-    after: analysisString.substring(end+1),
+    tertiaComment: analysisString.substring(start, end + 1),
+    after: analysisString.substring(end + 1),
   };
 };
-
 
 /**
  * Fix wrongly escaped newlines and unescaped quotation marks in strings
  * which are part of user provided data.
- * 
+ *
  * The string _content_ should start and end with quotation marks, to indicate
  * the beginning and end of the JSON string value. Only the quotation marks
  * inside of that, and all newlines, potentially need fixing.
@@ -95,10 +89,9 @@ export const sanitize = (string) => {
     const fragment = `{"key":${string}}`;
     JSON.parse(fragment);
     return string;
-  }
-  catch  {
+  } catch {
     // Remove the enclosing quotes
-    let sanitized = string.substring(1, string.length-1);
+    let sanitized = string.substring(1, string.length - 1);
     // Escape all the remaining quotation marks
     sanitized = sanitized.replaceAll('"', '\\"');
     // Remove superfluous escapes before newlines
@@ -107,7 +100,6 @@ export const sanitize = (string) => {
     return `"${sanitized}"`;
   }
 };
-
 
 /**
  * Split a string, which contains the auxiliaryText of an analysis, into
@@ -120,64 +112,63 @@ export const sanitize = (string) => {
  * @returns {Array} sorted list of text segments, containing text, boundaries, and type information
  */
 export const splitInserts = (auxText) => {
-    // Extract all the `insert` fields from auxiliaryText.
-    const insertStarts = [];
-    const pattern = /"insert":/g;
-    let matches;
-    // eslint-disable-next-line no-cond-assign,no-unused-vars
-    while (matches = pattern.exec(auxText)) {
-      insertStarts.push(pattern.lastIndex);
-    }
-    const inserts = insertStarts.map(startIdx => {
-      // NOTE: this can break for certain string contents, but there is no
-      // 100% robust solution.
-      const endIdx = auxText.indexOf('"}', startIdx) + 1;
-      return {
-        startIdx,
-        endIdx,
-        text: auxText.substring(startIdx, endIdx),
-        type: 'insert',
+  // Extract all the `insert` fields from auxiliaryText.
+  const insertStarts = [];
+  const pattern = /"insert":/g;
+  let matches;
+  // eslint-disable-next-line no-cond-assign,no-unused-vars
+  while ((matches = pattern.exec(auxText))) {
+    insertStarts.push(pattern.lastIndex);
+  }
+  const inserts = insertStarts.map((startIdx) => {
+    // NOTE: this can break for certain string contents, but there is no
+    // 100% robust solution.
+    const endIdx = auxText.indexOf('"}', startIdx) + 1;
+    return {
+      startIdx,
+      endIdx,
+      text: auxText.substring(startIdx, endIdx),
+      type: 'insert',
+    };
+  });
+
+  // Extract all the in-between strings.
+  let latestEnd = 0;
+  const nonInserts = inserts.flatMap(({ startIdx, endIdx }) => {
+    let inbetween;
+    if (startIdx > latestEnd) {
+      inbetween = {
+        startIdx: latestEnd,
+        endIdx: startIdx,
+        text: auxText.substring(latestEnd, startIdx),
+        type: 'non-insert',
       };
-    });
-
-    // Extract all the in-between strings.
-    let latestEnd = 0;
-    const nonInserts = inserts.flatMap(({startIdx, endIdx}) => {
-      let inbetween;
-      if (startIdx > latestEnd) {
-        inbetween = {
-          startIdx: latestEnd,
-          endIdx: startIdx,
-          text: auxText.substring(latestEnd, startIdx),
-          type: 'non-insert',
-        };
-      }
-      else {
-        inbetween = [];
-      }
-      latestEnd = endIdx;
-      return inbetween;
-    });
-    // No inserts at all. Make sure to at least preserve the empty object.
-    if (!inserts.length) {
-      nonInserts.push({
-        startIdx: 0,
-        endIdx: 2,
-        text: '{}',
-        type: 'non-insert',
-      });
+    } else {
+      inbetween = [];
     }
-    // Preserve non-insert parts at the end of the whole auxString structure.
-    else if (inserts.length && inserts.slice(-1)[0].endIdx < auxText.length) {
-      nonInserts.push({
-        startIdx: inserts.slice(-1)[0].endIdx,
-        endIdx: auxText.length,
-        text: auxText.substring(inserts.slice(-1)[0].endIdx),
-        type: 'non-insert',
-      });
-    }
+    latestEnd = endIdx;
+    return inbetween;
+  });
+  // No inserts at all. Make sure to at least preserve the empty object.
+  if (!inserts.length) {
+    nonInserts.push({
+      startIdx: 0,
+      endIdx: 2,
+      text: '{}',
+      type: 'non-insert',
+    });
+  }
+  // Preserve non-insert parts at the end of the whole auxString structure.
+  else if (inserts.length && inserts.slice(-1)[0].endIdx < auxText.length) {
+    nonInserts.push({
+      startIdx: inserts.slice(-1)[0].endIdx,
+      endIdx: auxText.length,
+      text: auxText.substring(inserts.slice(-1)[0].endIdx),
+      type: 'non-insert',
+    });
+  }
 
-    return inserts.concat(nonInserts).sort((a, b) => a.startIdx - b.startIdx);
+  return inserts.concat(nonInserts).sort((a, b) => a.startIdx - b.startIdx);
 };
 
 /**
@@ -189,11 +180,10 @@ export const processAuxText = (analysisString) => {
   // Extract all the string segments which form an "insert", and all the rest in between:
   const segments = splitInserts(auxText);
   const sanitized = segments
-    .map(s => {
+    .map((s) => {
       if (s.type === 'insert') {
         return sanitize(s.text);
-      }
-      else {
+      } else {
         return s.text;
       }
     })

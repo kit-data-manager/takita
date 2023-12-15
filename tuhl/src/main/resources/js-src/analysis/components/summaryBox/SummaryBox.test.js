@@ -4,7 +4,6 @@ import { render, screen } from '@testing-library/react';
 
 import SummaryBox from './SummaryBox';
 
-
 let container = null;
 let analysis = null;
 
@@ -33,7 +32,7 @@ it('renders without analysis prop', () => {
 
 it('renders comment', () => {
   analysis.getComment = () => 'a comment';
-  render(<SummaryBox showComments analysis={analysis}/>, container);
+  render(<SummaryBox showComments analysis={analysis} />, container);
   expect(screen.getByText('a comment')).toBeInTheDocument();
 });
 
@@ -49,10 +48,10 @@ it('renders text summary', () => {
 
 it('renders mapping summary', () => {
   analysis.getMappingTables = () => {
-    return [[{source: {value: 'blabla', step: 'open'}, target: {value: 'blublu', step:'complete'}}]];
+    return [[{ source: { value: 'blabla', step: 'open' }, target: { value: 'blublu', step: 'complete' } }]];
   };
   analysis.getMappingTableAt = () => {
-    return [{source: {value: 'blabla', step: 'open'}, target: {value: 'blublu', step:'complete'}}];
+    return [{ source: { value: 'blabla', step: 'open' }, target: { value: 'blublu', step: 'complete' } }];
   };
   render(<SummaryBox showMappings analysis={analysis} />, container);
   expect(screen.getByText('blublu')).toBeInTheDocument();

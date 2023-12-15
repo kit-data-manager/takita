@@ -1,6 +1,5 @@
 import styled from 'styled-components';
 
-
 const SummaryBox = styled.div`
   border: 1px solid var(--default-border-color);
 
@@ -12,6 +11,5 @@ const SummaryBox = styled.div`
     margin-top: 0;
   }
 `;
-
 
 export { SummaryBox };

@@ -1,7 +1,4 @@
-import {
-  getConceptSearchURL,
-  sanitizeSearchQuery,
-} from '../utils';
+import { getConceptSearchURL, sanitizeSearchQuery } from '../utils';
 
 /**
  * Send a query to the configured thesaurus.
@@ -31,22 +28,21 @@ export const searchForConcept = async (term) => {
   return data;
 };
 
-
 /**
  * @param {String} query the original search query
  * @param {String} selectedURI the concept URI which has been selected, if any, or null
  * @param {Number} selectedRank the rank of the selected URI, if any, or null
  * @param {String} annoURI the URI of the analysis annotation where the search has been done
- * @param {String} endpoint the endpoint where this data should be sent to 
+ * @param {String} endpoint the endpoint where this data should be sent to
  */
-export const storeSearchAnalytics = async (query, selectedURI, selectedRank, annoURI, endpoint=null) => {
+export const storeSearchAnalytics = async (query, selectedURI, selectedRank, annoURI, endpoint = null) => {
   const uri = endpoint || `${getConceptSearchURL()}store_data`;
   const payload = JSON.stringify({
-    "query": query,
-    "selected": selectedURI || null,
-    "selectedRank": (selectedRank || selectedRank === 0) ? selectedRank : null,
-    "anno": annoURI,
-    "datetime": new Date().toISOString(),
+    query: query,
+    selected: selectedURI || null,
+    selectedRank: selectedRank || selectedRank === 0 ? selectedRank : null,
+    anno: annoURI,
+    datetime: new Date().toISOString(),
   });
   console.log('logging search performance: ', payload);
   const resp = await fetch(uri, {

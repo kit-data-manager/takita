@@ -18,13 +18,11 @@ export const StyledLabel = styled.label`
 
   &:hover > input,
   &:hover > textarea {
-    border-color: ${props =>
-      props.disabled ? 'var(--default-border-color)' : 'var(--default-border-color)'};
+    border-color: ${(props) => (props.disabled ? 'var(--default-border-color)' : 'var(--default-border-color)')};
   }
   &:hover > input:focus,
   &:hover > textarea:focus {
-    border-color: ${props =>
-      props.disabled ? 'var(--default-bg-color' : 'var(--default-bg-color)'};
+    border-color: ${(props) => (props.disabled ? 'var(--default-bg-color' : 'var(--default-bg-color)')};
   }
 `;
 
@@ -41,26 +39,22 @@ export const StyledPrefixLabel = styled.label`
     margin-left: 2px;
   }
   &:hover > input {
-    border-color: ${props =>
-      props.disabled ? 'var(--default-border-color)' : 'var(--default-border-color)'};
+    border-color: ${(props) => (props.disabled ? 'var(--default-border-color)' : 'var(--default-border-color)')};
   }
 `;
 
 export const StyledInput = styled.input`
   flex: 1 0 auto;
-  background: ${props =>
-    props.disabled ? 'var(--default-bg-color)' : 'var(--default-bg-color)'};
+  background: ${(props) => (props.disabled ? 'var(--default-bg-color)' : 'var(--default-bg-color)')};
   font-weight: 400;
   width: 100%;
   font-size: 14px;
-  border: 2px solid
-    ${props =>
-      props.disabled ? 'var(--default-border-color)' : 'var(--default-border-color)'};
+  border: 2px solid ${(props) => (props.disabled ? 'var(--default-border-color)' : 'var(--default-border-color)')};
   border-radius: 4px;
   padding: 8px 12px;
   margin-top: 2px;
   box-shadow: none;
-  ${props =>
+  ${(props) =>
     props.type === 'checkbox' &&
     css`
       flex: initial;
@@ -98,12 +92,11 @@ export const StyledHiddenInput = styled.input`
 export const StyledCheckboxWrapper = styled(FlexRow)`
   color: var(--default-color);
   display: flex;
-  align-items: ${props => props.align};
+  align-items: ${(props) => props.align};
   line-height: 1.4;
-  cursor: ${props => (props.disabled ? 'not-allowed' : 'pointer')};
+  cursor: ${(props) => (props.disabled ? 'not-allowed' : 'pointer')};
   &:hover {
-    color: ${({ theme, disabled }) =>
-      disabled ? 'var(--default-color)' : 'var(--default-color)'};
+    color: ${({ _theme, disabled }) => (disabled ? 'var(--default-color)' : 'var(--default-color)')};
   }
   > div {
     margin-left: -6px;
@@ -139,9 +132,8 @@ export const InputOverlay = styled.div`
   background-color: var(--default-bg-color);
   opacity: 0.6;
   padding: 8px;
-  border-radius: ${props =>
-    props.type === 'user' ? `${props.size}px` : '8px'};
-  opacity: ${props => (props.visible ? '1' : '0')};
+  border-radius: ${(props) => (props.type === 'user' ? `${props.size}px` : '8px')};
+  opacity: ${(props) => (props.visible ? '1' : '0')};
   &:hover {
     opacity: 1;
     + img,

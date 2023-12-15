@@ -3,7 +3,7 @@ import { cloneDeep } from 'lodash';
 /**
  * This models what we frequently call "mapping" i.e. the connection
  * of an expression from any source domain to another expression from
- * any target domain. 
+ * any target domain.
  */
 
 /* Specifies the step during which this value was given. */

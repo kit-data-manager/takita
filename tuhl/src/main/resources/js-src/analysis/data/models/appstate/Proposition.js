@@ -32,8 +32,12 @@ class Proposition {
   constructor(data = {}) {
     const temp = cloneDeep(template);
     const prop = { ...temp, ...data };
-    if (!Object.values(typeEnum).includes(prop.type)) { prop.type = template.type; }
-    if (!Object.values(evidenceEnum).includes(prop.evidence)) { prop.evidence = template.evidence; }
+    if (!Object.values(typeEnum).includes(prop.type)) {
+      prop.type = template.type;
+    }
+    if (!Object.values(evidenceEnum).includes(prop.evidence)) {
+      prop.evidence = template.evidence;
+    }
     Object.assign(this, prop);
   }
 }

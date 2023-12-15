@@ -1,7 +1,6 @@
 import React from 'react';
 
-const Toolbar = (props) => {
-
+const Toolbar = (_props) => {
   return (
     <div className='toolbar' id='toolbar'>
       <button className='ql-mrw-indirect'>MRW (indirect)</button>

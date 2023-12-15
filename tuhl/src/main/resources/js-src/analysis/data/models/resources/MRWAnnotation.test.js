@@ -24,7 +24,7 @@ describe('MRW annotation functionality', () => {
 
   it('deals with purpose "classifying", too', () => {
     const data = cloneDeep(mockMRWAnnoData);
-    data.body = data.body.map(b => {
+    data.body = data.body.map((b) => {
       if (b.purpose === 'tagging') {
         b.purpose = 'classifying';
       }

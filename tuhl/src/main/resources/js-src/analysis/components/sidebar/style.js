@@ -33,7 +33,7 @@ const StyledSideBar = styled.div`
   background-color: var(--sidebar-bg-color);
   transition: all 0.5s ease;
   overflow-y: scroll;
-  z-Index: 5;
+  z-index: 5;
 `;
 
 const ToggleExpand = styled.span`

@@ -4,7 +4,6 @@ import Icon from '../icon';
 
 import * as S from './style';
 
-
 const Message = ({ text, type }) => {
   switch (type) {
     case 'success':
@@ -31,26 +30,26 @@ const MessageBox = ({ messages, onClear, readOnly }) => {
           return <Message key={uid} text={text} type={type} />;
         }
         return <Message key={uid} text={text} type={'obsolete'} />;
-      }
-      catch {
+      } catch {
         console.warn('invalid message received:');
         console.warn(msg);
         return undefined;
       }
-    }).filter(msg => msg !== undefined); 
+    })
+    .filter((msg) => msg !== undefined);
 
   return (
     <>
-    { msgList.length !== 0 &&
-    <S.MessageBox readOnly>
-      { !readOnly &&
-      <S.CloseButton onClick={onClear}>
-        <Icon glyph='view-close' title='close' />
-      </S.CloseButton>
-      }
-      { msgList }
-    </S.MessageBox>
-    }
+      {msgList.length !== 0 && (
+        <S.MessageBox readOnly>
+          {!readOnly && (
+            <S.CloseButton onClick={onClear}>
+              <Icon glyph='view-close' title='close' />
+            </S.CloseButton>
+          )}
+          {msgList}
+        </S.MessageBox>
+      )}
     </>
   );
 };

@@ -1,4 +1,4 @@
-import styled from 'styled-components'; 
+import styled from 'styled-components';
 
 export const StyledPropositionPreview = styled.li`
   padding-bottom: 10px;

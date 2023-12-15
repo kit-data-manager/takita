@@ -1,11 +1,11 @@
-import React from "react";
+import React from 'react';
 import { NavLink } from 'react-router-dom';
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const A = styled.a`
   display: flex;
   align-items: center;
-  flex: none;  
+  flex: none;
 `;
 
 export const StyledLink = styled(NavLink)`
@@ -15,7 +15,7 @@ export const StyledLink = styled(NavLink)`
 
   &.active.navigation {
     background-color: var(--highlight-bg-color);
-    color: var(--highlight-color)
+    color: var(--highlight-color);
   }
 `;
 
@@ -30,17 +30,17 @@ export const wrapLink = (Component, props) => {
 
   if (href) {
     return (
-      <A
-        href={href}
-        rel={!target ? 'noopener noreferrer' : undefined}
-        target={target || '_blank'}
-      >
+      <A href={href} rel={!target ? 'noopener noreferrer' : undefined} target={target || '_blank'}>
         {button}
       </A>
     );
   }
   if (to) {
-    return <StyledLink to={to} end className={isNav ? 'navigation' : ''}>{button}</StyledLink>;
+    return (
+      <StyledLink to={to} end className={isNav ? 'navigation' : ''}>
+        {button}
+      </StyledLink>
+    );
   }
   return button;
 };

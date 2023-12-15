@@ -1,5 +1,1 @@
-export {
-  loadAnalysis,
-  storeAnalysis,
-  searchForConcept,
-} from './api';
+export { loadAnalysis, storeAnalysis, searchForConcept } from './api';

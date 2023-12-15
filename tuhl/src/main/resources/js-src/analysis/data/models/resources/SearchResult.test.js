@@ -11,13 +11,13 @@ describe('searched concepts with parent concepts', () => {
 
   beforeEach(() => {
     data = cloneDeep(mockConceptSearchData);
-    concepts = data.results.map(r => new SearchResult(r));
+    concepts = data.results.map((r) => new SearchResult(r));
   });
 
   test('instantiation works', () => {
-    concepts.forEach(concept => {
+    concepts.forEach((concept) => {
       expect(concept).toBeInstanceOf(SearchResult);
-    })
+    });
   });
 
   test('toConcept() exists', () => {
@@ -25,8 +25,8 @@ describe('searched concepts with parent concepts', () => {
   });
 
   test('create DetailedConcept', () => {
-    const detailed = concepts.map(c => c.toConcept());
-    detailed.forEach(d => {
+    const detailed = concepts.map((c) => c.toConcept());
+    detailed.forEach((d) => {
       expect(d).toBeInstanceOf(DetailedConcept);
     });
   });
@@ -38,7 +38,7 @@ describe('ensure DetailedConcept works correctly', () => {
 
   beforeEach(() => {
     data = cloneDeep(mockConceptSearchData);
-    concept = (new SearchResult(data.results.pop())).toConcept(); 
+    concept = new SearchResult(data.results.pop()).toConcept();
   });
 
   test('ensure creation works', () => {
@@ -52,11 +52,11 @@ describe('searched toplevel concepts', () => {
 
   beforeEach(() => {
     data = cloneDeep(mockConceptSearchDataToplevel);
-    concepts = data.results.map(r => new SearchResult(r));
+    concepts = data.results.map((r) => new SearchResult(r));
   });
 
   it('instantiates successfully', () => {
-    concepts.forEach(concept => {
+    concepts.forEach((concept) => {
       expect(concept).toBeInstanceOf(SearchResult);
     });
   });

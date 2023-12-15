@@ -3,7 +3,6 @@ import Icon from '../icon';
 
 import * as S from './style';
 
-
 const Collapsible = ({ headerText, body, startCollapsed }) => {
   const [collapsed, setCollapsed] = useState(startCollapsed);
 
@@ -14,9 +13,7 @@ const Collapsible = ({ headerText, body, startCollapsed }) => {
   return (
     <S.Collapsible className={collapsed ? 'Collapsible collapsed' : 'Collapsible extended'}>
       <S.CollapsibleHeader className='CollapsibleHeader' onClick={toggleCollapsed}>
-        <S.CollapsibleHeaderText>
-          {headerText}
-        </S.CollapsibleHeaderText>
+        <S.CollapsibleHeaderText>{headerText}</S.CollapsibleHeaderText>
         <S.CollapsibleToggle>
           <Icon glyph={collapsed ? 'down-caret' : 'up-caret'} />
         </S.CollapsibleToggle>
@@ -28,6 +25,5 @@ const Collapsible = ({ headerText, body, startCollapsed }) => {
     </S.Collapsible>
   );
 };
-
 
 export default Collapsible;

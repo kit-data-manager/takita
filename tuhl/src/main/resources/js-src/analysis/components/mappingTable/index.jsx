@@ -7,9 +7,9 @@ import { stepEnum } from '../../data/models/appstate';
 //import { StyledControlSlot, StyledVerticalHeader, StyledMappingTable, StyledHighlightedCell, StyledFixedCell } from './style';
 import * as S from './style';
 
-/** 
+/**
  * UI element to create and remove table columns during
- * open mapping. 
+ * open mapping.
  */
 const MappingHeaderSlot = (props) => {
   return (
@@ -39,10 +39,10 @@ const ControlCell = (props) => {
   return (
     <td>
       <S.ControlSlot className='ControlCell'>
-          <IconButton onClick={props.onClick}>
-            <Icon glyph='down-caret' size={24} />
-            <Icon glyph='up-caret' size={24} />
-          </IconButton>
+        <IconButton onClick={props.onClick}>
+          <Icon glyph='down-caret' size={24} />
+          <Icon glyph='up-caret' size={24} />
+        </IconButton>
       </S.ControlSlot>
     </td>
   );
@@ -63,26 +63,35 @@ const ActiveCell = (props) => {
 /* Cell which can not be edited but is otherwise unstyled. */
 const FixedCell = (props) => {
   return (
-    <S.FixedCell><div>{props.text}</div></S.FixedCell>
+    <S.FixedCell>
+      <div>{props.text}</div>
+    </S.FixedCell>
   );
 };
 
 /* Slot which has been set during open mapping and which can no longer
  * be changed during complete mapping. */
 const FixedCompleteCell = (props) => {
-  return <S.FixedCompleteCell><div>{props.text}</div></S.FixedCompleteCell>;
+  return (
+    <S.FixedCompleteCell>
+      <div>{props.text}</div>
+    </S.FixedCompleteCell>
+  );
 };
 
 /* Slot which has been set during complete mapping and is marked as such,
  * but can still be changed during open mapping.
  */
 const HighlightedCell = (props) => {
-  return <S.HighlightedCell><div>{props.children}</div></S.HighlightedCell>;
+  return (
+    <S.HighlightedCell>
+      <div>{props.children}</div>
+    </S.HighlightedCell>
+  );
 };
 
-
 /* Helper to generate a suitable text slot. */
-const Slot =  ({item, idx, domain, onChange, open, readOnly}) => {
+const Slot = ({ item, idx, domain, onChange, open, readOnly }) => {
   // If the slot should be readonly, there are no inputs and also no styling.
   if (readOnly) {
     return <FixedCell text={item.value} />;
@@ -90,14 +99,26 @@ const Slot =  ({item, idx, domain, onChange, open, readOnly}) => {
   // During open mapping, all inputs are active, but it should be visible if they have been filled during
   // open or complete mapping.
   if (open && item.step !== stepEnum.complete) {
-    return <ActiveCell><input autoFocus value={item.value} onChange={ev => onChange(ev, idx, domain, stepEnum.open)} /></ActiveCell>;
+    return (
+      <ActiveCell>
+        <input autoFocus value={item.value} onChange={(ev) => onChange(ev, idx, domain, stepEnum.open)} />
+      </ActiveCell>
+    );
   }
   if (open && item.step === stepEnum.complete) {
-    return <HighlightedCell><input value={item.value} onChange={ev => onChange(ev, idx, domain, stepEnum.open)} /></HighlightedCell>;
+    return (
+      <HighlightedCell>
+        <input value={item.value} onChange={(ev) => onChange(ev, idx, domain, stepEnum.open)} />
+      </HighlightedCell>
+    );
   }
   // During complete mapping, only step==complete and empty slots are active.
   if (item.step === stepEnum.complete || !item.value) {
-    return <ActiveCell><input value={item.value} onChange={ev => onChange(ev, idx, domain, stepEnum.complete)} /></ActiveCell>;
+    return (
+      <ActiveCell>
+        <input value={item.value} onChange={(ev) => onChange(ev, idx, domain, stepEnum.complete)} />
+      </ActiveCell>
+    );
   }
   if (item.step === stepEnum.complete || item.value) {
     return <FixedCompleteCell text={item.value} />;
@@ -108,8 +129,8 @@ const Slot =  ({item, idx, domain, onChange, open, readOnly}) => {
 
 /**
  * MappingTable - a table with corresponding text slots from a source and a target domain, respectively.
- * 
- * @param {Object} props - should contain at least (analysis) data, setData, and a boolean whether we are in open mapping or not.  
+ *
+ * @param {Object} props - should contain (analysis) data, setData, and a boolean whether we are in open mapping or not.
  * @returns {JSX} - description of the component
  */
 export const MappingTable = ({ data, open, setData, tableIdx, readOnly }) => {
@@ -161,48 +182,71 @@ export const MappingTable = ({ data, open, setData, tableIdx, readOnly }) => {
   const heads = mappings.map((m, i) => {
     if (open) {
       return (
-        <MappingHeaderSlot mapping={m} idx={i} key={i}
-          onClickBack={ev => onClickBack(ev, i)}
-          onClickDelete={ev => onClickDelete(ev, i)}
-          onClickForward={ev => onClickForward(ev, i)} 
+        <MappingHeaderSlot
+          mapping={m}
+          idx={i}
+          key={i}
+          onClickBack={(ev) => onClickBack(ev, i)}
+          onClickDelete={(ev) => onClickDelete(ev, i)}
+          onClickForward={(ev) => onClickForward(ev, i)}
         />
       );
     }
     return <th key={`empty-${i}`}>&nbsp;</th>;
   });
-  const targets = mappings.map(m => m.target)
-                          .map((t, i) => <Slot key={`target-${i}`} item={t} idx={i} domain='target' onChange={onChangeInput} open={open} readOnly={readOnly} />);
-  const sources = mappings.map(m => m.source)
-                          .map((s, i) => <Slot key={`source-${i}`} item={s} idx={i} domain='source' onChange={onChangeInput} open={open} readOnly={readOnly} />);
+  const targets = mappings
+    .map((m) => m.target)
+    .map((t, i) => (
+      <Slot
+        key={`target-${i}`}
+        item={t}
+        idx={i}
+        domain='target'
+        onChange={onChangeInput}
+        open={open}
+        readOnly={readOnly}
+      />
+    ));
+  const sources = mappings
+    .map((m) => m.source)
+    .map((s, i) => (
+      <Slot
+        key={`source-${i}`}
+        item={s}
+        idx={i}
+        domain='source'
+        onChange={onChangeInput}
+        open={open}
+        readOnly={readOnly}
+      />
+    ));
   const controlCells = mappings.map((m, i) => {
     if (open) {
-      return <ControlCell key={`control-${i}`} onClick={ev => onClickUpDown(ev, i)} />;
+      return <ControlCell key={`control-${i}`} onClick={(ev) => onClickUpDown(ev, i)} />;
     }
     return <td key={`empty-${i}`}>&nbsp;</td>;
   });
-  
+
   return (
     <S.MappingTable>
       <thead>
         <tr>
-          <th className='empty-header-slot'>
-            { open ? <DeleteButton size={24} onClick={onClickDeleteTable} /> : ' ' }
-          </th>
-          { heads }
+          <th className='empty-header-slot'>{open ? <DeleteButton size={24} onClick={onClickDeleteTable} /> : ' '}</th>
+          {heads}
         </tr>
       </thead>
       <tbody>
         <tr className='mapping-target'>
           <S.VerticalHeader className='vertical-heading'>Target</S.VerticalHeader>
-          { targets }
+          {targets}
         </tr>
         <tr className='mapping-control'>
           <S.VerticalHeader className='vertical-heading empty-header-slot'>&nbsp;</S.VerticalHeader>
-          { controlCells }
+          {controlCells}
         </tr>
         <tr className='mapping-source'>
           <S.VerticalHeader className='vertical-heading'>Source</S.VerticalHeader>
-          { sources }
+          {sources}
         </tr>
       </tbody>
     </S.MappingTable>

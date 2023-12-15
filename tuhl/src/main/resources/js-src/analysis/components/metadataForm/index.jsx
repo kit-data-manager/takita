@@ -7,22 +7,22 @@ export const MetadataForm = (props) => {
   const { data, setData } = props;
 
   const onChangeAnnotator = (ev) => {
-    setData({...data, annotator: ev.target.value});
+    setData({ ...data, annotator: ev.target.value });
   };
   const onChangeProject = (ev) => {
-    setData({...data, project: ev.target.value});
+    setData({ ...data, project: ev.target.value });
   };
   const onChangeDocTitle = (ev) => {
-    setData({...data, doc_title: ev.target.value});
+    setData({ ...data, doc_title: ev.target.value });
   };
   const onChangeDocReference = (ev) => {
-    setData({...data, doc_reference: ev.target.value});
+    setData({ ...data, doc_reference: ev.target.value });
   };
 
   return (
     <div className='Metadata'>
       <h2>Metadata</h2>
-      
+
       <div className='user-metadata'>
         <h3>Annotator</h3>
         <IconButton>

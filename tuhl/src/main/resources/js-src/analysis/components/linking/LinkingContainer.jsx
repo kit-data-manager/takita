@@ -5,9 +5,7 @@ import { DeleteButton, Input } from '../formElement';
 import { LinkingBlock } from './LinkingBlock';
 import * as S from './styles';
 
-
 const LinkingContainer = ({ linking, onChange, onDelete, searchFunction, loggingFunction }) => {
-
   const onChangeSource = (ev) => {
     const updated = cloneDeep(linking);
     updated.source = ev.target.value;
@@ -34,17 +32,9 @@ const LinkingContainer = ({ linking, onChange, onDelete, searchFunction, logging
   return (
     <S.LinkingContainer className='LinkingContainer'>
       <S.TermMappingRow>
-        <Input
-          value={linking.target}
-          onChange={onChangeTarget}
-          placeholder='target term'
-        />
+        <Input value={linking.target} onChange={onChangeTarget} placeholder='target term' />
         <S.MappingDelimiter>is like</S.MappingDelimiter>
-        <Input
-          value={linking.source}
-          onChange={onChangeSource}
-          placeholder='source term'
-        />
+        <Input value={linking.source} onChange={onChangeSource} placeholder='source term' />
       </S.TermMappingRow>
       <S.ConceptMappingRow>
         <LinkingBlock

@@ -14,16 +14,16 @@ class MetaphorAnnotation {
     if (annotation.body.length === 0) {
       throw new TypeError('annotation data has no bodies');
     }
-    if (annotation.body.filter(b => b.purpose === 'describing').length === 0 ) {
+    if (annotation.body.filter((b) => b.purpose === 'describing').length === 0) {
       throw new TypeError('annotation data has no describing body');
     }
-    if (annotation.body.filter(b => b.purpose === 'linking').length === 0) {
+    if (annotation.body.filter((b) => b.purpose === 'linking').length === 0) {
       throw new TypeError('annotation data has no linking body');
     }
-    if (annotation.body.filter(b => b.purpose === 'assessing').length !== 1) {
+    if (annotation.body.filter((b) => b.purpose === 'assessing').length !== 1) {
       //throw new TypeError('annotation data needs to include exactly on assessing body');
       //console.log('metaphor annotation has no "assessing" body yet. Creating an empty one.');
-      const now = (new Date()).toISOString();
+      const now = new Date().toISOString();
       annotation.body.push({
         created: now,
         modified: now,
@@ -41,12 +41,11 @@ class MetaphorAnnotation {
     Object.assign(this, annotation);
     try {
       this.analysisString = this.body
-        .filter(b => b.purpose === 'assessing')
-        .map(b => b.value)
+        .filter((b) => b.purpose === 'assessing')
+        .map((b) => b.value)
         .pop();
       this.analysis = parseAnalysisString(this.analysisString);
-    }
-    catch (error) {
+    } catch (error) {
       console.log('inside MetaphorAnnotation() error handling');
       console.error(error);
       console.debug(this);
@@ -60,11 +59,11 @@ class MetaphorAnnotation {
     // Start with a clone of the original annotation.
     const anno = new this(originalAnnotation);
     // Set the modified date of the annotation as a whole.
-    const now = (new Date()).toISOString();
+    const now = new Date().toISOString();
     anno.modified = now;
 
     // Update the `assessing` body's metadata.
-    const assessing = anno.body.filter(b => b.purpose === 'assessing').pop();
+    const assessing = anno.body.filter((b) => b.purpose === 'assessing').pop();
     assessing.created = appState.getAnalysisCreatedDate() || now;
     assessing.modified = now;
 
@@ -73,11 +72,11 @@ class MetaphorAnnotation {
       auxiliaryText: appState.getAuxText(),
       propositions: appState.getPropositions(),
       mappings: appState.getMappingTables(),
-      linkings: appState.getLinkings().map(l => {
+      linkings: appState.getLinkings().map((l) => {
         // replace source_links and target_links with only the URIs
         const newLinking = cloneDeep(l);
-        newLinking.source_link = newLinking.source_link.map(sl => sl.uri);
-        newLinking.target_link = newLinking.target_link.map(tl => tl.uri);
+        newLinking.source_link = newLinking.source_link.map((sl) => sl.uri);
+        newLinking.target_link = newLinking.target_link.map((tl) => tl.uri);
         return newLinking;
       }),
       tertiaComment: appState.getTertiaComment(),
@@ -91,7 +90,7 @@ class MetaphorAnnotation {
     assessing.value = anno.analysisString;
 
     // Insert the assessing body into the list of other, unmodified bodies.
-    anno.body = anno.body.filter(b => b.purpose !== 'assessing').concat([assessing]);
+    anno.body = anno.body.filter((b) => b.purpose !== 'assessing').concat([assessing]);
 
     // Finally, check if we need to update the etag.
     if (etag && etag !== originalAnnotation.etag) {
@@ -117,7 +116,7 @@ class MetaphorAnnotation {
   }
 
   /**
-   * 
+   *
    */
   getAnalysis() {
     if (!this.analysis || Object.keys(this.analysis).length === 0) {
@@ -169,13 +168,11 @@ class MetaphorAnnotation {
 
   /**
    * Extract the URIs of all the linked MRWs.
-   * 
+   *
    * @returns Array of MRW URIs
    */
   getMRWURIs() {
-    const mrws = this.body
-      .filter(b => b.purpose === 'linking')
-      .map(b => b.value);
+    const mrws = this.body.filter((b) => b.purpose === 'linking').map((b) => b.value);
     return mrws;
   }
 
@@ -189,16 +186,15 @@ class MetaphorAnnotation {
     }
     try {
       const concepts = analysis.linkings
-        .flatMap(l => {
-          const sources = (l.source_link instanceof Array) ? l.source_link : [l.source_link, ];
-          const targets = (l.target_link instanceof Array) ? l.target_link : [l.target_link, ];
+        .flatMap((l) => {
+          const sources = l.source_link instanceof Array ? l.source_link : [l.source_link];
+          const targets = l.target_link instanceof Array ? l.target_link : [l.target_link];
           return sources.concat(targets);
         })
-        .filter(c => !!c);
+        .filter((c) => !!c);
 
       return concepts;
-    }
-    catch (e) {
+    } catch (e) {
       console.log(e);
       //console.log('could not create analysis linkings');
       return [];
@@ -210,8 +206,8 @@ class MetaphorAnnotation {
    */
   getAnnotationLabel() {
     const label = this.body
-      .filter(b => b.purpose === 'identifying')
-      .map(b => b.value)
+      .filter((b) => b.purpose === 'identifying')
+      .map((b) => b.value)
       .pop();
     return label;
   }
@@ -223,8 +219,8 @@ class MetaphorAnnotation {
 
   getComment() {
     const comment = this.body
-      .filter(b => b.purpose === 'commenting')
-      .map(b => b.value)
+      .filter((b) => b.purpose === 'commenting')
+      .map((b) => b.value)
       .pop();
     return comment;
   }
@@ -254,8 +250,8 @@ class MetaphorAnnotation {
     // If we only have a single target object, wrap it in an array for consistency.
     const target = Array.isArray(this.target) ? this.target : [this.target];
     const docId = target
-      .map(t => t.source)
-      .map(s => s.split('/').splice(-3, 1).pop())
+      .map((t) => t.source)
+      .map((s) => s.split('/').splice(-3, 1).pop())
       .pop();
     return docId;
   }
@@ -275,8 +271,8 @@ class MetaphorAnnotation {
 
   getText() {
     const text = this.body
-      .filter(b => b.purpose === 'describing')
-      .map(b => b.value)
+      .filter((b) => b.purpose === 'describing')
+      .map((b) => b.value)
       .pop();
     return text;
   }

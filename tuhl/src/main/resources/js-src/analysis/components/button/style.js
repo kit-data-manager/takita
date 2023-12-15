@@ -4,7 +4,7 @@ export const StyledButton = styled.button`
   font-weight: 600;
   color: var(--default-color);
   background: var(--default-bg-color);
-  border: ${props => (props.border ? '1px solid var(--default-border-color);' : undefined)};
+  border: ${(props) => (props.border ? '1px solid var(--default-border-color);' : undefined)};
   border-radius: 5px;
   padding: 6px 12px;
   display: flex;
@@ -12,7 +12,7 @@ export const StyledButton = styled.button`
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  opacity: ${props => (props.disabled ? '0.6' : '1')};
+  opacity: ${(props) => (props.disabled ? '0.6' : '1')};
   line-height: 1.2;
   transition: box-shadow 0.2s ease-in-out;
 
@@ -47,9 +47,9 @@ export const StyledIconButton = styled(StyledButton)`
 
 export const StyledAbsoluteIconButton = styled(StyledIconButton)`
   position: absolute;
-  top: ${props => props.top || undefined};
-  left: ${props => props.left || undefined};
-  right: ${props => props.right || undefined};
+  top: ${(props) => props.top || undefined};
+  left: ${(props) => props.left || undefined};
+  right: ${(props) => props.right || undefined};
 `;
 
 export const StyledPrimaryButton = styled(StyledButton)`
@@ -58,13 +58,10 @@ export const StyledPrimaryButton = styled(StyledButton)`
   color: var(--primary-color);
 
   &:hover {
-    
   }
   &:focus {
-
   }
   &:active {
-
   }
 `;
 

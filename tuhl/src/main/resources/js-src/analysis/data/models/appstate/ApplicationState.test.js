@@ -2,18 +2,9 @@ import { ApplicationState } from './ApplicationState';
 
 import { cloneDeep } from 'lodash';
 
-import {
-  FetchResult,
-  MetaphorAnnotation,
-  MRWAnnotation
-} from '../resources';
+import { FetchResult, MetaphorAnnotation, MRWAnnotation } from '../resources';
 
-import {
-  mockConceptFetchDataLeafNode,
-  mockMetaphorAnnoData,
-  mockMRWAnnoData,
-} from '../../examples';
-
+import { mockConceptFetchDataLeafNode, mockMetaphorAnnoData, mockMRWAnnoData } from '../../examples';
 
 describe('basic ApplicationState functionality', () => {
   let metaphor, mrws, concepts, state;
@@ -46,7 +37,6 @@ describe('metaphor text included in AppState', () => {
     expect(state.getText()).toBe('Blessed [is] the man that walketh not in the counsel of the ungodly');
   });
 });
-
 
 describe('ApplicationState with prefilled mappings', () => {
   let metaphor, mrws, concepts, state;
@@ -89,8 +79,8 @@ describe('ApplicationState with prefilled mappings', () => {
     // there should always be at least one empty table
     expect(mt.length).toBe(1);
     const firstMapping = mt[0][0];
-    expect(firstMapping.source).toEqual({value:'', step:null});
-    expect(firstMapping.target).toEqual({value:'', step:null});
+    expect(firstMapping.source).toEqual({ value: '', step: null });
+    expect(firstMapping.target).toEqual({ value: '', step: null });
   });
 
   it('appends a mapping table', () => {
@@ -180,9 +170,11 @@ describe('ApplicationState linkings', () => {
   });
 
   it('extracts linkings', () => {
-    const knownFirst =  {
-      source:"Hirte",source_link:["https://w3id.org/MoRe-SFB1475/CT/concepts/3083523343"],
-      target:"Gott",target_link:["https://w3id.org/MoRe-SFB1475/CT/concepts/1520345177"]
+    const knownFirst = {
+      source: 'Hirte',
+      source_link: ['https://w3id.org/MoRe-SFB1475/CT/concepts/3083523343'],
+      target: 'Gott',
+      target_link: ['https://w3id.org/MoRe-SFB1475/CT/concepts/1520345177'],
     };
     const first = state.getLinkings()[0];
     expect(first).toBeDefined();
@@ -197,15 +189,17 @@ describe('ApplicationState linkings', () => {
     metaphor.analysis.linkings[0].target_link.push(undefined);
     state = new ApplicationState(metaphor, mrws, concepts);
 
-    const knownFirst =  {
-      source:"Hirte",source_link:["https://w3id.org/MoRe-SFB1475/CT/concepts/3083523343"],
-      target:"Gott",target_link:["https://w3id.org/MoRe-SFB1475/CT/concepts/1520345177"]
+    const knownFirst = {
+      source: 'Hirte',
+      source_link: ['https://w3id.org/MoRe-SFB1475/CT/concepts/3083523343'],
+      target: 'Gott',
+      target_link: ['https://w3id.org/MoRe-SFB1475/CT/concepts/1520345177'],
     };
     const first = state.getLinkings()[0];
     expect(first).toBeDefined();
     expect(first.source).toBe(knownFirst.source);
     expect(first.source_link).toEqual(knownFirst.source_link);
     expect(first.target).toBe(knownFirst.target);
-    expect(first.target_link).toEqual(knownFirst.target_link);    
+    expect(first.target_link).toEqual(knownFirst.target_link);
   });
 });

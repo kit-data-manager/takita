@@ -41,11 +41,14 @@ export const StyledSelect = styled.select`
     background: var(--default-bg-color);
   }
   &:focus {
-    box-shadow: 0 0 0 2px var(--default-bg-color), 0 0 0 4px var(--default-border-color);
+    box-shadow:
+      0 0 0 2px var(--default-bg-color),
+      0 0 0 4px var(--default-border-color);
     transition: box-shadow 0.2s ease-in-out;
   }
   &:active {
-    box-shadow: 0 0 0 2px var(--default-bg-color),
+    box-shadow:
+      0 0 0 2px var(--default-bg-color),
       0 0 0 4px var(--default-border-color);
     transition: box-shadow 0.2s ease-in-out;
   }

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactQuill, { Quill } from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+//import 'react-quill/dist/quill.snow.css';
 
 import Toolbar from './Toolbar';
 
@@ -56,7 +56,7 @@ function HighlightEditor({ text, setText, readOnly }) {
  
   return (
     <div className='text-editor'>
-      { !readOnly && <Toolbar /> }
+      {!readOnly && <Toolbar />}
       <ReactQuill
         placeholder='Note down ad-hoc translations to aid in the analysis'
         theme='snow'

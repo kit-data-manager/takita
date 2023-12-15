@@ -16,7 +16,7 @@ const AuxiliaryText = (_props) => {
 
   return (
     <div className='AuxiliaryText'>
-      { true && <SummaryBox analysis={currentAppState} showText showComments /> }
+      {true && <SummaryBox analysis={currentAppState} showText showComments />}
       <H3>Auxiliary Translation</H3>
       <HighlightEditor text={currentAppState.auxiliaryText} setText={onChangeText} />
     </div>

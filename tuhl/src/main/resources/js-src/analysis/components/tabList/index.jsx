@@ -3,7 +3,7 @@ import React from 'react';
 import { Button } from '../button';
 import { StyledTab, StyledTabList } from './style';
 
-export const Tab = ({to, children, ...props}) => {
+export const Tab = ({ to, children, ...props }) => {
   return (
     <StyledTab>
       <Button to={to} className='tab'>
@@ -14,11 +14,10 @@ export const Tab = ({to, children, ...props}) => {
 };
 
 export const TabList = ({ tabs }) => {
-  return (
-    <StyledTabList>
-      { 
-        tabs.map(([label, route], idx) => <Tab key={idx} to={route}>{label}</Tab>)
-      }
-    </StyledTabList>
-  );
+  const tablist = tabs.map(([label, route], idx) => (
+    <Tab key={idx} to={route}>
+      {label}
+    </Tab>
+  ));
+  return <StyledTabList>{tablist}</StyledTabList>;
 };

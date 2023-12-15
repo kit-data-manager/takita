@@ -12,7 +12,7 @@ const Propositions = () => {
     <div className='Propositions'>
       <SummaryBox analysis={currentAppState} showText showTranslation showComments />
       <H3>Propositions</H3>
-      <PropositionList  data={currentAppState} setData={setCurrentAppState} />
+      <PropositionList data={currentAppState} setData={setCurrentAppState} />
     </div>
   );
 };

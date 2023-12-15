@@ -10,16 +10,13 @@ export const Dropdown = ({ isOpen, header, items }) => {
     return <S.DropDownItem key={key}>{item}</S.DropDownItem>;
   });
 
-
   return (
     <S.DropDownContainer>
-      <S.DropDownHeader>{ header }</S.DropDownHeader>
-      { isOpen && (
-      <S.DropDownListContainer>
-        <S.DropDownList>
-          { listItems }
-        </S.DropDownList>
-      </S.DropDownListContainer>
+      <S.DropDownHeader>{header}</S.DropDownHeader>
+      {isOpen && (
+        <S.DropDownListContainer>
+          <S.DropDownList>{listItems}</S.DropDownList>
+        </S.DropDownListContainer>
       )}
     </S.DropDownContainer>
   );

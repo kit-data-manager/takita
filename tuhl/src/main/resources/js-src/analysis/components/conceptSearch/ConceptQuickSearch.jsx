@@ -5,16 +5,11 @@ import { Dropdown } from '../dropdown';
 import { Input, NewButton, SearchButton } from '../formElement';
 import * as S from './styles';
 
-
-const QuickSearchHeader = ({queryValue, onChangeQuery, onSubmit}) => {
+const QuickSearchHeader = ({ queryValue, onChangeQuery, onSubmit }) => {
   return (
     <S.QuickSearchHeader>
-      <Input
-        placeholder='search for concepts'
-        onChange={onChangeQuery}
-        value={queryValue}
-      />
-      <SearchButton role='button' type='submit' onClick={ev => onSubmit(ev)} />
+      <Input placeholder='search for concepts' onChange={onChangeQuery} value={queryValue} />
+      <SearchButton role='button' type='submit' onClick={(ev) => onSubmit(ev)} />
     </S.QuickSearchHeader>
   );
 };
@@ -23,14 +18,12 @@ const QuickSearchResultItem = ({ item, linkItem }) => {
   return (
     <S.QuickSearchResultItem className='QuickSearchResultItem'>
       <span>
-        <b>{item.prefLabel}</b>&nbsp;
-        ({ item.parentLabel })&nbsp;
+        <b>{item.prefLabel}</b>&nbsp; ({item.parentLabel})&nbsp;
       </span>
-      <NewButton onClick={ev => linkItem(ev, item)} size={24} />
+      <NewButton onClick={(ev) => linkItem(ev, item)} size={24} />
     </S.QuickSearchResultItem>
   );
 };
-
 
 export const ConceptQuickSearch = ({ onAdd, searchFunction, loggingFunction }) => {
   const [queryValue, setQueryValue] = useState('');
@@ -44,7 +37,9 @@ export const ConceptQuickSearch = ({ onAdd, searchFunction, loggingFunction }) =
   }
   if (!loggingFunction) {
     loggingFunction = (query, selectedURI, selectedRank, annoURI) => {
-      if (!query) { return; }
+      if (!query) {
+        return;
+      }
       const msg = `Logging the following search data:
       query: ${query}
       selectedURI: ${selectedURI}
@@ -61,7 +56,7 @@ export const ConceptQuickSearch = ({ onAdd, searchFunction, loggingFunction }) =
     }
     setSearchResults([]);
   };
-  const ref = useOutsideClick(ev => clearSearchResults(ev, true));
+  const ref = useOutsideClick((ev) => clearSearchResults(ev, true));
 
   const onChangeQuery = (ev) => {
     ev.preventDefault();
@@ -75,8 +70,7 @@ export const ConceptQuickSearch = ({ onAdd, searchFunction, loggingFunction }) =
       const results = await searchFunction(queryValue);
       //console.log(results);
       setSearchResults(results);
-    }
-    else {
+    } else {
       setSearchResults([]);
     }
   };
@@ -90,14 +84,16 @@ export const ConceptQuickSearch = ({ onAdd, searchFunction, loggingFunction }) =
   };
 
   const dropdownItems = searchResults.map((item, idx) => {
-    return (
-      <QuickSearchResultItem item={item} linkItem={(ev, item) => handleAddItem(ev, item, idx)} /> 
-    );
+    return <QuickSearchResultItem key={idx} item={item} linkItem={(ev, item) => handleAddItem(ev, item, idx)} />;
   });
 
   return (
     <S.QuickSearch
-      onKeyDown={(ev) => { if (ev.key === 'Escape') { clearSearchResults(ev, true); }}}
+      onKeyDown={(ev) => {
+        if (ev.key === 'Escape') {
+          clearSearchResults(ev, true);
+        }
+      }}
       ref={ref}
     >
       <Dropdown

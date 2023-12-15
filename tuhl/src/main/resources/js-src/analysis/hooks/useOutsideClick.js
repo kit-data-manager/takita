@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import { useRef, useEffect } from 'react';
 
 /**
  * Hook to do stuff whenever a click happens _outside_ of the component

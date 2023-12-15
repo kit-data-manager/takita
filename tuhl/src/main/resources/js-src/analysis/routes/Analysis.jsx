@@ -11,7 +11,6 @@ import { MessageBox } from '../components/messageBox';
 import Header from '../components/header';
 import Icon from '../components/icon';
 
-
 /**
  * Automatically called when this route's form is submitted.
  */
@@ -29,7 +28,6 @@ const loader = async () => {
   console.log('exit Analysis.loader()');
   return { appState, originalAnnotation, etag };
 };
-
 
 const Analysis = () => {
   const { appState, originalAnnotation, etag } = useLoaderData();
@@ -55,7 +53,7 @@ const Analysis = () => {
     setCurrentAppState(cloneDeep(reloaded.appState));
     const msg = new Message({
       text: 'reset analysis to latest saved state',
-      type: 'success'
+      type: 'success',
     });
     addMessage(msg);
   };
@@ -73,37 +71,34 @@ const Analysis = () => {
 
       const msg = new Message({
         text: 'saved analysis',
-        type: 'success'
+        type: 'success',
       });
       addMessage(msg);
-    }
-    catch (error) {
+    } catch (error) {
       if (error.status === 412) {
         const msg = new Message({
           text: 'Did not store analysis because it has been modified elsewhere since last page load.',
-          type: 'error'
+          type: 'error',
         });
         addMessage(msg);
-      }
-      else {
+      } else {
         throw error;
       }
     }
   };
 
-  const onClickBack = (ev) => {
+  const onClickBack = (_ev) => {
     window.location = normalizeBasename(window.ANALYSIS_TOOL_BASENAME);
   };
 
-  const onClickToDoc = (ev) => {
+  const onClickToDoc = (_ev) => {
     window.location = `${normalizeBasename(window.ANALYSIS_TOOL_BASENAME)}editor/${currentAppState.getDocId()}`;
   };
 
   let id;
   try {
     id = encodeURL(currentAppState.getId());
-  }
-  catch (e) {
+  } catch (e) {
     console.error('can not get MetaphorAnnotation Id, leading to broken AppState');
     console.error(currentAppState);
   }
@@ -111,18 +106,48 @@ const Analysis = () => {
     {
       label: 'Analyse',
       routes: [
-        { label: 'Auxiliary Translation', route: createRoute(id, 'textvariant'), nav: true, icon: <Icon glyph='pencil' title='Auxiliary Translation' /> },
-        { label: 'Propositions', route: createRoute(id, 'propositions'), nav: true, icon: <Icon glyph='propositions' title='Propositions' /> },
-        { label: 'Open Mapping', route: createRoute(id, 'openmapping'), nav: true, icon: <Icon glyph='openmapping' title='Open Mapping' /> },
-        { label: 'Complete Mapping', route: createRoute(id, 'completemapping'), nav: true, icon: <Icon glyph='completemapping' title='Complete Mapping' /> },
-        { label: 'Linking', route: createRoute(id, 'linking'), nav: true, icon: <Icon glyph='linking' title='Linking' /> },
-        { label: 'Conceptualizing', route: createRoute(id, 'conceptualizing'), nav: true, icon: <Icon glyph='abstraction' title='Conceptualizing' /> },
+        {
+          label: 'Auxiliary Translation',
+          route: createRoute(id, 'textvariant'),
+          nav: true,
+          icon: <Icon glyph='pencil' title='Auxiliary Translation' />,
+        },
+        {
+          label: 'Propositions',
+          route: createRoute(id, 'propositions'),
+          nav: true,
+          icon: <Icon glyph='propositions' title='Propositions' />,
+        },
+        {
+          label: 'Open Mapping',
+          route: createRoute(id, 'openmapping'),
+          nav: true,
+          icon: <Icon glyph='openmapping' title='Open Mapping' />,
+        },
+        {
+          label: 'Complete Mapping',
+          route: createRoute(id, 'completemapping'),
+          nav: true,
+          icon: <Icon glyph='completemapping' title='Complete Mapping' />,
+        },
+        {
+          label: 'Linking',
+          route: createRoute(id, 'linking'),
+          nav: true,
+          icon: <Icon glyph='linking' title='Linking' />,
+        },
+        {
+          label: 'Conceptualizing',
+          route: createRoute(id, 'conceptualizing'),
+          nav: true,
+          icon: <Icon glyph='abstraction' title='Conceptualizing' />,
+        },
       ],
     },
     {
       label: 'Store',
       routes: [
-        { label: 'Discard Changes', route: onClickReset, icon: <Icon glyph='undo' title='Discard Changes' />},
+        { label: 'Discard Changes', route: onClickReset, icon: <Icon glyph='undo' title='Discard Changes' /> },
         { label: 'Save Changes', route: onClickSave, icon: <Icon glyph='save' title='Save Changes' /> },
       ],
     },
@@ -143,9 +168,7 @@ const Analysis = () => {
         <Header target={normalizeBasename(window.ANALYSIS_TOOL_BASENAME)} />
 
         <div className='main-content-area'>
-          <p className='debug'>
-
-          </p>
+          <p className='debug'></p>
 
           <MessageBox messages={messages} onClear={clearMessages} />
 

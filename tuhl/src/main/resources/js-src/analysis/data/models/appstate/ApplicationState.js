@@ -1,11 +1,6 @@
 import { cloneDeep } from 'lodash';
 
-import {
-  FetchResult,
-  SearchResult,
-  MetaphorAnnotation,
-  MRWAnnotation
-} from '../resources';
+import { FetchResult, SearchResult, MetaphorAnnotation, MRWAnnotation } from '../resources';
 import { DetailedConcept } from './DetailedConcept';
 import { Linking } from './Linking';
 import { Mapping } from './Mapping';
@@ -33,16 +28,16 @@ const template = {
 
 class ApplicationState {
   /**
-   * 
+   *
    * @param {MetaphorAnnotation} metaphorAnno MetaphorAnnotation object
    * @param {[MRWAnnotation]} mrwAnnos Array of MRWAnnotation objects
    * @param {Array} concepts Array, can contain FetchResult, SearchResult, or DetailedConcept
    */
   constructor(metaphorAnno, mrwAnnos, concepts) {
-    if ( metaphorAnno && ! (metaphorAnno instanceof MetaphorAnnotation) ) {
+    if (metaphorAnno && !(metaphorAnno instanceof MetaphorAnnotation)) {
       throw TypeError(metaphorAnno);
     }
-    if ( mrwAnnos && mrwAnnos.some(mrw => ! (mrw instanceof MRWAnnotation))) {
+    if (mrwAnnos && mrwAnnos.some((mrw) => !(mrw instanceof MRWAnnotation))) {
       throw TypeError(mrwAnnos);
     }
 
@@ -60,55 +55,56 @@ class ApplicationState {
     this.text = metaphorAnno.getText();
 
     // Format MRW objects.
-    this.mrws = mrwAnnos.map(mrw => { return { type: mrw.getType(), text: mrw.getText() }; });
+    this.mrws = mrwAnnos.map((mrw) => {
+      return { type: mrw.getType(), text: mrw.getText() };
+    });
 
     // Create linkings field based on linked concepts
     const linkings = metaphorAnno.getLinkings();
     if (linkings.length) {
       const lookup = {};
-      const detailed = concepts.map(c => {
-        if (c instanceof DetailedConcept) { return c; }
-        if (c instanceof SearchResult) { return c.toConcept(); }
-        if (c instanceof FetchResult) { return c.toConcept(); }
+      const detailed = concepts.map((c) => {
+        if (c instanceof DetailedConcept) {
+          return c;
+        }
+        if (c instanceof SearchResult) {
+          return c.toConcept();
+        }
+        if (c instanceof FetchResult) {
+          return c.toConcept();
+        }
         throw new TypeError(c);
       });
-      detailed.forEach(dc => {
+      detailed.forEach((dc) => {
         lookup[dc.getUri()] = dc;
       });
-      this.linkings = linkings.map(linking => {
-        linking.source_link = linking.source_link
-          .filter(sl => !!sl)
-          .map(sl => lookup[sl] || sl);
-        linking.target_link = linking.target_link
-          .filter(tl => !!tl)
-          .map(tl => lookup[tl] || tl);
+      this.linkings = linkings.map((linking) => {
+        linking.source_link = linking.source_link.filter((sl) => !!sl).map((sl) => lookup[sl] || sl);
+        linking.target_link = linking.target_link.filter((tl) => !!tl).map((tl) => lookup[tl] || tl);
         return linking;
       });
     }
 
     // Create propositions
-    this.propositions = metaphorAnno.getPropositions()
-      .map(proposition => new Proposition(proposition));
-    
+    this.propositions = metaphorAnno.getPropositions().map((proposition) => new Proposition(proposition));
+
     // Create mappings
     const mappings = metaphorAnno.getMappings();
     if (mappings.length === 0) {
-      this.mappings = [ [new Mapping()] ];
-    }
-    else if (!Array.isArray(mappings[0]) && mappings[0].source !== undefined) {
+      this.mappings = [[new Mapping()]];
+    } else if (!Array.isArray(mappings[0]) && mappings[0].source !== undefined) {
       // This is the old convention of only a single mapping table, just
       // wrap it in an additional array.
       //console.debug('oldschool mappings with a single mapping table');
-      this.mappings = [ mappings ];
-    }
-    else {
+      this.mappings = [mappings];
+    } else {
       // This is the new convention: mappings is an array of arrays of
       // mapping objects, where the outer arrays represent different tables.
-      this.mappings = mappings.map(table => {
-        return table.map(data => new Mapping(data));
+      this.mappings = mappings.map((table) => {
+        return table.map((data) => new Mapping(data));
       });
     }
-   
+
     // Create auxiliary text
     this.auxiliaryText = metaphorAnno.getAuxText();
 
@@ -157,9 +153,9 @@ class ApplicationState {
 
   /**
    * Update `auxiliaryText`
-   * 
+   *
    * @param {*} textDelta text delta as used by the quill text editor
-   * @returns {ApplicationState} 
+   * @returns {ApplicationState}
    */
   updateAuxText(textDelta) {
     const updated = cloneDeep(this);
@@ -168,7 +164,7 @@ class ApplicationState {
   }
 
   /*
-   * Mapping related methods 
+   * Mapping related methods
    */
 
   getMappingTables() {
@@ -178,10 +174,8 @@ class ApplicationState {
     }
     // if the data follows the old convention of having only a single
     // mapping table simply wrap in yet another array.
-    if (this.mappings.length === 1 
-      && !Array.isArray(this.mappings[0])
-    ) {
-      return [ this.mappings ];
+    if (this.mappings.length === 1 && !Array.isArray(this.mappings[0])) {
+      return [this.mappings];
     }
     return this.mappings;
   }
@@ -189,7 +183,7 @@ class ApplicationState {
   appendMappingTable() {
     const updated = cloneDeep(this);
     const tables = updated.getMappingTables();
-    tables.push([ new Mapping() ]);
+    tables.push([new Mapping()]);
     updated.mappings = tables;
     return updated;
   }
@@ -207,16 +201,15 @@ class ApplicationState {
     const mt = updated.getMappingTables();
     if (mt.length <= 1) {
       // Ensure that at least one table with at least one mapping exists
-      mt.splice(idx, 1, [ new Mapping() ]);
-    }
-    else {
+      mt.splice(idx, 1, [new Mapping()]);
+    } else {
       mt.splice(idx, 1);
     }
     updated.mappings = mt;
     return updated;
   }
 
-  getMappingTableAt(idx=0) {
+  getMappingTableAt(idx = 0) {
     const m = this.getMappingTables();
     if (idx >= m.length) {
       console.warn('getMappingTableAt() idx too high');
@@ -229,17 +222,16 @@ class ApplicationState {
     const updated = cloneDeep(this);
     const table = updated.getMappingTableAt(tableIdx);
     const changed = table[mapIdx];
- 
+
     if (domain === 'source') {
       changed.source.value = value;
       changed.source.step = step;
-    }
-    else {
+    } else {
       changed.target.value = value;
       changed.target.step = step;
     }
     table.splice(mapIdx, 1, changed);
-    
+
     return updated.changeMappingTableAt(tableIdx, table);
   }
 
@@ -254,7 +246,7 @@ class ApplicationState {
   insertMappingAfter(tableIdx, mapIdx) {
     const updated = cloneDeep(this);
     const table = updated.getMappingTableAt(tableIdx);
-    table.splice(mapIdx+1, 0, new Mapping());
+    table.splice(mapIdx + 1, 0, new Mapping());
     updated.mappings[tableIdx] = table;
     return updated;
   }
@@ -262,12 +254,11 @@ class ApplicationState {
   deleteMappingAt(tableIdx, mapIdx) {
     const updated = cloneDeep(this);
     const table = updated.getMappingTableAt(tableIdx);
-    
+
     // Make sure at least one empty mapping remains.
     if (table.length <= 1) {
       table.splice(mapIdx, 1, new Mapping());
-    }
-    else {
+    } else {
       table.splice(mapIdx, 1);
     }
     updated.mappings[tableIdx] = table;
@@ -278,7 +269,7 @@ class ApplicationState {
     const updated = cloneDeep(this);
     const table = updated.getMappingTableAt(tableIdx);
     const mapping = table[mapIdx];
-    table.splice(mapIdx, 1, new Mapping({source: mapping.target, target: mapping.source}));
+    table.splice(mapIdx, 1, new Mapping({ source: mapping.target, target: mapping.source }));
     updated.mappings[tableIdx] = table;
     return updated;
   }
@@ -307,8 +298,7 @@ class ApplicationState {
       if (!p.length) {
         p.push(new Proposition());
       }
-    }
-    else {
+    } else {
       p[idx] = value;
     }
     updated.propositions = p;
@@ -342,8 +332,7 @@ class ApplicationState {
       if (!l.length) {
         l.push(new Linking());
       }
-    }
-    else {
+    } else {
       l[idx] = value;
     }
     updated.linkings = l;

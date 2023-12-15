@@ -25,7 +25,7 @@ export const MessageBox = styled.div`
   border: 1px solid #ccc;
   padding-bottom: 10px;
   box-sizing: border-box;
-  background-color: ${props => props.readOnly ? 'var(--error-bg-color)' : 'inherit'};
+  background-color: ${(props) => (props.readOnly ? 'var(--error-bg-color)' : 'inherit')};
 `;
 
 export const CloseButton = styled.div`

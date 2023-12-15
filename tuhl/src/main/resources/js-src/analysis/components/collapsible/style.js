@@ -16,14 +16,12 @@ export const CollapsibleToggle = styled.div`
   right: 10px;
 `;
 
-export const CollapsibleHeaderText = styled.h4`
-
-`;
+export const CollapsibleHeaderText = styled.h4``;
 
 export const CollapsibleBody = styled.div`
   max-height: 50vh;
   overflow-y: auto;
-  transition: all .3s ease-in-out;
+  transition: all 0.3s ease-in-out;
 
   & > div {
     padding: 10px 15px;
@@ -31,7 +29,6 @@ export const CollapsibleBody = styled.div`
 `;
 
 export const Collapsible = styled.div`
-  
   background-color: var(--default-bg-color);
 
   &.collapsed ${CollapsibleBody} {

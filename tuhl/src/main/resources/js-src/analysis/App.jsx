@@ -11,59 +11,59 @@ import Propositions from './routes/Propositions';
 import ErrorPage from './routes/ErrorPage';
 import { normalizeBasename } from './utils';
 
-
-const router = createBrowserRouter([
+const router = createBrowserRouter(
+  [
+    {
+      element: <Layout />,
+      errorElement: <ErrorPage />,
+      children: [
+        {
+          element: <Analysis />,
+          action: analyisAction,
+          loader: analysisLoader,
+          id: 'analysis',
+          path: 'analysis',
+          children: [
+            {
+              path: ':analysisId',
+              element: <AuxiliaryText />,
+            },
+            {
+              path: ':analysisId/textvariant',
+              element: <AuxiliaryText />,
+            },
+            {
+              path: ':analysisId/propositions',
+              element: <Propositions />,
+            },
+            {
+              path: ':analysisId/openmapping',
+              element: <Mapping open />,
+            },
+            {
+              path: ':analysisId/completemapping',
+              element: <Mapping />,
+            },
+            {
+              path: ':analysisId/linking',
+              element: <Linking />,
+            },
+            {
+              path: ':analysisId/conceptualizing',
+              element: <Conceptualizing />,
+            },
+          ],
+        },
+      ],
+    },
+  ],
   {
-    element: <Layout />,
-    errorElement: <ErrorPage />,
-    children: [
-      {
-        element: <Analysis />,
-        action: analyisAction,
-        loader: analysisLoader,
-        id: 'analysis',
-        path: 'analysis',
-        children: [
-          {
-            path: ':analysisId',
-            element: <AuxiliaryText />,
-          },
-          {
-            path: ':analysisId/textvariant',
-            element: <AuxiliaryText />,
-          },
-          {
-            path: ':analysisId/propositions',
-            element: <Propositions />,
-          },
-          {
-            path: ':analysisId/openmapping',
-            element: <Mapping open />,
-          },
-          {
-            path: ':analysisId/completemapping',
-            element: <Mapping />,
-          },
-          {
-            path: ':analysisId/linking',
-            element: <Linking />,
-          },
-          {
-            path: ':analysisId/conceptualizing',
-            element: <Conceptualizing />,
-          },
-        ],
-      }
-    ],
+    basename: normalizeBasename(window.ANALYSIS_TOOL_BASENAME),
   },
-], {
-  basename: normalizeBasename(window.ANALYSIS_TOOL_BASENAME),
-});
+);
 
 function App() {
-  return (
-    <RouterProvider router={router} />
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;

@@ -16,14 +16,15 @@ const Methan = (props) => {
 };
 
 const Header = (props) => {
-  const showIcon = (props.showIcon !== undefined) ? props.showIcon : false;
+  const showIcon = props.showIcon !== undefined ? props.showIcon : false;
   const target = props.target || '/';
   return (
     <StyledHeader>
-      { showIcon && <Methan /> }
+      {showIcon && <Methan />}
       <Container>
         <Link to={target}>
-          <H1>Metaphor Analysis Tool
+          <H1>
+            Metaphor Analysis Tool
             <TinyText>(β–version)</TinyText>
           </H1>
         </Link>
@@ -36,7 +37,7 @@ const Header = (props) => {
       >
         <Icon glyph='feedback' />
       </AbsoluteIconButton>
-    </StyledHeader> 
+    </StyledHeader>
   );
 };
 

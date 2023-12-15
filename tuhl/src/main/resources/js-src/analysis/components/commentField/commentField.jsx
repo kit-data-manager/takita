@@ -7,7 +7,9 @@ export const CommentField = (props) => {
   return (
     <S.CommentField>
       <S.CommentFieldTextarea
-        value={value} onChange={(ev) => onChange(ev, ev.target.value)} placeholder={placeholder}
+        value={value}
+        onChange={(ev) => onChange(ev, ev.target.value)}
+        placeholder={placeholder}
       />
     </S.CommentField>
   );

@@ -1,30 +1,14 @@
-import {
-  createFetchedConcept,
-  createMetaphor,
-  createMRWs,
-  createSearchedConcepts,
-} from './converting';
-
-import {
-  MetaphorAnnotation,
-  MRWAnnotation,
-  SearchResult,
-} from './models';
-
+import { createFetchedConcept, createMetaphor, createMRWs, createSearchedConcepts } from './converting';
+import { MetaphorAnnotation, MRWAnnotation, SearchResult } from './models';
 import { FetchResult } from './models/resources/FetchResult';
 
 // eslint-disable-next-line jest/no-mocks-import
 import { searchForConcept } from './__mocks__/searching';
 
 // These will be imported from __mock__/fetching.js instead.
-import {
-  fetchMetaphorAnnotation,
-  fetchConcept,
-  fetchMRWAnnotation,
-} from './fetching';
+import { fetchMetaphorAnnotation, fetchConcept, fetchMRWAnnotation } from './fetching';
 
 jest.mock('./fetching');
-
 
 describe('metaphor annotation creation', () => {
   let data;
@@ -32,7 +16,7 @@ describe('metaphor annotation creation', () => {
   beforeAll(async () => {
     data = await fetchMetaphorAnnotation(null);
   });
-  
+
   test('create a metaphor annotation', () => {
     const result = createMetaphor(data);
     expect(result).toBeInstanceOf(MetaphorAnnotation);
@@ -40,15 +24,14 @@ describe('metaphor annotation creation', () => {
 
   test('analysisString property exists', () => {
     const result = createMetaphor(data);
-    expect(typeof result.analysisString).toBe("string");
+    expect(typeof result.analysisString).toBe('string');
   });
 
   test('analysis property exists', () => {
     const result = createMetaphor(data);
-    expect(typeof result.analysis).toBe("object");
+    expect(typeof result.analysis).toBe('object');
   });
 });
-
 
 describe('fetched concept creation', () => {
   let data;
@@ -61,7 +44,7 @@ describe('fetched concept creation', () => {
     const result = createFetchedConcept(data);
     expect(result).toBeInstanceOf(FetchResult);
   });
-  
+
   test('toConcept() method exists', () => {
     const result = createFetchedConcept(data);
     expect(result.toConcept).toBeDefined();
@@ -82,7 +65,7 @@ describe('single MRW annotation creation', () => {
 
   test('check instantiation', () => {
     const mrws = createMRWs(data);
-    mrws.forEach(mrw => {
+    mrws.forEach((mrw) => {
       expect(mrw).toBeInstanceOf(MRWAnnotation);
     });
   });
@@ -93,7 +76,7 @@ describe('multiple MRW annotation creation', () => {
 
   beforeAll(async () => {
     const mrw = await fetchMRWAnnotation(null);
-    data = [mrw, mrw, ];
+    data = [mrw, mrw];
   });
 
   test('create multiple MRW annotations', () => {
@@ -103,7 +86,7 @@ describe('multiple MRW annotation creation', () => {
 
   test('check instantiation', () => {
     const mrws = createMRWs(data);
-    mrws.forEach(mrw => {
+    mrws.forEach((mrw) => {
       expect(mrw).toBeInstanceOf(MRWAnnotation);
     });
   });
@@ -118,7 +101,7 @@ describe('searched concepts creation', () => {
 
   test('create multiple SearchResult concepts', () => {
     const concepts = createSearchedConcepts(data);
-    concepts.forEach(c => {
+    concepts.forEach((c) => {
       expect(c).toBeInstanceOf(SearchResult);
     });
   });

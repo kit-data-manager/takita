@@ -1,4 +1,4 @@
-import { wrapLink } from "../linkUtils";
+import { wrapLink } from '../linkUtils';
 import {
   StyledAbsoluteIconButton,
   StyledIconButton,

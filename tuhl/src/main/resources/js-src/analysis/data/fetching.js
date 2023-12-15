@@ -1,24 +1,16 @@
 /**
  * @module data/fetching
- * 
+ *
  * This module contains only async functions which directly use
  * the fetch API to access data. It is not concerned with the
  * validity of said data.
  */
-import {
-  MissingConceptError,
-  MissingMRWError,
-  MissingMetaphorError,
-} from '../errors';
-import {
-  getConceptURL,
-  encodeURL,
-  normalizeApiUrl
-} from '../utils';
+import { MissingConceptError, MissingMRWError, MissingMetaphorError } from '../errors';
+import { getConceptURL, encodeURL, normalizeApiUrl } from '../utils';
 
 /**
  * Fetch a concept from skosmos.
- * @param {string} uri 
+ * @param {string} uri
  * @returns {Promise<Object>}
  */
 
@@ -35,8 +27,7 @@ export const fetchConcept = async (uri) => {
 
     const data = await response.json();
     return data;
-  }
-  catch (e) {
+  } catch (e) {
     //console.log(e);
     return null;
   }
@@ -44,7 +35,7 @@ export const fetchConcept = async (uri) => {
 
 /**
  * Fetch a metaphor annotation from takita.
- * @param {string} metaphorURI 
+ * @param {string} metaphorURI
  * @returns {Promise<Object>}
  */
 export const fetchMetaphorAnnotation = async (metaphorURI) => {
@@ -64,7 +55,7 @@ export const fetchMetaphorAnnotation = async (metaphorURI) => {
 
 /**
  * Fetch a MRW annotation from takita.
- * @param {string} mrwURI 
+ * @param {string} mrwURI
  * @returns {Promise<Object>}
  */
 export const fetchMRWAnnotation = async (mrwURI) => {
@@ -88,7 +79,7 @@ export const fetchMRWAnnotation = async (mrwURI) => {
  *
  * @param {MetaphorAnnotation} annotation the complete metaphor annotation
  * @param {String?} apiUri URI of the API to use for updating
- * @returns json representation of updated metaphor annotation 
+ * @returns json representation of updated metaphor annotation
  */
 export const updateAnalysis = async (annotation, apiUri) => {
   const payload = annotation.serialize();
@@ -99,7 +90,7 @@ export const updateAnalysis = async (annotation, apiUri) => {
     cache: 'no-cache',
     headers: {
       'Content-Type': 'application/json',
-      'Accepts': 'application/json',
+      Accepts: 'application/json',
     },
     body: payload,
   });

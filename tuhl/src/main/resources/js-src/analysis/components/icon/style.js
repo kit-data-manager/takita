@@ -14,15 +14,15 @@ export const InlineSvg = styled.svg`
 
 export const SvgWrapper = styled.div`
   display: inline-block;
-  flex: 0 0 ${props => (props.size ? `${props.size}px` : '32px')};
-  width: ${props => (props.size ? `${props.size}px` : '32px')};
-  height: ${props => (props.size ? `${props.size}px` : '32px')};
-  min-width: ${props => (props.size ? `${props.size}px` : '32px')};
-  min-height: ${props => (props.size ? `${props.size}px` : '32px')};
+  flex: 0 0 ${(props) => (props.size ? `${props.size}px` : '32px')};
+  width: ${(props) => (props.size ? `${props.size}px` : '32px')};
+  height: ${(props) => (props.size ? `${props.size}px` : '32px')};
+  min-width: ${(props) => (props.size ? `${props.size}px` : '32px')};
+  min-height: ${(props) => (props.size ? `${props.size}px` : '32px')};
   position: relative;
   color: inherit;
 
-  ${props => 
+  ${(props) =>
     props.count &&
     css`
       background-color: transparent;
@@ -39,6 +39,5 @@ export const SvgWrapper = styled.div`
         padding: 2px 4px;
         border: 2px solid var(--default-border-color);
       }
-    `
-  };
+    `};
 `;

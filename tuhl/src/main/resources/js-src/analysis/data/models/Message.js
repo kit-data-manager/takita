@@ -16,8 +16,12 @@ const template = {
 class Message {
   constructor(data = {}) {
     const prop = { ...template, ...data };
-    if (!Object.values(msgType).includes(prop.type)) { prop.type = template.type; }
-    if (prop.uid === null) { prop.uid = uniqueId('msg_'); }
+    if (!Object.values(msgType).includes(prop.type)) {
+      prop.type = template.type;
+    }
+    if (prop.uid === null) {
+      prop.uid = uniqueId('msg_');
+    }
     Object.assign(this, prop);
   }
 }

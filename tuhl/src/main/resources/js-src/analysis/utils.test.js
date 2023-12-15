@@ -1,11 +1,6 @@
-import {
-  parseAnalysisString,
-  sanitizeSearchQuery,
-} from './utils';
-
+import { parseAnalysisString, sanitizeSearchQuery } from './utils';
 
 describe('parsing analysis string with auxiliaryText', () => {
-
   it('deals with well-formed input', () => {
     const string = '{"auxiliaryText":{"ops":[{"insert":"Hello, this is not tricky.\\\\n"}]},"propositions":[],"mappings":[[{"source":{"value":"","step":null},"target":{"value":"","step":null}}]],"linkings":[{"source":"","source_link":[],"target":"","target_link":[]}],"tertiaComment":""}';
     const result = parseAnalysisString(string);
@@ -34,7 +29,6 @@ describe('parsing analysis string with auxiliaryText', () => {
 });
 
 describe('parsing analysis string with tertiaComment', () => {
-
   it('deals with well-formed input', () => {
     const string = '{"auxiliaryText":{},"propositions":[],"mappings":[[{"source":{"value":"","step":null},"target":{"value":"","step":null}}]],"linkings":[{"source":"","source_link":[],"target":"","target_link":[]}],"tertiaComment":"This is not problematic.\\n"}';
     const result = parseAnalysisString(string);

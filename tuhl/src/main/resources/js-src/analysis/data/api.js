@@ -1,37 +1,23 @@
 /**
  * @module data/api
- * 
+ *
  * This is the most high-level API of the `data` module. Calling code should
  * only ever call functions from this module, instead of fetching or loading
  * on its own.
  */
 
-import {
-  fetchConcept,
-  fetchMetaphorAnnotation,
-  fetchMRWAnnotation,
-  updateAnalysis,
-} from './fetching';
-import {
-  createAppState,
-  createFetchedConcept,
-  createMetaphor,
-  createMRWs,
-  createSearchedConcepts,
-} from './converting';
-import {
-  searchForConcept as search,
-  storeSearchAnalytics as storeSearchData,
-} from './searching';
+import { fetchConcept, fetchMetaphorAnnotation, fetchMRWAnnotation, updateAnalysis } from './fetching';
+import { createAppState, createFetchedConcept, createMetaphor, createMRWs, createSearchedConcepts } from './converting';
+import { searchForConcept as search, storeSearchAnalytics as storeSearchData } from './searching';
 
 import { MetaphorAnnotation } from './models';
 
 /**
  * Fetch all the data which belongs to a given metaphor and converts
  * it to a usable application state.
- * 
+ *
  * @param {string}  metaphorURI URI of the metaphor annotation
- * @returns {Object} 
+ * @returns {Object}
  */
 export const loadAnalysis = async (metaphorURI) => {
   console.debug('Load analysis via Takita');
@@ -48,7 +34,7 @@ export const loadAnalysis = async (metaphorURI) => {
   console.log('we have created metaphor');
   // Aquire all the linked data to construct a fully usable application state.
   const appState = await constructAppState(metaphor);
- 
+
   return { appState, etag: metaphorData.etag, originalAnnotation: metaphorData };
 };
 
@@ -92,19 +78,15 @@ export const storeAnalysis = async (appState, originalAnnotation, etag) => {
 const constructAppState = async (metaphor) => {
   console.log('enter constructAppState()');
   // Fetch all linked MRW annotations.
-  const mrwData = await Promise.all(
-    metaphor.getMRWURIs().map(async (uri) => fetchMRWAnnotation(uri))
-  );
+  const mrwData = await Promise.all(metaphor.getMRWURIs().map(async (uri) => fetchMRWAnnotation(uri)));
   console.log(mrwData);
   console.log('we have fetched all the MRW Annotations');
   const mrws = createMRWs(mrwData);
   // Fetch all linked concepts.
-  const conceptData = await Promise.all(
-    metaphor.getConceptURIs().map(async (uri) => fetchConcept(uri))
-  );
+  const conceptData = await Promise.all(metaphor.getConceptURIs().map(async (uri) => fetchConcept(uri)));
   console.log(conceptData);
   console.log('we have fetched concepts');
-  const concepts = conceptData.map(item => createFetchedConcept(item));
+  const concepts = conceptData.map((item) => createFetchedConcept(item));
   console.log(concepts);
   console.log('we have created concepts');
   const appState = createAppState(metaphor, mrws, concepts);
@@ -114,28 +96,30 @@ const constructAppState = async (metaphor) => {
 };
 
 /**
- * 
+ *
  * @param {string} query search term
- * @returns {Array} list of DetailedConcepts 
+ * @returns {Array} list of DetailedConcepts
  */
 export const searchForConcept = async (query) => {
   // TODO: search for URI or ID should try to fetch the concept
   // directly, instead of searching for it.
   const data = await search(query);
   const results = createSearchedConcepts(data);
-  return results.map(searchResult => searchResult.toConcept());
+  return results.map((searchResult) => searchResult.toConcept());
 };
 
 /**
  * Store search analytics.
- * 
+ *
  * @param {String} query original search query
  * @param {String} selectedURI selected concept or null
  * @param {Number} selectedRank search rank of the selected concept or null
  * @param {String} annoURI analysis annotation where the linking took place
  */
 export const storeSearchAnalytics = async (query, selectedURI, selectedRank, annoURI) => {
-  if (!query) { return; }
+  if (!query) {
+    return;
+  }
   const respData = await storeSearchData(query, selectedURI, selectedRank, annoURI);
   return respData;
 };

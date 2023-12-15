@@ -1,6 +1,6 @@
 /**
  * @module data/converting
- * 
+ *
  * This module contains only functions which convert fetched data by
  * matching it to an appropriate model.
  */
@@ -16,26 +16,25 @@ import {
 
 //import { MissingConceptError } from '../errors';
 
-
 export const createDetailedConcepts = (data) => {
   //const array = (data instanceof Array) ? data : [data];
-  const detailed = data.map(concept => {
+  const detailed = data
+    .map((concept) => {
       try {
         const dc = new DetailedConcept(concept);
         return dc;
-      }
-      catch (e) {
+      } catch (e) {
         console.error(new TypeError(concept));
         return null;
       }
     })
-    .filter(dc => dc !== null);
-  return detailed;  
+    .filter((dc) => dc !== null);
+  return detailed;
 };
 
 export const createMRWs = (data) => {
-  const array = (data instanceof Array) ? data : [data];
-  const mrws = array.map(mrw => new MRWAnnotation(mrw));
+  const array = data instanceof Array ? data : [data];
+  const mrws = array.map((mrw) => new MRWAnnotation(mrw));
   return mrws;
 };
 
@@ -58,8 +57,7 @@ export const createFetchedConcept = (data) => {
 };
 
 export const createSearchedConcepts = (data) => {
-  const results = data.results
-    .map(r => new SearchResult(r));
+  const results = data.results.map((r) => new SearchResult(r));
 
   return results;
 };

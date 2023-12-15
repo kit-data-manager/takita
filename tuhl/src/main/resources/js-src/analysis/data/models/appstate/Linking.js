@@ -1,6 +1,6 @@
 /**
  * These classes model what we frequently call "cross-domain-mapping"
- * as well as "linking" to the conceptual thesaurus. 
+ * as well as "linking" to the conceptual thesaurus.
  */
 
 /* Specifies an "empty" linking.
@@ -17,7 +17,7 @@ class Linking {
     if (data === null || data === undefined) {
       data = {};
     }
-    if (! (data instanceof Object)) {
+    if (!(data instanceof Object)) {
       throw new TypeError(data);
     }
     Object.assign(this, template);
