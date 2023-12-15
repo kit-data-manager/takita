@@ -16,9 +16,9 @@ const dstPath = path.resolve(__dirname, './src/main/resources/static');
 // bundle into our regular static files folder.
 module.exports = {
   entry: {
-    'js/analysis.js': path.resolve(srcPath, './analysis/index.js'),
+    //'js/analysis.js': path.resolve(srcPath, './analysis/index.js'),
     //'css/analysis.css': path.resolve(srcPath, './analysis/index.css'),
-    'js/texteditor.js': path.resolve(srcPath, './texteditor/index.js'),
+    //'js/texteditor.js': path.resolve(srcPath, './texteditor/index.js'),
   },
   output: {
     path: path.resolve(dstPath),
