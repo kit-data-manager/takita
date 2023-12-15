@@ -18,7 +18,7 @@ module.exports = {
   entry: {
     'js/analysis.js': path.resolve(srcPath, './analysis/index.js'),
     //'css/analysis.css': path.resolve(srcPath, './analysis/index.css'),
-    //'js/texteditor.js': path.resolve(srcPath, './texteditor/index.js'),
+    'js/texteditor.js': path.resolve(srcPath, './texteditor/index.js'),
   },
   output: {
     path: path.resolve(dstPath),
