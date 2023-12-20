@@ -51,6 +51,7 @@ export function initializeNavBar($navBar) {
         currentTextPartLabel = textPartLabels[currentIdx - 1];
         selectTextPart(currentTextPartLabel, textParts);
         updateButtons(currentTextPartLabel, textPartLabels, $prevButton, $nextButton);
+        $chapterSelect.value = currentTextPartLabel;
       }
     };
     const onClickNext = (_ev) => {
@@ -59,6 +60,7 @@ export function initializeNavBar($navBar) {
         currentTextPartLabel = textPartLabels[currentIdx + 1];
         selectTextPart(currentTextPartLabel, textParts);
         updateButtons(currentTextPartLabel, textPartLabels, $prevButton, $nextButton);
+        $chapterSelect.value = currentTextPartLabel;
       }
     };
 
