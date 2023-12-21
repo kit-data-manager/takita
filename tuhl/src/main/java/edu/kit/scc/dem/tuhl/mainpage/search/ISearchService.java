@@ -1,5 +1,6 @@
 package edu.kit.scc.dem.tuhl.mainpage.search;
 
+import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -22,12 +23,29 @@ public interface ISearchService {
   List<Manuscript> search(int pageNumber, String sortField, boolean sortAsc);
 
   /**
+   * Searches the index and returns a certain number of annotation results specified in pageSize.
+   *
+   * @param pageNumber page of search results
+   * @param sortField  field to sort the results
+   * @param sortAsc    specifies if the sorting direction is ascending
+   * @return limited number of search results in list of manuscripts
+   */
+  List<Annotation> searchAnno(int pageNumber, String sortField, boolean sortAsc);
+  
+  /**
    * Gets list of search results.
    *
    * @return search results in list of manuscripts
    */
   List<Manuscript> getResults();
   
+  /**
+   * Gets list of search results for annotation.
+   *
+   * @return search results in list of annotations
+   */
+  List<Annotation> getAnnoResults();
+
   /**
    * Gets the number of pages needed to contain all results.
    *
@@ -62,4 +80,6 @@ public interface ISearchService {
    * @param model the holder for model attributes, used to pass attributes back to the view
    */
   void updateModel(Model model);
-}
+
+
+  }

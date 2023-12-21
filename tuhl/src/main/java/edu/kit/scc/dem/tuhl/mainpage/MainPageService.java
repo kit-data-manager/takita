@@ -3,6 +3,7 @@ package edu.kit.scc.dem.tuhl.mainpage;
 import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
 import edu.kit.scc.dem.tuhl.mainpage.dashboard.IDashboardService;
 import edu.kit.scc.dem.tuhl.mainpage.dashboard.contentview.TableViewService;
+import edu.kit.scc.dem.tuhl.mainpage.dashboard.annoview.AnnoViewService;
 import edu.kit.scc.dem.tuhl.mainpage.search.IFilterService;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ public class MainPageService implements IMainPageService {
   IFilterService filterService;
   IDashboardService dashboardService;
   TableViewService tableViewService;
+  AnnoViewService annoViewService;
   ISearchService searchService;
 
   /**
@@ -38,11 +40,12 @@ public class MainPageService implements IMainPageService {
   @Autowired
   public MainPageService(IAssistanceService assistanceService, IFilterService filterService,
                          IDashboardService dashboardService, TableViewService tableViewService,
-                         ISearchService searchService) {
+                         AnnoViewService annoViewService, ISearchService searchService) {
     this.assistanceService = assistanceService;
     this.filterService = filterService;
     this.dashboardService = dashboardService;
     this.tableViewService = tableViewService;
+    this.annoViewService = annoViewService;
     this.searchService = searchService;
   }
 
@@ -56,6 +59,7 @@ public class MainPageService implements IMainPageService {
     filterService.updateModel(model);
     dashboardService.updateModel(model);
     tableViewService.updateModel(model);
+    annoViewService.updateModel(model);
     searchService.updateModel(model);
 
   }
