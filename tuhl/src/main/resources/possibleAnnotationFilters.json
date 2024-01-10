@@ -1,0 +1,46 @@
+[
+  {
+    "field": "creator",
+    "type": "MATCH"
+  },
+  {
+    "field": "lastModified",
+    "type": "RANGE"
+  },
+  {
+    "field": "created",
+    "type": "RANGE"
+  },
+  {
+    "field": "label",
+    "type": "MATCH"
+  },
+  {
+    "field": "manuscriptTitle",
+    "type": "MATCH"
+  },
+  {
+    "field": "targets",
+    "type": "MATCH"
+  },
+  {
+    "field": "linkToResource",
+    "type": "MATCH"
+  },
+  {
+    "field": "annoId",
+    "type": "MATCH"
+  },
+  {
+    "field": "pageId",
+    "type": "MATCH"
+  },
+  {
+    "field": "textcards",
+    "type": "MATCH"
+  },
+  {
+    "field": "tags",
+    "type": "MATCH"
+  }
+]

@@ -41,7 +41,17 @@
 <script th:src="@{/js/tabulator.min.js}"></script>
 <script th:src="@{js/table_view.js}"></script>
 <script th:inline="javascript">
+    // "replacing" the search bars
+    if(document.getElementById("annotationSearchbar").classList.contains("d-none")){
+        document.getElementById("annotationSearchbar").classList.toggle("d-none");
+        document.getElementById("manuscriptSearchbar").classList.toggle("d-none");
+    }
 
+    // "replacing" the filter bars
+    if(document.getElementById("annotationFilterbar").classList.contains("d-none")){
+        document.getElementById("annotationFilterbar").classList.toggle("d-none");
+        document.getElementById("manuscriptFilterbar").classList.toggle("d-none");
+    }
     function checkIsMetaphorAnnotation(cell){
         const textcards = cell.getRow().getData().textcards;
         // check if a textcard has the value "metaphor", if it does the resulting array
@@ -50,7 +60,8 @@
     }
 
     // create the annotation overview table
-
+    // TODO: CUSTOMIZE to adjust the available filters add the field name of the
+    // column to be filtered on to "./possibleAnnotationFilters.json"
     /*<![CDATA[*/
     //define columns
     window.annocolumns = [
@@ -63,7 +74,24 @@
             headerSort: false,
             cellClick:function(e, cell){
                 const pageId = cell.getRow().getData().pageId;
-                location.href = "editor/" + pageId;
+                const annoId = cell.getRow().getData().annoId;
+
+                const targetUrl = new URL ('editor/' + pageId, new URL(window.location));
+                let searchParams = new URLSearchParams({
+                    annotationId: annoId
+                });
+
+                const selector = cell.getRow().getData().targets[0].selector;
+                if (selector.type === "XPathSelector"){
+                    // get the Id of the first word of the target
+                    const firstWordOfTarget = selector.value
+                                    .split('id("')[1]
+                                    .split('"')[0];
+                    searchParams.append("fragment", firstWordOfTarget);
+                }
+
+                targetUrl.search = searchParams;
+                location.href = targetUrl.toString();
             },
 
         },
@@ -75,7 +103,7 @@
         },
         {
             title: [[#{col_name.lastModified}]],
-            field: "modified",
+            field: "lastModified",
             headerSort: true,
             headerMenu: headerMenu()
         },
@@ -92,6 +120,12 @@
             headerMenu: headerMenu()
         },
         {
+            title: [[#{col_name.selection}]],
+            field: "selection",
+            headerSort: true,
+            headerMenu: headerMenu()
+        },
+        {
             title: [[#{col_name.manuscriptTitle}]],
             field: "manuscriptTitle",
             headerSort: true,
@@ -101,26 +135,30 @@
             title: [[#{col_name.targets}]],
             field: "targets",
             headerSort: false,
-            headerMenu: headerMenu()
+            headerMenu: headerMenu(),
+            visible: false
         },
         {
             title: [[#{col_name.linkToResource}]],
             field: "linkToResource",
             headerSort: false,
-            headerMenu: headerMenu()
+            headerMenu: headerMenu(),
+            visible: false
         },
         {
             title: [[#{col_name.annoId}]],
             field: "annoId",
             headerSort: false,
-            headerMenu: headerMenu()
+            headerMenu: headerMenu(),
+            visible: false
         },
 
         {
             title: [[#{col_name.pageId}]],
             field: "pageId",
             headerSort: true,
-            headerMenu: headerMenu()
+            headerMenu: headerMenu(),
+            visible: false
         },
         {
             title: [[#{col_name.textcards}]],
@@ -132,6 +170,13 @@
         {
             title: [[#{col_name.tags}]],
             field: "tags",
+            headerSort: false,
+            headerMenu: headerMenu(),
+            visible: false
+        },
+        {
+            title: "searchableBodies",
+            field: "searchableBodies",
             headerSort: false,
             headerMenu: headerMenu(),
             visible: false
@@ -185,9 +230,21 @@
                 // unwrapping the creator array
                 entry.creator = entry.creator.join(', ');
 
+                // unwrapping the bodies to make them searchable
+                const unwrappedTextcards= entry.textcards.map(textcard => textcard.purpose + ": " + textcard.value);
+                const unwrappedTags = entry.tags.map(tag => "tagging: " + tag.value);
+                entry.searchableBodies = unwrappedTags.concat(unwrappedTextcards);
+
                 // TODO: CUSTOMIZE how the label for the annotation is created
                 // check if a textcard has "identifying" as it its purpose (CRC1475 stores the label there)
                 entry.label = entry.textcards.filter(textcard => textcard.purpose === "identifying")
+                                                // get the last (and only) entry of the resulting array
+                                                .pop()
+                                                // check if the entry has a "value"-key, if not set it to "undefined"
+                                                ?.value || "undefined";
+                // TODO: CUSTOMIZE how the selected image/textpart of the annotation is created
+                // check if a textcard has "identifying" as it its purpose (CRC1475 stores the label there)
+                entry.selection = entry.textcards.filter(textcard => textcard.purpose === "describing")
                                                 // get the last (and only) entry of the resulting array
                                                 .pop()
                                                 // check if the entry has a "value"-key, if not set it to "undefined"

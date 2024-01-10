@@ -213,7 +213,7 @@ public class AnnoViewService implements IAnnoViewService {
         JSONObject row = new JSONObject();
         row.put("annoId", annotation.getId());
         row.put("creator", new JSONArray(annotation.getCreators()));
-        row.put("modified", annotation.getModified());
+        row.put("lastModified", annotation.getModified());
         row.put("created", annotation.getCreated());
         // TODO: this needs to be addressed, if annotations can target multiple resources/pages
         row.put("linkToResource", annotation.getTargets().get(0).getLinkToResource());

@@ -26,3 +26,23 @@ function setSearchTerm(event) {
         });
     }
 }
+
+function setAnnotationSearchTerm(event) {
+    event.preventDefault();
+    let searchTerm;
+    if(document.getElementById("annotationSearchTermEmpty") == null){
+        searchTerm = $('#annotationSearchTerm').val();
+    } else {
+        searchTerm = $('#annotationSearchTermEmpty').val();
+    }
+    if (searchTerm != null) {
+        // use "OR" filters on every column to "search"
+        // creating the filters
+        let filters = window.annocolumns.filter(column => column.field !== undefined)
+                                        .map(column => {
+                                                return {field:column.field, type:"like", value:searchTerm};
+                                            });
+        // applying the filters; as filters is an array, tabulator will use "OR" filters
+        window.annotable.setFilter([filters]);
+    }
+}
