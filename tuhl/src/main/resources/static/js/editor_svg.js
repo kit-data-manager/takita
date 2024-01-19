@@ -860,7 +860,7 @@ function init(annotations) {
             newRectangle = drawRectangle(scaledX, scaledY, 0, 0, '#ff8d00', null, null);
         };
 
-        if (movingImage) {
+        if (movingImage || coordinates.ctrlKey) {
 
             initiated = true;
             let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
@@ -944,6 +944,7 @@ function init(annotations) {
 
     };
     document.getElementById("imageWorkspace").onmousemove = function(coordinates) {
+
         if (addingRectangle && newRectangle) {
             let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
             let scalingRatios = getScalingRatios();
@@ -984,7 +985,7 @@ function init(annotations) {
             polygonPath.attr({'path' : polygonPath.attrs.path.toString().substring(0,polygonPath.attrs.path.toString().lastIndexOf('L')) + 'L' + polygonX + " " + polygonY});
 
         };
-        if (movingImage && initiated) {
+        if (movingImage && initiated || coordinates.ctrlKey && initiated) {
             let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
             let scalingRatios = getScalingRatios();
 
@@ -994,7 +995,7 @@ function init(annotations) {
             let deltaX = Math.round((relativeCoordinates[0] - mouseDownX) / scalingRatios[0] / 100);
             let deltaY = Math.round((relativeCoordinates[1] - mouseDownY) / scalingRatios[1] / 100);
 
-
+            // if movement needs to be quicker, introduce a factor e.g. 2 before deltaX and deltaY
             paper.currentX = paper.currentX - deltaX;
             paper.currentY = paper.currentY - deltaY;
 
@@ -1037,8 +1038,10 @@ function init(annotations) {
 
         if (movingImage) {
           movingImage = false;
-          initiated = false;
         };
+
+        // moved out of the if clause to prevent unintentional movement after ctrl-move
+        initiated = false;
     };
 
     // Drawing anno svgs on first opening of page
