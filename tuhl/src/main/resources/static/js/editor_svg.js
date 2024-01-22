@@ -1111,6 +1111,13 @@ window.addEventListener("wheel", function(e) {
   passive: false
 });
 
+window.addEventListener("mouseup", function(e) {
+    // prevent unintended movement after ctrl moving
+    // if the user gets out of the canvas while ctrl moving the variable is not resetted 
+    // if the ctrl button is pushed again, the image moves with every mouse move otherwise
+    initiated = false;
+})
+
 // adding the closing functionality to annotation creation modal
 document.getElementById('closeButtonAnno').addEventListener('click', function (e) {
     document.getElementById("createAnnotation").classList.toggle("show-modal");
