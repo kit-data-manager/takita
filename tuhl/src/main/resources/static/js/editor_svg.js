@@ -33,9 +33,22 @@ let mode = Mode.View;
 // also includes scrolling offsets
 // ToDo: check browser compatibility!
 function getRelativeCoordinates(x, y) {
-    let imageWorkspaceBoundingRect = document.getElementById("imageWorkspace").getBoundingClientRect();
-    let relativeX = (x - imageWorkspaceBoundingRect.left - window.pageXOffset); //* paper.currentWidth / paper.originalWidth;
-    let relativeY = (y - imageWorkspaceBoundingRect.top - window.pageYOffset); //* paper.currentHeight / paper.originalHeight;
+    let image = document.getElementById("pageImage");
+
+    let relativeX = (x - image.getBoundingClientRect().left - window.pageXOffset);
+    let relativeY = (y - image.getBoundingClientRect().top - window.pageYOffset); 
+    
+    let styleLeft = parseInt(image.style.left);
+    let styleTop = parseInt(image.style.top);
+
+    // only adding the offset if a shape is created
+    // otherwise the image flies out of bounds while moving
+    if (!isNaN(styleLeft) && (addingRectangle || addingPolygon)) {
+        relativeX = relativeX + styleLeft;
+    };
+    if (!isNaN(styleTop) && (addingRectangle || addingPolygon)) {
+        relativeY = relativeY + styleTop;
+    }
 
     return [relativeX, relativeY];
 };
@@ -992,8 +1005,8 @@ function init(annotations) {
             //let deltaX = Math.round((relativeCoordinates[0] - mouseDownX) * paper.currentWidth / scalingRatios[0] / 10 / paper.originalWidth);
             //let deltaY = Math.round((relativeCoordinates[1] - mouseDownY) * paper.currentHeight / scalingRatios[1] / 10 / paper.originalHeight);
 
-            let deltaX = Math.round((relativeCoordinates[0] - mouseDownX) / scalingRatios[0] / 100);
-            let deltaY = Math.round((relativeCoordinates[1] - mouseDownY) / scalingRatios[1] / 100);
+            let deltaX = Math.round((relativeCoordinates[0] - mouseDownX) / scalingRatios[0] / 10);
+            let deltaY = Math.round((relativeCoordinates[1] - mouseDownY) / scalingRatios[1] / 10);
 
             // if movement needs to be quicker, introduce a factor e.g. 2 before deltaX and deltaY
             paper.currentX = paper.currentX - deltaX;
