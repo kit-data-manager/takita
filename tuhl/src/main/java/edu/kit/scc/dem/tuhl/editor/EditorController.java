@@ -3,8 +3,6 @@ package edu.kit.scc.dem.tuhl.editor;
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
-import edu.kit.scc.dem.tuhl.model.Color;
-import edu.kit.scc.dem.tuhl.model.body.TextCard;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -12,21 +10,23 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.context.request.WebRequest;
 
 /**
  * Handles requests and directs them to the EditorService.
@@ -89,197 +89,6 @@ public class EditorController {
     return "editor";
   }
 
-  /**
-   * Changes the visibility of a selected annotation on the displayed page.
-   *
-   * @param annotationNumber Number of the annotation in the editor
-   * @param visibility true, if the annotation should be visible, false else
-   * @param model the holder for model attributes. Used to pass attributes back to the view
-   * @return the name of the html file to display
-   */
-  /** @GetMapping("/visibility")
-  public String changeVisibility(@RequestParam("annotationNumber") int annotationNumber,
-                                 @RequestParam("visibility") Boolean visibility, Model model) {
-    throw new AssertionError(NOT_IMPLEMENTED);
-  }
-
-  /**
-   * Adds a new annotation to the database.
-   *
-   * @param svg svg of the annotation, that should be added to the page
-   * @param color color of the annotation, that should be added
-   * @param model the holder for model attributes. Used to pass attributes back to the view
-   * @return the name of the html file to display
-   */
-  /** @PostMapping("/addAnnotation")
-  public String addAnnotation(@RequestParam("svg") String svg, @RequestParam("color") Color color,
-                              Model model) {
-    throw new AssertionError(NOT_IMPLEMENTED);
-  }
-
-  /**
-   * Endpoint to change the currently selected annotation.
-   *
-   * @param annotationId the id of the annotation
-   * @param model the holder for model attributes. Used to pass attributes back to the view
-   * @return a string to indicate the redirect
-   */
-  /** @PostMapping("/select_annotation")
-  public String selectAnnotation(@RequestBody String annotationJson, Model model) {
-    try {
-      JSONObject json = new JSONObject(annotationJson);
-      String id = json.getString("id");
-      editorService.selectAnnotation(id);
-      model.addAttribute("currentAnnotation", editorService.getCurrentAnnotation());
-      model.addAttribute("currentPage", editorService.getCurrentPage());
-      model.addAttribute("currentManuscript", editorService.getCurrentManuscript());
-
-      assistanceService.updateModel(model);
-    } catch (JSONException | NoSuchIndexEntryException e) {
-      return REDIRECT_ERROR + e.getMessage();
-    }
-    return "editor_fragments :: annotationViewer";
-  }
-
-  /**
-   * Updates a parameter of an annotation like the color or the SVG form of it.
-   *
-   * @param svg updated svg of the annotation
-   * @param color updated color of the annotation
-   * @param motivation updated motivation of the annotation
-   * @param model the holder for model attributes. Used to pass attributes back to the view
-   * @return the name of the html file to display
-   */
-  /** @GetMapping("/change/annotation")
-  public String updateAnnotation(@RequestParam("svg") String svg,
-                                 @RequestParam("color") Color color,
-                                 @RequestParam("motivation") String motivation, Model model) {
-    throw new AssertionError(NOT_IMPLEMENTED);
-  }
-
-  /**
-   * Deletes the currently selected Annotation.
-   *
-   * @param model the holder for model attributes. Used to pass attributes back to the view
-   * @return the name of the html file to display
-   */
-  /** @GetMapping("/delete/annotation")
-  public String deleteAnnotation(Model model) {
-    throw new AssertionError(NOT_IMPLEMENTED);
-  }
-
-  /**
-   * Adds a text card to an annotation in the database.
-   *
-   * @param textCard Textcard with the new title, purpose and Value
-   * @return the name of the html file to display
-   */
-  /** @PostMapping("/add/textcard")
-  public String addTextCard(@ModelAttribute("textCard") TextCard textCard) {
-    throw new AssertionError(NOT_IMPLEMENTED);
-  }
-
-  /**
-   * Saves the made changes of the currently displayed text card.
-   *
-   * @param text  changed text of the text card
-   * @param purpose new purpose of the text card
-   * @param model the holder for model attributes. Used to pass attributes back to the view
-   * @return the name of the html file to display
-   */
-  /** @GetMapping("/change/textcard")
-  public String updateTextCard(@RequestParam("text") String text,
-                               @RequestParam("purpose") String purpose, Model model) {
-    throw new AssertionError(NOT_IMPLEMENTED);
-  }
-
-  /**
-   * Displays all the available metadata of the currently displayed page in a sorted way.
-   *
-   * @param model the holder for model attributes. Used to pass attributes back to the view
-   * @return the name of the html file to display
-   */
-  /** @PostMapping("/allmetadata")
-  public String getAllMetadata(Model model) {
-    throw new AssertionError(NOT_IMPLEMENTED);
-  }
-
-  /**
-   * Displays all the available metadata of the currently displayed page as a raw JSON.
-   *
-   * @param model the holder for model attributes. Used to pass attributes back to the view
-   * @return the name of the html file to display
-   */
-  /** @PostMapping("/rawmetadata")
-  public String getRawMetadata(Model model) {
-    throw new AssertionError(NOT_IMPLEMENTED);
-  }
-
-  /**
-   * Changes the metadata that are displayed for the user in the editor.
-   *
-   * @param model the holder for model attributes. Used to pass attributes back to the view
-   * @return the name of the html file to display
-   */
-  /** @PostMapping("/change/metadata")
-  public String changeDisplayedMetadata(Model model) {
-    throw new AssertionError(NOT_IMPLEMENTED);
-  }
-
-  /**
-   * Adds a tag to an annotation.
-   *
-   * @param tag   tag that should be added
-   * @param model the holder for model attributes. Used to pass attributes back to the view
-   * @return the name of the html file to display
-   */
-  /** @PostMapping("/add/tag")
-  public String addTag(@RequestParam("tag") String tag, Model model) {
-    throw new AssertionError(NOT_IMPLEMENTED);
-  }
-
-  /**
-   * Deletes a tag from an annotation.
-   *
-   * @param tag tag, that should be deleted
-   * @param model the holder for model attributes. Used to pass attributes back to the view
-   * @return the name of the html file to display
-   */
-  /** @PostMapping("/delete/tag")
-  public String deleteTag(@RequestParam("tag") String tag, Model model) {
-    throw new AssertionError(NOT_IMPLEMENTED);
-  }
-
-  /**
-   * Gets all possible tags for annotations.
-   *
-   * @param model the holder for model attributes. Used to pass attributes back to the view
-   * @return the name of the html file to display
-   */
-  /** @PostMapping("/get/allTags")
-  public String getAllTags(Model model) {
-    throw new AssertionError(NOT_IMPLEMENTED);
-  }
-
-  /**
-   * Validates an Annotation made by an algorithm.
-   *
-   * @param validated true, if the annotation is validated, false if the annotation is rejected
-   * @param model the holder for model attributes. Used to pass attributes back to the view
-   * @return the name of the html file to display
-   */
-  /** public String validateAnnotation(@RequestParam("validated") String validated, Model model) {
-    try {
-      editorService.validateAnnotation(validated);
-    } catch (IOException | NoSuchIndexEntryException e) {
-      return REDIRECT_ERROR + e.getMessage();
-    } catch (InterruptedException e) {
-      Thread.currentThread().interrupt();
-      return REDIRECT_ERROR + e.getMessage();
-    }
-    return "editor";
-  } */
-
   private JSONArray getDisplayableAnnotations(List<Annotation> annotations)
     throws UnsupportedEncodingException {
     JSONArray displayable = new JSONArray();
@@ -312,5 +121,54 @@ public class EditorController {
     return displayable;
   }
 
+  /**
+   * Delegates the task to get the raw JSON file to a manuscript to IEditorService.
+   *
+   * @param objectId identifies the object to get meta data about
+   * @param request to access the headers from the HTTP request
+   * @param response to access the headers for the HTTP response
+   * @return HTTP entity sent back, either ok for a success including the 
+   *    JSON or 500 for an internal error
+   */
+  
+@RequestMapping(value = "/raw/{objectId}", method = RequestMethod.GET, produces = "application/json")
+@ResponseBody
+public ResponseEntity getObjectJson(@PathVariable("objectId") String objectId, final WebRequest request, final HttpServletResponse response) {
+   String rawJson;
+   try {
+       rawJson = editorService.getManuscriptJson(objectId).toString(2).replace("\\/", "/");
+    } catch (IOException | JSONException e) {
+        return ResponseEntity.status(500).body(e.getMessage());
+    } catch (InterruptedException e) {
+        Thread.currentThread().interrupt();
+        return ResponseEntity.status(500).body(e.getMessage());
+    }
+   return ResponseEntity.ok().body(rawJson);
+}
+
+/**
+   * Delegates the task to get the raw XML file to a manuscript to IEditorService.
+   *
+   * @param objectId identifies the object to get meta data about
+   * @param request to access the headers from the HTTP request
+   * @param response to access the headers for the HTTP response
+   * @return HTTP entity sent back, either ok for a success including the 
+   *    XML or 500 for an internal error
+   */
+
+   @RequestMapping(value = "/raw/{objectId}", method = RequestMethod.GET, produces = "application/xml")
+   @ResponseBody
+   public ResponseEntity getObjectXml(@PathVariable("objectId") String objectId, final WebRequest request, final HttpServletResponse response) {
+      String rawXml;
+      try {
+          rawXml = editorService.getManuscriptXml(objectId);
+       } catch (IOException e) {
+           return ResponseEntity.status(500).body(e.getMessage());
+       } catch (InterruptedException e) {
+           Thread.currentThread().interrupt();
+           return ResponseEntity.status(500).body(e.getMessage());
+       }
+      return ResponseEntity.ok().body(rawXml);
+   }
   
 }

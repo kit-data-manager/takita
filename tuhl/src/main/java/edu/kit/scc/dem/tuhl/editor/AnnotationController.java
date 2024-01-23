@@ -1,4 +1,4 @@
-package edu.kit.scc.dem.tuhl.editorstub;
+package edu.kit.scc.dem.tuhl.editor;
 
 import com.google.gson.Gson;
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
@@ -27,29 +27,29 @@ import org.springframework.web.context.request.WebRequest;
 /**
  * Controls the interaction with the user interface concerning the interaction with
  * the databases and provides the api endpoints for those functionalities.
- * Delegates the tasks to the corresponding business logic in an IEditorStubService instance.
+ * Delegates the tasks to the corresponding business logic in an IEditorService instance.
  */
 @Controller
 @RequestMapping("/editor_rest")
-public class RestController {
+public class AnnotationController {
   
   
-  private final IEditorStubService editorStubService;
+  private final IEditorService editorService;
 
   /**
-   * Constructor for EditorStubController, initializes instances of used beans.
+   * Constructor for EditorController, initializes instances of used beans.
    *
-   * @param editorStubService instance of IEditorStubService
+   * @param editorService instance of IEditorService
    */
   @Autowired
-  public RestController(IEditorStubService editorStubService) {
-    this.editorStubService = editorStubService;
+  public AnnotationController(IEditorService editorService) {
+    this.editorService = editorService;
     
   }
 
   /**
    * Delegates the task to get all annotations for a specific page
-   * to IEditorStubService.
+   * to IEditorService.
    *
    * @param id holds the value specifying the page
    * @param request to access the headers from the HTTP request
@@ -63,7 +63,7 @@ public class RestController {
 public ResponseEntity getAnnotationsForId(@RequestParam("id") String id, final WebRequest request, final HttpServletResponse response) {
    String annotationsJson;
    try {
-       List <Annotation> annotations = editorStubService.getAnnotationsForId(id);
+       List <Annotation> annotations = editorService.getAnnotationsForId(id);
        annotationsJson = new Gson().toJson(annotations);
     } catch (IOException | JSONException e) {
         return ResponseEntity.status(500).body(e.getMessage());
@@ -77,7 +77,7 @@ public ResponseEntity getAnnotationsForId(@RequestParam("id") String id, final W
 }
 
   /**
-   * Delegates the task to create an annotation to IEditorStubService.
+   * Delegates the task to create an annotation to IEditorService.
    *
    * @param jsonString holds the values for specifying the added annotation
    * @param request to access the headers from the HTTP request
@@ -99,7 +99,7 @@ public ResponseEntity createAnnotation(@RequestBody String jsonString, final Web
             svgCode = json.getString("svgCode");
         }
         String motivation = json.getString("motivation");
-        Annotation annotation = editorStubService.addAnnotation(pageId, color, svgCode, motivation);
+        Annotation annotation = editorService.addAnnotation(pageId, color, svgCode, motivation);
         annotationJson = new Gson().toJson(annotation);
     } catch (IOException | JSONException e) {
         return ResponseEntity.status(500).body(e.getMessage());
@@ -113,7 +113,7 @@ public ResponseEntity createAnnotation(@RequestBody String jsonString, final Web
 }
 
   /**
-   * Delegates the task to read an annotation to IEditorStubService.
+   * Delegates the task to read an annotation to IEditorService.
    *
    * @param id identifies the annotation to get
    * @param request to access the headers from the HTTP request
@@ -127,7 +127,7 @@ public ResponseEntity createAnnotation(@RequestBody String jsonString, final Web
 public ResponseEntity getAnnotationById(@PathVariable("id") final String id, final WebRequest request, final HttpServletResponse response) { 
     String annotationJson;
     try {
-        Annotation annotation = editorStubService.getAnnotation(decodeURL(id));
+        Annotation annotation = editorService.getAnnotation(decodeURL(id));
         annotationJson = new Gson().toJson(annotation);
     } catch (NoSuchIndexEntryException e) {
         return ResponseEntity.status(404).body(e.getMessage());
@@ -138,7 +138,7 @@ public ResponseEntity getAnnotationById(@PathVariable("id") final String id, fin
 }
 
  /**
-   * Delegates the task to read an annotation to IEditorStubService.
+   * Delegates the task to read an annotation to IEditorService.
    *
    * @param id identifies the annotation to get
    * @param request to access the headers from the HTTP request
@@ -152,7 +152,7 @@ public ResponseEntity getAnnotationById(@PathVariable("id") final String id, fin
 public ResponseEntity getAnnotationByIdWadm(@PathVariable("id") final String id, final WebRequest request, final HttpServletResponse response) { 
     String rawJson;
     try {
-        rawJson = editorStubService
+        rawJson = editorService
           .getAnnotationJson(decodeURL(id))
           .toString(2)
           .replace("\\/", "/");
@@ -166,7 +166,7 @@ public ResponseEntity getAnnotationByIdWadm(@PathVariable("id") final String id,
 }
 
   /**
-   * Delegates the task to update an annotation to IEditorStubService.
+   * Delegates the task to update an annotation to IEditorService.
    *
    * @param id identifies the annotation to update
    * @param jsonString holds the values for specifying the updated annotation
@@ -186,7 +186,7 @@ public ResponseEntity updateAnnotationById(@PathVariable("id") final String id, 
         String color = json.getString("color");
         String svgCode = json.getString("svgCode");
         String motivation = json.getString("motivation");
-        Annotation annotation = editorStubService
+        Annotation annotation = editorService
           .updateAnnotation(decodeURL(id), color, svgCode, motivation);
         annotationJson = new Gson().toJson(annotation);
     } catch (IOException | JSONException e) {
@@ -201,7 +201,7 @@ public ResponseEntity updateAnnotationById(@PathVariable("id") final String id, 
 }
 
   /**
-   * Delegates the task to delete an annotation to IEditorStubService.
+   * Delegates the task to delete an annotation to IEditorService.
    *
    * @param id identifies the annotation to delete
    * @param request to access the headers from the HTTP request
@@ -215,7 +215,7 @@ public ResponseEntity updateAnnotationById(@PathVariable("id") final String id, 
 public ResponseEntity deleteAnnotationById(@PathVariable("id") final String id, final WebRequest request, final HttpServletResponse response) {
     String annotationJson;
     try {
-        Annotation annotation = editorStubService.deleteAnnotation(decodeURL(id));
+        Annotation annotation = editorService.deleteAnnotation(decodeURL(id));
         annotationJson = new Gson().toJson(annotation);
     } catch (IOException e) {
         return ResponseEntity.status(500).body(e.getMessage());
@@ -229,7 +229,7 @@ public ResponseEntity deleteAnnotationById(@PathVariable("id") final String id, 
 }
 
   /**
-   * Delegates the task to get all bodies for an annotation to IEditorStubService.
+   * Delegates the task to get all bodies for an annotation to IEditorService.
    *
    * @param id identifies the annotation for which the bodies are fetched
    * @param request to access the headers from the HTTP request
@@ -243,7 +243,7 @@ public ResponseEntity deleteAnnotationById(@PathVariable("id") final String id, 
 public ResponseEntity getBodiesForAnnotationById(@PathVariable("id") final String id, final WebRequest request, final HttpServletResponse response) {
     String textCardsJson;
     try {
-        Annotation annotation = editorStubService.getAnnotation(decodeURL(id));
+        Annotation annotation = editorService.getAnnotation(decodeURL(id));
         List<TextCard> textCards = annotation.getTextCards();
         textCardsJson = new Gson().toJson(textCards);
     } catch (NoSuchIndexEntryException e) {
@@ -255,7 +255,7 @@ public ResponseEntity getBodiesForAnnotationById(@PathVariable("id") final Strin
 }
 
   /**
-   * Delegates the task to create an annotation body to IEditorStubService.
+   * Delegates the task to create an annotation body to IEditorService.
    *
    * @param id identifies the annotation to which the body is added
    * @param jsonString holds the values for specifying the added body
@@ -288,7 +288,7 @@ public ResponseEntity createBodyForAnnotationById(@PathVariable("id") final Stri
             source = json.getString("source");
         }
         String purpose = json.getString("purpose");
-        TextCard textCard = editorStubService.addTextCard(decodeURL(id), title, subject, value, source, purpose);
+        TextCard textCard = editorService.addTextCard(decodeURL(id), title, subject, value, source, purpose);
         textCardJson = new Gson().toJson(textCard);
     } catch (IOException | JSONException e) {
         return ResponseEntity.status(500).body(e.getMessage());
@@ -302,7 +302,7 @@ public ResponseEntity createBodyForAnnotationById(@PathVariable("id") final Stri
 }
 
   /**
-   * Delegates the task to read an annotation body to IEditorStubService.
+   * Delegates the task to read an annotation body to IEditorService.
    *
    * @param id identifies the annotation to get
    * @param bodyId identifies the body to get
@@ -317,7 +317,7 @@ public ResponseEntity createBodyForAnnotationById(@PathVariable("id") final Stri
 public ResponseEntity getBodyByIdForAnnotationById(@PathVariable("id") final String id, @PathVariable("bodyId") final String bodyId, final WebRequest request, final HttpServletResponse response) {
     String textCardJson;
     try {
-        TextCard textCard = editorStubService.getTextCard(bodyId);
+        TextCard textCard = editorService.getTextCard(bodyId);
         textCardJson = new Gson().toJson(textCard);
     } catch (NoSuchIndexEntryException e) {
         return ResponseEntity.status(404).body(e.getMessage());
@@ -326,7 +326,7 @@ public ResponseEntity getBodyByIdForAnnotationById(@PathVariable("id") final Str
 }
 
   /**
-   * Delegates the task to read an annotation body to IEditorStubService.
+   * Delegates the task to read an annotation body to IEditorService.
    *
    * @param id identifies the annotation to get
    * @param bodyId identifies the body to get
@@ -342,7 +342,7 @@ public ResponseEntity getBodyByIdForAnnotationByIdWadm(@PathVariable("id") final
     TextCard textCard;
     JSONObject fullJson;
     try {
-        textCard = editorStubService.getTextCard(bodyId);
+        textCard = editorService.getTextCard(bodyId);
         fullJson = textCard.getFullJson();
     } catch (NoSuchIndexEntryException e) {
         return ResponseEntity.status(404).body(e.getMessage());
@@ -353,7 +353,7 @@ public ResponseEntity getBodyByIdForAnnotationByIdWadm(@PathVariable("id") final
 }
 
  /**
-   * Delegates the task to update an annotation body to IEditorStubService.
+   * Delegates the task to update an annotation body to IEditorService.
    *
    * @param id identifies the annotation to update
    * @param bodyId identifies the body to update
@@ -390,7 +390,7 @@ public ResponseEntity updateBodyByIdForAnnotationById(@PathVariable("id") final 
         if (json.has("purpose")) {
             purpose = json.getString("purpose");
         }
-        TextCard textCard = editorStubService.updateTextCard(bodyId, title, subject, value, source, purpose);
+        TextCard textCard = editorService.updateTextCard(bodyId, title, subject, value, source, purpose);
         textCardJson = new Gson().toJson(textCard);
     } catch (IOException | JSONException e) {
         return ResponseEntity.status(500).body(e.getMessage());
@@ -405,7 +405,7 @@ public ResponseEntity updateBodyByIdForAnnotationById(@PathVariable("id") final 
 }
 
   /**
-   * Delegates the task to delete an annotation body to IEditorStubService.
+   * Delegates the task to delete an annotation body to IEditorService.
    *
    * @param id identifies the annotation to delete
    * @param bodyId identifies the body to delete
@@ -420,7 +420,7 @@ public ResponseEntity updateBodyByIdForAnnotationById(@PathVariable("id") final 
 public ResponseEntity deleteBodyByIdForAnnotationById(@PathVariable("id") final String id, @PathVariable("bodyId") final String bodyId, final WebRequest request, final HttpServletResponse response) {
     String textCardJson;
     try {
-        TextCard textCard = editorStubService.deleteTextCard(bodyId);
+        TextCard textCard = editorService.deleteTextCard(bodyId);
         textCardJson = new Gson().toJson(textCard);
     } catch (NoSuchIndexEntryException e) {
         return ResponseEntity.status(404).body(e.getMessage());
@@ -434,7 +434,7 @@ public ResponseEntity deleteBodyByIdForAnnotationById(@PathVariable("id") final 
 }
 
   /**
-   * Delegates the task to get all tags for an annotation to IEditorStubService.
+   * Delegates the task to get all tags for an annotation to IEditorService.
    *
    * @param id identifies the annotation for which the bodies are fetched
    * @param request to access the headers from the HTTP request
@@ -448,7 +448,7 @@ public ResponseEntity deleteBodyByIdForAnnotationById(@PathVariable("id") final 
 public ResponseEntity getTagsForAnnotationById(@PathVariable("id") final String id, final WebRequest request, final HttpServletResponse response) {
     String tagsJson;
     try {
-        Annotation annotation = editorStubService.getAnnotation(decodeURL(id));
+        Annotation annotation = editorService.getAnnotation(decodeURL(id));
         List<Tag> tags = annotation.getTags();
         tagsJson = new Gson().toJson(tags);
     } catch (NoSuchIndexEntryException e) {
@@ -460,7 +460,7 @@ public ResponseEntity getTagsForAnnotationById(@PathVariable("id") final String 
 }
 
   /**
-   * Delegates the task to create a tag to IEditorStubService.
+   * Delegates the task to create a tag to IEditorService.
    *
    * @param id identifies the annotation to which the tag is added
    * @param jsonString holds the values for specifying the added tag
@@ -492,7 +492,7 @@ public ResponseEntity createTagForAnnotationById(@PathVariable("id") final Strin
         if (json.has("source")) {
             source = json.getString("source");
         }
-        Tag tag = editorStubService.addTag(decodeURL(id), title, subject, value, source);
+        Tag tag = editorService.addTag(decodeURL(id), title, subject, value, source);
         tagJson = new Gson().toJson(tag);
     } catch (IOException | JSONException e) {
         return ResponseEntity.status(500).body(e.getMessage());
@@ -506,7 +506,7 @@ public ResponseEntity createTagForAnnotationById(@PathVariable("id") final Strin
 }
 
   /**
-   * Delegates the task to read a tag to IEditorStubService.
+   * Delegates the task to read a tag to IEditorService.
    *
    * @param id identifies the annotation to get
    * @param tagId identifies the body to get
@@ -521,7 +521,7 @@ public ResponseEntity createTagForAnnotationById(@PathVariable("id") final Strin
 public ResponseEntity getTagByIdForAnnotationById(@PathVariable("id") final String id, @PathVariable("tagId") final String tagId, final WebRequest request, final HttpServletResponse response) {
     String tagJson;
     try {
-        Tag tag = editorStubService.getTag(tagId);
+        Tag tag = editorService.getTag(tagId);
         tagJson = new Gson().toJson(tag);
     } catch (NoSuchIndexEntryException e) {
         return ResponseEntity.status(404).body(e.getMessage());
@@ -530,7 +530,7 @@ public ResponseEntity getTagByIdForAnnotationById(@PathVariable("id") final Stri
 }
 
 /**
-   * Delegates the task to read a tag to IEditorStubService.
+   * Delegates the task to read a tag to IEditorService.
    *
    * @param id identifies the annotation to get
    * @param tagId identifies the body to get
@@ -546,7 +546,7 @@ public ResponseEntity getTagByIdForAnnotationByIdWadm(@PathVariable("id") final 
     Tag tag;
     JSONObject fullJson;
     try {
-        tag = editorStubService.getTag(tagId);
+        tag = editorService.getTag(tagId);
         fullJson = tag.getFullJson();
     } catch (NoSuchIndexEntryException e) {
         return ResponseEntity.status(404).body(e.getMessage());
@@ -557,7 +557,7 @@ public ResponseEntity getTagByIdForAnnotationByIdWadm(@PathVariable("id") final 
 }
 
  /**
-   * Delegates the task to update a tag to IEditorStubService.
+   * Delegates the task to update a tag to IEditorService.
    *
    * @param id identifies the annotation to update
    * @param tagId identifies the tag to update
@@ -590,7 +590,7 @@ public ResponseEntity updateTagByIdForAnnotationById(@PathVariable("id") final S
         if (json.has("source")) {
             source = json.getString("source");
         }
-        Tag tag = editorStubService.updateTag(tagId, title, subject, value, source);
+        Tag tag = editorService.updateTag(tagId, title, subject, value, source);
         tagJson = new Gson().toJson(tag);
     } catch (IOException | JSONException e) {
         return ResponseEntity.status(500).body(e.getMessage());
@@ -605,7 +605,7 @@ public ResponseEntity updateTagByIdForAnnotationById(@PathVariable("id") final S
 }
 
   /**
-   * Delegates the task to delete a tag to IEditorStubService.
+   * Delegates the task to delete a tag to IEditorService.
    *
    * @param id identifies the annotation to delete
    * @param tagId identifies the tag to delete
@@ -620,7 +620,7 @@ public ResponseEntity updateTagByIdForAnnotationById(@PathVariable("id") final S
 public ResponseEntity deleteTagByIdForAnnotationById(@PathVariable("id") final String id, @PathVariable("tagId") final String tagId, final WebRequest request, final HttpServletResponse response) {
     Tag tag;
     try {
-        tag = editorStubService.deleteTag(tagId);
+        tag = editorService.deleteTag(tagId);
     } catch (NoSuchIndexEntryException e) {
         return ResponseEntity.status(404).body(e.getMessage());
     } catch (IOException e) {
@@ -632,56 +632,6 @@ public ResponseEntity deleteTagByIdForAnnotationById(@PathVariable("id") final S
     return ResponseEntity.noContent().build();
 }
 
-/**
-   * Delegates the task to get the raw JSON file to a manuscript to IEditorStubService.
-   *
-   * @param objectId identifies the object to get meta data about
-   * @param request to access the headers from the HTTP request
-   * @param response to access the headers for the HTTP response
-   * @return HTTP entity sent back, either ok for a success including the 
-   *    JSON or 500 for an internal error
-   */
-  
-@RequestMapping(value = "/raw/{objectId}", method = RequestMethod.GET, produces = "application/json")
-@ResponseBody
-public ResponseEntity getObjectJson(@PathVariable("objectId") String objectId, final WebRequest request, final HttpServletResponse response) {
-   String rawJson;
-   try {
-       rawJson = editorStubService.getManuscriptJson(objectId).toString(2).replace("\\/", "/");
-    } catch (IOException | JSONException e) {
-        return ResponseEntity.status(500).body(e.getMessage());
-    } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-        return ResponseEntity.status(500).body(e.getMessage());
-    }
-   return ResponseEntity.ok().body(rawJson);
-}
-
-/**
-   * Delegates the task to get the raw XML file to a manuscript to IEditorStubService.
-   *
-   * @param objectId identifies the object to get meta data about
-   * @param request to access the headers from the HTTP request
-   * @param response to access the headers for the HTTP response
-   * @return HTTP entity sent back, either ok for a success including the 
-   *    XML or 500 for an internal error
-   */
-
-@RequestMapping(value = "/raw/{objectId}", method = RequestMethod.GET, produces = "application/xml")
-@ResponseBody
-public ResponseEntity getObjectXml(@PathVariable("objectId") String objectId, final WebRequest request, final HttpServletResponse response) {
-   String rawXml;
-   try {
-       rawXml = editorStubService.getManuscriptXml(objectId);
-    } catch (IOException e) {
-        return ResponseEntity.status(500).body(e.getMessage());
-    } catch (InterruptedException e) {
-        Thread.currentThread().interrupt();
-        return ResponseEntity.status(500).body(e.getMessage());
-    }
-   return ResponseEntity.ok().body(rawXml);
-}
-
 private String decodeURL(String url) throws UnsupportedEncodingException {
     String decoded = URLDecoder.decode(url, StandardCharsets.UTF_8.toString());
     if (!url.equals(decoded)) {
@@ -691,4 +641,3 @@ private String decodeURL(String url) throws UnsupportedEncodingException {
 }
 
 }
-
