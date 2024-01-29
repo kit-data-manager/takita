@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -61,6 +62,18 @@ public class Manuscript {
     this.publisher = publisher;
     this.publicationYear = publicationYear;
     pages = new ArrayList<>();
+  }
+
+  @PersistenceCreator
+  public Manuscript(String id, Date created, String title, String publisher, int publicationYear, Date lastModified, int noPages, List<Page> pages) {
+    this.id = id;
+    this.created = created;
+    this.title = title;
+    this.publisher = publisher;
+    this.publicationYear = publicationYear;
+    this.lastModified = lastModified;
+    this.noPages = noPages;
+    this.pages = pages;
   }
 
   /**
