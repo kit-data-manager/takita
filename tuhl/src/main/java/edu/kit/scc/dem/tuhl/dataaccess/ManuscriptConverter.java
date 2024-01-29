@@ -4,6 +4,7 @@ import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
 import edu.kit.scc.dem.tuhl.model.page.ImagePage;
 import edu.kit.scc.dem.tuhl.model.page.Page;
+import edu.kit.scc.dem.tuhl.model.page.ResourceType;
 import edu.kit.scc.dem.tuhl.model.page.TextPage;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -153,7 +154,7 @@ class ManuscriptConverter {
       String thumbResourceUrl = repositoryAccessService.getBaseUrl() + repositoryAccessService.getStaticPath()
           + id + RepositoryAccessService.DATA_PATH + pageNumber + RepositoryAccessService.THUMB_JPG;
 
-      ImagePage imagePage = new ImagePage(id, pageNumber, created, resourceUrl, thumbResourceUrl);
+      ImagePage imagePage = new ImagePage(id, ResourceType.IMAGE, pageNumber, created, resourceUrl, thumbResourceUrl);
  
       if (sortedAnnotations == null) {
         imagePage.setAnnotations(getAnnotationsByPage(imagePage));
@@ -167,7 +168,7 @@ class ManuscriptConverter {
       // Here comes the URL to the resource of the page
       String resourceUrl = "";
 
-      page = new TextPage(id, pageNumber, created, resourceUrl);
+      page = new TextPage(id, ResourceType.TEXT, pageNumber, created, resourceUrl);
     } else {
       throw new IllegalStateException("Unexpected value: " + resourceTypeString);
     }

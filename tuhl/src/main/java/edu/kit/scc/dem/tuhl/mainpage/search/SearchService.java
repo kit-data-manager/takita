@@ -6,6 +6,7 @@ import edu.kit.scc.dem.tuhl.model.Manuscript;
 import edu.kit.scc.dem.tuhl.model.filter.Filter;
 import edu.kit.scc.dem.tuhl.model.page.ImagePage;
 import edu.kit.scc.dem.tuhl.model.page.Page;
+import edu.kit.scc.dem.tuhl.model.page.ResourceType;
 import edu.kit.scc.dem.tuhl.model.page.TextPage;
 import java.io.IOException;
 import java.sql.Date;
@@ -207,11 +208,11 @@ public class SearchService implements ISearchService {
         String manuscriptId = (String) pageMap.get("manuscriptId");
         String pageNumber = (String) pageMap.get("pageNumber");
         if (pageMap.get("resourceType").equals("TEXT")) {
-          p = new TextPage(id, pageNumber, created, resourceUrl);
+          p = new TextPage(id, ResourceType.TEXT, pageNumber, created, resourceUrl);
           p.setManuscriptId(manuscriptId);
           pages.add(p);
         } else if (pageMap.get("resourceType").equals("IMAGE")) {
-          p = new ImagePage(id, pageNumber, created, resourceUrl, thumbResourceUrl);
+          p = new ImagePage(id, ResourceType.IMAGE, pageNumber, created, resourceUrl, thumbResourceUrl);
           p.setManuscriptId(manuscriptId);
           pages.add(p);
         }

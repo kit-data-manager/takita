@@ -18,9 +18,9 @@ public class ImagePage extends Page {
    * @param resourceUrl URL of the image of the page
    * @param thumbResourceUrl URL of the thumbnail of the page
    */
-  public ImagePage(String id, String pageNumber, Date created,
+  public ImagePage(String id, ResourceType resourceType, String pageNumber, Date created,
                    String resourceUrl, String thumbResourceUrl) {
-    super(id, ResourceType.IMAGE, pageNumber, created, resourceUrl);
+    super(id, resourceType, pageNumber, created, resourceUrl);
     annotations = new ArrayList<>();
     this.thumbResourceUrl = thumbResourceUrl;
   }
