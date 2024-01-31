@@ -32,7 +32,7 @@ import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
@@ -51,7 +51,7 @@ public class SearchService implements ISearchService {
   
   private static final Logger logger = LoggerFactory.getLogger(SearchService.class);
   private final IFilterService filterService;
-  private final ElasticsearchRestTemplate elasticsearchRestTemplate;
+  private final ElasticsearchOperations elasticsearchOperations;
   
   private List<Manuscript> results;
   private long resultPagesCount;
@@ -64,15 +64,15 @@ public class SearchService implements ISearchService {
    *
    * @param filterService instance of the business logic for filters. Injected with Springs
    *                      dependency injection system indicated by @autowired annotation.
-   * @param elasticsearchRestTemplate instance of the elasticsearch rest template. Injected with
+   * @param elasticsearchOperations instance of the elasticsearch operations. Injected with
    *                                  Springs dependency injection system indicated by @autowired
    *                                  annotation.
    */
   @Autowired
   public SearchService(IFilterService filterService,
-                       ElasticsearchRestTemplate elasticsearchRestTemplate) {
+                       ElasticsearchOperations elasticsearchOperations) {
     this.filterService = filterService;
-    this.elasticsearchRestTemplate = elasticsearchRestTemplate;
+    this.elasticsearchOperations = elasticsearchOperations;
     pageSize = 10;
   }
   
@@ -88,16 +88,16 @@ public class SearchService implements ISearchService {
   public List<Manuscript> search(int pageNumber, String sortField, boolean sortAsc) {
     
     //Cannot use lambda because of reflection in test class
-    boolean exists = elasticsearchRestTemplate.execute(
-        new ElasticsearchRestTemplate.ClientCallback<Boolean>() {
-        @Override
-        public Boolean doWithClient(RestHighLevelClient client) throws IOException {
-          return client.indices().exists(new GetIndexRequest(INDEX_NAME), RequestOptions.DEFAULT);
-        }
-      });
-    if (!exists) {
-      logger.error("The index does not exist. Please try to build it first.");
-    }
+    //boolean exists = elasticsearchOperations.execute(
+    //    new ElasticsearchOperations.ClientCallback<Boolean>() {
+    //    @Override
+    //    public Boolean doWithClient(RestHighLevelClient client) throws IOException {
+    //      return client.indices().exists(new GetIndexRequest(INDEX_NAME), RequestOptions.DEFAULT);
+    //   }
+    //  });
+    //if (!exists) {
+    //  logger.error("The index does not exist. Please try to build it first.");
+    //}
     
     //Create the query builder
     final NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
@@ -152,7 +152,7 @@ public class SearchService implements ISearchService {
   
   private long calculatePageCount(Query query) {
     //Making sure integer division is ceiled
-    long count = elasticsearchRestTemplate.count(query, IndexCoordinates.of(INDEX_NAME));
+    long count = elasticsearchOperations.count(query, IndexCoordinates.of(INDEX_NAME));
     return (count + pageSize - 1) / pageSize;
   }
   
@@ -168,17 +168,18 @@ public class SearchService implements ISearchService {
   
   private List<Manuscript> performRequest(NativeSearchQuery query, int pageStart,
                                           String sortField, boolean sortAsc) {
-    SearchResponse response = elasticsearchRestTemplate.execute(client -> client.search(
-        new SearchRequestBuilder(null, SearchAction.INSTANCE).setIndices(INDEX_NAME)
-            .setQuery(query.getQuery())
-            .setFrom((pageStart - 1) * pageSize)
-            .setSize(pageSize)
-            .addSort(sortField, sortAsc ? SortOrder.ASC : SortOrder.DESC)
-            .setFetchSource(null, "pages.annotations")
-            .request(),
-        RequestOptions.DEFAULT)
-    );
-    return parseResults(response.getHits());
+  //  SearchResponse response = elasticsearchOperations.execute(client -> client.search(
+  //      new SearchRequestBuilder(null, SearchAction.INSTANCE).setIndices(INDEX_NAME)
+  //          .setQuery(query.getQuery())
+  //          .setFrom((pageStart - 1) * pageSize)
+  //          .setSize(pageSize)
+  //          .addSort(sortField, sortAsc ? SortOrder.ASC : SortOrder.DESC)
+  //          .setFetchSource(null, "pages.annotations")
+  //          .request(),
+  //      RequestOptions.DEFAULT)
+  //  );
+  //  return parseResults(response.getHits());
+  return new ArrayList<Manuscript>();
   }
   
   private List<Manuscript> parseResults(SearchHits hits) {

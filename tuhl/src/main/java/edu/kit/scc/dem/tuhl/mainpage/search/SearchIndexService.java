@@ -43,7 +43,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.IndexOperations;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
@@ -62,7 +61,7 @@ public class  SearchIndexService implements ISearchIndexService {
   public static final String INDEX_NAME = "search_index";
   private final IAccessService accessService;
   private final ManuscriptRepository manuscriptRepository;
-  private final ElasticsearchRestTemplate elasticsearchRestTemplate;
+  private final ElasticsearchOperations elasticsearchOperations;
   
   private Date lastUpdatedIndex;
   
@@ -74,17 +73,17 @@ public class  SearchIndexService implements ISearchIndexService {
    *                      Springs dependency injection system indicated by @autowired annotation.
    * @param manuscriptRepository instance of the manuscript repository. Injected with Springs
    *                             dependency injection system indicated by @autowired annotation.
-   * @param elasticsearchRestTemplate instance of the elasticsearch rest template. Injected with
+   * @param elasticsearchOperations instance of the elasticsearch operations. Injected with
    *                                  Springs dependency injection system indicated by @autowired
    *                                  annotation.
    */
   @Autowired
   public SearchIndexService(IAccessService accessService,
                             ManuscriptRepository manuscriptRepository,
-                            ElasticsearchRestTemplate elasticsearchRestTemplate) {
+                            ElasticsearchOperations elasticsearchOperations) {
     this.accessService = accessService;
     this.manuscriptRepository = manuscriptRepository;
-    this.elasticsearchRestTemplate = elasticsearchRestTemplate;
+    this.elasticsearchOperations = elasticsearchOperations;
     lastUpdatedIndex = Date.from(Instant.EPOCH);
     accessService.setSearchIndexService(this);
   }
@@ -104,15 +103,15 @@ public class  SearchIndexService implements ISearchIndexService {
     deleteIndex();
     
     //Creating the index
-    elasticsearchRestTemplate.execute(client ->
-        client.indices().create(new CreateIndexRequest(INDEX_NAME)
-                .settings(Settings.builder()
-                    .put("index.mapping.nested_objects.limit", 1000000)),
-            RequestOptions.DEFAULT));
+    //elasticsearchOperations.execute(client ->
+    //    client.indices().create(new CreateIndexRequest(INDEX_NAME)
+    //            .settings(Settings.builder()
+    //                .put("index.mapping.nested_objects.limit", 1000000)),
+    //        RequestOptions.DEFAULT));
     
     logger.info("Building new index. This may take a while.");
     
-    IndexOperations indexOp = elasticsearchRestTemplate.indexOps(Manuscript.class);
+    IndexOperations indexOp = elasticsearchOperations.indexOps(Manuscript.class);
     createMappings(indexOp);
     
     List<Manuscript> allManuscripts = accessService.getAllManuscripts();
@@ -131,13 +130,13 @@ public class  SearchIndexService implements ISearchIndexService {
   
   private void deleteIndex() {
     if (indexExists()) {
-      AcknowledgedResponse response = elasticsearchRestTemplate.execute(client ->
-          client.indices().delete(new DeleteIndexRequest(INDEX_NAME), RequestOptions.DEFAULT));
-      if (response.isAcknowledged()) {
-        logger.info("Index successfully deleted.");
-      } else {
-        logger.info("Index could not be deleted.");
-      }
+      //AcknowledgedResponse response = elasticsearchOperations.execute(client ->
+      //    client.indices().delete(new DeleteIndexRequest(INDEX_NAME), RequestOptions.DEFAULT));
+      //if (response.isAcknowledged()) {
+      //  logger.info("Index successfully deleted.");
+      //} else {
+      //  logger.info("Index could not be deleted.");
+      //}
     } else {
       logger.info("Index does not exist. Proceeding.");
     }
@@ -208,9 +207,10 @@ public class  SearchIndexService implements ISearchIndexService {
     indexReq.includeDefaults(true);
     try {
       logger.info("Getting index creation date");
-      return elasticsearchRestTemplate.execute(client -> 
-        Date.from(Instant.ofEpochMilli(Long.parseLong(client.indices().get(indexReq, RequestOptions.DEFAULT).getSetting(INDEX_NAME, "index.creation_date"))))    
-      );      
+      //return elasticsearchOperations.execute(client -> 
+      //  Date.from(Instant.ofEpochMilli(Long.parseLong(client.indices().get(indexReq, RequestOptions.DEFAULT).getSetting(INDEX_NAME, "index.creation_date"))))    
+      //); 
+      return new Date();     
     } catch (NullPointerException e) {
       logger.error("Search index creation date could not be parsed");
       return null;
@@ -219,8 +219,9 @@ public class  SearchIndexService implements ISearchIndexService {
 }
 
   private boolean indexExists() {
-    return elasticsearchRestTemplate.execute(client ->
-        client.indices().exists(new GetIndexRequest(INDEX_NAME), RequestOptions.DEFAULT));
+    return true;
+    //return elasticsearchOperations.execute(client ->
+    //    client.indices().exists(new GetIndexRequest(INDEX_NAME), RequestOptions.DEFAULT));
   }
   
   /**
@@ -237,15 +238,15 @@ public class  SearchIndexService implements ISearchIndexService {
     deleteIndex();
     
     //Creating the index
-    elasticsearchRestTemplate.execute(client ->
-        client.indices().create(new CreateIndexRequest(INDEX_NAME)
-                .settings(Settings.builder()
-                    .put("index.mapping.nested_objects.limit", 1000000)),
-            RequestOptions.DEFAULT));
+    //elasticsearchOperations.execute(client ->
+    //    client.indices().create(new CreateIndexRequest(INDEX_NAME)
+    //            .settings(Settings.builder()
+    //                .put("index.mapping.nested_objects.limit", 1000000)),
+    //        RequestOptions.DEFAULT));
     
     logger.info("Building new small index.");
   
-    IndexOperations indexOp = elasticsearchRestTemplate.indexOps(Manuscript.class);
+    IndexOperations indexOp = elasticsearchOperations.indexOps(Manuscript.class);
     createMappings(indexOp);
     
     List<Manuscript> allManuscripts = accessService.getFewManuscripts();
@@ -330,7 +331,7 @@ public class  SearchIndexService implements ISearchIndexService {
         new NativeSearchQueryBuilder().withQuery(
             matchQuery("pages.annotations.id.keyword", id)).build();
     
-    SearchHits<Manuscript> searchHits = elasticsearchRestTemplate.search(
+    SearchHits<Manuscript> searchHits = elasticsearchOperations.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
     if (searchHits.isEmpty()) {
       throw new NoSuchIndexEntryException("Could not find Annotation with id: " + id);
@@ -352,7 +353,7 @@ public class  SearchIndexService implements ISearchIndexService {
         new NativeSearchQueryBuilder().withQuery(
             matchQuery("pages.id.keyword", id)).build();
     
-    SearchHits<Manuscript> searchHits = elasticsearchRestTemplate.search(
+    SearchHits<Manuscript> searchHits = elasticsearchOperations.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
     if (searchHits.isEmpty()) {
       throw new NoSuchIndexEntryException("Could not find page with id: " + id);
@@ -514,7 +515,7 @@ public class  SearchIndexService implements ISearchIndexService {
     Query query = new NativeSearchQueryBuilder()
         .withQuery(matchQuery("pages.annotations.textCards.id.keyword", id)).build();
     
-    SearchHits<Manuscript> manuscriptForPage = elasticsearchRestTemplate.search(
+    SearchHits<Manuscript> manuscriptForPage = elasticsearchOperations.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
     
     Manuscript manuscript;
@@ -555,7 +556,7 @@ public class  SearchIndexService implements ISearchIndexService {
     Query query = new NativeSearchQueryBuilder()
         .withQuery(matchQuery("pages.annotations.tags.id.keyword", id)).build();
     
-    SearchHits<Manuscript> manuscriptForPage = elasticsearchRestTemplate.search(
+    SearchHits<Manuscript> manuscriptForPage = elasticsearchOperations.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
     
     Manuscript manuscript;
@@ -644,7 +645,7 @@ public class  SearchIndexService implements ISearchIndexService {
             .minimumShouldMatch(1))
             .build();
     
-    SearchHits<Manuscript> searchHits = elasticsearchRestTemplate.search(
+    SearchHits<Manuscript> searchHits = elasticsearchOperations.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
     
     for (Page page : searchHits.getSearchHit(0).getContent().getPages()) {
@@ -730,7 +731,7 @@ public class  SearchIndexService implements ISearchIndexService {
         nestedQuery("pages", matchQuery("pages.id.keyword", id), ScoreMode.Avg)
             .innerHit(new InnerHitBuilder().setName("innerHitName"))).build();
     
-    SearchHits<Manuscript> manuscripts = elasticsearchRestTemplate.search(
+    SearchHits<Manuscript> manuscripts = elasticsearchOperations.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
 
     if (manuscripts.hasSearchHits()) {
