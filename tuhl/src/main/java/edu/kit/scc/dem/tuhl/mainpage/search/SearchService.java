@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.IndexOperations;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
@@ -40,6 +41,8 @@ import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.annotation.SessionScope;
+
+import co.elastic.clients.elasticsearch.core.bulk.IndexOperation;
 
 
 /**
@@ -86,18 +89,11 @@ public class SearchService implements ISearchService {
    */
   @Override
   public List<Manuscript> search(int pageNumber, String sortField, boolean sortAsc) {
+    IndexOperations indexOp = elasticsearchOperations.indexOps(Manuscript.class);
     
-    //Cannot use lambda because of reflection in test class
-    //boolean exists = elasticsearchOperations.execute(
-    //    new ElasticsearchOperations.ClientCallback<Boolean>() {
-    //    @Override
-    //    public Boolean doWithClient(RestHighLevelClient client) throws IOException {
-    //      return client.indices().exists(new GetIndexRequest(INDEX_NAME), RequestOptions.DEFAULT);
-    //   }
-    //  });
-    //if (!exists) {
-    //  logger.error("The index does not exist. Please try to build it first.");
-    //}
+    if (!indexOp.exists()) {
+      logger.error("The index does not exist. Please try to build it first.");
+    }
     
     //Create the query builder
     final NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();

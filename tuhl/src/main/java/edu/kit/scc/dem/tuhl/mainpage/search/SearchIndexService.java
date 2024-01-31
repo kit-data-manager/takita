@@ -30,12 +30,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 import org.apache.lucene.search.join.ScoreMode;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.support.master.AcknowledgedResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.indices.CreateIndexRequest;
-import org.elasticsearch.client.indices.GetIndexRequest;
-import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.index.query.InnerHitBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,22 +91,20 @@ public class  SearchIndexService implements ISearchIndexService {
    */
   @Override
   public void buildIndex() throws InterruptedException, IOException, JSONException {
+    IndexOperations indexOp = elasticsearchOperations.indexOps(Manuscript.class);
+
     logger.info("Index rebuild started. Deleting old index.");
     final LocalDateTime startBuild = LocalDateTime.now();
     lastUpdatedIndex = Date.from(Instant.now());
-    deleteIndex();
-    
-    //Creating the index
-    //elasticsearchOperations.execute(client ->
-    //    client.indices().create(new CreateIndexRequest(INDEX_NAME)
-    //            .settings(Settings.builder()
-    //                .put("index.mapping.nested_objects.limit", 1000000)),
-    //        RequestOptions.DEFAULT));
+    deleteIndex(indexOp);
     
     logger.info("Building new index. This may take a while.");
+
+    indexOp.create();;
+    logger.info("Index created.");
     
-    IndexOperations indexOp = elasticsearchOperations.indexOps(Manuscript.class);
     createMappings(indexOp);
+    logger.info("Mappings created.");
     
     List<Manuscript> allManuscripts = accessService.getAllManuscripts();
     for (Manuscript m : allManuscripts) {
@@ -128,15 +120,15 @@ public class  SearchIndexService implements ISearchIndexService {
         duration.getSeconds() % 60);
   }
   
-  private void deleteIndex() {
-    if (indexExists()) {
-      //AcknowledgedResponse response = elasticsearchOperations.execute(client ->
-      //    client.indices().delete(new DeleteIndexRequest(INDEX_NAME), RequestOptions.DEFAULT));
-      //if (response.isAcknowledged()) {
-      //  logger.info("Index successfully deleted.");
-      //} else {
-      //  logger.info("Index could not be deleted.");
-      //}
+  private void deleteIndex(IndexOperations indexOp) {
+    if (indexOp.exists()) {
+      boolean successful = indexOp.delete();
+
+      if (successful) {
+        logger.info("Index successfully deleted.");  
+      } else {
+        logger.info("Index could not be deleted.");
+      };
     } else {
       logger.info("Index does not exist. Proceeding.");
     }
@@ -151,7 +143,9 @@ public class  SearchIndexService implements ISearchIndexService {
    */
   @Override
   public void updateIndex() throws InterruptedException, JSONException, IOException {
-    if (!indexExists()) {
+    IndexOperations indexOp = elasticsearchOperations.indexOps(Manuscript.class);
+
+    if (!indexOp.exists()) {
       logger.info("Index does not exist yet. Starting build.");
       buildIndex();
     } else {
@@ -202,27 +196,20 @@ public class  SearchIndexService implements ISearchIndexService {
   }
   
   public Date indexCreationDate() {
+    IndexOperations indexOp = elasticsearchOperations.indexOps(Manuscript.class);
 
-    GetIndexRequest indexReq = new GetIndexRequest(INDEX_NAME);
-    indexReq.includeDefaults(true);
     try {
       logger.info("Getting index creation date");
       //return elasticsearchOperations.execute(client -> 
       //  Date.from(Instant.ofEpochMilli(Long.parseLong(client.indices().get(indexReq, RequestOptions.DEFAULT).getSetting(INDEX_NAME, "index.creation_date"))))    
       //); 
-      return new Date();     
+      return Date.from(Instant.ofEpochMilli(indexOp.getSettings().getLong("index.creation_date")));     
     } catch (NullPointerException e) {
       logger.error("Search index creation date could not be parsed");
       return null;
     }
 
 }
-
-  private boolean indexExists() {
-    return true;
-    //return elasticsearchOperations.execute(client ->
-    //    client.indices().exists(new GetIndexRequest(INDEX_NAME), RequestOptions.DEFAULT));
-  }
   
   /**
    * Builds a new search index from scratch. This search index is limited to 5 manuscripts.
@@ -233,21 +220,19 @@ public class  SearchIndexService implements ISearchIndexService {
    */
   @Override
   public void buildSmallIndex() throws InterruptedException, IOException, JSONException {
+    IndexOperations indexOp = elasticsearchOperations.indexOps(Manuscript.class);
+
     logger.info("Limited Index rebuild started. Deleting old index.");
     final LocalDateTime startBuild = LocalDateTime.now();
-    deleteIndex();
-    
-    //Creating the index
-    //elasticsearchOperations.execute(client ->
-    //    client.indices().create(new CreateIndexRequest(INDEX_NAME)
-    //            .settings(Settings.builder()
-    //                .put("index.mapping.nested_objects.limit", 1000000)),
-    //        RequestOptions.DEFAULT));
+    deleteIndex(indexOp);
     
     logger.info("Building new small index.");
-  
-    IndexOperations indexOp = elasticsearchOperations.indexOps(Manuscript.class);
+
+    indexOp.create();
+    logger.info("Index created.");
+
     createMappings(indexOp);
+    logger.info("Mappings created.");
     
     List<Manuscript> allManuscripts = accessService.getFewManuscripts();
     logger.info("Indexing Manuscripts.");
@@ -856,15 +841,6 @@ public class  SearchIndexService implements ISearchIndexService {
         if (newBody.equals(body)) {
             return newBody;
         }
-      // can't use ID because same body can have different IDs
-      // old bodies may miss a created date? newBody.getCreated() != null
-      // newBody.getCreated().equals(body.getCreated())
-      // && newBody.getTitle().equals(body.getTitle())
-      //if (newBody.getCreators().containsAll(body.getCreators())
-      //    && newBody.getPurpose() == body.getPurpose()
-      //    && newBody.getValue().equals(body.getValue())) {
-      //  return newBody;
-      //}
     }
     throw new NoSuchIndexEntryException("No body like this was found in the index.");
   }
