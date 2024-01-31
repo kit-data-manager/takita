@@ -1,9 +1,5 @@
 package edu.kit.scc.dem.tuhl.mainpage.search;
 
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
-import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
-
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.dataaccess.IAccessService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
@@ -16,7 +12,6 @@ import edu.kit.scc.dem.tuhl.model.page.Page;
 import edu.kit.scc.dem.tuhl.model.page.ResourceType;
 import edu.kit.scc.dem.tuhl.model.page.TextPage;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.time.Duration;
 import java.time.Instant;
@@ -29,8 +24,6 @@ import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
-import org.apache.lucene.search.join.ScoreMode;
-import org.elasticsearch.index.query.InnerHitBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,9 +31,10 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.IndexOperations;
+import org.springframework.data.elasticsearch.core.query.Criteria;
+import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
 
@@ -312,9 +306,7 @@ public class  SearchIndexService implements ISearchIndexService {
    */
   @Override
   public Annotation getAnnotationById(String id) throws NoSuchIndexEntryException {
-    Query query =
-        new NativeSearchQueryBuilder().withQuery(
-            matchQuery("pages.annotations.id.keyword", id)).build();
+    Query query = new CriteriaQuery(new Criteria("pages.annotations.id").is(id));
     
     SearchHits<Manuscript> searchHits = elasticsearchOperations.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
@@ -334,9 +326,7 @@ public class  SearchIndexService implements ISearchIndexService {
   
   @Override
   public List<Annotation> getAnnotationsForPageById(String id) throws NoSuchIndexEntryException {
-    Query query =
-        new NativeSearchQueryBuilder().withQuery(
-            matchQuery("pages.id.keyword", id)).build();
+    Query query = new CriteriaQuery(new Criteria("pages.id").is(id));
     
     SearchHits<Manuscript> searchHits = elasticsearchOperations.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
@@ -497,8 +487,7 @@ public class  SearchIndexService implements ISearchIndexService {
    */
   @Override
   public TextCard getTextCardById(String id) throws NoSuchIndexEntryException {
-    Query query = new NativeSearchQueryBuilder()
-        .withQuery(matchQuery("pages.annotations.textCards.id.keyword", id)).build();
+    Query query = new CriteriaQuery(new Criteria("pages.annotations.textCards.id").is(id));
     
     SearchHits<Manuscript> manuscriptForPage = elasticsearchOperations.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
@@ -538,8 +527,7 @@ public class  SearchIndexService implements ISearchIndexService {
    */
   @Override
   public Tag getTagById(String id) throws NoSuchIndexEntryException {
-    Query query = new NativeSearchQueryBuilder()
-        .withQuery(matchQuery("pages.annotations.tags.id.keyword", id)).build();
+    Query query = new CriteriaQuery(new Criteria("pages.annotations.tags.id").is(id));
     
     SearchHits<Manuscript> manuscriptForPage = elasticsearchOperations.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
@@ -623,12 +611,7 @@ public class  SearchIndexService implements ISearchIndexService {
   }
   
   private Annotation getAnnotationByBodyId(String bodyId) throws NoSuchIndexEntryException {
-    Query query =
-        new NativeSearchQueryBuilder().withQuery(boolQuery()
-            .should(matchQuery("pages.annotations.tags.id.keyword", bodyId))
-            .should(matchQuery("pages.annotations.textCards.id.keyword", bodyId))
-            .minimumShouldMatch(1))
-            .build();
+    Query query = new CriteriaQuery(new Criteria("pages.annotations.textCards.id").is(bodyId).or("pages.annotations.tags.id").is(bodyId));
     
     SearchHits<Manuscript> searchHits = elasticsearchOperations.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
@@ -712,9 +695,7 @@ public class  SearchIndexService implements ISearchIndexService {
    */
   @Override
   public Page getPageById(String id) throws NoSuchIndexEntryException {
-    Query query = new NativeSearchQueryBuilder().withQuery(
-        nestedQuery("pages", matchQuery("pages.id.keyword", id), ScoreMode.Avg)
-            .innerHit(new InnerHitBuilder().setName("innerHitName"))).build();
+    Query query = new CriteriaQuery(new Criteria("pages.id").is(id));
     
     SearchHits<Manuscript> manuscripts = elasticsearchOperations.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
