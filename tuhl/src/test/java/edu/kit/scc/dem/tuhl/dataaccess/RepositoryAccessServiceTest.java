@@ -6,13 +6,13 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.internal.util.reflection.FieldSetter;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.net.http.HttpHeaders;
@@ -54,9 +54,7 @@ class RepositoryAccessServiceTest {
     MockitoAnnotations.initMocks(this);
     
     //Insert mock HttpRequestHelper into private field of the RepositoryAccessService instance
-    FieldSetter.setField(repositoryAccessService,
-        repositoryAccessService.getClass().getDeclaredField("httpRequestHelper"),
-        mockedRequestHelper);
+    ReflectionTestUtils.setField(repositoryAccessService, "httpRequestHelper", mockedRequestHelper);
   }
   
   @Test

@@ -29,9 +29,8 @@ class MatchFilterTest {
     matchFilter.setValues(values);
 
     NativeSearchQuery perfectQuery = new NativeSearchQueryBuilder()
-        .withQuery(matchQuery("title", titleTerm)
-          .fuzziness(Fuzziness.AUTO))
-        .build();
+        .withQuery(matchQuery("title", titleTerm)).build();
+          //.fuzziness(Fuzziness.AUTO)
 
     assertEquals(perfectQuery.getQuery(), matchFilter.getQuery().getQuery());
   }

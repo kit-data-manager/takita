@@ -3,9 +3,9 @@ package edu.kit.scc.dem.tuhl.dataaccess;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
-import org.mockito.internal.util.reflection.FieldSetter;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.net.URI;
@@ -33,9 +33,7 @@ class HttpRequestHelperTest {
     httpRequestHelper = new HttpRequestHelper();
     
     //Insert mock HttpRequestHelper into private field of the RepositoryAccessService instance
-    FieldSetter.setField(httpRequestHelper,
-        httpRequestHelper.getClass().getDeclaredField("client"),
-        mockedHttpClient);
+    ReflectionTestUtils.setField(httpRequestHelper, "client", mockedHttpClient);
   }
   
   @Test

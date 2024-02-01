@@ -6,13 +6,13 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.internal.util.reflection.FieldSetter;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -65,9 +65,7 @@ class AnnotationStoreAccessServiceTest {
     MockitoAnnotations.initMocks(this);
 
     //Insert mock HttpRequestHelper into private field of the AnnotationStoreAccessService instance
-    FieldSetter.setField(annotationStoreAccessService,
-        annotationStoreAccessService.getClass().getDeclaredField("httpRequestHelper"),
-        mockedRequestHelper);
+    ReflectionTestUtils.setField(annotationStoreAccessService, "httpRequestHelper", mockedRequestHelper);
   }
 
   @Test
@@ -97,7 +95,7 @@ class AnnotationStoreAccessServiceTest {
     Mockito.when(mockedRequestHelper.postAnnotations("http://sampleannoserver.edu/wap/a04/validated/", newAnnotation1))
         .thenReturn(mockedAnnotation2);
 
-    JSONObject actualAnnotation1 = annotationStoreAccessService.addAnnotation(newAnnotation1);
+    JSONObject actualAnnotation1 = annotationStoreAccessService.addAnnotation(newAnnotation1, "a04");
 
     JSONObject expectedAnnotation1 = newAnnotation1;
     newAnnotation1.put("etag", "ktcnefhkbtgdqobilpvs");

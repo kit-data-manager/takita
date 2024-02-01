@@ -5,7 +5,6 @@ import edu.kit.scc.dem.tuhl.assistance.User;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
-import edu.kit.scc.dem.tuhl.model.Motivation;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import org.junit.jupiter.api.BeforeAll;
@@ -50,7 +49,7 @@ class EditorStubControllerTest {
     mockAnno.setId("2c01883b-5aae-4867-b0f2-06fbb093f61e");
     mockAnno.setColor(Color.TEXT_REGION);
     mockAnno.setSvgCode("");
-    mockAnno.setMotivation(Motivation.EDITING);
+    mockAnno.setMotivation("editing");
 
     mockCard = new TextCard("http://192.168.0.49:8100/wap/a04/validated/78ee189a-5ac9-4b1c-ac0b-49863387fc49");
 
@@ -171,7 +170,7 @@ class EditorStubControllerTest {
   @Test
   void testCreateTextCard() throws Exception {
 
-    Mockito.when(mockedEditorStubService.addTextCard("http://192.168.0.49:8100/wap/a04/validated/78ee189a-5ac9-4b1c-ac0b-49863387fc49", "Ich bin ein Titel", "Ich bin der Value", "DESCRIBING")).thenReturn(mockCard);
+    Mockito.when(mockedEditorStubService.addTextCard("http://192.168.0.49:8100/wap/a04/validated/78ee189a-5ac9-4b1c-ac0b-49863387fc49", "Ich bin ein Titel", null, "Ich bin der Value", null, "DESCRIBING")).thenReturn(mockCard);
 
 
     String invalid = "{}";
@@ -209,7 +208,7 @@ class EditorStubControllerTest {
   @Test
   void testUpdateTextCard() throws Exception {
 
-    Mockito.when(mockedEditorStubService.updateTextCard("3fc86c30-5ce6-4ab3-8076-6c3109f61384", "Title", "Value", "HIGHLIGHTING")).thenReturn(mockCard);
+    Mockito.when(mockedEditorStubService.updateTextCard("3fc86c30-5ce6-4ab3-8076-6c3109f61384", "Title", null, "Value", null, "HIGHLIGHTING")).thenReturn(mockCard);
 
 
     String invalid = "{}";
@@ -247,7 +246,7 @@ class EditorStubControllerTest {
   @Test
   void testCreateTag() throws Exception {
 
-    Mockito.when(mockedEditorStubService.addTag("http://192.168.0.49:8100/wap/a04/validated/78ee189a-5ac9-4b1c-ac0b-49863387fc49", "Taggg", "valuee")).thenReturn(mockTag);
+    Mockito.when(mockedEditorStubService.addTag("http://192.168.0.49:8100/wap/a04/validated/78ee189a-5ac9-4b1c-ac0b-49863387fc49", "Taggg", null, "valuee", null)).thenReturn(mockTag);
 
     String invalid = "{}";
     this.mockMvc.perform(post("/editor_stub/create_tag").contentType(MediaType.APPLICATION_JSON).content(invalid))
@@ -285,7 +284,7 @@ class EditorStubControllerTest {
   @Test
   void testUpdateTag() throws Exception {
 
-    Mockito.when(mockedEditorStubService.updateTag("dc66e069-9774-4525-a901-03cdcfa36af9", "taag", "vvvalue")).thenReturn(mockTag);
+    Mockito.when(mockedEditorStubService.updateTag("dc66e069-9774-4525-a901-03cdcfa36af9", "taag", null, "vvvalue", null)).thenReturn(mockTag);
 
     String invalid = "{}";
     this.mockMvc.perform(post("/editor_stub/update_tag").contentType(MediaType.APPLICATION_JSON).content(invalid))
