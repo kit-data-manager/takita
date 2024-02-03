@@ -58,7 +58,7 @@ class EditorStubServiceTest {
           return annotation;
          });
 
-    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), annotation.getColor().toString(),
+    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
         annotation.getSvgCode(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
@@ -81,7 +81,7 @@ class EditorStubServiceTest {
           return annotation;
         });
 
-    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), annotation.getColor().toString(),
+    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
         annotation.getSvgCode(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
@@ -104,7 +104,7 @@ class EditorStubServiceTest {
           return annotation;
         });
 
-    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), annotation.getColor().toString(),
+    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
         annotation.getSvgCode(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
@@ -127,7 +127,7 @@ class EditorStubServiceTest {
           return annotation;
         });
 
-    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), annotation.getColor().toString(),
+    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
         annotation.getSvgCode(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
@@ -150,7 +150,7 @@ class EditorStubServiceTest {
           return annotation;
         });
 
-    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), annotation.getColor().toString(),
+    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
         annotation.getSvgCode(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
@@ -173,7 +173,7 @@ class EditorStubServiceTest {
           return annotation;
         });
 
-    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), annotation.getColor().toString(),
+    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
         annotation.getSvgCode(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
@@ -195,7 +195,7 @@ class EditorStubServiceTest {
           return annotation;
         });
 
-    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), annotation.getColor().toString(),
+    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
         annotation.getSvgCode(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
@@ -218,7 +218,7 @@ class EditorStubServiceTest {
           return annotation;
         });
 
-    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), annotation.getColor().toString(),
+    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
         annotation.getSvgCode(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
@@ -241,7 +241,7 @@ class EditorStubServiceTest {
           return annotation;
         });
 
-    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), annotation.getColor().toString(),
+    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
         annotation.getSvgCode(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
@@ -263,7 +263,7 @@ class EditorStubServiceTest {
           return annotation;
         });
 
-    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), annotation.getColor().toString(),
+    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
         annotation.getSvgCode(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
@@ -286,7 +286,7 @@ class EditorStubServiceTest {
           return annotation;
         });
 
-    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), annotation.getColor().toString(),
+    Annotation actualAnnotation = editorStubService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
         annotation.getSvgCode(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
@@ -616,6 +616,11 @@ class EditorStubServiceTest {
     assertEquals(expectedAnno.getCreators().size(), actualAnno.getCreators().size());
     assertEquals(expectedAnno.getTags().size(), actualAnno.getTags().size());
     assertEquals(expectedAnno.getTextCards().size(), actualAnno.getTextCards().size());
+    assertEquals(expectedAnno.getEtag(), actualAnno.getEtag());
+    assertEquals(expectedAnno.getIsAlgorithmAnnotation(), actualAnno.getIsAlgorithmAnnotation());
+    assertIterableEquals(expectedAnno.getCreators(), actualAnno.getCreators());
+    assertIterableEquals(expectedAnno.getTextCards(), actualAnno.getTextCards());
+    assertIterableEquals(expectedAnno.getTags(), actualAnno.getTags());
   }
 
   private void assertEqualsBodies(Body expectedBody, Body actualBody) throws JSONException, org.json.JSONException {
@@ -626,8 +631,11 @@ class EditorStubServiceTest {
     assertEquals(expectedBody.getPurpose(), actualBody.getPurpose());
     assertEquals(expectedBody.getTitle(), actualBody.getTitle());
     assertEquals(expectedBody.getValue(), actualBody.getValue());
+    assertEquals(expectedBody.getSubject(), actualBody.getSubject());
+    assertEquals(expectedBody.getSource(), actualBody.getSource());
     JSONAssert.assertEquals(expectedBody.getFullJson().toString(), actualBody.getFullJson().toString(), true);
     assertEquals(expectedBody.getCreators().size(), actualBody.getCreators().size());
+    assertIterableEquals(expectedBody.getCreators(), actualBody.getCreators());
   }
 
   private String readStringFromRelativePath(String relativePath) throws IOException {
