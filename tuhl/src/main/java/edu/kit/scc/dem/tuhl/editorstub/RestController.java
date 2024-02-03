@@ -340,10 +340,10 @@ public ResponseEntity getBodyByIdForAnnotationById(@PathVariable("id") final Str
 @ResponseBody
 public ResponseEntity getBodyByIdForAnnotationByIdWadm(@PathVariable("id") final String id, @PathVariable("bodyId") final String bodyId, final WebRequest request, final HttpServletResponse response) {
     TextCard textCard;
-    JSONObject fullJson;
+    String fullJson;
     try {
         textCard = editorStubService.getTextCard(bodyId);
-        fullJson = textCard.getFullJson();
+        fullJson = textCard.getFullJson().toString(2).replace("\\/", "/");
     } catch (NoSuchIndexEntryException e) {
         return ResponseEntity.status(404).body(e.getMessage());
     } catch (JSONException e) {
@@ -482,7 +482,7 @@ public ResponseEntity createTagForAnnotationById(@PathVariable("id") final Strin
             title = json.getString("title");
         }
         if (json.has("subject")) {
-            title = json.getString("subject");
+            subject = json.getString("subject");
         }
         String value = "";
         String source = "";
@@ -544,10 +544,10 @@ public ResponseEntity getTagByIdForAnnotationById(@PathVariable("id") final Stri
 @ResponseBody
 public ResponseEntity getTagByIdForAnnotationByIdWadm(@PathVariable("id") final String id, @PathVariable("tagId") final String tagId, final WebRequest request, final HttpServletResponse response) {
     Tag tag;
-    JSONObject fullJson;
+    String fullJson;
     try {
         tag = editorStubService.getTag(tagId);
-        fullJson = tag.getFullJson();
+        fullJson = tag.getFullJson().toString(2).replace("\\/", "/");
     } catch (NoSuchIndexEntryException e) {
         return ResponseEntity.status(404).body(e.getMessage());
     } catch (JSONException e) {
