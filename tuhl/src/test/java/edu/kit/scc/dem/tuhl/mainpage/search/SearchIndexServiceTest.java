@@ -36,6 +36,7 @@ import java.time.Instant;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 
 @SpringBootTest
 class SearchIndexServiceTest {
@@ -54,7 +55,7 @@ class SearchIndexServiceTest {
   private List<Manuscript> manuscriptList;
 
   @BeforeEach
-  void init() throws ParseException {
+  void init() throws JSONException, ParseException {
     manuscriptList = initManuscriptList();
   }
 
@@ -75,9 +76,8 @@ class SearchIndexServiceTest {
     newAnnotation.setVia(null);
     newAnnotation.setEtag(null);
 
-    // TODO: check here which projectId needs to be used
     Mockito.when(mockedAccessService.addAnnotation(Mockito.any(Annotation.class), Mockito.eq(manuscriptList.get(0)
-        .getPages().get(0).getPageNumber()), "a04")).thenAnswer(invocation -> {
+        .getPages().get(0).getPageNumber()), anyString())).thenAnswer(invocation -> {
       Annotation thisAnnotation = invocation.getArgument(0);
       assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
       assertEquals(annotation.getSvgCode(), thisAnnotation.getSvgCode());
@@ -160,6 +160,15 @@ class SearchIndexServiceTest {
     body.setModified(Instant.now());
     body.setValue("value");
     body.setTitle("title");
+    
+    JSONObject bodyJson = new JSONObject();
+    bodyJson.put("id", body.getId());
+    bodyJson.put("annotationId", body.getAnnotationId());
+    bodyJson.put("created", body.getCreated());
+    bodyJson.put("modified", body.getModified());
+    bodyJson.put("value", body.getValue());
+    bodyJson.put("title", body.getTitle());
+    body.setFullJson(bodyJson);
 
     Mockito.when(mockedAccessService.updateAnnotation(annotation, manuscriptList.get(0).getPages().get(0).getPageNumber()))
         .thenReturn(annotation);
@@ -177,12 +186,24 @@ class SearchIndexServiceTest {
   @Test
   void addTag() throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException {
     Annotation annotation = manuscriptList.get(0).getPages().get(0).getAnnotations().get(0);
+    System.out.println(annotation);
     Body body = new Tag(UUID.randomUUID().toString());
     body.setAnnotationId(annotation.getId());
     body.setCreated(Instant.now());
     body.setModified(Instant.now());
     body.setValue("value");
     body.setTitle("title");
+
+    JSONObject bodyJson = new JSONObject();
+    bodyJson.put("id", body.getId());
+    bodyJson.put("annotationId", body.getAnnotationId());
+    bodyJson.put("created", body.getCreated());
+    bodyJson.put("modified", body.getModified());
+    bodyJson.put("value", body.getValue());
+    bodyJson.put("title", body.getTitle());
+    body.setFullJson(bodyJson);
+
+    System.out.println("addTagTest: " + body + body.getAnnotationId() + body.getCreated());
 
     Mockito.when(mockedAccessService.updateAnnotation(annotation, manuscriptList.get(0).getPages().get(0).getPageNumber()))
         .thenReturn(annotation);
@@ -226,6 +247,13 @@ class SearchIndexServiceTest {
     body.setValue("value");
     body.setTitle("title");
     body.setPurpose("describing");
+    JSONObject bodyJson = body.getFullJson();
+    bodyJson.put("annotationId", body.getAnnotationId());
+    bodyJson.put("modified", body.getModified());
+    bodyJson.put("value", body.getValue());
+    bodyJson.put("title", body.getTitle());
+    bodyJson.put("purpose", body.getPurpose());
+    body.setFullJson(bodyJson);
 
     Mockito.when(mockedAccessService.updateAnnotation(annotation, manuscriptList.get(0).getPages().get(0).getPageNumber()))
         .thenReturn(annotation);
@@ -248,6 +276,12 @@ class SearchIndexServiceTest {
     body.setModified(Instant.now());
     body.setValue("value");
     body.setTitle("title");
+    JSONObject bodyJson = body.getFullJson();
+    bodyJson.put("annotationId", body.getAnnotationId());
+    bodyJson.put("modified", body.getModified());
+    bodyJson.put("value", body.getValue());
+    bodyJson.put("title", body.getTitle());
+    body.setFullJson(bodyJson);
 
     Mockito.when(mockedAccessService.updateAnnotation(annotation, manuscriptList.get(1).getPages().get(0).getPageNumber()))
         .thenReturn(annotation);
@@ -364,7 +398,7 @@ class SearchIndexServiceTest {
     assertEquals(manuscript, searchIndexService.getRawManuscriptXml(manuscriptList.get(0).getId()));
   }
 
-  private List<Manuscript> initManuscriptList() throws ParseException {
+  private List<Manuscript> initManuscriptList() throws JSONException, ParseException {
     DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat();
     List<Manuscript> manuscripts = new ArrayList<>();
 
@@ -380,6 +414,11 @@ class SearchIndexServiceTest {
     TextCard t1 = new TextCard("11111");
     t1.setAnnotationId(anno1.getId());
     t1.setCreated(Instant.now());
+    JSONObject t1json = new JSONObject();
+    t1json.put("id", t1.getId());
+    t1json.put("annotationId", t1.getAnnotationId());
+    t1json.put("created", t1.getCreated());
+    t1.setFullJson(t1json);
     textCards1.add(t1);
     anno1.setTextCards(textCards1);
     anno1.setPageId(manuscript1.getPages().get(0).getId());
@@ -399,6 +438,10 @@ class SearchIndexServiceTest {
     List<Tag> tags1 = new ArrayList<>();
     Tag tag1 = new Tag("22222");
     tag1.setCreated(Instant.now());
+    JSONObject tag1json = new JSONObject();
+    tag1json.put("id", tag1.getId());
+    tag1json.put("created", tag1.getCreated());
+    tag1.setFullJson(tag1json);
     tags1.add(tag1);
     anno2.setTags(tags1);
     anno2.setPageId(manuscript2.getPages().get(0).getId());

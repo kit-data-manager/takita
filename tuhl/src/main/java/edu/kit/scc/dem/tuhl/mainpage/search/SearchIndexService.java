@@ -477,7 +477,7 @@ public class  SearchIndexService implements ISearchIndexService {
     logger.info("OriginalAnno: " + updatedAnnotation);
     logger.info(body.toString());
     logger.info("1: " + body.getId());
-    if (body.getPurpose().equalsIgnoreCase("tagging")) {
+    if (body.getPurpose() != null && body.getPurpose().equalsIgnoreCase("tagging")) {
       updatedAnnotation.addTag((Tag) body);
     } else {
       updatedAnnotation.addTextCard((TextCard) body);
@@ -614,7 +614,7 @@ public class  SearchIndexService implements ISearchIndexService {
     logger.info("Lösche Body aus " + updatedAnnotation.getId());
     Body body = getBodyFromAnnotationAndId(updatedAnnotation, id);
     logger.info("Lösche Body " + body.getFullJson().toString());
-    if (body.getPurpose().equalsIgnoreCase("tagging")) {
+    if (body.getPurpose() != null && body.getPurpose().equalsIgnoreCase("tagging")) {
       updatedAnnotation.getTags().remove(body);
     } else {
       updatedAnnotation.getTextCards().remove(body);
@@ -829,8 +829,8 @@ public class  SearchIndexService implements ISearchIndexService {
     allBodies.addAll(annotation.getTags());
     allBodies.addAll(annotation.getTextCards());
     for (Body newBody : allBodies) {
-        logger.info(newBody.getFullJson().toString());
-        logger.info(body.getFullJson().toString());
+        logger.info("New body: " + newBody.getFullJson().toString());
+        logger.info("Body to check: " + body.getFullJson().toString());
         if (newBody.equals(body)) {
             return newBody;
         }
