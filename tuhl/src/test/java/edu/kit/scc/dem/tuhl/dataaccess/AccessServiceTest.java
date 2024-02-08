@@ -185,11 +185,11 @@ class AccessServiceTest {
     Annotation expectedAnnotation = annotations.get(0);
     Annotation actualAnnotationBefore = annotations.get(1);
 
-    Mockito.when(mockedAnnotationStoreAccessService.validateAnnotation(jsonAnnotation2)).thenReturn(validatedJsonAnnotation2);
+    Mockito.when(mockedAnnotationStoreAccessService.validateAnnotation(jsonAnnotation2, "a04/")).thenReturn(validatedJsonAnnotation2);
     Mockito.when(mockedAnnotationConverter.buildAnnotationFromJson(validatedJsonAnnotation2)).thenReturn(expectedAnnotation);
     Mockito.when(mockedAnnotationConverter.buildJsonFromAnnotation(actualAnnotationBefore, "082r")).thenReturn(jsonAnnotation2);
 
-    Annotation actualAnnotationAfter = accessService.validateAnnotation(actualAnnotationBefore, "082r");
+    Annotation actualAnnotationAfter = accessService.validateAnnotation(actualAnnotationBefore, "082r", "a04/");
     assertEqualsAnnotations(expectedAnnotation, actualAnnotationAfter);
   }
   

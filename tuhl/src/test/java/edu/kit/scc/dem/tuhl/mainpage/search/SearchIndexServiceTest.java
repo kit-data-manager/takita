@@ -123,7 +123,7 @@ class SearchIndexServiceTest {
   void validateAnnotation() throws ParseException, InterruptedException, IOException, JSONException, NoSuchIndexEntryException {
     Annotation annotation = manuscriptList.get(0).getPages().get(0).getAnnotations().get(0);
 
-    Mockito.when(mockedAccessService.validateAnnotation(annotation, manuscriptList.get(0).getPages().get(0).getPageNumber()))
+    Mockito.when(mockedAccessService.validateAnnotation(annotation, manuscriptList.get(0).getPages().get(0).getPageNumber(), "a04/"))
         .thenReturn(annotation);
     Mockito.when(mockedManuscriptRepository.findById(Mockito.anyString()))
         .thenAnswer(invocation -> {

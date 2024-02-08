@@ -84,7 +84,7 @@ public interface IAnnotationStoreAccessService {
    * @throws InterruptedException if the http request is interrupted
    * @throws JSONException if the response body could not be parsed to json
    */
-  JSONObject validateAnnotation(JSONObject jsonAnnotation)
+  JSONObject validateAnnotation(JSONObject jsonAnnotation, String projectId)
       throws IOException, InterruptedException, JSONException;
 
   /**

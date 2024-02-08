@@ -202,10 +202,10 @@ public class AccessService implements IAccessService {
    * @throws InterruptedException if the http request is interrupted
    */
   @Override
-  public Annotation validateAnnotation(Annotation annotation, String pageNumber)
+  public Annotation validateAnnotation(Annotation annotation, String pageNumber, String projectId)
       throws JSONException, IOException, InterruptedException {
     JSONObject validatedAnnotation = annotationStoreAccessService
-        .validateAnnotation(annotationConverter.buildJsonFromAnnotation(annotation, pageNumber));
+        .validateAnnotation(annotationConverter.buildJsonFromAnnotation(annotation, pageNumber), projectId);
     return annotationConverter.buildAnnotationFromJson(validatedAnnotation);
   }
 

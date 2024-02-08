@@ -1,0 +1,9 @@
+{
+  "@context" : "http://www.w3.org/ns/anno.jsonld",
+  "id" : "http://sampleannoserver.edu/wap/a04/?iris=0",
+  "type" : [ "AnnotationCollection", "BasicContainer", "Container" ],
+  "contains" : [ "http://sampleannoserver.edu/wap/a04/validated/", "http://sampleannoserver.edu/wap/a04/deinterpretatione/" ],
+  "modified" : "2022-07-07T09:54:05Z",
+  "label" : "Container for SFB-TP A04",
+  "total" : "0"
+}

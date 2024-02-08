@@ -12,6 +12,7 @@ import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.xml.sax.SAXException;
 
@@ -33,6 +34,18 @@ class AnnotationStoreAccessServiceTest {
   @Autowired
    public IAnnotationStoreAccessService annotationStoreAccessService;
 
+  @Mock
+  public HttpResponse<String> mockedResponseBase;
+
+  @Mock
+  public HttpResponse<String> mockedResponseA04;
+
+  @Mock
+  public HttpResponse<String> mockedResponseValidated;
+
+  @Mock
+  public HttpResponse<String> mockedResponseDeInterpretatione;
+  
   @Mock
   public HttpResponse<String> mockedResponsePage1;
 
@@ -62,8 +75,6 @@ class AnnotationStoreAccessServiceTest {
 
   @BeforeEach
   void init() throws NoSuchFieldException {
-    MockitoAnnotations.initMocks(this);
-
     //Insert mock HttpRequestHelper into private field of the AnnotationStoreAccessService instance
     ReflectionTestUtils.setField(annotationStoreAccessService, "httpRequestHelper", mockedRequestHelper);
   }
@@ -73,7 +84,7 @@ class AnnotationStoreAccessServiceTest {
     JSONObject newAnnotation1 = new JSONObject(readStringFromRelativePath("addAnnotation/annotation1.json"));
     JSONObject newAnnotation2 = new JSONObject(readStringFromRelativePath("addAnnotation/annotation2.json"));
 
-  //Builds body for mock response
+    //Builds body for mock response
     Mockito.when(mockedAnnotation1.body()).thenReturn(newAnnotation1.toString());
     Mockito.when(mockedAnnotation2.body()).thenReturn(newAnnotation2.toString());
 
@@ -88,20 +99,24 @@ class AnnotationStoreAccessServiceTest {
         .thenReturn(HttpHeaders.of(headersPage1, (a, b) -> true));
 
     //Define mock response to get requests
-    Mockito.when(mockedRequestHelper.postAnnotations("http://sampleannoserver.edu/wap/a04/deinterpretatione/", newAnnotation1))
+    Mockito.when(mockedRequestHelper.postAnnotations("http://sampleannoserver.edu/wap/a04/takita/", newAnnotation1))
         .thenReturn(mockedAnnotation1);
-    newAnnotation1.put("via", newAnnotation1.getString("id"));
-    newAnnotation1.put("canonical", newAnnotation1.getString("id"));
-    Mockito.when(mockedRequestHelper.postAnnotations("http://sampleannoserver.edu/wap/a04/validated/", newAnnotation1))
+    Mockito.when(mockedRequestHelper.postAnnotations("http://sampleannoserver.edu/wap/a04/takita/", newAnnotation2))
         .thenReturn(mockedAnnotation2);
 
-    JSONObject actualAnnotation1 = annotationStoreAccessService.addAnnotation(newAnnotation1, "a04");
+    JSONObject actualAnnotation1 = annotationStoreAccessService.addAnnotation(newAnnotation1, "a04/");
+    JSONObject actualAnnotation2 = annotationStoreAccessService.addAnnotation(newAnnotation2, "a04/");
 
-    JSONObject expectedAnnotation1 = newAnnotation1;
+    //JSONObject expectedAnnotation1 = newAnnotation1;
+    JSONObject annotationJson1 = new JSONObject(mockedAnnotation1.body());
     newAnnotation1.put("etag", "ktcnefhkbtgdqobilpvs");
-    newAnnotation1.put("id", newAnnotation2.getString("id"));
+    newAnnotation1.put("id", annotationJson1.getString("id"));
+    JSONObject annotationJson2 = new JSONObject(mockedAnnotation2.body());
+    newAnnotation2.put("etag", "ktcnefhkbtgdqobilpvs");
+    newAnnotation2.put("id", annotationJson2.getString("id"));
 
-    JSONAssert.assertEquals(expectedAnnotation1.toString(), actualAnnotation1.toString(), true);
+    JSONAssert.assertEquals(newAnnotation1.toString(), actualAnnotation1.toString(), true);
+    JSONAssert.assertEquals(newAnnotation2.toString(), actualAnnotation2.toString(), true);
   }
 
   @Test
@@ -154,7 +169,7 @@ class AnnotationStoreAccessServiceTest {
         .get("http://sampleannoserver-sparql.edu/wap/sparql?query=PREFIX+oa%3A+%3Chttp%3A%2F%2Fwww.w3.org%2Fns%" +
             "2Foa%23%3E+PREFIX+as%3A+%3Chttp%3A%2F%2Fwww.w3.org%2Fns%2Factivitystreams%23%3E+PREFIX+rdf%3A+%3Cht" +
             "tp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E+PREFIX+xsd%3A+%3Chttp%3A%2F%2Fwww.w3.or" +
-            "g%2F2001%2FXMLSchema%23%3E+SELECT+%3Fanno+%7BGRAPH+%3Fg+%7B%3Fanno+oa%3AhasTarget%2Foa%3AhasSource+" +
+            "g%2F2001%2FXMLSchema%23%3E+SELECT+DISTINCT+%3Fanno+%7BGRAPH+%3Fg+%7B%3Fanno+oa%3AhasTarget%2Foa%3AhasSource+" +
             "%3Chttp%3A%2F%2Fsamplerepo.edu%2Fapi%2Fv1%2Fdataresources%2Ff2e20635-8898-4983-9a86-c" +
             "6e3d8006016%2Fdata%2F033r.master.jpg%3E+.+FILTER+NOT+EXISTS+%7B+%3Fanno+%3Chttp%3A%2F%2Fdem.scc.kit.edu%2Fwapse" +
             "rv%2Fns%23deleted%3E+%22true%22%5E%5Exsd%3Aboolean%7D+%7D+%7D"))
@@ -195,6 +210,10 @@ class AnnotationStoreAccessServiceTest {
   @Test
   void getAllAnnotations() throws IOException, InterruptedException, JSONException, org.json.JSONException {
     //Builds bodies for mock response
+    Mockito.when(mockedResponseBase.body()).thenReturn(readStringFromRelativePath("getAllAnnotations/responseBaseContainer.json"));
+    Mockito.when(mockedResponseA04.body()).thenReturn(readStringFromRelativePath("getAllAnnotations/responseA04Container.json"));
+    Mockito.when(mockedResponseValidated.body()).thenReturn(readStringFromRelativePath("getAllAnnotations/responseValidated.json"));
+    Mockito.when(mockedResponseDeInterpretatione.body()).thenReturn(readStringFromRelativePath("getAllAnnotations/responseDeInterpretatione.json"));
     Mockito.when(mockedResponsePage1.body()).thenReturn(readStringFromRelativePath("getAllAnnotations/responsePage1.json"));
     Mockito.when(mockedResponsePage2.body()).thenReturn(readStringFromRelativePath("getAllAnnotations/responsePage2.json"));
 
@@ -204,10 +223,20 @@ class AnnotationStoreAccessServiceTest {
         "getAllAnnotations/expectedObject1.json")).getJSONObject(1).toString());
     Mockito.when(mockedAnnotation3.body()).thenReturn(new JSONArray(readStringFromRelativePath(
         "getAllAnnotations/expectedObject2.json")).getJSONObject(0).toString());
-    Mockito.when(mockedAnnotation4.body()).thenReturn(new JSONArray(readStringFromRelativePath(
-        "getAllAnnotations/expectedObject2.json")).getJSONObject(1).toString());
 
     //Define mock responses to get requests
+    Mockito.when(mockedRequestHelper
+        .get("http://sampleannoserver.edu/wap/"))
+        .thenReturn(mockedResponseBase);
+    Mockito.when(mockedRequestHelper
+        .get("http://sampleannoserver.edu/wap/a04/"))
+        .thenReturn(mockedResponseA04);
+    Mockito.when(mockedRequestHelper
+        .get("http://sampleannoserver.edu/wap/a04/validated/"))
+        .thenReturn(mockedResponseValidated);
+    Mockito.when(mockedRequestHelper
+        .get("http://sampleannoserver.edu/wap/a04/deinterpretatione/"))
+        .thenReturn(mockedResponseDeInterpretatione);
     Mockito.when(mockedRequestHelper
         .get("http://sampleannoserver.edu/wap/a04/validated/?iris=1&page=0"))
         .thenReturn(mockedResponsePage1);
@@ -220,8 +249,6 @@ class AnnotationStoreAccessServiceTest {
         "3-43f6-92c4-0b3ed4b1d3d9")).thenReturn(mockedAnnotation2);
     Mockito.when(mockedRequestHelper.get("http://sampleannoserver.edu/wap/a04/deinterpretatione/05c2" +
         "81d1-5184-4b74-a9dd-5fbac538f75c")).thenReturn(mockedAnnotation3);
-    Mockito.when(mockedRequestHelper.get("http://sampleannoserver.edu/wap/a04/deinterpretatione/1749" +
-        "ce9c-a79a-4929-8299-edc9c0388fcc")).thenReturn(mockedAnnotation4);
 
     //Mock headers
     List<String> etags = new ArrayList<>();
@@ -234,8 +261,6 @@ class AnnotationStoreAccessServiceTest {
         .thenReturn(HttpHeaders.of(headersPage1, (a, b) -> true));
     Mockito.when(mockedAnnotation3.headers())
         .thenReturn(HttpHeaders.of(headersPage1, (a, b) -> true));
-    Mockito.when(mockedAnnotation4.headers())
-        .thenReturn(HttpHeaders.of(headersPage1, (a, b) -> true));
 
     //Build expected return object
     List<JSONObject> expected = new ArrayList<>();
@@ -245,10 +270,13 @@ class AnnotationStoreAccessServiceTest {
       expected.add(expectedArray1.getJSONObject(i));
       expected.get(i).put("etag", etags.get(etags.size() - 1));
     }
-    expectedArray2.getJSONObject(1).put("etag", etags.get(etags.size() - 1));
-      expected.add(expectedArray2.getJSONObject(1));
+    expectedArray2.getJSONObject(0).put("etag", etags.get(etags.size() - 1));
+      expected.add(expectedArray2.getJSONObject(0));
 
     List<JSONObject> actual = annotationStoreAccessService.getAllAnnotations();
+
+    // TODO: return values are different JSON objects, thus assertIterable does not work - why?
+    //assertIterableEquals(expected, actual);
 
     assertEquals(expected.size(), actual.size());
     for (int i = 0; i < expected.size(); i++) {
@@ -257,7 +285,6 @@ class AnnotationStoreAccessServiceTest {
           JSONAssert.assertEquals(expected.get(i).toString(), actual.get(j).toString(), true);
         }
       }
-
     }
   }
 
@@ -337,7 +364,7 @@ class AnnotationStoreAccessServiceTest {
     Mockito.when(mockedRequestHelper.postAnnotations("http://sampleannoserver.edu/wap/a04/validated/", newAnnotation1))
         .thenReturn(mockedAnnotation2);
 
-    JSONObject actualAnnotation = annotationStoreAccessService.validateAnnotation(newAnnotation1);
+    JSONObject actualAnnotation = annotationStoreAccessService.validateAnnotation(newAnnotation1, "a04/");
     JSONObject expectedAnnotation = newAnnotation2;
     expectedAnnotation.put("via", expectedUnvalidatedAnnotation.getString("id"));
     expectedAnnotation.put("canonical", expectedUnvalidatedAnnotation.getString("id"));
@@ -348,13 +375,16 @@ class AnnotationStoreAccessServiceTest {
 
   @Test
   void updateAnnotation() throws IOException, JSONException, InterruptedException, org.json.JSONException {
-    JSONObject originalAnnotation = new JSONObject(readStringFromRelativePath("addAnnotation/annotation2.json"));
+    JSONObject originalAnnotation = new JSONObject(readStringFromRelativePath("addAnnotation/annotation1.json"));
     JSONObject newAnnotation1 = new JSONObject((readStringFromRelativePath("addAnnotation/annotation1.json")));
-    JSONObject newAnnotation2 = new JSONObject(readStringFromRelativePath("addAnnotation/annotation2.json"));
+    
+    // changing some values for testing the update
+    newAnnotation1.remove("motivation");
+    newAnnotation1.put("motivation", "editing");
+    newAnnotation1.remove("generator");
 
     //Builds body for mock response
     Mockito.when(mockedAnnotation1.body()).thenReturn(newAnnotation1.toString());
-    Mockito.when(mockedAnnotation2.body()).thenReturn(newAnnotation2.toString());
 
     //Mock headers
     List<String> etags = new ArrayList<>();
@@ -363,24 +393,20 @@ class AnnotationStoreAccessServiceTest {
     headersPage1.put("etag", etags);
     Mockito.when(mockedAnnotation1.headers())
         .thenReturn(HttpHeaders.of(headersPage1, (a, b) -> true));
-    Mockito.when(mockedAnnotation2.headers())
-        .thenReturn(HttpHeaders.of(headersPage1, (a, b) -> true));
+    Mockito.when(mockedAnnotation1.statusCode()).thenReturn(200);
 
     //Define mock response to get requests
-    Mockito.when(mockedRequestHelper.get(newAnnotation2.getString("id")))
-        .thenReturn(mockedAnnotation2);
-    Mockito.when(mockedRequestHelper.put(newAnnotation2.getString("canonical"), newAnnotation2, etags.get(0)))
+    Mockito.when(mockedRequestHelper.put(originalAnnotation.getString("id"), newAnnotation1, etags.get(0)))
         .thenReturn(mockedAnnotation1);
-    Mockito.when(mockedRequestHelper.put(newAnnotation2.getString("id"), newAnnotation2, etags.get(0)))
-        .thenReturn(mockedAnnotation2);
-    Mockito.when(mockedRequestHelper.get("http://sampleannoserver.edu/wap/a04/deinterpretatione/3fe548c5-8be6-40f7-88c8-0118e47c9ac8"))
-        .thenReturn(mockedAnnotation2);
 
-    annotationStoreAccessService.updateAnnotation(newAnnotation2.getString("id"), newAnnotation2, etags.get(0));
+    annotationStoreAccessService.updateAnnotation(originalAnnotation.getString("id"), newAnnotation1, etags.get(0));
 
     originalAnnotation.put("etag", etags.get(0));
+    originalAnnotation.remove("motivation");
+    originalAnnotation.put("motivation", "editing");
+    originalAnnotation.remove("generator");
 
-    JSONAssert.assertEquals(originalAnnotation.toString(), newAnnotation2.toString(), true);
+    JSONAssert.assertEquals(originalAnnotation.toString(), newAnnotation1.toString(), true);
   }
 
   @Test
