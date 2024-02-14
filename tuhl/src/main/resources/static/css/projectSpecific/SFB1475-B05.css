@@ -1,0 +1,28 @@
+/* B05 specifics */
+/* ------------------------------------*/
+
+/* remove quotation marks around direct speech 
+	as they are present in the xml file*/
+tei-body[n="Gilgameš"] tei-said::before, 
+tei-body[n="Gilgameš"] tei-said::after {
+    content: "";
+}
+
+/* display the linenumbers in front of the linebeginnings */
+tei-body[n="Gilgameš"] tei-lb[n]::before {
+    color: grey;
+    content: "\00000a"attr(n)". ";
+    white-space: pre-wrap;
+}
+
+/* disabling the choice display used in B04/B03*/
+tei-choice {
+    display: inherit;
+}
+
+/* adding a backslash between tei-orig and tei-reg */
+tei-reg::before {
+	content: "/";
+	color: gray;
+}
+    
