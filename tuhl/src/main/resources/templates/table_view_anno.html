@@ -53,7 +53,7 @@
         document.getElementById("manuscriptFilterbar").classList.toggle("d-none");
     }
     function checkIsMetaphorAnnotation(cell){
-        const textcards = cell.getRow().getData().textcards;
+        const textcards = JSON.parse(cell.getRow().getData().textcards);
         // check if a textcard has the value "metaphor", if it does the resulting array
         // will be longer than "0" and the comparison will return true
         return textcards.filter(textcard => textcard.value ==="metaphor").length > 0;
@@ -81,7 +81,7 @@
                     annotationId: annoId
                 });
 
-                const selector = cell.getRow().getData().targets[0].selector;
+                const selector = cell.getRow().getData().targetSelectors[0];
                 if (selector.type === "XPathSelector"){
                     // get the Id of the first word of the target
                     const firstWordOfTarget = selector.value
@@ -132,6 +132,52 @@
             headerMenu: headerMenu()
         },
         {
+            title: [[#{col_name.tags}]],
+            field: "tags",
+            headerSort: false,
+            headerMenu: headerMenu(),
+            visible: false
+        },
+        {
+            title: [[#{col_name.textcards}]],
+            field: "textcards",
+            headerSort: false,
+            headerMenu: headerMenu(),
+            visible: false
+        },
+        {
+            title: [[#{col_name.annoId}]],
+            field: "annoId",
+            headerSort: false,
+            headerMenu: headerMenu(),
+            visible: false
+        },{
+            title: [[#{col_name.targetSelectors}]],
+            field: "targetSelectors",
+            headerSort: false,
+            headerMenu: headerMenu(),
+            visible: false
+        },
+        {
+            title: [[#{col_name.pageId}]],
+            field: "pageId",
+            headerSort: true,
+            headerMenu: headerMenu(),
+            visible: false
+        }
+        /* not relevant any longer as the bodies are getting stringifyed
+        ,
+        {
+            title: "searchableBodies",
+            field: "searchableBodies",
+            headerSort: false,
+            headerMenu: headerMenu(),
+            visible: false
+        }*/
+        /* information irrelevant for the enduser and the functionalities
+         will not be included
+        ,
+        {
             title: [[#{col_name.targets}]],
             field: "targets",
             headerSort: false,
@@ -144,43 +190,8 @@
             headerSort: false,
             headerMenu: headerMenu(),
             visible: false
-        },
-        {
-            title: [[#{col_name.annoId}]],
-            field: "annoId",
-            headerSort: false,
-            headerMenu: headerMenu(),
-            visible: false
-        },
-
-        {
-            title: [[#{col_name.pageId}]],
-            field: "pageId",
-            headerSort: true,
-            headerMenu: headerMenu(),
-            visible: false
-        },
-        {
-            title: [[#{col_name.textcards}]],
-            field: "textcards",
-            headerSort: false,
-            headerMenu: headerMenu(),
-            visible: false
-        },
-        {
-            title: [[#{col_name.tags}]],
-            field: "tags",
-            headerSort: false,
-            headerMenu: headerMenu(),
-            visible: false
-        },
-        {
-            title: "searchableBodies",
-            field: "searchableBodies",
-            headerSort: false,
-            headerMenu: headerMenu(),
-            visible: false
         }
+        */
     ]
     /*]]>*/
 
@@ -230,10 +241,12 @@
                 // unwrapping the creator array
                 entry.creator = entry.creator.join(', ');
 
+                // the following is not necessary any longer as the tags/textcards are getting
+                // stringified later and at necessary parts parsed into JSON again
                 // unwrapping the bodies to make them searchable
-                const unwrappedTextcards= entry.textcards.map(textcard => textcard.purpose + ": " + textcard.value);
+                /*const unwrappedTextcards= entry.textcards.map(textcard => textcard.purpose + ": " + textcard.value);
                 const unwrappedTags = entry.tags.map(tag => "tagging: " + tag.value);
-                entry.searchableBodies = unwrappedTags.concat(unwrappedTextcards);
+                entry.searchableBodies = unwrappedTags.concat(unwrappedTextcards);*/
 
                 // TODO: CUSTOMIZE how the label for the annotation is created
                 // check if a textcard has "identifying" as it its purpose (CRC1475 stores the label there)
@@ -249,6 +262,10 @@
                                                 .pop()
                                                 // check if the entry has a "value"-key, if not set it to "undefined"
                                                 ?.value || "undefined";
+                
+                // stringifying the bodies to make them searchable
+                entry.tags = JSON.stringify(entry.tags);
+                entry.textcards = JSON.stringify(entry.textcards);
             });
             return response; //return the response data to tabulator
         },
@@ -271,14 +288,14 @@
                 cardBody.setAttribute('class', 'card card-body no-wrap');
 
                 // create rows for all bodies
-                const textcards = row.getData().textcards;
+                const textcards = JSON.parse(row.getData().textcards);
                 textcards.forEach(textcard => {
                     let row = document.createElement('div');
                     row.setAttribute('class', 'row');
                     row.innerText = textcard.purpose + ": " + textcard.value;
                     cardBody.appendChild(row);
                 });
-                const tags = row.getData().tags;
+                const tags = JSON.parse(row.getData().tags);
                 tags.forEach(tag => {
                     let row = document.createElement('div');
                     row.setAttribute('class', 'row');

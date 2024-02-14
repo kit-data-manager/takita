@@ -20,22 +20,6 @@
     "type": "MATCH"
   },
   {
-    "field": "targets",
-    "type": "MATCH"
-  },
-  {
-    "field": "linkToResource",
-    "type": "MATCH"
-  },
-  {
-    "field": "annoId",
-    "type": "MATCH"
-  },
-  {
-    "field": "pageId",
-    "type": "MATCH"
-  },
-  {
     "field": "textcards",
     "type": "MATCH"
   },

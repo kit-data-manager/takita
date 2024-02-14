@@ -215,17 +215,8 @@ public class AnnoViewService implements IAnnoViewService {
         row.put("creator", new JSONArray(annotation.getCreators()));
         row.put("lastModified", annotation.getModified());
         row.put("created", annotation.getCreated());
-        // TODO: this needs to be addressed, if annotations can target multiple resources/pages
-        row.put("linkToResource", annotation.getTargets().get(0).getLinkToResource());
-        row.put("pageId", annotation.getPageId());
         row.put("manuscriptTitle", annotation.getManuscriptTitle());
         
-        JSONArray targets = new JSONArray();
-        for (Target target : annotation.getTargets()) {
-        	targets.put(target.getWADMSerialization());
-        }
-        row.put("targets", targets);
- 
         // getting all bodies
         // getting all textcards
         JSONArray textcards = new JSONArray();
@@ -259,6 +250,24 @@ public class AnnoViewService implements IAnnoViewService {
         }
         row.put("tags", tags);
         
+        // getting all selectors
+        JSONArray targetSelectors = new JSONArray();
+        for (Target target : annotation.getTargets()) {
+        	targetSelectors.put(target.getSelector().getWADMSerialization());
+        }
+        row.put("targetSelectors", targetSelectors);
+        row.put("pageId", annotation.getPageId());
+        
+        // the following information are irrelevant for the enduser and will be ignored, but;
+        // keeping the following as it might be needed in the future. 
+        // JSONArray targets = new JSONArray();
+        // for (Target target : annotation.getTargets()) {
+        // 	targets.put(target.getWADMSerialization());
+        // }
+        // row.put("targets", targets);
+        // TODO: this needs to be addressed, if annotations can target multiple resources/pages
+        // row.put("linkToResource", annotation.getTargets().get(0).getLinkToResource());
+                
         data.put(row);
     }
     return data;
