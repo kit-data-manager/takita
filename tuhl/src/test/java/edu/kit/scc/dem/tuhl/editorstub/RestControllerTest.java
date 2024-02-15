@@ -22,7 +22,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -89,6 +91,10 @@ class RestControllerTest {
   @Test
   void testGetAnnotationsById() throws Exception {
     List<Annotation> annotations = List.of(mockAnno, mockAnno);
+    ObjectMapper mapper = new ObjectMapper(); 
+    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    mapper.registerModule(new JavaTimeModule());
+    String mockAnnotations = mapper.writeValueAsString(annotations);
 
     Mockito.when(mockedEditorStubService.getAnnotationsForId(pageId +"nf")).thenThrow(NoSuchIndexEntryException.class);
     Mockito.when(mockedEditorStubService.getAnnotationsForId(pageId + "io")).thenThrow(IOException.class);
@@ -115,7 +121,7 @@ class RestControllerTest {
     this.mockMvc.perform(get("/editor_rest/annotations?id=" + pageId).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(new Gson().toJson(annotations)))
+        .andExpect(content().json(mockAnnotations))
         .andDo(MockMvcResultHandlers.print());
   }
   
@@ -126,6 +132,11 @@ class RestControllerTest {
     Mockito.when(mockedEditorStubService.addAnnotation(pageId + "nf", "TEXT_REGION", "", "editing")).thenThrow(NoSuchIndexEntryException.class);
     Mockito.when(mockedEditorStubService.addAnnotation(pageId + "io", "TEXT_REGION", "", "editing")).thenThrow(IOException.class);
     Mockito.when(mockedEditorStubService.addAnnotation(pageId + "int", "TEXT_REGION", "", "editing")).thenThrow(InterruptedException.class);
+
+    ObjectMapper mapper = new ObjectMapper(); 
+    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    mapper.registerModule(new JavaTimeModule());
+    String mockAnnoSerialized = mapper.writeValueAsString(mockAnno);
 
     String invalid = "{}";
     this.mockMvc.perform(post("/editor_rest/annotations").contentType(MediaType.APPLICATION_JSON).content(invalid))
@@ -151,12 +162,17 @@ class RestControllerTest {
     this.mockMvc.perform(post("/editor_rest/annotations").contentType(MediaType.APPLICATION_JSON).content(valid).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(new Gson().toJson(mockAnno)))
+        .andExpect(content().json(mockAnnoSerialized))
         .andDo(MockMvcResultHandlers.print());
   }
 
   @Test
   void testGetAnnotationById() throws Exception {
+
+    ObjectMapper mapper = new ObjectMapper(); 
+    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    mapper.registerModule(new JavaTimeModule());
+    String mockAnnoSerialized = mapper.writeValueAsString(mockAnno);
 
     Mockito.when(mockedEditorStubService.getAnnotation(annoId)).thenReturn(mockAnno);
     Mockito.when(mockedEditorStubService.getAnnotation(annoId + "nf")).thenThrow(NoSuchIndexEntryException.class);
@@ -168,7 +184,7 @@ class RestControllerTest {
     this.mockMvc.perform(get("/editor_rest/annotations/" + URLEncoder.encode(URLEncoder.encode(annoId, StandardCharsets.UTF_8.name()), StandardCharsets.UTF_8.name())).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(new Gson().toJson(mockAnno)))
+        .andExpect(content().json(mockAnnoSerialized))
         .andDo(MockMvcResultHandlers.print());
   }
 
@@ -220,6 +236,11 @@ class RestControllerTest {
     mockAnnoUpdated.setCreated(Instant.now().truncatedTo(ChronoUnit.DAYS));
     mockAnnoUpdated.setModified(Instant.now().truncatedTo(ChronoUnit.DAYS));
 
+    ObjectMapper mapper = new ObjectMapper(); 
+    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    mapper.registerModule(new JavaTimeModule());
+    String mockAnnoUpdatedSerialized = mapper.writeValueAsString(mockAnnoUpdated);
+
     Mockito.when(mockedEditorStubService.updateAnnotation(annoId, "TEXT_REGION", "", "bookmarking")).thenReturn(mockAnnoUpdated);
     Mockito.when(mockedEditorStubService.updateAnnotation(annoId + "nf", "TEXT_REGION", "", "bookmarking")).thenThrow(NoSuchIndexEntryException.class);
     Mockito.when(mockedEditorStubService.updateAnnotation(annoId + "io", "TEXT_REGION", "", "bookmarking")).thenThrow(IOException.class);
@@ -242,7 +263,7 @@ class RestControllerTest {
     this.mockMvc.perform(put("/editor_rest/annotations/" + URLEncoder.encode(URLEncoder.encode(annoId, StandardCharsets.UTF_8.name()), StandardCharsets.UTF_8.name())).contentType(MediaType.APPLICATION_JSON).content(valid).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(new Gson().toJson(mockAnnoUpdated)))
+        .andExpect(content().json(mockAnnoUpdatedSerialized))
         .andDo(MockMvcResultHandlers.print());
   }
 
@@ -276,6 +297,11 @@ class RestControllerTest {
     mockAnno.addTextCard(mockCard);
     mockAnno.addTextCard(mockCard);
 
+    ObjectMapper mapper = new ObjectMapper(); 
+    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    mapper.registerModule(new JavaTimeModule());
+    String mockTextCardSerialized = mapper.writeValueAsString(mockAnno.getTextCards());
+
     Mockito.when(mockedEditorStubService.getAnnotation(annoId)).thenReturn(mockAnno);
     Mockito.when(mockedEditorStubService.getAnnotation(annoId + "nf")).thenThrow(NoSuchIndexEntryException.class);
 
@@ -286,12 +312,16 @@ class RestControllerTest {
     this.mockMvc.perform(get("/editor_rest/annotations/" + URLEncoder.encode(URLEncoder.encode(annoId, StandardCharsets.UTF_8.name()), StandardCharsets.UTF_8.name()) + "/bodies").accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(new Gson().toJson(mockAnno.getTextCards())))
+        .andExpect(content().json(mockTextCardSerialized))
         .andDo(MockMvcResultHandlers.print());
   }
   
   @Test
   void testCreateBodyForAnnotationById() throws Exception {
+    ObjectMapper mapper = new ObjectMapper(); 
+    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    mapper.registerModule(new JavaTimeModule());
+    String mockCardSerialized = mapper.writeValueAsString(mockCard);
 
     Mockito.when(mockedEditorStubService.addTextCard(annoId, "title", "subject", "value", "", "describing")).thenReturn(mockCard);
     Mockito.when(mockedEditorStubService.addTextCard(annoId + "nf", "title", "subject", "value", "", "describing")).thenThrow(NoSuchIndexEntryException.class);
@@ -320,12 +350,16 @@ class RestControllerTest {
     this.mockMvc.perform(post("/editor_rest/annotations/" + URLEncoder.encode(URLEncoder.encode(annoId, StandardCharsets.UTF_8.name()), StandardCharsets.UTF_8.name()) + "/bodies").contentType(MediaType.APPLICATION_JSON).content(valid).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(new Gson().toJson(mockCard)))
+        .andExpect(content().json(mockCardSerialized))
         .andDo(MockMvcResultHandlers.print());
   }
 
   @Test
   void testGetBodyByIdForAnnotationById() throws Exception {
+    ObjectMapper mapper = new ObjectMapper(); 
+    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    mapper.registerModule(new JavaTimeModule());
+    String mockCardSerialized = mapper.writeValueAsString(mockCard);
 
     Mockito.when(mockedEditorStubService.getTextCard(bodyId)).thenReturn(mockCard);
     Mockito.when(mockedEditorStubService.getTextCard(bodyId + "nf")).thenThrow(NoSuchIndexEntryException.class);
@@ -337,7 +371,7 @@ class RestControllerTest {
     this.mockMvc.perform(get("/editor_rest/annotations/" + URLEncoder.encode(URLEncoder.encode(annoId, StandardCharsets.UTF_8.name()), StandardCharsets.UTF_8.name()) + "/bodies/" + bodyId).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(new Gson().toJson(mockCard)))
+        .andExpect(content().json(mockCardSerialized))
         .andDo(MockMvcResultHandlers.print());
   }
 
@@ -372,6 +406,11 @@ class RestControllerTest {
     mockCardUpdated.setValue("valueUpdated");
     mockCardUpdated.setPurpose("highlighting");
 
+    ObjectMapper mapper = new ObjectMapper(); 
+    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    mapper.registerModule(new JavaTimeModule());
+    String mockCardUpdatedSerialized = mapper.writeValueAsString(mockCardUpdated);
+
     Mockito.when(mockedEditorStubService.updateTextCard(bodyId, "titleUpdated", "subjectUpdated", "valueUpdated", "", "highlighting")).thenReturn(mockCardUpdated);
     Mockito.when(mockedEditorStubService.updateTextCard(bodyId + "nf", "titleUpdated", "subjectUpdated", "valueUpdated", "", "highlighting")).thenThrow(NoSuchIndexEntryException.class);
     Mockito.when(mockedEditorStubService.updateTextCard(bodyId + "io", "titleUpdated", "subjectUpdated", "valueUpdated", "", "highlighting")).thenThrow(IOException.class);
@@ -398,7 +437,7 @@ class RestControllerTest {
     this.mockMvc.perform(put("/editor_rest/annotations/" + URLEncoder.encode(URLEncoder.encode(annoId, StandardCharsets.UTF_8.name()), StandardCharsets.UTF_8.name()) + "/bodies/" + bodyId).accept(MediaType.APPLICATION_JSON).content(valid))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(new Gson().toJson(mockCardUpdated)))
+        .andExpect(content().json(mockCardUpdatedSerialized))
         .andDo(MockMvcResultHandlers.print());
   }
 
@@ -432,6 +471,11 @@ class RestControllerTest {
     mockAnno.addTag(mockTag);
     mockAnno.addTag(mockTag);
 
+    ObjectMapper mapper = new ObjectMapper(); 
+    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    mapper.registerModule(new JavaTimeModule());
+    String mockTagsSerialized = mapper.writeValueAsString(mockAnno.getTags());
+
     Mockito.when(mockedEditorStubService.getAnnotation(annoId)).thenReturn(mockAnno);
     Mockito.when(mockedEditorStubService.getAnnotation(annoId + "nf")).thenThrow(NoSuchIndexEntryException.class);
 
@@ -442,12 +486,16 @@ class RestControllerTest {
     this.mockMvc.perform(get("/editor_rest/annotations/" + URLEncoder.encode(URLEncoder.encode(annoId, StandardCharsets.UTF_8.name()), StandardCharsets.UTF_8.name()) + "/tags").accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(new Gson().toJson(mockAnno.getTags())))
+        .andExpect(content().json(mockTagsSerialized))
         .andDo(MockMvcResultHandlers.print());
   }
   
   @Test
   void testCreateTagForAnnotationById() throws Exception {
+    ObjectMapper mapper = new ObjectMapper(); 
+    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    mapper.registerModule(new JavaTimeModule());
+    String mockTagSerialized = mapper.writeValueAsString(mockTag);
 
     Mockito.when(mockedEditorStubService.addTag(annoId, "title", "subject", "value", "")).thenReturn(mockTag);
     Mockito.when(mockedEditorStubService.addTag(annoId + "nf", "title", "subject", "value", "")).thenThrow(NoSuchIndexEntryException.class);
@@ -475,13 +523,18 @@ class RestControllerTest {
     this.mockMvc.perform(post("/editor_rest/annotations/" + URLEncoder.encode(URLEncoder.encode(annoId, StandardCharsets.UTF_8.name()), StandardCharsets.UTF_8.name()) + "/tags").contentType(MediaType.APPLICATION_JSON).content(valid).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(new Gson().toJson(mockTag)))
+        .andExpect(content().json(mockTagSerialized))
         .andDo(MockMvcResultHandlers.print());
 
   }
 
   @Test
   void testGetTagByIdForAnnotationById() throws Exception {
+    ObjectMapper mapper = new ObjectMapper(); 
+    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    mapper.registerModule(new JavaTimeModule());
+    String mockTagSerialized = mapper.writeValueAsString(mockTag);
+
     Mockito.when(mockedEditorStubService.getTag(bodyId)).thenReturn(mockTag);
     Mockito.when(mockedEditorStubService.getTag(bodyId + "nf")).thenThrow(NoSuchIndexEntryException.class);
 
@@ -492,7 +545,7 @@ class RestControllerTest {
     this.mockMvc.perform(get("/editor_rest/annotations/" + URLEncoder.encode(URLEncoder.encode(annoId, StandardCharsets.UTF_8.name()), StandardCharsets.UTF_8.name()) + "/tags/" + bodyId).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(new Gson().toJson(mockTag)))
+        .andExpect(content().json(mockTagSerialized))
         .andDo(MockMvcResultHandlers.print());
   }
 
@@ -526,6 +579,11 @@ class RestControllerTest {
     mockTagUpdated.setSubject("subjectUpdated");
     mockTagUpdated.setValue("valueUpdated");
 
+    ObjectMapper mapper = new ObjectMapper(); 
+    mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+    mapper.registerModule(new JavaTimeModule());
+    String mockTagUpdatedSerialized = mapper.writeValueAsString(mockTagUpdated);
+
     Mockito.when(mockedEditorStubService.updateTag(bodyId, "titleUpdated", "subjectUpdated", "valueUpdated", "")).thenReturn(mockTagUpdated);
     Mockito.when(mockedEditorStubService.updateTag(bodyId + "nf", "titleUpdated", "subjectUpdated", "valueUpdated", "")).thenThrow(NoSuchIndexEntryException.class);
     Mockito.when(mockedEditorStubService.updateTag(bodyId + "io", "titleUpdated", "subjectUpdated", "valueUpdated", "")).thenThrow(IOException.class);
@@ -552,7 +610,7 @@ class RestControllerTest {
     this.mockMvc.perform(put("/editor_rest/annotations/" + URLEncoder.encode(URLEncoder.encode(annoId, StandardCharsets.UTF_8.name()), StandardCharsets.UTF_8.name()) + "/tags/" + bodyId).accept(MediaType.APPLICATION_JSON).content(valid))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(content().json(new Gson().toJson(mockTagUpdated)))
+        .andExpect(content().json(mockTagUpdatedSerialized))
         .andDo(MockMvcResultHandlers.print());
   }
 
