@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>annoView</title>
+</head>
+
+<body id="body" th:fragment="annoView">
+<div class="form-row align-items-center m-2">
+    <div class="col-auto dropdown">
+        <button class="btn-sm btn-secondary dropdown-toggle"
+                type="button"
+                id="dropdownMenu"
+                data-toggle="dropdown" th:text="#{buttons.choose_cols}"></button>
+        <div class="dropdown-menu" id="boxes"></div>
+    </div>
+
+    <div class="col-auto">
+        <button type="button"
+                class="btn-sm btn-secondary"
+                id="reset"
+                onclick="resetColumns()" th:text="#{buttons.reset_cols}"></button>
+    </div>
+
+    <div class="col-auto ml-auto">
+        <button type="button"
+                class="btn-sm btn-info"
+                onclick="backToDashboard()" th:text="#{buttons.to_dashboard}"></button>
+    </div>
+</div>
+
+<div id="searchresults"></div>
+<div id="annotationTable"></div>
+
+<script th:inline="javascript">
+    // setting contextpath and storing it
+    window.CONTEXTPATH = /*[[@{/}]]*/ "";
+</script>
+<script th:src="@{/js/jsonform.js}"></script>
+<script th:src="@{/js/tabulator.min.js}"></script>
+<script th:src="@{js/table_view.js}"></script>
+<script th:inline="javascript">
+    // "replacing" the search bars
+    if(document.getElementById("annotationSearchbar").classList.contains("d-none")){
+        document.getElementById("annotationSearchbar").classList.toggle("d-none");
+        document.getElementById("manuscriptSearchbar").classList.toggle("d-none");
+    }
+
+    // "replacing" the filter bars
+    if(document.getElementById("annotationFilterbar").classList.contains("d-none")){
+        document.getElementById("annotationFilterbar").classList.toggle("d-none");
+        document.getElementById("manuscriptFilterbar").classList.toggle("d-none");
+    }
+    function checkIsMetaphorAnnotation(cell){
+        const textcards = JSON.parse(cell.getRow().getData().textcards);
+        // check if a textcard has the value "metaphor", if it does the resulting array
+        // will be longer than "0" and the comparison will return true
+        return textcards.filter(textcard => textcard.value ==="metaphor").length > 0;
+    }
+
+    // create the annotation overview table
+    // TODO: CUSTOMIZE to adjust the available filters add the field name of the
+    // column to be filtered on to "./possibleAnnotationFilters.json"
+    /*<![CDATA[*/
+    //define columns
+    window.annocolumns = [
+        {
+            formatter:function(cell, formatterParams, onRendered){
+                return "<i class='fa fa-eye'></i>";},
+            hozAlign:"center",
+            resizable: false,
+            frozen: true,
+            headerSort: false,
+            cellClick:function(e, cell){
+                const pageId = cell.getRow().getData().pageId;
+                const annoId = cell.getRow().getData().annoId;
+
+                const targetUrl = new URL ('editor/' + pageId, new URL(window.location));
+                let searchParams = new URLSearchParams({
+                    annotationId: annoId
+                });
+
+                const selector = cell.getRow().getData().targetSelectors[0];
+                if (selector.type === "XPathSelector"){
+                    // get the Id of the first word of the target
+                    const firstWordOfTarget = selector.value
+                                    .split('id("')[1]
+                                    .split('"')[0];
+                    searchParams.append("fragment", firstWordOfTarget);
+                }
+
+                targetUrl.search = searchParams;
+                location.href = targetUrl.toString();
+            },
+
+        },
+        {
+            title: [[#{col_name.creator}]],
+            field: "creator",
+            headerSort: true,
+            headerMenu: headerMenu()
+        },
+        {
+            title: [[#{col_name.lastModified}]],
+            field: "lastModified",
+            headerSort: true,
+            headerMenu: headerMenu()
+        },
+        {
+            title: [[#{col_name.created}]],
+            field: "created",
+            headerSort: true,
+            headerMenu: headerMenu()
+        },
+        {
+            title: [[#{col_name.label}]],
+            field: "label",
+            headerSort: true,
+            headerMenu: headerMenu()
+        },
+        {
+            title: [[#{col_name.selection}]],
+            field: "selection",
+            headerSort: true,
+            headerMenu: headerMenu()
+        },
+        {
+            title: [[#{col_name.manuscriptTitle}]],
+            field: "manuscriptTitle",
+            headerSort: true,
+            headerMenu: headerMenu()
+        },
+        {
+            title: [[#{col_name.tags}]],
+            field: "tags",
+            headerSort: false,
+            headerMenu: headerMenu(),
+            visible: false
+        },
+        {
+            title: [[#{col_name.textcards}]],
+            field: "textcards",
+            headerSort: false,
+            headerMenu: headerMenu(),
+            visible: false
+        },
+        {
+            title: [[#{col_name.annoId}]],
+            field: "annoId",
+            headerSort: false,
+            headerMenu: headerMenu(),
+            visible: false
+        },{
+            title: [[#{col_name.targetSelectors}]],
+            field: "targetSelectors",
+            headerSort: false,
+            headerMenu: headerMenu(),
+            visible: false
+        },
+        {
+            title: [[#{col_name.pageId}]],
+            field: "pageId",
+            headerSort: true,
+            headerMenu: headerMenu(),
+            visible: false
+        }
+        /* not relevant any longer as the bodies are getting stringifyed
+        ,
+        {
+            title: "searchableBodies",
+            field: "searchableBodies",
+            headerSort: false,
+            headerMenu: headerMenu(),
+            visible: false
+        }*/
+        /* information irrelevant for the enduser and the functionalities
+         will not be included
+        ,
+        {
+            title: [[#{col_name.targets}]],
+            field: "targets",
+            headerSort: false,
+            headerMenu: headerMenu(),
+            visible: false
+        },
+        {
+            title: [[#{col_name.linkToResource}]],
+            field: "linkToResource",
+            headerSort: false,
+            headerMenu: headerMenu(),
+            visible: false
+        }
+        */
+    ]
+    /*]]>*/
+
+
+    // TODO: CUSTOMIZE edit the message.properties in all language to either show
+    // or not show the button to the analysisTool
+    /*<![CDATA[*/
+    window.SHOW_BUTTON_TO_ANALYSIS_TOOL = [[#{show.ButtonToAnalysisTool}]];
+    /*]]>*/
+    /*<![CDATA[*/
+    if (window.SHOW_BUTTON_TO_ANALYSIS_TOOL === "true"){
+    /*]]>*/
+        window.annocolumns.splice(1, 0, 
+            {
+                formatter:function(cell, formatterParams, onRendered){
+                    if(checkIsMetaphorAnnotation(cell)){
+                        return "<i class='fa fa-pencil'></i>";    
+                    }
+                    return "<i class='fa fa-pencil' style='cursor: not-allowed; opacity: .4;'></i>";
+                },
+                hozAlign:"center",
+                resizable: false,
+                frozen: true,
+                headerSort: false,
+                cellClick:function(e, cell){
+                    if(checkIsMetaphorAnnotation(cell)){
+                        const annotationId = cell.getRow().getData().annoId;
+                        // similar behaviour as encodieAnnoId() from editor.js
+                        location.href = "analysis/" + encodeURIComponent(encodeURIComponent(annotationId));
+                    }
+                },
+            }
+        );
+    }
+    window.annotable = new Tabulator("#searchresults", {
+        layout: "fitDataTable",
+        pagination: "local",
+        ajaxURL: window.CONTEXTPATH + "annoview/annoview", //set url for ajax request
+            ajaxResponse:function(url, params, response){
+            if(response === "error"){
+                /*<![CDATA[*/
+                location.href = window.CONTEXTPATH + "error/" + [[${errorMessage}]];
+                /*]]>*/
+            }
+            console.log(response);
+            response.forEach(entry => {
+                // unwrapping the creator array
+                entry.creator = entry.creator.join(', ');
+
+                // the following is not necessary any longer as the tags/textcards are getting
+                // stringified later and at necessary parts parsed into JSON again
+                // unwrapping the bodies to make them searchable
+                /*const unwrappedTextcards= entry.textcards.map(textcard => textcard.purpose + ": " + textcard.value);
+                const unwrappedTags = entry.tags.map(tag => "tagging: " + tag.value);
+                entry.searchableBodies = unwrappedTags.concat(unwrappedTextcards);*/
+
+                // TODO: CUSTOMIZE how the label for the annotation is created
+                // check if a textcard has "identifying" as it its purpose (CRC1475 stores the label there)
+                entry.label = entry.textcards.filter(textcard => textcard.purpose === "identifying")
+                                                // get the last (and only) entry of the resulting array
+                                                .pop()
+                                                // check if the entry has a "value"-key, if not set it to "undefined"
+                                                ?.value || "undefined";
+                // TODO: CUSTOMIZE how the selected image/textpart of the annotation is created
+                // check if a textcard has "identifying" as it its purpose (CRC1475 stores the label there)
+                entry.selection = entry.textcards.filter(textcard => textcard.purpose === "describing")
+                                                // get the last (and only) entry of the resulting array
+                                                .pop()
+                                                // check if the entry has a "value"-key, if not set it to "undefined"
+                                                ?.value || "undefined";
+                
+                // stringifying the bodies to make them searchable
+                entry.tags = JSON.stringify(entry.tags);
+                entry.textcards = JSON.stringify(entry.textcards);
+            });
+            return response; //return the response data to tabulator
+        },
+        height: 800,
+        movableColumns: true, //enable user movable columns
+        /*<![CDATA[*/
+        placeholder:[[#{table.noResults}]],
+        /*]]>*/
+        paginationSize: 10,
+        paginationSizeSelector: [10, 20, 30, 40],
+        rowDblClick: function (e, row) {
+            //shows and hides thumbnails for each row
+            let id = row.getData().id;
+            if (document.getElementById('holder' + id) == null) {
+                // create container/holder for all body rows
+                let holder = document.createElement('div');
+                holder.style.display = 'block';
+                holder.setAttribute('id', 'holder' + id)
+                let cardBody = document.createElement('div');
+                cardBody.setAttribute('class', 'card card-body no-wrap');
+
+                // create rows for all bodies
+                const textcards = JSON.parse(row.getData().textcards);
+                textcards.forEach(textcard => {
+                    let row = document.createElement('div');
+                    row.setAttribute('class', 'row');
+                    row.innerText = textcard.purpose + ": " + textcard.value;
+                    cardBody.appendChild(row);
+                });
+                const tags = JSON.parse(row.getData().tags);
+                tags.forEach(tag => {
+                    let row = document.createElement('div');
+                    row.setAttribute('class', 'row');
+                    row.innerText = "tagging: " + tag.value;
+                    cardBody.appendChild(row);
+                });
+                holder.appendChild(cardBody);
+                row.getElement().appendChild(holder);
+            } else {
+                document.getElementById('holder' + id).remove();
+            }
+        },
+        columns: window.annocolumns
+    });
+
+    setHeaderMenues();
+    createDropdown();
+
+    function setHeaderMenues(){
+        window.annotable.getColumns().forEach(function(item, index) {
+            if (index > 0) {
+            item.getDefinition().headerMenu = headerMenu();
+            }
+        })
+    }
+
+    //defines header menu with hide function
+    function headerMenu() {
+        /*<![CDATA[*/
+        return [
+            {
+                label: "<i class='fa fa-eye-slash mr-1'> </i>" + [[#{menu.hideCol}]],
+                action: function (e, column) {
+                    column.hide();
+                    document.getElementById('check_' + column.getField()).checked = false;
+                }
+            }
+        ];
+        /*]]>*/
+    }
+    function getCurrentPage(){
+           return [[${user.getCurrentPage()}]];
+    }
+
+    window.flag = true;
+
+
+
+    function setHeaderMenues(){
+            window.annotable.getColumns().forEach(function(item, index) {
+                if (index > 1) {
+                    item.getDefinition().headerMenu = headerMenu();
+                }
+            })
+    }
+
+    function callEditor(manId){
+        $.ajax({
+            type: 'GET',
+            url: window.CONTEXTPATH + 'tableview/getFirstPage/' + manId,
+            dataType: 'text',
+
+            success: function (responseData) {
+                if(responseData === "error"){
+                    /*<![CDATA[*/
+                    location.href = window.CONTEXTPATH + "error/" + [[${errorMessage}]];
+                    /*]]>*/
+                }
+                location.href = "editor/" + responseData;
+
+            }
+        })
+    }
+
+    function callEditorOn(pageId){
+        $.ajax({
+            type: 'GET',
+            url: window.CONTEXTPATH + 'editor/' + manId,
+            dataType: 'text',
+
+            success: function (responseData) {
+                if(responseData === "error"){
+                    /*<![CDATA[*/
+                    location.href = window.CONTEXTPATH + "error/" + [[${errorMessage}]];
+                    /*]]>*/
+                }
+                location.href = "editor/" + responseData;
+
+            }
+        })
+    }
+
+    // create show columns dropdown menu
+    function createDropdown() {
+        /*<![CDATA[*/
+        let container = document.getElementById("boxes");
+        let cont;
+        let checkbox;
+        let label;
+        let tbl = window.annotable.getColumns();
+        for (let i = 1; i < table.getColumns().length - 1; i++) {
+            //tbl[i] = table.getColumns()[i + 1];
+        }
+        tbl.forEach(function (col, index) {
+            // index needs to be bigger than 1 to ignore the buttons in the first 2 columns
+            if(index > 1) {
+                cont = document.createElement("div");
+                cont.className = "form-check ml-1"
+                checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.className = "form-check-input";
+                checkbox.id = "check_" + col.getField();
+
+                label = document.createElement("label");
+                label.htmlFor = "check_" + col.getField();
+                label.className = "form-check-label";
+                label.appendChild(document.createTextNode(col.getDefinition().title));
+
+                cont.appendChild(checkbox);
+                cont.appendChild(label);
+                if (col.isVisible()) {
+                    checkbox.checked = true;
+                }
+                container.appendChild(cont);
+            }
+        });
+        let divider = document.createElement("div");
+        divider.className = "dropdown-divider";
+        container.append(divider);
+        let applyBtn = document.createElement("button");
+        applyBtn.className = "btn btn-primary btn-sm ml-1";
+        applyBtn.type = "submit";
+        applyBtn.innerHTML = [[#{buttons.apply}]];
+        applyBtn.addEventListener("click", function (e) {
+            window.annotable.getColumns().forEach(function (col, index) {
+                // index needs to be bigger than 1 to ignore the buttons in the first 2 columns
+                if(index > 1) {
+                    if (document.getElementById("check_" + col.getField()).checked) {
+                        col.show();
+                    } else {
+                        col.hide();
+                    }
+                }
+            });
+            e.preventDefault();
+        });
+        container.append(applyBtn);
+        /*]]>*/
+    }
+
+    function updateDropdown(){
+        window.annotable.getColumns().forEach(function (col, index) {
+            if(index > 1 && col.isVisible()){
+                document.getElementById("check_" + col.getField()).checked = true;
+            }
+        });
+    }
+
+    //reset columns function
+    function resetColumns() {
+        /*<![CDATA[*/
+        window.annotable.setColumns(window.annocolumns);
+        window.annotable.getColumns().forEach(function(col){
+            col.show();
+        });
+        window.annotable.setSort("annoId", "asc");
+        updateDropdown();
+        /*]]>*/
+    }
+
+</script>
+
+</body>
+</html>
+<style>
+    .no-wrap > .row {
+        overflow-x: scroll;
+        white-space: nowrap;
+        flex-wrap: nowrap;
+    }
+    .no-wrap > .row > .col-auto{
+        display: inline-block;
+        float: none;
+    }
+</style>

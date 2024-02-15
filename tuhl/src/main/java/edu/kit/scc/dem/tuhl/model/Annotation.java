@@ -20,6 +20,7 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 public class Annotation {
 
   private String pageId;
+  private String manuscriptTitle;
   
   @Field(type = FieldType.Nested, includeInParent = true)
   private List<TextCard> textCards;
@@ -74,6 +75,24 @@ public class Annotation {
    */
   public void setPageId(String id) {
     pageId = id;
+  }
+  
+  /**
+   * Gets name of the manuscripts that the Annotation belongs to.
+   *
+   * @return manuscriptName
+   */
+  public String getManuscriptTitle() {
+    return manuscriptTitle;
+  }
+  
+  /**
+   * Sets name of the manuscripts that the Annotation belongs to.
+   *
+   * @return manuscriptName
+   */
+  public void setManuscriptTitle(String manuscriptTitle) {
+	  this.manuscriptTitle = manuscriptTitle;
   }
 
 
