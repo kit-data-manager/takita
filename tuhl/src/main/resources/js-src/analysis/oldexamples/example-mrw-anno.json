@@ -1,0 +1,41 @@
+{
+    "@context" : "http://www.w3.org/ns/anno.jsonld",
+    "id" : "http://localhost/wap/sfb1475/philipp/takita/8795d91a-3c17-497e-b22c-523501fedab8",
+    "type" : "Annotation",
+    "created" : "2023-02-24T10:11:19Z",
+    "creator" : {
+      "type" : "Person",
+      "name" : "default"
+    },
+    "modified" : "2023-02-24T10:11:20Z",
+    "body" : [ {
+      "type" : "TextualBody",
+      "created" : "2023-02-24T10:11:20Z",
+      "creator" : {
+        "type" : "Person",
+        "name" : "default"
+      },
+      "modified" : "2023-02-24T10:11:20Z",
+      "value" : "אֶת",
+      "purpose" : "classifying"
+    }, {
+      "type" : "TextualBody",
+      "created" : "2023-02-24T10:11:20.664841Z",
+      "creator" : {
+        "type" : "Person",
+        "name" : "default"
+      },
+      "modified" : "2023-02-24T10:11:20.664842Z",
+      "value" : "mrw",
+      "purpose" : "tagging"
+    } ],
+    "target" : {
+      "type" : "SpecificResource",
+      "selector" : {
+        "type" : "XPathSelector",
+        "value" : "//w[@xml:id=\"w.477\"]"
+      },
+      "source" : "http://localhost:8090/api/v1/dataresources/8a890992-bf8b-4f43-ad12-9c70a351ced1/data/HebrewBibleFull.xml"
+    },
+    "motivation" : "describing"
+  }
