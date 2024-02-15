@@ -1,0 +1,28 @@
+/* B03 specifics */
+/* ------------------------------------*/
+
+/* display vocalized version above the unvocalized version */
+tei-text[lang="hbo"] tei-choice {
+	display: inline-flex;
+	flex-direction: column;
+}
+
+/* make unvocalized version unselectable, but keep vocalized version selectable */
+tei-text[lang="hbo"] tei-choice {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+tei-text[lang="hbo"] tei-orig {
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
+}
+
+/* hides the unvocalized version */
+.zeroOpacity {
+	opacity: 0;
+}

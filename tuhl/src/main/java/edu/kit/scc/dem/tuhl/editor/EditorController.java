@@ -84,10 +84,12 @@ public class EditorController {
       editorService.selectPage(pageId);
       model.addAttribute("currentPage", editorService.getCurrentPage());
       model.addAttribute("currentManuscript", editorService.getCurrentManuscript());
+      // TODO: use the project abbreviation instead of the publisher. This can be done
+      //	when the manuscript class has an attribute "project"
+      model.addAttribute("currentProject", editorService.getCurrentManuscript().getPublisher().replaceAll("\\s",""));
       model.addAttribute("currentAnnotationsJson", 
         getDisplayableAnnotations(editorService.getCurrentPage().getAnnotations()));
       assistanceService.updateModel(model);
-      
     } catch (UnsupportedEncodingException | NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
     }

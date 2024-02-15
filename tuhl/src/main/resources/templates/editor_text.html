@@ -23,6 +23,8 @@
     <link rel="stylesheet" th:href="@{/css/editor_text_bottombar.css}">
     <link rel="stylesheet" th:href="@{/css/modal.css}">
     <link rel="stylesheet" th:href="@{/css/editor_text.css}">
+    <!-- loading the stylesheet associated with the project -->
+    <link rel="stylesheet" th:href="@{'/css/projectSpecific/'+${currentProject}+'.css'}">
 
     <!-- JS, jQuery -->
     <script src="https://code.jquery.com/jquery-3.5.1.js"></script>

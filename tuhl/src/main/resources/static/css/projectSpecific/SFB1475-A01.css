@@ -1,0 +1,21 @@
+/* A01 specifics */
+/* ------------------------------------*/
+
+/* color quotes from different sources differently */
+tei-q[type="Quran"] {
+	color: green;	
+}
+
+tei-q[type="Hadith"] {
+	color: red;	
+}
+
+tei-q[type="Poetry"] {
+	color: rgb(160, 160, 0);
+}
+
+/* half verse markers for the Masnavi*/
+tei-body[n="Mas̱nawī"] tei-seg[n="a"]::after {
+	content: "\00a0**\00a0";
+	white-space: pre-warp;
+}

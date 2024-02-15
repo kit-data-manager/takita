@@ -1,0 +1,22 @@
+/* A04 specifics */
+/* ------------------------------------*/
+
+/* displaying linenumbers*/
+tei-text[lang="ae"] tei-ab[id]::before {
+	color: #c94c2d;
+    content: attr(id)" : ";
+    white-space: pre-wrap;
+}
+
+tei-text[lang="ae"] tei-ab[type="prayer"]::before {
+	content: "";
+}
+
+/* changing color of notes and disabling selection */
+tei-note {
+	color: grey;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}

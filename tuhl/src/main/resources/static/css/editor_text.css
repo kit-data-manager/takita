@@ -6,7 +6,7 @@
 
 /* TODO: improve the comment phrasing */
 /* default: highlight words annotated as anything not specified in purple */
-.defaulthighlight{
+.defaulthighlight {
 	background: lightgreen;
 }
 
@@ -25,15 +25,15 @@
 	background: linear-gradient( to bottom, yellow 50%, #daa3ff 50% 100% )
 }
 
-.defaulthighlight.mrw{
+.defaulthighlight.mrw {
 	background: linear-gradient( to bottom, lightgreen 50%, #daa3ff 50% 100% )
 }
 
-.defaulthighlight.mflag{
+.defaulthighlight.mflag {
 	background: linear-gradient( to bottom, lightgreen 50%, yellow 50% 100% )
 }
 
-.defaulthighlight.mrw.mflag{
+.defaulthighlight.mrw.mflag {
 	background: linear-gradient( to bottom, lightgreen 33%, yellow 33% 66%, #daa3ff 66% 100% )
 }
 
@@ -53,7 +53,7 @@
 		0em 0.2em #2196F3;
 }
 
-.metaphor.whitespaceAfter{
+.metaphor.whitespaceAfter {
 	box-shadow: 
 		0.29em 0em white, 
 		0em 0em white, 
@@ -61,7 +61,7 @@
 		0em 0.2em #2196F3;
 }
 
-#TEI[dir="rtl"] .metaphor.whitespaceAfter{
+#TEI[dir="rtl"] .metaphor.whitespaceAfter {
 	box-shadow: 
 		-0.29em 0em white, 
 		0em 0em white, 
@@ -81,7 +81,7 @@
 	line-height: 1.75em;
 }
 
-.metaphorSecond.whitespaceAfter{
+.metaphorSecond.whitespaceAfter {
 	box-shadow: 
 		0.29em 0.2em white, 
 		0em 0.2em white, 
@@ -90,7 +90,7 @@
 	line-height: 1.75em;
 }
 
-#TEI[dir="rtl"] .metaphorSecond.whitespaceAfter{
+#TEI[dir="rtl"] .metaphorSecond.whitespaceAfter {
 	box-shadow: 
 		-0.29em 0.2em white, 
 		0em 0.2em white, 
@@ -114,7 +114,7 @@
 	line-height: 1.75em;
 }
 
-.metaphor.metaphorSecond.whitespaceAfter{
+.metaphor.metaphorSecond.whitespaceAfter {
 	box-shadow: 
 		0.29em 0em white, 
 		0em 0em white,
@@ -125,7 +125,7 @@
 	line-height: 1.75em;
 }
 
-#TEI[dir="rtl"] .metaphor.metaphorSecond.whitespaceAfter{
+#TEI[dir="rtl"] .metaphor.metaphorSecond.whitespaceAfter {
 	box-shadow: 
 		-0.29em 0em white, 
 		0em 0em white, 
@@ -210,7 +210,7 @@
 }
 /* add some space between the form elements */
 .horizontalFormDiv > input[type="text"],
-.horizontalFormDiv > label  {
+.horizontalFormDiv > label {
 	margin-right: 0.3em;
 }
 /* override the styling on the text done by
@@ -263,7 +263,7 @@
 
 /* early modern chinese */
 /* change font to batang */
-tei-text[lang=lzh]{
+tei-text[lang=lzh] {
 	font-family: Batang, serif;
 }
 
@@ -294,8 +294,15 @@ tei-ab {
 }
 
 /* linebreak before the start of a new line */
-tei-lb::before{
+tei-lb::before {
     content: "\00000a";
+    white-space: pre-wrap;
+}
+
+/* display the linenumbers in front of the linebeginnings */
+tei-lb[n]::before {
+	color: grey;
+    content: "\00000a"attr(n);
     white-space: pre-wrap;
 }
 
@@ -323,38 +330,47 @@ tei-supplied::before {
 	color: grey;
     content: "(";
 }
+
 tei-supplied::after {
 	color: grey;
     content: ")";
 }
+
 tei-supplied[reason="augment"]::before {
 	color: grey;
     content: "(";
 }
+
 tei-supplied[reason="augment"]::after {
     color: grey;
 	content: ")";
 }
+
 tei-supplied[reason="lost"]::before {
 	color: grey;
     content: "[";
 }
+
 tei-supplied[reason="lost"]::after {
 	color: grey;
     content: "]";
 }
+
 tei-gap::after {
 	color: grey;
     content: "[…]";
 }
+
 tei-gap[reason="lost"]::after {
 	color: grey;
     content: "[…]";
 }
+
 tei-gap[reason="illegible"]::after {
 	color: grey;
     content: "…";
 }
+
 tei-supplied > tei-gap::after {
 	color: grey;
     content: "…";
@@ -375,190 +391,4 @@ tei-lg {
 }
 
 /* end of text structure specifics */
-/* ------------------------------------*/
-
-
-/* ------------------------------------*/
-/* SUBPROJECT SPECIFICS */
-/* ------------------------------------*/
-
-/* A01 specifics */
-/* ------------------------------------*/
-
-/* color quotes from different sources differently */
-tei-q[type="Quran"]{
-	color: green;	
-}
-
-tei-q[type="Hadith"]{
-	color: red;	
-}
-
-tei-q[type="Poetry"]{
-	color: rgb(160, 160, 0);
-}
-
-/* A03 specifics */
-/* ------------------------------------*/
-
-/* display the linenumbers for lines of the root text */
-tei-lg[type="root"] > tei-l::before {
-	color: grey;
-	content: attr(n)". ";
-}
-
-/* B03 specifics */
-/* ------------------------------------*/
-
-/* display vocalized version above the unvocalized version */
-tei-choice {
-	display: inline-flex;
-	flex-direction: column;
-}
-
-/* make unvocalized version unselectable, but keep vocalized version selectable */
-tei-text[lang="hbo"] tei-choice{
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-}
-
-tei-text[lang="hbo"] tei-orig{
-	-webkit-user-select: text;
-	-moz-user-select: text;
-	-ms-user-select: text;
-	user-select: text;
-}
-
-/* hides the unvocalized version */
-.zeroOpacity{
-	opacity: 0;
-}
-
-/* B04 specifics */
-/* ------------------------------------*/
-
-/* display sandhied version above the unsandhied version */
-tei-choice {
-	display: inline-flex;
-	flex-direction: column;
-}
-
-/* make sandhied version unselectable, but keep unsandhied version selectable */
-/* TODO: make it targeting all B04 files */
-tei-text[lang="sa-Latn"] tei-choice{
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-}
-
-tei-text[lang="sa-Latn"] tei-reg {
-	-webkit-user-select: text;
-	-moz-user-select: text;
-	-ms-user-select: text;
-	user-select: text;
-}
-
-/* display the sandhi syllable marker after unsandhied words*/
-.sandhiSyllableMarkerAfter::after{
-	content: "‧";
-	color: gray;
-}
-
-/* B05 specifics */
-/* ------------------------------------*/
-
-/* TODO: make the following rule only apply for B05s Gilgamesh text */
-/* display the linenumbers in front of the linebeginnings */
-tei-lb[n]::before{
-	color: grey;
-    content: "\00000a"attr(n)". ";
-    white-space: pre-wrap;
-}
-
-/* C01 specifics */
-/* ------------------------------------*/
-
-/* linebreak after a question answer blob */
-tei-ab[type=qna]::after{
-	content: "\00000a";
-	white-space: pre-wrap;
-}
-
-/* C03 specifics */
-/* ------------------------------------*/
-
-/* TODO: move this to a CETEICEAN-behavior to make it use the
-	html sup-element
-	positioning the folio statement as superscript and disable
-	the selection of it*/
-tei-fw[type="folio"]{
-	vertical-align: super;
-	font-size: 70%;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-}
-
-/* C04 specifics */
-/* ------------------------------------*/
-
-tei-div[type=replies] {
-    margin-left: 1em;
-    border-left: 1px solid gray;
-    padding-left: .5em;
-}
-
-tei-div[type=orphan-posts]::before {
-    content: "Orphan Posts: "
-}
-
-tei-post {
-    display: block;
-    border-bottom: 1px solid purple;
-    padding: .5em 0;
-    margin-bottom: 1em;
-}
-
-tei-post:before {
-    content: attr(who);
-    color: gray;
-}
-
-tei-numeric::before {
-    content: "Score: " attr(value);
-    padding-bottom: 1em;
-    color: gray;
-}
-
-/* CM specifics */
-/* ------------------------------------*/
-
-/* hide footnotes and disable seelction for it */
-tei-note[type="footnote"] {
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-	/* hacky way to hide the text and keep it outside the 
-		selection object. "display: none;" will include
-		the elements text in the selection */
-	color: grey;
-	display: block;
-	height: 0;
-	overflow: hidden;
-}
-/* fix the spacing between the lines prior and after tei-notes*/
-tei-note + tei-lb::before{
-	content: "";
-}
-tei-note + tei-lb[n]::before{
-	content: attr(n)". ";
-	color: grey;
-}
-
-/* end of subproject specifics */
-/* ------------------------------------*/
+/* ------------------------------------ */

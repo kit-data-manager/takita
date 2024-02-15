@@ -1,0 +1,21 @@
+/* C02 specifics */
+/* ------------------------------------*/
+
+/* ruby annotations used in akkadian/summerian texts */
+tei-ruby {
+	display: ruby
+}
+
+tei-rb {
+	display: ruby-base;
+	font-size: 70%;
+	color: grey;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+tei-rt {
+	display: ruby-text;	
+}

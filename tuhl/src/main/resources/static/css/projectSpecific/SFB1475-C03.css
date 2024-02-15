@@ -1,0 +1,171 @@
+/* C03 specifics */
+/* ------------------------------------*/
+
+/* removing whitespace inserted by the standard css */
+tei-p {
+	display: inline;
+}
+
+/* variety of pagenumbers */
+tei-pb[ed="folio"][n]::before {
+	content: "fol."attr(n);
+	color: #006600;
+	font-size: 70%;
+	font-style: oblique;
+	vertical-align: super;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+tei-pb[ed="digital"][n]::before {
+	content: "\00000a"attr(n);
+	font-weight: bold;
+	white-space: pre-wrap;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+tei-pb[ed="print"][n]::before {
+	content: "[p."attr(n)"]";
+	color: #FF6600;
+	font-family: Times New Roman, Times, serif;
+	font-size: 90%;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+/* quotes */
+/* resetting the standard quote rules */
+tei-quote::before {
+    content: "";
+}
+
+tei-quote::after {
+	content: "";
+}
+
+/* quotation marks around quotes not created by the author */
+tei-quote[type="direct"][rend="noquotes"]::before {
+	color: grey;
+  content: "\"";
+}
+
+tei-quote[type="direct"][rend="noquotes"]::after {
+  color: grey;
+	content: "\"";
+}
+
+tei-quote[type="indirect"][rend="noquotes"]::before {
+	color: grey;
+  content: "\'";
+}
+
+tei-quote[type="indirect"][rend="noquotes"]::after {
+  color: grey;
+	content: "\'";
+}
+
+/* quotes spanning multiple paragraphs should only
+  have quotations marks at the start and the end
+  of the quote and not at every opening/closing 
+  element of the quote-element-chain */
+
+/* indirect quotes not created by the author spanning multiple lines*/
+tei-quote[type="indirect"][rend="noquotes"][next]::before {
+	color: grey;
+  	content: "\'";
+}
+
+tei-quote[type="indirect"][rend="noquotes"][next]::after {
+	content: "";
+}
+
+tei-quote[type="indirect"][rend="noquotes"][prev]::before {
+  	content: "";
+}
+
+tei-quote[type="indirect"][rend="noquotes"][prev]::after {
+	color: grey;
+  	content: "\'";
+}
+
+tei-quote[type="indirect"][rend="noquotes"][next][prev]::before {
+  	content: "";
+}
+
+tei-quote[type="indirect"][rend="noquotes"][next][prev]::after {
+	content: "";
+}
+
+/* direct quotes not created by the author spanning multiple lines*/
+tei-quote[type="direct"][rend="noquotes"][next]::before {
+	color: grey;
+  	content: "\"";
+}
+
+tei-quote[type="direct"][rend="noquotes"][next]::after {
+	content: "";
+}
+
+tei-quote[type="direct"][rend="noquotes"][prev]::before {
+  	content: "";
+}
+
+tei-quote[type="direct"][rend="noquotes"][prev]::after {
+	color: grey;
+  	content: "\"";
+}
+
+tei-quote[type="direct"][rend="noquotes"][next][prev]::before {
+  	content: "";
+}
+
+tei-quote[type="direct"][rend="noquotes"][next][prev]::after {
+	content: "";
+}
+
+/* editorial editions */
+/* */
+tei-corr::before {
+	color: grey;
+	content: "⌈";
+}
+
+tei-corr::after {
+	color: grey;
+	content: "⌉";
+}
+
+/* text supplied by the transcriber or editor for any reason */
+tei-supplied[reason="augment"]::before {
+	color: grey;
+	content: "[";
+}
+
+tei-supplied[reason="augment"]::after {
+	color: grey;
+	content: "]";
+}
+
+tei-supplied[reason="augment"][rend="ltgt"]::before {
+	color: grey;
+	content: "<";
+}
+
+tei-supplied[reason="augment"][rend="ltgt"]::after {
+	color: grey;
+	content: ">";
+}
+
+/* material omitted in the transcription */
+tei-gap[reason="illegible"] {
+	color: grey;
+	content: "<...>";
+}
+
+
