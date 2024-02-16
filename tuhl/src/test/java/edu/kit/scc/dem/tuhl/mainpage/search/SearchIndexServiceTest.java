@@ -21,7 +21,7 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
@@ -50,7 +50,7 @@ class SearchIndexServiceTest {
   private ManuscriptRepository mockedManuscriptRepository;
 
   @MockBean
-  private ElasticsearchRestTemplate mockedElasticsearchRestTemplate;
+  private ElasticsearchOperations mockedElasticsearchOperations;
 
   private List<Manuscript> manuscriptList;
 
@@ -540,7 +540,7 @@ class SearchIndexServiceTest {
     Mockito.when(mockedHit.getContent()).thenReturn(manuscript);
     SearchHits<Manuscript> mockedHits = Mockito.mock(SearchHits.class);
     Mockito.when(mockedHits.getSearchHit(0)).thenReturn(mockedHit);
-    Mockito.when(mockedElasticsearchRestTemplate.search(Mockito.any(Query.class),
+    Mockito.when(mockedElasticsearchOperations.search(Mockito.any(Query.class),
         Mockito.eq(Manuscript.class), Mockito.any(IndexCoordinates.class)))
         .thenReturn(mockedHits);
     Mockito.when(mockedHits.hasSearchHits()).thenReturn(true);
