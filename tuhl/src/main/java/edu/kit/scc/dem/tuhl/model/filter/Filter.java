@@ -1,7 +1,8 @@
 package edu.kit.scc.dem.tuhl.model.filter;
 
 import java.util.List;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
+
+import org.springframework.data.elasticsearch.core.query.Criteria;
 
 /**
  * Interface specifying methods for filters, their fields, values and generating their query.
@@ -33,7 +34,7 @@ public interface Filter {
    *
    * @return query as NativeSearchQuery
    */
-  NativeSearchQuery getQuery();
+  Criteria getCriteria();
 
   /**
    * Gets the type of the filter.
