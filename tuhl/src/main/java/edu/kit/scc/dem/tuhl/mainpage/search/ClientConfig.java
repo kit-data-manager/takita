@@ -10,6 +10,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.convert.ReadingConverter;
 import org.springframework.data.convert.WritingConverter;
+import org.springframework.data.elasticsearch.client.ClientConfiguration;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchClients;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchClients.WebClientConfigurationCallback;
+import org.springframework.data.elasticsearch.client.elc.ElasticsearchConfiguration;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
@@ -22,7 +26,7 @@ import co.elastic.clients.transport.rest_client.RestClientTransport;
  */
 @Configuration
 @EnableElasticsearchRepositories(basePackages = "edu.kit.scc.dem.tuhl.mainpage.search")
-public class ElasticSearchConfiguration {
+public class ClientConfig extends ElasticsearchConfiguration{
   
   @Value("${elasticsearch.ip}")
   private String elasticsearchIP;
@@ -34,12 +38,19 @@ public class ElasticSearchConfiguration {
    *
    * @return ElasticsearchClient
    */
-  @Bean
-  public ElasticsearchClient elasticsearchClient() {
-    RestClient restClient = RestClient.builder(HttpHost.create(elasticsearchIP)).build();
-    ElasticsearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
+  //@Bean
+  //public ElasticsearchClient elasticsearchClient() {
+  //  RestClient restClient = RestClient.builder(HttpHost.create(elasticsearchIP)).build();
+  //  ElasticsearchTransport transport = new RestClientTransport(restClient, new JacksonJsonpMapper());
     
-    return new ElasticsearchClient(transport);
+  //  return new ElasticsearchClient(transport);
+  //}
+
+  @Override
+  public ClientConfiguration clientConfiguration() {
+    return ClientConfiguration.builder()
+      .connectedTo(elasticsearchIP + ":" + elasticsearchPort)
+     .build();
   }
   
   //@Bean
