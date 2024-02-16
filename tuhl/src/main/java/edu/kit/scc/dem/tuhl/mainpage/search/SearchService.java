@@ -6,13 +6,6 @@ import edu.kit.scc.dem.tuhl.model.Manuscript;
 import edu.kit.scc.dem.tuhl.model.filter.Filter;
 import java.util.ArrayList;
 import java.util.List;
-import org.elasticsearch.common.unit.Fuzziness;
-import org.elasticsearch.index.query.BoolQueryBuilder;
-import org.elasticsearch.index.query.MatchAllQueryBuilder;
-import org.elasticsearch.index.query.Operator;
-import org.elasticsearch.index.query.QueryBuilder;
-import org.elasticsearch.index.query.QueryBuilders;
-import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +16,8 @@ import org.springframework.data.elasticsearch.core.IndexOperations;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.Criteria;
+import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -81,64 +74,62 @@ public class SearchService implements ISearchService {
       logger.error("The index does not exist. Please try to build it first.");
     }
     
-    //Create the query builder
-    final NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
+    Criteria criteria;
     
     //Check if a search term is specified
-    QueryBuilder searchTermQueryBuilder;
     if (searchTerm != null && !searchTerm.trim().equals("")) {
       String escapedTerm = searchTerm.replace(":", "\\:");
+      criteria = Criteria.and();
+      Criteria subCriteria;
+
+      //Check if search term consists of multiple terms and create one criteria for earch
+      for (String singleSearchTerm : escapedTerm.split(" ")) {
+        logger.info("Searching for " + singleSearchTerm);
+        subCriteria = new Criteria("title").contains(singleSearchTerm)
+                            .or("publisher").contains(singleSearchTerm)
+                            .or("pages.pageNumber").contains(singleSearchTerm)
+                            .or("pages.resourceType").contains(singleSearchTerm)
+                            .or("pages.annotations.title").contains(singleSearchTerm)
+                            .or("pages.annotations.creators").contains(singleSearchTerm)
+                            .or("pages.annotations.color").contains(singleSearchTerm)
+                            .or("pages.annotations.tags.creators").contains(singleSearchTerm)
+                            .or("pages.annotations.tags.purpose").contains(singleSearchTerm)
+                            .or("pages.annotations.tags.value").contains(singleSearchTerm)
+                            .or("pages.annotations.textCards.creators").contains(singleSearchTerm)
+                            .or("pages.annotations.textCards.title").contains(singleSearchTerm)
+                            .or("pages.annotations.textCards.purpose").contains(singleSearchTerm)
+                            .or("pages.annotations.textCards.value").contains(singleSearchTerm);
       
-      //Add the search term as a query that matches against all fields
-      QueryStringQueryBuilder queryStringQueryBuilder =
-          QueryBuilders.queryStringQuery(
-              String.format("(%s) OR (*%s*) OR (%s)", escapedTerm, escapedTerm, escapedTerm))
-              .defaultOperator(Operator.AND)
-              .fuzziness(Fuzziness.ZERO)
-              .field("title")
-              .field("publisher")
-              .field("pages.pageNumber")
-              .field("pages.resourceType")
-              .field("pages.annotations.title")
-              .field("pages.annotations.creators", .3f)
-              .field("pages.annotations.color")
-              .field("pages.annotations.tags.creators", .3f)
-              .field("pages.annotations.tags.purpose")
-              .field("pages.annotations.tags.value")
-              .field("pages.annotations.textCards.creators", .3f)
-              .field("pages.annotations.textCards.title")
-              .field("pages.annotations.textCards.purpose")
-              .field("pages.annotations.textCards.value");
-      
-      if (searchTerm.matches("^[0-9]*$")) {
-        queryStringQueryBuilder.field("publicationYear");
+      if (singleSearchTerm.matches("^[0-9]*$")) {
+        subCriteria = subCriteria.or("publicationYear").contains(singleSearchTerm);
       }
-      searchTermQueryBuilder = queryStringQueryBuilder;
+
+      criteria = criteria.subCriteria(subCriteria);
+      }
     } else {
-      searchTermQueryBuilder = new MatchAllQueryBuilder();
+      //Generic criteria constructor to obtain all search results
+      criteria = new Criteria();
     }
-    BoolQueryBuilder boolQuery = new BoolQueryBuilder();
-    boolQuery.must(searchTermQueryBuilder);
+
     //Add the query of each filter to the query builder
     for (Filter f : filterService.getCurrentFilters()) {
-      if (f.getQuery() != null) {
-        boolQuery.must(f.getQuery().getQuery());
+      if (f.getCriteria() != null) {
+        criteria = criteria.and(f.getCriteria());
       }
     }
-    queryBuilder.withQuery(boolQuery);
 
-    if (sortAsc) {
-      queryBuilder.withSort(Sort.by(Sort.Direction.ASC, sortField));
-    } else {
-      queryBuilder.withSort(Sort.by(Sort.Direction.DESC, sortField));
-    }
-
-    NativeSearchQuery query = queryBuilder.build();
+    CriteriaQuery query = new CriteriaQuery(criteria);
     // pageable result objects starts counting at 0, tabular view at 1
     PageRequest page = PageRequest.of(pageNumber-1, pageSize);
     query.setPageable(page);
+
+    if (sortAsc) {
+      query.addSort(Sort.by(Sort.Direction.ASC, sortField));
+    } else {
+      query.addSort(Sort.by(Sort.Direction.DESC, sortField));
+    }
     
-    resultPagesCount = calculatePageCount(queryBuilder.build());
+    resultPagesCount = calculatePageCount(query);
     //Perform the search
     SearchHits<Manuscript> searchHits = elasticsearchOperations.search(query, Manuscript.class);
     List<Manuscript> searchResults = new ArrayList<>();
