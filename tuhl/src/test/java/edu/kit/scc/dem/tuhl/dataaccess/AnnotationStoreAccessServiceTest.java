@@ -12,6 +12,7 @@ import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.xml.sax.SAXException;
@@ -29,10 +30,13 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest (classes = AnnotationStoreAccessService.class)
 class AnnotationStoreAccessServiceTest {
   @Autowired
-   public IAnnotationStoreAccessService annotationStoreAccessService;
+  public AnnotationStoreAccessService annotationStoreAccessService;
+
+  @MockBean
+  private IRepositoryAccessService mockedRepositoryAccessService;
 
   @Mock
   public HttpResponse<String> mockedResponseBase;
@@ -164,6 +168,9 @@ class AnnotationStoreAccessServiceTest {
     Mockito.when(mockedResponsePage1.body()).thenReturn(readStringFromRelativePath("getAnnotationsByPageId/responsePage.xml"));
     Mockito.when(mockedAnnotation1.body()).thenReturn(annotation1.toString());
     Mockito.when(mockedAnnotation2.body()).thenReturn(annotation2.toString());
+
+    Mockito.when(mockedRepositoryAccessService.getBaseUrl()).thenReturn("http://samplerepo.edu/");
+    Mockito.when(mockedRepositoryAccessService.getStaticPath()).thenReturn("api/v1/dataresources/");
 
     Mockito.when(mockedRequestHelper
         .get("http://sampleannoserver-sparql.edu/wap/sparql?query=PREFIX+oa%3A+%3Chttp%3A%2F%2Fwww.w3.org%2Fns%" +

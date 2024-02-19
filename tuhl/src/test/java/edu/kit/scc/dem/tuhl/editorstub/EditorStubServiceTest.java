@@ -3,6 +3,8 @@ package edu.kit.scc.dem.tuhl.editorstub;
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
 import edu.kit.scc.dem.tuhl.assistance.User;
+import edu.kit.scc.dem.tuhl.dataaccess.IAnnotationStoreAccessService;
+import edu.kit.scc.dem.tuhl.dataaccess.IRepositoryAccessService;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
@@ -29,7 +31,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
+@SpringBootTest(classes = EditorStubService.class)
 class EditorStubServiceTest {
 
   @Autowired
@@ -40,6 +42,12 @@ class EditorStubServiceTest {
 
   @MockBean
   private ISearchIndexService mockedSearchIndexService;
+
+  @MockBean
+  private IRepositoryAccessService mockRepositoryAccessService;
+
+  @MockBean
+  private IAnnotationStoreAccessService mockAnnotationStoreAccessService;
 
   @Test
   void addAnnotation1() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {

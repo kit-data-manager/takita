@@ -22,7 +22,7 @@ import java.nio.file.Path;
 import java.text.ParseException;
 import java.util.*;
 
-@SpringBootTest
+@SpringBootTest(classes = RepositoryAccessService.class)
 class RepositoryAccessServiceTest {
   
   @Mock

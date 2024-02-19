@@ -38,7 +38,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 
-@SpringBootTest
+@SpringBootTest(classes = SearchIndexService.class)
 class SearchIndexServiceTest {
   @Autowired
   private ISearchIndexService searchIndexService;
