@@ -1,6 +1,5 @@
 package edu.kit.scc.dem.tuhl.editorstub;
 
-import com.google.gson.Gson;
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
 import edu.kit.scc.dem.tuhl.dataaccess.AnnotationConverter;
@@ -13,9 +12,7 @@ import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import java.io.IOException;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;

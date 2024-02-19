@@ -10,7 +10,6 @@ import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import java.io.IOException;
 
 import edu.kit.scc.dem.tuhl.model.page.Page;
-import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 

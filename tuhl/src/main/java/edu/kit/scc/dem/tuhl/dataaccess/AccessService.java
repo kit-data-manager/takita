@@ -4,7 +4,6 @@ import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
-import edu.kit.scc.dem.tuhl.model.page.ImagePage;
 import edu.kit.scc.dem.tuhl.model.page.Page;
 import java.io.IOException;
 import java.text.ParseException;
@@ -125,7 +124,6 @@ public class AccessService implements IAccessService {
       if (!page.getAnnotations().contains(annotation)) {
         logger.debug("Number of annotations on page before {}", page.getAnnotations().size());
         logger.info("Adding new annotation to page object {}", page.getId());
-        String changedPageID = page.getId();
         page.addAnnotation(annotation);
         logger.debug("Number of annotations on page after {}", page.getAnnotations().size());
       }
