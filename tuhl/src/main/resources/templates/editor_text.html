@@ -167,6 +167,35 @@
         <div class="col-2" th:text="#{col_name.lastModified}">"></div>
         <div class="col-4" th:text="${currentManuscript.lastModified}"></div>
     </div>
+    <!-- metadata obtained from manuscript_metadata.xml-->
+    <div class="row is-full-width">
+        <div class="col-1"></div>
+        <div class="col-2" th:text="#{col_name.author}"></div>
+        <div class="col-2" th:text="${currentManuscript.teiAuthor} ?: 'UNKNOWN'"></div>
+        <div class="col-1"></div>
+        <div class="col-2" th:text="#{col_name.manuscriptCreationDate}"></div>
+        <div class="col-2" th:text="${currentManuscript.teiManuscriptCreationDateString} ?: 'UNKNOWN'">"></div>
+    </div>
+    <div class="row is-full-width" th:if="${currentManuscript.teiTitle}">
+        <div class="col-1"></div>
+        <div class="col-2" th:text="#{col_name.title}"></div>
+        <div class="col-7" th:text="${currentManuscript.teiTitle}"></div>
+    </div>
+    <div class="row is-full-width" th:if="${currentManuscript.teiTitleSeries}">
+        <div class="col-1"></div>
+        <div class="col-2" th:text="#{col_name.title}"></div>
+        <div class="col-7" th:text="${currentManuscript.teiTitleSeries}"></div>
+    </div>
+    <div class="row is-full-width" th:if="${currentManuscript.teiTitleMonographic}">
+        <div class="col-1"></div>
+        <div class="col-2" th:text="#{col_name.title}"></div>
+        <div class="col-7" th:text="${currentManuscript.teiTitleMonographic}"></div>
+    </div>
+    <div class="row is-full-width" th:if="${currentManuscript.teiTitleAnalytic}">
+        <div class="col-1"></div>
+        <div class="col-2" th:text="#{col_name.title}"></div>
+        <div class="col-7" th:text="${currentManuscript.teiTitleAnalytic}"></div>
+    </div>
 
 	<div class="row is-full-width"><div class="col-12"></div></div>
 	<div id="textNavBar" class="textNavBar row is-full-width is-hidden">
@@ -413,11 +442,6 @@
             }
         });
     </script>
-    
-	<!-- chapter navigation -->
-   	<script th:inline="javascript">        		
-	
-   	</script>
 
 	<script th:src="@{/js/raphael.js}"></script>
     <script th:src="@{/js/ajv7.js}"></script>
@@ -465,7 +489,9 @@
         window.CURRENTPAGEURL = /*[[${currentPage.getResourceUrl()}]]*/ "default.url";
         // storing currentPageId as its needed for getting the updated annoJson
         window.CURRENTPAGEID = /*[[${currentPage.getId()}]]*/ "default.id";
-		var linkToResource = window.CONTEXTPATH + "editor_rest/content/" + window.CURRENTPAGEID + "/" + [[${fileName}]];
+        // storing currentManuscriptId as its needed for getting the metadata
+        window.CURRENTMANUSCRIPTID = /*[[${currentManuscript.id}]]*/ "default.id";
+        var linkToResource = window.CONTEXTPATH + "editor_rest/content/" + window.CURRENTPAGEID + "/" + [[${fileName}]];
 
 	    // adding the TEI file to the DOM
 	    var CETEIcean = new CETEI();

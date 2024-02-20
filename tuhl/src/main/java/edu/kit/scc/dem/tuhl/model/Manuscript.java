@@ -45,6 +45,28 @@ public class Manuscript {
   
   private boolean hasAlgorithmAnnotations;
   
+  // variables obtained from manuscript_metadata.xml
+  // for the various title levels consult:
+  // https://tei-c.org/release/doc/tei-p5-doc/en/html/ref-title.html
+  private String teiTitleSeries;
+  
+  private String teiTitleMonographic;
+  
+  private String teiTitleAnalytic;
+  
+  // default title used when no title levels are used
+  private String teiTitle;
+  
+  private String teiAuthor;
+  
+  // TODO: model the creation dates as a lot of texts don't have an exact
+  // creation date
+  private Date teiManuscriptCreationDate;
+  
+  // as texts might have various dates when they were created/published
+  // these information is stored as a string
+  private String teiManuscriptCreationDateString;
+  
   /**
    * Constructor for Manuscript.
    *
@@ -199,4 +221,132 @@ public class Manuscript {
   public void setNoPages(int noPages) {
     this.noPages = noPages;
   }
+  
+  /**
+   * Gets series title of manuscript.
+   *
+   * @return teiTitle
+   */
+  public String getTeiTitleSeries() {
+    return teiTitleSeries;
+  }
+  
+  /**
+   * Sets series title of manuscript.
+   *
+   * @return teiTitle
+   */
+  public void setTeiTitleSeries(String teiTitleSeries) {
+    this.teiTitleSeries =  teiTitleSeries;
+  }
+  
+  /**
+   * Gets monographic title of manuscript.
+   *
+   * @return teiTitle
+   */
+  public String getTeiTitleMonographic() {
+    return teiTitleMonographic;
+  }
+  
+  /**
+   * Sets monographic title of manuscript.
+   *
+   * @return teiTitle
+   */
+  public void setTeiTitleMonographic(String teiTitleMonographic) {
+    this.teiTitleMonographic =  teiTitleMonographic;
+  }
+  
+  /**
+   * Gets analytic title of manuscript.
+   *
+   * @return teiTitle
+   */
+  public String getTeiTitleAnalytic() {
+    return teiTitleAnalytic;
+  }
+  
+  /**
+   * Sets analytic title of manuscript.
+   *
+   * @return teiTitle
+   */
+  public void setTeiTitleAnalytic(String teiTitleAnalytic) {
+    this.teiTitleAnalytic =  teiTitleAnalytic;
+  }
+  
+  /**
+   * Gets default title of manuscript.
+   *
+   * @return teiTitle
+   */
+  public String getTeiTitle() {
+	return teiTitle;
+  }
+	
+  /**
+   * Sets default title of manuscript.
+   *
+   * @return teiTitle
+   */
+  public void setTeiTitle(String teiTitle) {
+	this.teiTitle = teiTitle;
+  }
+
+/**
+   * Gets author of manuscript.
+   *
+   * @return teiTitle
+   */
+  public String getTeiAuthor() {
+    return teiAuthor;
+  }
+  
+  /**
+   * Sets author of manuscript.
+   *
+   * @return teiTitle
+   */
+  public void setTeiAuthor(String teiAuthor) {
+    this.teiAuthor =  teiAuthor;
+  }
+  
+  /**
+   * Gets creation date of manuscript.
+   *
+   * @return teiTitle
+   */
+  public Date setTeiManuscriptCreationDate() {
+    return teiManuscriptCreationDate;
+  }
+  
+  /**
+   * Sets creation date of manuscript.
+   *
+   * @return teiTitle
+   */
+  public void getTeiManuscriptCreationDate(Date teiManuscriptCreationDate) {
+    this.teiManuscriptCreationDate =  teiManuscriptCreationDate;
+  }
+  
+  /**
+   * Gets creation date string of manuscript.
+   *
+   * @return teiTitle
+   */
+  public String getTeiManuscriptCreationDateString() {
+    return teiManuscriptCreationDateString;
+  }
+  
+  /**
+   * Sets creation date string of manuscript.
+   *
+   * @return teiTitle
+   */
+  public void setTeiManuscriptCreationDateString(String teiManuscriptCreationDateString) {
+    this.teiManuscriptCreationDateString =  teiManuscriptCreationDateString;
+  }
 }
+
+	

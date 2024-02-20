@@ -10,13 +10,28 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
 
 /**
  * Class responsible for converting manuscripts from JSON to Manuscript Object.
@@ -97,6 +112,9 @@ class ManuscriptConverter {
     }
 
     manuscript.setPages(pages);
+    
+    addTeiMetadata(manuscript);
+    
     return manuscript;
   }
 
@@ -129,6 +147,256 @@ class ManuscriptConverter {
     return date;
   }
 
+  /*
+   * Fetch manuscript_metadata.xml and extract metadata from it. Then add the metadata
+   * to the manuscript.
+   */
+  private void addTeiMetadata(Manuscript manuscript) {
+	  
+	  try {
+		  
+		  String teiString = repositoryAccessService.getXmlByManuscriptId(manuscript.getId());
+		  // parsing the string into a document
+		  DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		  factory.setNamespaceAware(true);
+		  DocumentBuilder builder = factory.newDocumentBuilder();
+		  Document teiDocument = builder.parse(new InputSource(new StringReader(teiString)));
+
+		  // defining the namespaces to be used by the following code
+		  // see: https://stackoverflow.com/questions/13702637/xpath-with-namespace-in-java
+		  // and https://web.archive.org/web/20070328212209/http://blog.davber.com/2006/09/17/xpath-with-namespaces-in-java/
+          // We map the prefixes to URIs
+          NamespaceContext namespaceContext = new NamespaceContext() {
+              public String getNamespaceURI(String prefix) {
+                  String uri;
+                  if (prefix.equals("tei")) {
+                      uri = "http://www.tei-c.org/ns/1.0";
+                  } else if (prefix.equals("xi")) {
+                      uri = "http://www.w3.org/2001/XInclude";
+                  } else {
+                      uri = null;
+                  }
+                  return uri;
+              }
+               
+              // Dummy implementation - not used!
+              public Iterator getPrefixes(String val) {
+                  return null;
+              }
+             
+              // Dummy implemenation - not used!
+              public String getPrefix(String uri) {
+                  return null;
+              }
+          };
+
+          // creating the xPath object
+          XPath xPath = XPathFactory.newInstance().newXPath();
+		  xPath.setNamespaceContext(namespaceContext);
+
+		  // adding the titles
+		  // xPath query string to get the title of the text
+		  String titleQuery = "//tei:teiHeader/tei:fileDesc[1]/tei:titleStmt[1]/tei:title";
+		  NodeList titles = (NodeList) xPath.compile(titleQuery)
+				  .evaluate(teiDocument.getDocumentElement(), XPathConstants.NODESET);
+		  if (titles.getLength() > 0) {
+			  addTeiTitles(manuscript, titles);
+		  }
+		  	  
+		  // adding the author names
+		  // xPath for getting the author of the text
+		  String authorsQuery = "//tei:teiHeader/tei:fileDesc[1]/tei:titleStmt[1]/tei:author";
+		  NodeList authors = (NodeList) xPath.compile(authorsQuery)
+				  .evaluate(teiDocument.getDocumentElement(), XPathConstants.NODESET);
+		  if (authors.getLength() > 0) {
+			  addTeiAuthor(manuscript, authors);
+		  }
+		  
+
+		  // adding the dates
+		  // xPath for getting the creation dates of the text
+		  String datesQuery = "//tei:teiHeader[1]/tei:profileDesc[1]/tei:creation[1]/tei:date[not(@type=\"file\")]";
+		  NodeList dates = (NodeList) xPath.compile(datesQuery)
+				  .evaluate(teiDocument.getDocumentElement(), XPathConstants.NODESET);
+		  if (dates.getLength() > 0) {
+			  addTeiDate(manuscript, dates);
+		  }
+
+	  } catch (Exception e) {
+		  System.out.println("Could not convert manuscript metadata for"
+		  		+ " elastic index for manuscript: " + manuscript.getId());
+		  e.printStackTrace();
+	  }
+  }
+  
+  /*
+   * Adds the titles obtained from the metadata tei-xml-file to a manuscript.
+   */
+  private void addTeiTitles(Manuscript manuscript, NodeList titles) {
+	  
+	  
+	  List<String> titleSeries = new ArrayList<String>();
+	  List<String> titleMonographic = new ArrayList<String>();
+	  List<String> titleAnalytic = new ArrayList<String>();
+	  List<String> titleDefault = new ArrayList<String>();
+	  
+	  for (int i = 0; i < titles.getLength(); i++) {
+		  System.out.println(titles.item(i).getTextContent());
+		  if (titles.item(i).getAttributes().getNamedItem("level") != null ||
+				  titles.item(i).getAttributes().getNamedItem("type") != null) {
+			  // getting the type attribute of the title (title[@type])
+			  Node titleType = titles.item(i).getAttributes().getNamedItem("type");
+			  
+			  // getting the various titles (series/monographic/analytic)
+			  // based on the value of title[@level]
+			  switch(titles.item(i).getAttributes().getNamedItem("level").getNodeValue().toString()) {
+			  	case "s":
+			  		if (titleType == null) {
+						titleSeries.add(0, titles.item(i).getTextContent());
+					} else {
+						if (titleType.getNodeValue().toString().contentEquals("main")) {
+							titleSeries.add(0, titles.item(i).getTextContent());
+						}
+						if (titleType.getNodeValue().toString().contentEquals("alt")) {
+							if (titleSeries.isEmpty()) {
+								titleSeries.add(titles.item(i).getTextContent());
+							} else {
+								titleSeries.add(1, titles.item(i).getTextContent());
+							}
+						}
+					}
+			  		break;
+			  	case "m":
+			  		if (titleType == null) {
+			  			titleMonographic.add(0, titles.item(i).getTextContent());
+					} else {
+						if (titleType.getNodeValue().toString().contentEquals("main")) {
+							titleMonographic.add(0, titles.item(i).getTextContent());
+						}
+						if (titleType.getNodeValue().toString().contentEquals("alt")) {
+							if (titleMonographic.isEmpty()) {
+								titleMonographic.add(titles.item(i).getTextContent());
+							} else {
+								titleMonographic.add(1, titles.item(i).getTextContent());
+							}
+						}
+					}
+			  		break;
+			  	case "a":				  		
+			  		if (titleType == null) {
+			  			titleAnalytic.add(0, titles.item(i).getTextContent());
+					} else {
+						if (titleType.getNodeValue().toString().contentEquals("main")) {
+							titleAnalytic.add(0, titles.item(i).getTextContent());
+						}
+						if (titleType.getNodeValue().toString().contentEquals("alt")) {
+							if (titleAnalytic.isEmpty()) {
+								titleAnalytic.add(titles.item(i).getTextContent());
+							} else {
+								titleAnalytic.add(1, titles.item(i).getTextContent());
+							}
+						}
+					}
+			  		break;
+			  }
+		  } else {
+			  System.out.println("##########################torioll");
+			  titleDefault.add(titles.item(i).getTextContent());
+		  }
+
+	  }
+	  
+	  if (!titleSeries.isEmpty()) {
+		  manuscript.setTeiTitleSeries(concatList(titleSeries));
+	  }
+	  if (!titleMonographic.isEmpty()) {
+		  manuscript.setTeiTitleMonographic(concatList(titleMonographic));
+	  }
+	  if (!titleAnalytic.isEmpty()) {
+		  manuscript.setTeiTitleAnalytic(concatList(titleAnalytic));
+	  }
+	  if (!titleDefault.isEmpty()) {
+		  manuscript.setTeiTitle(String.join(". ", titleDefault));
+	  }
+  }
+  
+  /*
+   * Adds the author obtained from the metadata tei-xml-file to a manuscript.
+   */
+  private void addTeiAuthor(Manuscript manuscript, NodeList authors) {
+	  
+	  List<String> authorList = new ArrayList<String>();
+	  
+	  for (int i = 0; i < authors.getLength(); i++) {
+		  NodeList persNames = authors.item(i).getChildNodes();
+		  
+		  // removing all the text nodes
+		  List<Node> cleanedPersNames = new ArrayList<Node>();
+		  for (int l = 0; l < persNames.getLength(); l++) {
+			  if (persNames.item(l).getNodeType() != 3) {
+				  cleanedPersNames.add(persNames.item(l));
+			  }
+		  }
+		  
+		  // getting the persNames text content and adding them to the
+		  // list of authors
+		  List<String> persNamesList = new ArrayList<String>();
+		  for (int l = 0; l < cleanedPersNames.size(); l++) {
+			  persNamesList.add(cleanedPersNames.get(l).getTextContent());
+		  }
+		  if (persNamesList.size() > 1) {
+			  String concatedPersNames = concatList(persNamesList);
+			  authorList.add(concatedPersNames);
+		  } else {
+			  authorList.add(persNamesList.get(0));
+		  }
+	  }
+	  
+	  if(!authorList.isEmpty()) {
+		  manuscript.setTeiAuthor(String.join(", ", authorList));
+	  }
+  }
+  
+  /*
+   * Adds the date obtained from the metadata tei-xml-file to a manuscript.
+   */
+  private void addTeiDate(Manuscript manuscript, NodeList dates) {
+	  List<String> datesList = new ArrayList<String>();
+	  for (int i = 0; i < dates.getLength(); i++) {
+		  // getting the date of manuscript creation
+		  if (dates.item(i).getAttributes().getNamedItem("type") != null) {
+			  if (dates.item(i).getAttributes().getNamedItem("type")
+					  .getNodeValue().toString().contentEquals("manuscript")) {
+				  // TODO: create proper dates, after dates have been modelled
+				  //Date creationDate = new Date();
+				  //manuscript.setTeiManuscriptCreationDate(creationDate);
+				  datesList.add(0, dates.item(i).getTextContent() + " (creation)");
+			  // getting all other dates connected to the creation of the text
+			  } else {
+				  datesList.add(dates.item(i).getTextContent() + " (" +
+						  dates.item(i).getAttributes().getNamedItem("type")
+						  .getNodeValue().toString() + ")");
+			  }
+		  } else {
+			  datesList.add(dates.item(i).getTextContent());
+		  }
+	  }
+	  manuscript.setTeiManuscriptCreationDateString(String.join(", " , datesList));
+  }
+  
+  /**
+   * Helper function to concatenate a list into a string, where all entries apart from
+   * the first are surrounded by brackets.
+  */
+  private String concatList(List list) {
+	  String result = list.get(0).toString();
+	  list.remove(0);
+	  if (list.size() >= 1) {
+		  result = result + " (" + String.join("; ", list) + ")";
+	  }
+	  return result;
+  }
+  
   /**
    * Builds the page with the accompanying annotations from sortedAnnotations.
    * If sortedAnnotations is null the annotations will be obtained by getAnnotationsByPage().
