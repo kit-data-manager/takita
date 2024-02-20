@@ -7,7 +7,7 @@ const POSSIBLE_TEXT_PART_TYPES = ['chapter', 'section'];
  * callbacks for the existing UI elements which switch between
  * the different document parts.
  */
-export function initializeNavBar($navBar) {
+export function initializeNavigation($navBar) {
   //console.log('initializing nav bar');
   // Text properties
   const textPartType = getDivisionType();
@@ -33,25 +33,26 @@ export function initializeNavBar($navBar) {
     // Fill select element with options
     textPartLabels.map(createOption).forEach((option) => $chapterSelect.appendChild(option));
 
-    // Keep track of the label of the currently displayed text part. Use the
-    // first part as default and display it.
-    let currentTextPartLabel = textPartLabels[0];
+    // Keep track of the label of the currently displayed text part. Use the either a pre-selected
+    // text part, or if none is selected use the first part as default and display it.
+    const preselectedAnno = getTargetElement();
+    const defaultTextPart = getTargetDivision(preselectedAnno, textPartType);
+    let currentTextPartLabel = defaultTextPart ? getLabel(defaultTextPart) : textPartLabels[0];
     selectTextPart(currentTextPartLabel, textParts);
-    updateButtons(currentTextPartLabel, textPartLabels, $prevButton, $nextButton);
+    updateButtons(currentTextPartLabel, textPartLabels, $prevButton, $nextButton, $chapterSelect);
 
     // Define button callbacks
     const onClickGoTo = (_ev) => {
       currentTextPartLabel = $chapterSelect.value;
       selectTextPart(currentTextPartLabel, textParts);
-      updateButtons(currentTextPartLabel, textPartLabels, $prevButton, $nextButton);
+      updateButtons(currentTextPartLabel, textPartLabels, $prevButton, $nextButton, $chapterSelect);
     };
     const onClickPrev = (_ev) => {
       const currentIdx = textPartLabels.indexOf(currentTextPartLabel);
       if (currentIdx > 0) {
         currentTextPartLabel = textPartLabels[currentIdx - 1];
         selectTextPart(currentTextPartLabel, textParts);
-        updateButtons(currentTextPartLabel, textPartLabels, $prevButton, $nextButton);
-        $chapterSelect.value = currentTextPartLabel;
+        updateButtons(currentTextPartLabel, textPartLabels, $prevButton, $nextButton, $chapterSelect);
       }
     };
     const onClickNext = (_ev) => {
@@ -59,8 +60,7 @@ export function initializeNavBar($navBar) {
       if (currentIdx < textPartLabels.length - 1) {
         currentTextPartLabel = textPartLabels[currentIdx + 1];
         selectTextPart(currentTextPartLabel, textParts);
-        updateButtons(currentTextPartLabel, textPartLabels, $prevButton, $nextButton);
-        $chapterSelect.value = currentTextPartLabel;
+        updateButtons(currentTextPartLabel, textPartLabels, $prevButton, $nextButton, $chapterSelect);
       }
     };
 
@@ -70,8 +70,58 @@ export function initializeNavBar($navBar) {
     $nextButton.addEventListener('click', onClickNext);
 
     // After everything is set up, make navbar visible
-    console.log('make visible');
+    console.log('make navbar visible');
     $navBar.classList.remove('is-hidden');
+
+    if (preselectedAnno !== undefined) {
+      setTimeout(() => {
+        preselectedAnno.scrollIntoView(true, {
+          behavior: 'smooth',
+        });
+      }, 100);
+    }
+  }
+}
+
+/**
+ * If an annotation is pre-selected via URL param, retrieve its Element in the text.
+ * @returns {Element}
+ */
+function getTargetElement() {
+  const searchParams = new URL(window.location).searchParams;
+  if (searchParams.size > 0 && searchParams.get('fragment')) {
+    return document.getElementById(searchParams.get('fragment'));
+  }
+  return undefined;
+}
+
+/**
+ * If an annotation is pre-selected, retrieve the division where it is located.
+ */
+function getTargetDivision(targetElement, divisionType) {
+  if (targetElement) {
+    const closestDivision = (node) => {
+      if (node?.attributes?.type?.value === divisionType) {
+        return node;
+      }
+      return closestDivision(node.parentNode);
+    };
+
+    const targetDivision = closestDivision(targetElement);
+    return targetDivision;
+  }
+  return undefined;
+}
+
+/**
+ * Get the ID of a pre-selected annotation (if any).
+ */
+export function getTargetAnnotationId() {
+  const searchParams = new URL(window.location).searchParams;
+  if (searchParams.size > 0 && searchParams.get('annotationId')) {
+    return searchParams.get('annotationId');
+  } else {
+    return undefined;
   }
 }
 
@@ -107,9 +157,10 @@ function selectTextPart(selectedLabel, allTextParts) {
  * @param {HTMLElement} $prev button which selects previous text part
  * @param {HTMLElement} $next button which selects next text part
  */
-function updateButtons(selectedLabel, allTextPartLabels, $prev, $next) {
+function updateButtons(selectedLabel, allTextPartLabels, $prev, $next, $chapterSelect) {
   $prev.disabled = allTextPartLabels.indexOf(selectedLabel) === 0;
   $next.disabled = allTextPartLabels.indexOf(selectedLabel) === allTextPartLabels.length - 1;
+  $chapterSelect.value = selectedLabel;
 }
 
 /**

@@ -1,1 +1,1 @@
-export { initializeNavBar } from './navigation';
+export { getTargetAnnotationId, initializeNavigation } from './navigation';
