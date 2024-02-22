@@ -123,6 +123,7 @@ public class SearchService implements ISearchService {
               .fuzziness(Fuzziness.ZERO)
               .field("title")
               .field("publisher")
+              .field("description")
               .field("pages.pageNumber")
               .field("pages.resourceType")
               .field("pages.annotations.title")
@@ -288,6 +289,7 @@ public class SearchService implements ISearchService {
           (String) manuscriptMap.get("publisher"),
           (int) manuscriptMap.get("publicationYear"));
       
+      m.setDescription((String) manuscriptMap.get("description"));
       m.setLastModified(new Date((Long) manuscriptMap.get("lastModified")));
       m.setNoPages((int) manuscriptMap.get("noPages"));
       m.setHasAlgorithmAnnotations((boolean) manuscriptMap.get("hasAlgorithmAnnotations"));

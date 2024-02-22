@@ -214,6 +214,7 @@ public class TableViewService implements IContentViewService {
       JSONObject row = new JSONObject();
       row.put("id", manuscript.getId());
       row.put("title", manuscript.getTitle());
+      row.put("description", manuscript.getDescription());
       row.put("publisher", manuscript.getPublisher());
       row.put("created", manuscript.getCreated());
       row.put("publicationYear", manuscript.getPublicationYear());
