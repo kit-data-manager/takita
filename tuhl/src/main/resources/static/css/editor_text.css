@@ -324,6 +324,27 @@ tei-quote::after {
 	content: "«";
 }
 
+/* text highlights */
+*[rend="sup"] {
+	font-size: 70%;
+	vertical-align: super;
+}
+
+*[rend="superscript"] {
+	font-size: 70%;
+	vertical-align: super;
+}
+
+*[rend="sub"] {
+	font-size: 70%;
+	vertical-align: sub;
+}
+
+*[rend="subscript"] {
+	font-size: 70%;
+	vertical-align: sub;
+}
+
 /* editorial additions (Leiden-style)
 	see https://git.noc.ruhr-uni-bochum.de/sfb1475-inf/subproject-data/-/issues/14#note_116732 */
 tei-supplied::before {
@@ -374,6 +395,16 @@ tei-gap[reason="illegible"]::after {
 tei-supplied > tei-gap::after {
 	color: grey;
     content: "…";
+}
+
+/* titles added by an agent, who is not the author*/
+tei-head[resp] {
+	color: grey;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	  
 }
 
 /* poem specifics*/
