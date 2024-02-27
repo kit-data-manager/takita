@@ -48,24 +48,18 @@ public class Manuscript {
   // variables obtained from manuscript_metadata.xml
   // for the various title levels consult:
   // https://tei-c.org/release/doc/tei-p5-doc/en/html/ref-title.html
-  private String teiTitleSeries;
+  private List<TeiTitle> teiTitleSeries;
   
-  private String teiTitleMonographic;
+  private List<TeiTitle> teiTitleMonographic;
   
-  private String teiTitleAnalytic;
+  private List<TeiTitle> teiTitleAnalytic;
   
   // default title used when no title levels are used
-  private String teiTitle;
+  private List<TeiTitle> teiTitle;
   
-  private String teiAuthor;
+  private List<String> teiAuthor;
   
-  // TODO: model the creation dates as a lot of texts don't have an exact
-  // creation date
-  private Date teiManuscriptCreationDate;
-  
-  // as texts might have various dates when they were created/published
-  // these information is stored as a string
-  private String teiManuscriptCreationDateString;
+  private List<TeiDate> teiManuscriptCreationDate;
   
   /**
    * Constructor for Manuscript.
@@ -227,16 +221,16 @@ public class Manuscript {
    *
    * @return teiTitle
    */
-  public String getTeiTitleSeries() {
+  public List<TeiTitle> getTeiTitleSeries() {
     return teiTitleSeries;
   }
   
   /**
    * Sets series title of manuscript.
    *
-   * @return teiTitle
+   * @param teiTitle
    */
-  public void setTeiTitleSeries(String teiTitleSeries) {
+  public void setTeiTitleSeries(List<TeiTitle> teiTitleSeries) {
     this.teiTitleSeries =  teiTitleSeries;
   }
   
@@ -245,16 +239,16 @@ public class Manuscript {
    *
    * @return teiTitle
    */
-  public String getTeiTitleMonographic() {
+  public List<TeiTitle> getTeiTitleMonographic() {
     return teiTitleMonographic;
   }
   
   /**
    * Sets monographic title of manuscript.
    *
-   * @return teiTitle
+   * @param teiTitle
    */
-  public void setTeiTitleMonographic(String teiTitleMonographic) {
+  public void setTeiTitleMonographic(List<TeiTitle> teiTitleMonographic) {
     this.teiTitleMonographic =  teiTitleMonographic;
   }
   
@@ -263,16 +257,16 @@ public class Manuscript {
    *
    * @return teiTitle
    */
-  public String getTeiTitleAnalytic() {
+  public List<TeiTitle> getTeiTitleAnalytic() {
     return teiTitleAnalytic;
   }
   
   /**
    * Sets analytic title of manuscript.
    *
-   * @return teiTitle
+   * @param teiTitle
    */
-  public void setTeiTitleAnalytic(String teiTitleAnalytic) {
+  public void setTeiTitleAnalytic(List<TeiTitle> teiTitleAnalytic) {
     this.teiTitleAnalytic =  teiTitleAnalytic;
   }
   
@@ -281,16 +275,16 @@ public class Manuscript {
    *
    * @return teiTitle
    */
-  public String getTeiTitle() {
+  public List<TeiTitle> getTeiTitle() {
 	return teiTitle;
   }
 	
   /**
    * Sets default title of manuscript.
    *
-   * @return teiTitle
+   * @param teiTitle
    */
-  public void setTeiTitle(String teiTitle) {
+  public void setTeiTitle(List<TeiTitle> teiTitle) {
 	this.teiTitle = teiTitle;
   }
 
@@ -299,16 +293,16 @@ public class Manuscript {
    *
    * @return teiTitle
    */
-  public String getTeiAuthor() {
+  public List<String> getTeiAuthor() {
     return teiAuthor;
   }
   
   /**
    * Sets author of manuscript.
    *
-   * @return teiTitle
+   * @param teiTitle
    */
-  public void setTeiAuthor(String teiAuthor) {
+  public void setTeiAuthor(List<String> teiAuthor) {
     this.teiAuthor =  teiAuthor;
   }
   
@@ -317,35 +311,69 @@ public class Manuscript {
    *
    * @return teiTitle
    */
-  public Date setTeiManuscriptCreationDate() {
+  public List<TeiDate> getTeiManuscriptCreationDate() {
     return teiManuscriptCreationDate;
   }
   
   /**
    * Sets creation date of manuscript.
    *
-   * @return teiTitle
+   * @param teiTitle
    */
-  public void getTeiManuscriptCreationDate(Date teiManuscriptCreationDate) {
+  public void setTeiManuscriptCreationDate(List<TeiDate> teiManuscriptCreationDate) {
     this.teiManuscriptCreationDate =  teiManuscriptCreationDate;
   }
   
+  // the following toString()-functions are called by the editor thymeleaf templates
   /**
-   * Gets creation date string of manuscript.
-   *
-   * @return teiTitle
+   * Concatenate a list of titles into a string, where all entries apart from
+   * the first one are surrounded by brackets.
+   * 
+   * @param List of titles to be concatenated
+   * @return concatenated List as String
    */
-  public String getTeiManuscriptCreationDateString() {
-    return teiManuscriptCreationDateString;
+  public String titleListToString(List<TeiTitle> titleList) {
+	  String result = titleList.get(0).getContent();
+	  titleList.remove(0);
+
+	  if (titleList.size() >= 1) {
+		  List<String> titleContents = new ArrayList();
+		  // storing the titles to be able to join them
+		  for (TeiTitle title : titleList) {
+			  titleContents.add(title.getContent());
+		  }
+		  result = result + " (" + String.join("; ", titleContents) + ")";
+	  }
+	  return result;
   }
   
   /**
-   * Sets creation date string of manuscript.
-   *
-   * @return teiTitle
+   * Concatenate a list of authors into a string
+   * 
+   * @param List of Strings to be concatenated
+   * @return concatenated List as String
    */
-  public void setTeiManuscriptCreationDateString(String teiManuscriptCreationDateString) {
-    this.teiManuscriptCreationDateString =  teiManuscriptCreationDateString;
+  public String authorListToString(List<String> authorList) {
+	  return String.join(", ", authorList);
+  }
+  
+  /**
+   * Concatenate a list of dates into a string
+   * 
+   * @param List of dates to be concatenated
+   * @return concatenated List as String
+   */
+  public String dateListToString(List<TeiDate> dateList) {
+	  List<String> results = new ArrayList<String>();
+	  for (TeiDate date : dateList) {
+		  String dateString = date.getContent();
+		  if (date.getType() != null) {
+			  dateString = dateString + " (" + date.getType() + ")";
+		  }
+		  results.add(dateString);
+		  
+	  }
+	  return String.join(", ", results);
   }
 }
 

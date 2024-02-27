@@ -2,6 +2,8 @@ package edu.kit.scc.dem.tuhl.dataaccess;
 
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
+import edu.kit.scc.dem.tuhl.model.TeiDate;
+import edu.kit.scc.dem.tuhl.model.TeiTitle;
 import edu.kit.scc.dem.tuhl.model.page.ImagePage;
 import edu.kit.scc.dem.tuhl.model.page.Page;
 import edu.kit.scc.dem.tuhl.model.page.TextPage;
@@ -12,6 +14,7 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 import java.io.IOException;
 import java.io.StringReader;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -27,6 +30,7 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -234,89 +238,56 @@ class ManuscriptConverter {
    */
   private void addTeiTitles(Manuscript manuscript, NodeList titles) {
 	  
-	  
-	  List<String> titleSeries = new ArrayList<String>();
-	  List<String> titleMonographic = new ArrayList<String>();
-	  List<String> titleAnalytic = new ArrayList<String>();
-	  List<String> titleDefault = new ArrayList<String>();
+	  List<TeiTitle> titlesSeries = new ArrayList<TeiTitle>();
+	  List<TeiTitle> titlesMonographic = new ArrayList<TeiTitle>();
+	  List<TeiTitle> titlesAnalytic = new ArrayList<TeiTitle>();
+	  List<TeiTitle> titlesDefault = new ArrayList<TeiTitle>();
 	  
 	  for (int i = 0; i < titles.getLength(); i++) {
-		  System.out.println(titles.item(i).getTextContent());
-		  if (titles.item(i).getAttributes().getNamedItem("level") != null ||
-				  titles.item(i).getAttributes().getNamedItem("type") != null) {
-			  // getting the type attribute of the title (title[@type])
-			  Node titleType = titles.item(i).getAttributes().getNamedItem("type");
+		  TeiTitle title = new TeiTitle(titles.item(i).getTextContent());
+		  
+		  // getting the values of the attribute of the title (title[@attribute])
+		  if (titles.item(i).getAttributes().getNamedItem("type") != null) {
+			  title.setType(titles.item(i).getAttributes().getNamedItem("type").getNodeValue());
+		  }
+		  
+		  if (titles.item(i).getAttributes().getNamedItem("xml:lang") != null) {
+			  title.setLevel(titles.item(i).getAttributes().getNamedItem("xml:lang").getNodeValue());
+		  }
+		  
+		  if (titles.item(i).getAttributes().getNamedItem("level") != null) {
 			  
-			  // getting the various titles (series/monographic/analytic)
-			  // based on the value of title[@level]
-			  switch(titles.item(i).getAttributes().getNamedItem("level").getNodeValue().toString()) {
-			  	case "s":
-			  		if (titleType == null) {
-						titleSeries.add(0, titles.item(i).getTextContent());
-					} else {
-						if (titleType.getNodeValue().toString().contentEquals("main")) {
-							titleSeries.add(0, titles.item(i).getTextContent());
-						}
-						if (titleType.getNodeValue().toString().contentEquals("alt")) {
-							if (titleSeries.isEmpty()) {
-								titleSeries.add(titles.item(i).getTextContent());
-							} else {
-								titleSeries.add(1, titles.item(i).getTextContent());
-							}
-						}
-					}
-			  		break;
-			  	case "m":
-			  		if (titleType == null) {
-			  			titleMonographic.add(0, titles.item(i).getTextContent());
-					} else {
-						if (titleType.getNodeValue().toString().contentEquals("main")) {
-							titleMonographic.add(0, titles.item(i).getTextContent());
-						}
-						if (titleType.getNodeValue().toString().contentEquals("alt")) {
-							if (titleMonographic.isEmpty()) {
-								titleMonographic.add(titles.item(i).getTextContent());
-							} else {
-								titleMonographic.add(1, titles.item(i).getTextContent());
-							}
-						}
-					}
-			  		break;
-			  	case "a":				  		
-			  		if (titleType == null) {
-			  			titleAnalytic.add(0, titles.item(i).getTextContent());
-					} else {
-						if (titleType.getNodeValue().toString().contentEquals("main")) {
-							titleAnalytic.add(0, titles.item(i).getTextContent());
-						}
-						if (titleType.getNodeValue().toString().contentEquals("alt")) {
-							if (titleAnalytic.isEmpty()) {
-								titleAnalytic.add(titles.item(i).getTextContent());
-							} else {
-								titleAnalytic.add(1, titles.item(i).getTextContent());
-							}
-						}
-					}
-			  		break;
+			  String level = titles.item(i).getAttributes().getNamedItem("level").getNodeValue();
+			  title.setLevel(level);
+			  
+			  switch (level) {
+				  case "s":
+					  titlesSeries.add(title);
+					  break;
+				  case "m":
+					  titlesMonographic.add(title);
+					  break;
+				  case "a":
+					  titlesAnalytic.add(title);
+					  break;
 			  }
 		  } else {
-			  System.out.println("##########################torioll");
-			  titleDefault.add(titles.item(i).getTextContent());
+			  titlesDefault.add(title);
 		  }
 
 	  }
 	  
-	  if (!titleSeries.isEmpty()) {
-		  manuscript.setTeiTitleSeries(concatList(titleSeries));
+	  if (!titlesSeries.isEmpty()) {
+		  manuscript.setTeiTitleSeries(titlesSeries);
 	  }
-	  if (!titleMonographic.isEmpty()) {
-		  manuscript.setTeiTitleMonographic(concatList(titleMonographic));
+	  if (!titlesMonographic.isEmpty()) {
+		  manuscript.setTeiTitleMonographic(titlesMonographic);
 	  }
-	  if (!titleAnalytic.isEmpty()) {
-		  manuscript.setTeiTitleAnalytic(concatList(titleAnalytic));
+	  if (!titlesAnalytic.isEmpty()) {
+		  manuscript.setTeiTitleAnalytic(titlesAnalytic);
 	  }
-	  if (!titleDefault.isEmpty()) {
-		  manuscript.setTeiTitle(String.join(". ", titleDefault));
+	  if (!titlesDefault.isEmpty()) {
+		  manuscript.setTeiTitle(titlesDefault);
 	  }
   }
   
@@ -353,7 +324,7 @@ class ManuscriptConverter {
 	  }
 	  
 	  if(!authorList.isEmpty()) {
-		  manuscript.setTeiAuthor(String.join(", ", authorList));
+		  manuscript.setTeiAuthor(authorList);
 	  }
   }
   
@@ -361,27 +332,108 @@ class ManuscriptConverter {
    * Adds the date obtained from the metadata tei-xml-file to a manuscript.
    */
   private void addTeiDate(Manuscript manuscript, NodeList dates) {
-	  List<String> datesList = new ArrayList<String>();
+	  List<TeiDate> datesList = new ArrayList<TeiDate>();
+	  
 	  for (int i = 0; i < dates.getLength(); i++) {
-		  // getting the date of manuscript creation
-		  if (dates.item(i).getAttributes().getNamedItem("type") != null) {
-			  if (dates.item(i).getAttributes().getNamedItem("type")
-					  .getNodeValue().toString().contentEquals("manuscript")) {
-				  // TODO: create proper dates, after dates have been modelled
-				  //Date creationDate = new Date();
-				  //manuscript.setTeiManuscriptCreationDate(creationDate);
-				  datesList.add(0, dates.item(i).getTextContent() + " (creation)");
-			  // getting all other dates connected to the creation of the text
-			  } else {
-				  datesList.add(dates.item(i).getTextContent() + " (" +
-						  dates.item(i).getAttributes().getNamedItem("type")
-						  .getNodeValue().toString() + ")");
+		  try {
+			  TeiDate date = new TeiDate();
+			  
+			  if (dates.item(i).getTextContent() != null) {
+				  date.setContent(dates.item(i).getTextContent());
 			  }
-		  } else {
-			  datesList.add(dates.item(i).getTextContent());
+			  if (dates.item(i).getAttributes().getNamedItem("type") != null) {
+				  date.setType(dates.item(i).getAttributes().getNamedItem("type").getNodeValue());
+			  }
+			  
+			  // set the various dates after the string a valid string, that can be parsed
+			  if (dates.item(i).getAttributes().getNamedItem("when") != null) {
+				  String whenValue = dates.item(i).getAttributes().getNamedItem("when").getNodeValue();
+				  whenValue = makeDateStringValid(whenValue, true);
+				  LocalDate when = LocalDate.parse(whenValue);
+				  date.setWhen(when);
+			  }
+			  if (dates.item(i).getAttributes().getNamedItem("notBefore") != null) {
+				  String notBeforeValue = dates.item(i).getAttributes().getNamedItem("notBefore").getNodeValue();
+				  notBeforeValue = makeDateStringValid(notBeforeValue, true);
+				  LocalDate notBefore = LocalDate.parse(notBeforeValue);
+				  date.setNotBefore(notBefore);
+			  }
+			  if (dates.item(i).getAttributes().getNamedItem("notAfter") != null) {
+				  String notAfterValue = dates.item(i).getAttributes().getNamedItem("notAfter").getNodeValue();
+				  notAfterValue = makeDateStringValid(notAfterValue, false);
+				  LocalDate notAfter = LocalDate.parse(notAfterValue);
+				  date.setNotAfter(notAfter);
+			  }
+			  if (dates.item(i).getAttributes().getNamedItem("from") != null) {
+				  String fromValue = dates.item(i).getAttributes().getNamedItem("from").getNodeValue();
+				  fromValue = makeDateStringValid(fromValue, true);
+				  LocalDate from = LocalDate.parse(fromValue);
+				  date.setFrom(from);
+			  }
+			  if (dates.item(i).getAttributes().getNamedItem("to") != null) {
+				  String toValue = dates.item(i).getAttributes().getNamedItem("to").getNodeValue();
+				  toValue = makeDateStringValid(toValue, false);
+				  LocalDate to = LocalDate.parse(toValue);
+				  date.setTo(to);
+			  }
+			  datesList.add(date);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			System.out.println("Could not parse dates for manuscript: " + manuscript.getId());
+			e.printStackTrace();
+		}
+	  }
+	  
+	  if(!datesList.isEmpty()) {
+		  manuscript.setTeiManuscriptCreationDate(datesList);
+	  }
+  }
+
+  /**
+   * Helper function to make sure that the string passed is a valid date in
+   * YYYY-MM-DD format.
+   * 
+   * @param dateString to be validated
+   * @param yearStarts Boolean to decide if the date should be the start/end of a year
+   * @return valid dateString
+  */
+  private String makeDateStringValid(String dateString, Boolean yearStart) {
+	  // check if the data is in YYYY-MM-DD format
+	  if (dateString.length() < 10) {
+		  // add MM-DD if missing
+		  if (dateString.length() <= 5) {
+			  if (yearStart) {
+				  if (dateString.startsWith("-")) {
+					  dateString = dateString + "-12-31";
+				  } else {
+					  dateString = dateString + "-01-01";
+				  }
+			  } else {
+				  if (dateString.startsWith("-")) {
+					  dateString = dateString + "-01-01";
+				  } else {
+					  dateString = dateString + "-12-31";
+				  }
+			  }
+		  }
+		  // add DD if missing
+		  if (dateString.length() <= 8 ) {
+			  if (yearStart) {
+				  if (dateString.startsWith("-")) {
+					  dateString = dateString + "-12";
+				  } else {
+					  dateString = dateString + "-01";
+				  }
+			  } else {
+				  if (dateString.startsWith("-")) {
+					  dateString = dateString + "-01";
+				  } else {
+					  dateString = dateString + "-31";
+				  }
+			  }
 		  }
 	  }
-	  manuscript.setTeiManuscriptCreationDateString(String.join(", " , datesList));
+	  return dateString;
   }
   
   /**
