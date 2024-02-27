@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { Form, Outlet, useLoaderData } from 'react-router-dom';
 import { cloneDeep } from 'lodash';
 
+import { storeSearchAnalytics } from '../data/api';
 import { loadAnalysis, storeAnalysis } from '../data';
 import { Message } from '../data/models';
-import { createRoute, encodeURL, getAnnoId, normalizeBasename } from '../utils';
+import { createRoute, encodeURL, getAnnoId, normalizeBasename, getSessionId } from '../utils';
 
 import { AnalysisSidebar } from '../components/sidebar';
 import { MessageBox } from '../components/messageBox';
@@ -35,6 +36,28 @@ const Analysis = () => {
   const [currentEtag, setCurrentEtag] = useState(etag);
   const [latestOriginal, setLatestOriginal] = useState(originalAnnotation);
   const [messages, setMessages] = useState([]);
+  const [searchLog, setSearchLog] = useState([]);
+  const sessionID = getSessionId();
+
+  const addSearchLog = (query, selectedURI, selectedRank, annoURI) => {
+    if (query) {
+      setSearchLog((prev) => {
+        prev.push({ query, selectedURI, selectedRank, annoURI });
+        return prev;
+      });
+    }
+  };
+
+  const clearSearchLog = () => {
+    setSearchLog([]);
+  };
+
+  const sendSearchLog = () => {
+    searchLog.forEach((log) => {
+      const { query, selectedURI, selectedRank, annoURI } = log;
+      storeSearchAnalytics(query, selectedURI, selectedRank, annoURI, sessionID);
+    });
+  };
 
   const addMessage = (msg) => {
     setMessages((prev) => {
@@ -56,12 +79,14 @@ const Analysis = () => {
       type: 'success',
     });
     addMessage(msg);
+    clearSearchLog();
   };
 
   const onClickSave = async (ev) => {
     ev.preventDefault();
 
     try {
+      sendSearchLog();
       // Construct a complete Metaphor Annotation to store via Takita
       const updated = await storeAnalysis(currentAppState, latestOriginal, currentEtag);
       console.log('got updated annotation');
@@ -173,7 +198,7 @@ const Analysis = () => {
           <MessageBox messages={messages} onClear={clearMessages} />
 
           <Form method='post'>
-            <Outlet context={[currentAppState, setCurrentAppState]} />
+            <Outlet context={[currentAppState, setCurrentAppState, addSearchLog]} />
           </Form>
         </div>
       </div>

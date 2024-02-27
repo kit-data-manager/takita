@@ -1,7 +1,7 @@
 import React from 'react';
 import { useOutletContext } from 'react-router-dom';
 
-import { searchForConcept, storeSearchAnalytics } from '../data/api';
+import { searchForConcept } from '../data/api';
 
 import { AddButton } from '../components/formElement';
 import { H3 } from '../components/text';
@@ -11,7 +11,7 @@ import { SummaryBox } from '../components/summaryBox';
 const style = { color: 'blue' };
 
 const Linking = () => {
-  const [currentAppState, setCurrentAppState] = useOutletContext();
+  const [currentAppState, setCurrentAppState, addSearchLog] = useOutletContext();
 
   const addLinkingContainer = (ev) => {
     ev.preventDefault();
@@ -40,7 +40,7 @@ const Linking = () => {
         onDelete={(ev) => deleteLinkingContainer(ev, idx)}
         searchFunction={searchForConcept}
         loggingFunction={(query, selectedURI, selectedRank) =>
-          storeSearchAnalytics(query, selectedURI, selectedRank, currentAppState.getId())
+          addSearchLog(query, selectedURI, selectedRank, currentAppState.getId())
         }
       />
     );
