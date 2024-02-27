@@ -302,7 +302,7 @@ tei-lb::before {
 /* display the linenumbers in front of the linebeginnings */
 tei-lb[n]::before {
 	color: grey;
-    content: "\00000a"attr(n);
+    content: "\00000a"attr(n)"\00a0";
     white-space: pre-wrap;
 }
 
