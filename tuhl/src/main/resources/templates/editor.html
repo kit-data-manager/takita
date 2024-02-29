@@ -172,6 +172,35 @@
         <div class="col-4" th:text="${currentManuscript.lastModified}"></div>
     </div>
 
+    <!-- metadata obtained from manuscript_metadata.xml-->
+    <div class="row is-full-width">
+        <div class="col-1"></div>
+        <div class="col-2" th:text="#{col_name.author}"></div>
+        <div class="col-2" th:text="${currentManuscript.teiAuthor} ? ${currentManuscript.authorListToString(currentManuscript.teiAuthor)} : 'UNKNOWN'"></div>
+        <div class="col-1"></div>
+        <div class="col-2" th:text="#{col_name.manuscriptCreationDate}"></div>
+        <div class="col-2" th:text="${currentManuscript.teiManuscriptCreationDate} ? ${currentManuscript.dateListToString(currentManuscript.teiManuscriptCreationDate)} : 'UNKNOWN'">"></div>
+    </div>
+    <div class="row is-full-width" th:if="${currentManuscript.teiTitle}">
+        <div class="col-1"></div>
+        <div class="col-2" th:text="#{col_name.title}"></div>
+        <div class="col-7" th:text="${currentManuscript.titleListToString(currentManuscript.teiTitle)}"></div>
+    </div>
+    <div class="row is-full-width" th:if="${currentManuscript.teiTitleSeries}">
+        <div class="col-1"></div>
+        <div class="col-2" th:text="#{col_name.title}"></div>
+        <div class="col-7" th:text="${currentManuscript.titleListToString(currentManuscript.teiTitleSeries)}"></div>
+    </div>
+    <div class="row is-full-width" th:if="${currentManuscript.teiTitleMonographic}">
+        <div class="col-1"></div>
+        <div class="col-2" th:text="#{col_name.title}"></div>
+        <div class="col-7" th:text="${currentManuscript.titleListToString(currentManuscript.teiTitleMonographic)}"></div>
+    </div>
+    <div class="row is-full-width" th:if="${currentManuscript.teiTitleAnalytic}">
+        <div class="col-1"></div>
+        <div class="col-2" th:text="#{col_name.title}"></div>
+        <div class="col-7" th:text="${currentManuscript.titleListToString(currentManuscript.teiTitleAnalytic)}"></div>
+    </div>
 
     <div id="editor">
         <!-- th:fragment="editor -->
