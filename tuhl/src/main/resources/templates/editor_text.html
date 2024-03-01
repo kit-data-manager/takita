@@ -235,8 +235,8 @@
                     <div class="row" id="iconRow">
                         <div class="col">
                             <div class="is-right">
-                                <i class="bx bx-plus" onclick="imageZoomIn()"></i>
-                                <i class="bx bx-trash" onclick="imageZoomIn()"></i>
+                                <i class="bx bx-plus"></i>
+                                <i class="bx bx-trash"></i>
                             </div>
                         </div>
                     </div>
@@ -461,7 +461,6 @@
         function onclickSelectText(event) {
             hideExpandedSidebar();
             selectingText = true;
-            confirmDiscardChanges();
             mode = Mode.Create;
             annotateSelectedText();
         };
@@ -596,18 +595,4 @@
 #editor {
     margin-left: 7.5rem;
 }
-
-/*
-   Optional. Prevent the accidential selection of the image (or other elements).
-   Old, but still works at least in Firefox, might be better to find a new method for this.
-   Very old source: https://stackoverflow.com/questions/5915023/preventing-images-and-text-to-be-selected
-*/
-.unselectable {
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -o-user-select: none;
-    user-select: none;
-}
-
 </style>
