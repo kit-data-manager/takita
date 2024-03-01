@@ -12,6 +12,7 @@
 		"stylis": "^4.3.0"
 	},
 	"peerDependencies": {
+		"CETEIcean": "^1.9.2",
 		"lodash": "^4.17.21"
 	},
 	"devDependencies": {

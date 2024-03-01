@@ -418,53 +418,6 @@ function fillMetaDataEditorTable(annoJson) {
   $('#table').metadataeditorTable(inputs);
 }
 
-// font size manipulation functions called by sidebar buttons
-function changeFontSize(id, changeFactor) {
-  const $txt = document.getElementById(id);
-  const style = window.getComputedStyle($txt, null).getPropertyValue('font-size');
-  const currentSize = parseFloat(style);
-  $txt.style.fontSize = currentSize + changeFactor + 'px';
-}
-
-function increaseFontSize() {
-  changeFontSize('TEI', 1);
-}
-
-function decreaseFontSize() {
-  changeFontSize('TEI', -1);
-}
-
-function resetFontSize() {
-  document.getElementById('TEI').style.fontSize = 'initial';
-}
-
-// adds one box-icon and removes the other one from an element
-function toggleBoxIcon(element, iconA, iconB) {
-  element.classList.toggle(iconA);
-  element.classList.toggle(iconB);
-}
-
-// hebrew specific display
-function toggleHebrewView() {
-  // adds the "zeroOpacity" class to a list of elements, to make the affected elements
-  // invisible (/hide them)
-  document.querySelectorAll('tei-reg').forEach((element) => {
-    element.classList.toggle('zeroOpacity');
-  });
-  // slide the toggle button to the other side
-  toggleBoxIcon(document.getElementById('toggleViewsButton'), 'bx-toggle-left', 'bx-toggle-right');
-}
-
-// sanskrit specific display
-function toggleSanskritView() {
-  // hides elements/text by adding the "is-hidden" class (form chota), but moves the text around a bit
-  document.querySelectorAll('tei-orig').forEach((element) => {
-    element.classList.toggle('is-hidden');
-  });
-  // slide the toggle button to the other side
-  toggleBoxIcon(document.getElementById('toggleViewsButton'), 'bx-toggle-left', 'bx-toggle-right');
-}
-
 // check if the selection happened on the textworkspace/tei element
 function checkIsSelectionOnWorkspace(node) {
   if (node.parentNode.id === 'TEI') {
@@ -1171,9 +1124,6 @@ function cancelModification() {
 }
 
 function init(annotations) {
-  // enable the tooltips for the sidebar
-  enableTooltips();
-
   // fill the annoJson with the annotations passed by the java backend
   annoJson = JSON.parse(annotations);
   // check if the annotations are compatible with the code, i.e. have
@@ -1316,10 +1266,3 @@ document.getElementById('closeButtonUpdate').addEventListener('click', function 
   mode = Mode.View;
   selectingText = false;
 });
-
-function hideExpandedSidebar() {
-  let sideBar = document.querySelector('.anno-side-bar');
-  if (!sideBar.classList.contains('annocollapse')) {
-    toggleAnnoSideBar();
-  }
-}

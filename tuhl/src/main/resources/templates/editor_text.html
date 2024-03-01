@@ -59,23 +59,23 @@
   <ul class="features-list">
       <div class="category-header">View Mode</div>
     <li class="features-item draft">
-      <i id="fontIncreaseButton" class="bx bx-zoom-in features-item-icon" onclick="hideExpandedSidebar(); increaseFontSize()"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); increaseFontSize()">Increase Font Size</span>
+      <i id="fontIncreaseButton" class="bx bx-zoom-in features-item-icon"></i>
+      <span id="fontIncreaseSpan" class="features-item-text annocollapse">Increase Font Size</span>
       <span class="tooltip">Increase Font Size</span>
     </li>
     <li class="features-item draft">
-      <i id="fontDecreaseButton" class="bx bx-zoom-out features-item-icon" onclick="hideExpandedSidebar(); decreaseFontSize()"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); decreaseFontSize()">Decrease Font Size</span>
+      <i id="fontDecreaseButton" class="bx bx-zoom-out features-item-icon"></i>
+      <span id="fontDecreaseSpan" class="features-item-text annocollapse">Decrease Font Size</span>
       <span class="tooltip">Decrease Font Size</span>
     </li>
     <li class="features-item draft">
-      <i id="resetFontButton" class="bx bx-font-size features-item-icon" onclick="hideExpandedSidebar(); resetFontSize()"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); resetFontSize()">Reset Font Size</span>
+      <i id="resetFontButton" class="bx bx-font-size features-item-icon"></i>
+      <span id="resetFontSpan" class="features-item-text annocollapse">Reset Font Size</span>
       <span class="tooltip">Reset Font Size</span>
     </li>
     <li id="toggleViews" class="features-item draft is-hidden">
-      <i id="toggleViewsButton" class="bx bx-toggle-left features-item-icon" onclick="hideExpandedSidebar();"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar();">Toggle Views</span>
+      <i id="toggleViewsButton" class="bx bx-toggle-left features-item-icon"></i>
+      <span id="toggleViewsSpan" class="features-item-text annocollapse">Toggle Views</span>
       <span class="tooltip">Toggle Views</span>
     </li>
   </ul>
@@ -102,8 +102,8 @@
   </ul>-->
     <ul class="features-list">
     <li class="features-item star">
-      <i id="pagesButton" class="bx bx-book-open features-item-icon" onclick="hideExpandedSidebar(); toggleOverview('pages')"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); toggleOverview('pages')">Show Parts</span>
+      <i id="pagesButton" class="bx bx-book-open features-item-icon"></i>
+      <span id="pagesSpan" class="features-item-text annocollapse">Show Parts</span>
       <span class="tooltip">Show Parts</span>
     </li>
   </ul>
@@ -111,7 +111,7 @@
 
     <div class="row topbar-row is-full-width">
         <div class="col-1"></div>
-        <div class="col-1 is-vertical-align is-horizontal-align"> <i class="bx bx-home" onclick="goHome();"></i> </div>
+        <div class="col-1 is-vertical-align is-horizontal-align"> <i id="goHomeButton" class="bx bx-home"></i> </div>
         <div class="col-4 is-vertical-align is-horizontal-align" th:text="${currentManuscript.title}"></div>
         <div class="col-4 is-vertical-align is-horizontal-align">
             <div class="row input-group">
@@ -488,103 +488,47 @@
         window.CURRENTPAGEURL = /*[[${currentPage.getResourceUrl()}]]*/ "default.url";
         // storing currentPageId as its needed for getting the updated annoJson
         window.CURRENTPAGEID = /*[[${currentPage.getId()}]]*/ "default.id";
-        var linkToResource = window.CONTEXTPATH + "editor_rest/content/" + window.CURRENTPAGEID + "/" + [[${fileName}]];
+        const linkToResource = window.CONTEXTPATH + "editor_rest/content/" + window.CURRENTPAGEID + "/" + [[${fileName}]];
 
-	    // adding the TEI file to the DOM
-	    var CETEIcean = new CETEI();
-	    var teiContent = CETEIcean.getHTML5(linkToResource).then(data => {
-			document.getElementById("TEI").innerHTML = "";
-			const text = document.getElementById("TEI").appendChild(data);
+        document.addEventListener("DOMContentLoaded", (_event) => {
+            // initializing the sidebar
+            window.sidebar.initializeSidebar();
 
-            // highlight all the annotated words
-            // check if the annotations are compatible with the code, i.e. have
-            // one xPath for each target and not one long xPath including all targets.
-            // Make them compatible, if they are not
-            drawAnnos(JSON.parse
-                (document.body.getAttribute('data-field'))
-                .map(annotation => {
-                    if (!checkIsTargetCompatible(annotation)){
-                        makeTargetsCompatible(annotation);
+            // adding the TEI file to the DOM
+            window.textloader.loadText(linkToResource).then( () => {
+                // highlight all the annotated words
+                // check if the annotations are compatible with the code, i.e. have
+                // one xPath for each target and not one long xPath including all targets.
+                // Make them compatible, if they are not
+                drawAnnos(JSON.parse
+                    (document.body.getAttribute('data-field'))
+                    .map(annotation => {
+                        if (!checkIsTargetCompatible(annotation)){
+                            makeTargetsCompatible(annotation);
+                        }
+                        return annotation;
+                    })
+                );
+
+                // updating the sidebar, because maybe some buttons have to be added
+                window.sidebar.updateSidebar(window.TEXTLANGUAGE);
+
+                // display the annotation with the id stored in the url
+                const targetAnnotationId = navigation.getTargetAnnotationId();
+                if (targetAnnotationId) {
+                    selectAnnotation(null, encodeAnnoId(targetAnnotationId));
+                    if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
+                        toggleOverview('annotationCard');
                     }
-                    return annotation;
-                })
-            );
-	    }).then( () => {
-            // store the language of a text
-            const textLanguage = document.querySelector("tei-text").lang;
-            // displaying right to left languages accordingly
-            if (textLanguage === "hbo" ||
-                textLanguage === "he" ||
-                textLanguage === "arb"||
-                textLanguage === "fa"){
-                document.getElementById("TEI").dir="rtl";
-            }
-
-            if(document.querySelector("tei-choice") != undefined){
-                // B04 specific adding of a syllable marker between the unsandhied words
-                // and activating the toggleViews button, which removes/adds
-	    	    // the sandhied version of the text to the display
-                if (textLanguage === "sa-Latn" ||
-                    document.querySelector("tei-choice").n === "sandhi"){
-                    var regW = document.querySelectorAll("tei-reg>tei-w");
-                    regW.forEach( word => {
-                        if (word.nextElementSibling !== null){
-                                // delete whitespace between the tei-reg>tei-w elements
-                                if (word.nextSibling.nodeType == 3 && word.nextSibling.nodeValue.trim() === "") {
-                                    word.nextSibling.remove();
-                                }
-                                word.classList.add("sandhiSyllableMarkerAfter");
-                            }
-                    });
-                    document.getElementById("toggleViews").classList.remove("is-hidden");
-                    document.getElementById("toggleViewsButton").addEventListener("click", toggleSanskritView);
                 }
-            }
 
-	    	// this is specific for files in hebrew
-	    	// it enables the toggleViews button, which removes/adds
-	    	// the unvocalized version of the text to the display
-	    	// the "paseq" sign "׀" will be removed as well, but it needs to be displayed
-	    	// so any word followed by a "paseq" will get a class "paseq", so the css rule applies
-	    	if (textLanguage === "hbo"){
-	    		document.querySelectorAll("tei-w").forEach(word => {
-	    			if( !word.id.includes("_")) {
-	    		  		//if (word.nextElementSibling !== null && word.nextElementSibling.localName === "tei-pc"){
-	    		  		/*if (word.nextElementSibling !== null && word.nextElementSibling.innerHTML === "־"){
-	    		  			word.classList.add("maqqef");
-	    		  		}*/
-	    		  		if (word.nextElementSibling !== null && word.nextElementSibling.innerHTML === "׀"){
-	    		  			word.classList.add("paseq");
-	    		  		}
-	    		  }
-	    		});
-	    		// delete all the "paseq" signs as they will be rendered via css
-	    		document.querySelectorAll("tei-pc").forEach(punct => {
-	    			// if (punct.innerHTML === "־" || punct.innerHTML === "׀"){
-	    			if (punct.innerHTML === "׀"){
-	    				punct.remove();
-	    			}
-	    		});
-                document.getElementById("toggleViews").classList.remove("is-hidden");
-                document.getElementById("toggleViewsButton").addEventListener("click", toggleHebrewView);
-                // trigger the button to hide the unvocalized version on page load
-                document.getElementById("toggleViewsButton").click();
-                //toggleOpacity(document.querySelectorAll("tei-reg"));
-	    	}
+                // Construct and display a navigation bar.
+                const $navbar = document.getElementById('textNavBar');
+                navigation.initializeNavigation($navbar);
+            });
+        });
 
-            // display the annotation with the id stored in the url
-            const targetAnnotationId = navigation.getTargetAnnotationId();
-            if (targetAnnotationId) {
-                selectAnnotation(null, encodeAnnoId(targetAnnotationId));
-                if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
-                    toggleOverview('annotationCard');
-                }
-            }
-
-            // Construct and display a navigation bar.
-            const $navbar = document.getElementById('textNavBar');
-            navigation.initializeNavigation($navbar);
-	    });
+	   
     </script>
 
 </body>
