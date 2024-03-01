@@ -33,16 +33,17 @@ export const searchForConcept = async (term) => {
  * @param {String} selectedURI the concept URI which has been selected, if any, or null
  * @param {Number} selectedRank the rank of the selected URI, if any, or null
  * @param {String} annoURI the URI of the analysis annotation where the search has been done
+ * @param {String} sessionID random string which indicates that multiple queries have been sent in one session
  * @param {String} endpoint the endpoint where this data should be sent to
  */
-export const storeSearchAnalytics = async (query, selectedURI, selectedRank, annoURI, endpoint = null) => {
+export const storeSearchAnalytics = async (query, selectedURI, selectedRank, annoURI, sessionID, endpoint = null) => {
   const uri = endpoint || `${getConceptSearchURL()}store_data`;
   const payload = JSON.stringify({
     query: query,
     selected: selectedURI || null,
     selectedRank: selectedRank || selectedRank === 0 ? selectedRank : null,
     anno: annoURI,
-    datetime: new Date().toISOString(),
+    datetime: sessionID,
   });
   console.log('logging search performance: ', payload);
   const resp = await fetch(uri, {

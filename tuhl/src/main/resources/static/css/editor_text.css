@@ -302,7 +302,7 @@ tei-lb::before {
 /* display the linenumbers in front of the linebeginnings */
 tei-lb[n]::before {
 	color: grey;
-    content: "\00000a"attr(n);
+    content: "\00000a"attr(n)"\00a0";
     white-space: pre-wrap;
 }
 
@@ -322,6 +322,27 @@ tei-quote::before {
 tei-quote::after {
     color: grey;
 	content: "«";
+}
+
+/* text highlights */
+*[rend="sup"] {
+	font-size: 70%;
+	vertical-align: super;
+}
+
+*[rend="superscript"] {
+	font-size: 70%;
+	vertical-align: super;
+}
+
+*[rend="sub"] {
+	font-size: 70%;
+	vertical-align: sub;
+}
+
+*[rend="subscript"] {
+	font-size: 70%;
+	vertical-align: sub;
 }
 
 /* editorial additions (Leiden-style)
@@ -374,6 +395,16 @@ tei-gap[reason="illegible"]::after {
 tei-supplied > tei-gap::after {
 	color: grey;
     content: "…";
+}
+
+/* titles added by an agent, who is not the author*/
+tei-head[resp] {
+	color: grey;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	  
 }
 
 /* poem specifics*/

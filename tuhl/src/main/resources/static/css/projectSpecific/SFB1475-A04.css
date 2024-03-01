@@ -2,10 +2,22 @@
 /* ------------------------------------*/
 
 /* displaying linenumbers*/
+tei-text[lang="ae"] tei-div[id]::before {
+	color: #c94c2d;
+    content: attr(id)":";
+    white-space: pre-wrap;
+}
+
 tei-text[lang="ae"] tei-ab[id]::before {
 	color: #c94c2d;
-    content: attr(id)" : ";
+    content: attr(id)":";
     white-space: pre-wrap;
+}
+
+/* to display the linenumbers infront of the line
+	the display has to be reset from block*/
+tei-l {
+    display: inline
 }
 
 tei-text[lang="ae"] tei-ab[type="prayer"]::before {

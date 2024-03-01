@@ -45,6 +45,9 @@ public class Manuscript {
   
   private boolean hasAlgorithmAnnotations;
   
+  @Field(type = FieldType.Keyword)
+  private String description;
+
   // variables obtained from manuscript_metadata.xml
   // for the various title levels consult:
   // https://tei-c.org/release/doc/tei-p5-doc/en/html/ref-title.html
@@ -154,6 +157,23 @@ public class Manuscript {
   }
 
   /**
+   * Gets description of manuscript.
+   *
+   * @return description
+   */
+  public String getDescription() {
+	  return description;
+  }
+
+  /**
+   * Sets description of manuscript.
+   *
+   * @return description
+   */
+  public void setDescription(String description) {
+	  this.description = description;
+  }
+/**
    * Gets publisher of manuscript.
    *
    * @return publisher

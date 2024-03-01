@@ -511,8 +511,6 @@
                 })
             );
 	    }).then( () => {
-            const ceteiEvent = new Event('ceteiceanhasloaded');
-            window.dispatchEvent(ceteiEvent);
             // store the language of a text
             const textLanguage = document.querySelector("tei-text").lang;
             // displaying right to left languages accordingly
@@ -575,53 +573,19 @@
                 //toggleOpacity(document.querySelectorAll("tei-reg"));
 	    	}
 
-            const editorURL = new URL(window.location);
-            // navigate to the annotated element and show the annotation
-            if (editorURL.searchParams.size > 0){
-                
-                const targetElement = document.getElementById(editorURL.searchParams.get("fragment"));
-                const targetAnnotationId = editorURL.searchParams.get("annotationId");
-
-                // navigate to the annotated element and update navigation bar accordingly
-                // dispaly the chapter containing the annotated element
-                const currentChapter = document.querySelector('tei-div[type="' + divisionType +'"]:not(.is-hidden)');
-                const desiredChapterNumber = getDesiredChapterNumber(targetElement, divisionType);
-                const chapters = document.querySelectorAll('tei-div[type="' + divisionType +'"]');
-                // the `...` is a spread operator to convert the nodeList into an array, that can be filtered
-                [...chapters].filter( chapter => chapter.attributes.n.nodeValue === desiredChapterNumber )
-                    .forEach( chapter => {
-                        console.log(chapter);
-                        if (currentChapter !== chapter) {
-                            chapter.classList.remove("is-hidden");
-                            currentChapter.classList.add("is-hidden");
-                            toggleButtonActivity(chapter, divisionType);
-                        }
-                    });
-                document.getElementById("chapterSelect").value = desiredChapterNumber;
-                // jump to the annotated element
-                targetElement.scrollIntoView(true);
-
-                // display the annotation with the id stored in the url
+            // display the annotation with the id stored in the url
+            const targetAnnotationId = navigation.getTargetAnnotationId();
+            if (targetAnnotationId) {
                 selectAnnotation(null, encodeAnnoId(targetAnnotationId));
                 if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
                     toggleOverview('annotationCard');
-                }   
-            }
-	    });
-
-        // finds the parent, that is used for navigation, of the {node}
-        // and return the "number" of it
-        function getDesiredChapterNumber(node, divisionType){
-            let parent = node.parentNode;
-            while (parent !== null){
-                if (parent.attributes.type !== undefined){
-                    if (parent.attributes.type.value === divisionType){
-                        return parent.attributes?.n.value || "No number available";
-                    }
                 }
-                parent = parent.parentNode;
             }
-        }
+
+            // Construct and display a navigation bar.
+            const $navbar = document.getElementById('textNavBar');
+            navigation.initializeNavigation($navbar);
+	    });
     </script>
 
 </body>

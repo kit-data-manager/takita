@@ -21,7 +21,9 @@ public enum RepositoryStrings {
   PUBLICATION_YEAR("publicationYear"),
   DATES("dates"),
   PAGE_ID("pageId"),
-  RESOURCE_ID("resourceId");
+  RESOURCE_ID("resourceId"),
+  DESCRIPTION("description"),
+  DESCRIPTIONS("descriptions");
 
   private final String name;
 

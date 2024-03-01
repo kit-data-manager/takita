@@ -116,10 +116,10 @@ export const searchForConcept = async (query) => {
  * @param {Number} selectedRank search rank of the selected concept or null
  * @param {String} annoURI analysis annotation where the linking took place
  */
-export const storeSearchAnalytics = async (query, selectedURI, selectedRank, annoURI) => {
+export const storeSearchAnalytics = async (query, selectedURI, selectedRank, annoURI, sessionID) => {
   if (!query) {
     return;
   }
-  const respData = await storeSearchData(query, selectedURI, selectedRank, annoURI);
+  const respData = await storeSearchData(query, selectedURI, selectedRank, annoURI, sessionID);
   return respData;
 };

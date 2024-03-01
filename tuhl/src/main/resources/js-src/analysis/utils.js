@@ -163,3 +163,24 @@ export const sanitizeSearchQuery = (query) => {
   // used together with the u flag!
   return query.replace(/[^\p{L}\d\s-]/gu, '');
 };
+
+/**
+ * Generate an arbitrary string, which can be used to identify which concept searches
+ * have been issued in the same session.
+ * @returns {String}
+ */
+export const getSessionId = () => {
+  const input = `${Math.floor(Math.random() * 100)}${Date.now()}`;
+
+  const hash = (string) => {
+    let hash = 0;
+    for (let i = 0, len = string.length; i < len; i++) {
+      let chr = string.charCodeAt(i);
+      hash = (hash << 5) - hash + chr;
+      hash |= 0; // Convert to 32bit integer
+    }
+    return hash;
+  };
+
+  return hash(input);
+};

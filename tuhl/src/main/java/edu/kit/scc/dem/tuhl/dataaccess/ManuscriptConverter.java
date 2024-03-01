@@ -81,6 +81,12 @@ class ManuscriptConverter {
           .getString(RepositoryStrings.VALUE.getName());
     }
 
+    String description = null;
+    if (manuscriptJson.has(RepositoryStrings.DESCRIPTIONS.getName())) {
+      description = manuscriptJson.getJSONArray(RepositoryStrings.DESCRIPTIONS.getName()).getJSONObject(0)
+          .getString(RepositoryStrings.DESCRIPTION.getName());
+    }
+    
     Date created = extractDateFromJsonManuscript(manuscriptJson,
         RepositoryStrings.CREATED.getName());
     Date modified;
@@ -94,6 +100,9 @@ class ManuscriptConverter {
 
     Manuscript manuscript = new Manuscript(id, created, title, publisher, publicationYear);
     manuscript.setLastModified(modified);
+    if (description != null) {
+    	manuscript.setDescription(description);
+    }
 
     //Retrieves pages from the page assignment.
     // Adds the pages after their creation to the manuscript.
