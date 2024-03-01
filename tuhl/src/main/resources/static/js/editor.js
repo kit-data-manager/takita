@@ -9,10 +9,10 @@ function selectAnnotation(event, annoId) {
 
         success: function(responseJson) {
             console.log(responseJson);
-            if (responseJson.created.seconds) {
-                responseJson.created = new Date(responseJson.created.seconds * 1000 + responseJson.created.nanos / 1000000).toISOString();
-                if(responseJson.modified.seconds) {
-                    responseJson.modified = new Date(responseJson.modified.seconds * 1000 + responseJson.modified.nanos / 1000000).toISOString();
+            if (responseJson.created) {
+                responseJson.created = new Date(responseJson.created * 1000).toISOString();
+                if(responseJson.modified) {
+                    responseJson.modified = new Date(responseJson.modified * 1000).toISOString();
                 };
             };
   
@@ -85,13 +85,13 @@ function selectAnnotation(event, annoId) {
             
             for (let body in bodies) {
                 if (bodies[body].created) {
-                    bodies[body].created = new Date(bodies[body].created.seconds * 1000 + bodies[body].created.nanos / 1000000).toISOString();
+                    bodies[body].created = new Date(bodies[body].created * 1000).toISOString();
                 };
                 
                 // bodies can have a modified date without having a created date
                 // 'legacy annotations'
                 if (bodies[body].modified) {
-                    bodies[body].modified = new Date(bodies[body].modified.seconds * 1000 + bodies[body].modified.nanos / 1000000).toISOString();
+                    bodies[body].modified = new Date(bodies[body].modified * 1000).toISOString();
                 };
                 
                 console.log(bodies[body]);
