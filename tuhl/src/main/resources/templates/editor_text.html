@@ -481,6 +481,17 @@
        
     </script>
 	<script th:inline="javascript">
+        // from editor.js
+        // show the animated book as loading icon whenever an ajax call is running
+        $(document)
+        .ajaxStart(function () {
+            const modal = document.getElementById('loading');
+            modal.classList.toggle('show-modal');
+        })
+        .ajaxStop(function () {
+            const modal = document.getElementById('loading');
+            modal.classList.toggle('show-modal');
+        });
         
         // storing currentPageNumber as its needed for the label of a metaphor annotation
         window.CURRENTPAGENUMBER = /*[[${currentPage.pageNumber}]]*/ "default.number";
@@ -491,6 +502,9 @@
         const linkToResource = window.CONTEXTPATH + "editor_rest/content/" + window.CURRENTPAGEID + "/" + [[${fileName}]];
 
         document.addEventListener("DOMContentLoaded", (_event) => {
+            // initiliazing the editor
+            window.textEditor.init(JSON.parse(document.body.getAttribute('data-field')));
+
             // initializing the sidebar
             window.sidebar.initializeSidebar();
 

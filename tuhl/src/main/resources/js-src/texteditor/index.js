@@ -1,6 +1,7 @@
 import { initializeNavigation, getTargetAnnotationId } from './navigation';
 import { loadText } from './textloader';
 import { initializeSidebar, updateSidebar } from './sidebar';
+import { init } from './annotationEditor';
 
 window.navigation = {
   initializeNavigation,
@@ -16,8 +17,6 @@ window.sidebar = {
   updateSidebar,
 };
 
-// window.textEditor = {
-//   function initilizeEditor() {
-//     console.log("H");
-//   }
-// }
+window.textEditor = {
+  init,
+};
