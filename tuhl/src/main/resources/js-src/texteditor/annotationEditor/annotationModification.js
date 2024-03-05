@@ -13,16 +13,16 @@ import { createTargetList, createXPath } from './targetCreation';
 import { getColorNameFromEnumEntry } from './annotationCreation/creationTemplates';
 
 export function modifySelection() {
-  selectingText = true;
-  mode = Mode.Modify;
+  window.SELECTING_TEXT = true;
+  window.MODE = window.MODE_CLASS.Modify;
   //document.getElementById('modifyButton').parentElement.classList.add('active');
-  if (globalSelectedAnnotation === undefined) {
+  if (window.SELECTED_ANNOTATION === undefined) {
     //document.getElementById('modifyButton').parentElement.classList.remove('active');
-    mode = Mode.View;
-    selectingText = false;
+    window.MODE = window.MODE_CLASS.View;
+    window.SELECTING_TEXT = false;
     return;
   }
-  console.log('Selected annotation: ', globalSelectedAnnotation);
+  console.log('Selected annotation: ', window.SELECTED_ANNOTATION);
 
   // disable/enable and hide/show the buttons connected
   // to the modifaction of a text selection
@@ -34,12 +34,12 @@ export function modifySelection() {
   document.getElementById('buttonCancelModification').classList.remove('is-hidden');
 }
 
-function saveModification() {
+export function saveModification() {
   if (
     window.getSelection().toString() &&
     checkIsSelectionOnWorkspace(window.getSelection().getRangeAt(0).commonAncestorContainer)
   ) {
-    let selectionRange = window.getSelection().getRangeAt(0);
+    // let selectionRange = window.getSelection().getRangeAt(0);
     let selectionRangeContents = getContentOfSelection(window.getSelection());
 
     /*
@@ -55,8 +55,8 @@ function saveModification() {
       // TODO: check if this causes problems. It might prevent users from saving
       // their updated selection, if the selected whitespace once
       // document.getElementById('modifyButton').parentElement.classList.remove('active');
-      mode = Mode.View;
-      selectingText = false;
+      window.MODE = window.MODE_CLASS.View;
+      window.SELECTING_TEXT = false;
       alert('No text selected. Please redo');
       return;
     }
@@ -71,13 +71,14 @@ function saveModification() {
 
     // ask user if the new selection should be saved in a modal
 
-    // get the previously selected text from the respective body (purpose: describing), or reconstruct it from the target
-    let oldSelectedText = globalSelectedAnnotation.textCards.find((textCard) => textCard.purpose === 'describing');
+    // get the previously selected text from the respective body (purpose: describing),
+    // or reconstruct it from the target
+    let oldSelectedText = window.SELECTED_ANNOTATION.textCards.find((textCard) => textCard.purpose === 'describing');
     if (oldSelectedText != undefined) {
       oldSelectedText = oldSelectedText.value;
     } else {
       let idArray = [];
-      globalSelectedAnnotation.targets.forEach((target) => {
+      window.SELECTED_ANNOTATION.targets.forEach((target) => {
         idArray.push(target.selector.xPath.split('"')[1]);
       });
       // this sorts the xml:ids to retrieve a somehow appropriate reconstruction of the text out of the targets
@@ -100,7 +101,9 @@ function saveModification() {
 
     // modal stuff should be optimised
     let el = document.createElement('div');
-    el.innerHTML = oldSelectedText; // + globalSelectedAnnotation.targets.toString(); //  + " | id: " + globalSelectedAnnotation.svgCode.split("\"")[1];
+    el.innerHTML = oldSelectedText;
+    // + window.SELECTED_ANNOTATION.targets.toString();
+    //  + " | id: " + window.SELECTED_ANNOTATION.svgCode.split("\"")[1];
     document.getElementById('oldSelectedText').innerHTML = 'Current Selection:';
     document.getElementById('oldSelectedText').append(el);
 
@@ -116,14 +119,14 @@ function saveModification() {
   }
 }
 
-function updateTarget() {
+export function updateTarget() {
   const modal = document.getElementById('updateSelection');
-  let idOfAnnotationToUpdate = encodeAnnoId(globalSelectedAnnotation.id);
+  let idOfAnnotationToUpdate = encodeAnnoId(window.SELECTED_ANNOTATION.id);
   //let idOfAnnotationToUpdate = encodeAnnoId(modal.dataset.SelectedAnnotationId);
   let targetXPath = modal.dataset.newTargetXmlId;
 
   // update the target of an annotation (and the "purpose:describing" body, if it exists) by sending a put request
-  let colorName = getColorNameFromEnumEntry(globalSelectedAnnotation.color);
+  let colorName = getColorNameFromEnumEntry(window.SELECTED_ANNOTATION.color);
   let annotationDataJson = { color: colorName, motivation: 'describing', svgCode: targetXPath };
   $.ajax({
     type: 'PUT',
@@ -143,10 +146,12 @@ function updateTarget() {
       let result = null;
       result = responseDataJson.textCards.filter((textCard) => textCard.purpose === 'describing');
       if (result != null && result.length > 0) {
-        // TODO: fix, when it goes into production, bc then the innerHTML will only be the selected text without any "|"s
+        // TODO: fix, when it goes into production, bc then the innerHTML will only be
+        // the selected text without any "|"s
         let newSelectedText = document.getElementById('newSelectedText').children[0].innerHTML.split('|')[0];
         newSelectedText.slice(0, newSelectedText.length - 1);
-        // TODO: should there not be a field to store, who modified the body in addition to the timestamp of the modification?
+        // TODO: should there not be a field to store, who modified the body in addition
+        // to the timestamp of the modification?
         // console.log(responseDataJson.creators);
         let updatedBody = {
           created: new Date(
@@ -192,8 +197,8 @@ function updateTarget() {
       // hide modal
       document.getElementById('updateSelection').classList.toggle('show-modal');
       //document.getElementById('modifyButton').parentElement.classList.remove('active');
-      mode = Mode.View;
-      selectingText = false;
+      window.MODE = window.MODE_CLASS.View;
+      window.SELECTING_TEXT = false;
 
       // show the updated annotation
       selectAnnotation(null, encodeAnnoId(responseDataJson.id));
@@ -215,6 +220,6 @@ export function cancelModification() {
   document.getElementById('buttonCancelModification').disabled = true;
   document.getElementById('buttonCancelModification').classList.add('is-hidden');
 
-  mode = Mode.View;
-  selectingText = false;
+  window.MODE = window.MODE_CLASS.View;
+  window.SELECTING_TEXT = false;
 }

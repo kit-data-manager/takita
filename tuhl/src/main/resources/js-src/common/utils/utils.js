@@ -1,5 +1,5 @@
 // external modules
-import { $ } from 'jquery';
+import jQuery from 'jquery';
 // internal modules
 import { selectAnnotation, deleteAnnotation } from '../annotationDisplay';
 
@@ -247,5 +247,5 @@ export function fillMetaDataEditorTable(annoJson) {
     //}
   };
 
-  $('#table').metadataeditorTable(inputs);
+  jQuery('#table').metadataeditorTable(inputs);
 }

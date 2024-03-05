@@ -2,9 +2,9 @@ import { encodeAnnoId } from '../../common/utils';
 
 // gets the describing body of an annotation (mrw-annotation)
 // used by src/main/resources/js-src/common/annotationDisplay/selection.js
-async function getMRWAnnoSelectedText(annoId) {
-  console.log('Trying to get annotation ', annoId, ' which is linked to ', globalSelectedAnnotation);
-  const response = await fetch(window.CONTEXTPATH + 'editor_rest/annotations/' + encodeAnnoId(annoId), {
+async function getMRWAnnoSelectedText(metaphorAnnoId, mrwAnnoId) {
+  console.log('Trying to get annotation ', mrwAnnoId, ' which is linked to ', metaphorAnnoId);
+  const response = await fetch(window.CONTEXTPATH + 'editor_rest/annotations/' + encodeAnnoId(mrwAnnoId), {
     method: 'GET',
     headers: {
       Accept: 'application/json',
@@ -17,7 +17,10 @@ async function getMRWAnnoSelectedText(annoId) {
     return describingBody.value;
   } else {
     // if the mrw-annotation linked to the metaphor-annotation got deleted the code will end up here
-    return 'ERROR: Something is wrong with the linked mrw-annotation; most likely it got deleted, please contact the developers.';
+    return (
+      'ERROR: Something is wrong with the linked mrw-annotation;' +
+      'most likely it got deleted, please contact the developers.'
+    );
   }
 }
 
@@ -50,9 +53,9 @@ export function addLinkToAnalysisTool(responseJson, annoId, annotationDiv) {
   }
 }
 
-export async function updateLinkingTextcard(resourceHorizontal) {
+export async function updateLinkingTextcard(annoId, resourceHorizontal) {
   if (resourceHorizontal.purpose === 'linking') {
-    resourceHorizontal.value = await getMRWAnnoSelectedText(resourceHorizontal.value);
+    resourceHorizontal.value = await getMRWAnnoSelectedText(annoId, resourceHorizontal.value);
   }
   return resourceHorizontal;
 }

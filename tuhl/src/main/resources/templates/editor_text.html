@@ -38,7 +38,6 @@
 
 </head>
 <body class="container-fluid p-0" th:data-field="${currentAnnotationsJson}"
-    onload="init(document.body.getAttribute('data-field'))"
     onresize="resizeViewbox()">
 
 <div id="sideBar" class="anno-side-bar annocollapse">
@@ -331,7 +330,7 @@
             <span class="close-button" id="closeButtonUpdate">&times;</span>
 			<div id="oldSelectedText"></div>
             <div id="newSelectedText"></div>
-            <input class="btn btn-primary" type="submit" value="Update + Save" id="buttonToAnalysisTool" onclick="updateTarget()">
+            <input class="btn btn-primary" type="submit" value="Update + Save" id="updateTaregtButton">
         </div>
     </div>
 
@@ -445,26 +444,11 @@
 
 	<script th:src="@{/js/raphael.js}"></script>
     <script th:src="@{/js/ajv7.js}"></script>
-    <script th:src="@{/js/underscore.js}"></script>
-    <script th:src="@{/js/jsonform.js}"></script>
     <script th:src="@{/js/tabulator.min.js}"></script>
     <script th:src="@{/js/metadataeditor.js}"></script>
-    <script th:src="@{/js/editor.js}"></script>
-    <script th:src="@{/js/creation_templates_text.js}"></script>
-	<script th:src="@{/js/CETEI.js}"></script>
-	<script th:src="@{/js/editor_xml.js}"></script>
     <script th:src="@{/js/texteditor.js}" type="module"></script>
     <script th:inline="javascript">
         // Adding/Binding eventhandlers to buttons
-
-        // adding eventhandler for text selection
-        function onclickSelectText(event) {
-            hideExpandedSidebar();
-            selectingText = true;
-            mode = Mode.Create;
-            annotateSelectedText();
-        };
-        document.getElementById("selectTextListItem").addEventListener("mousedown", onclickSelectText);
 
         // adding eventhandler for pseudonym change to the pseudonym input modal
         document.querySelector("#pseudonymInputModal > div:nth-child(1) > form:nth-child(1)")
@@ -493,6 +477,8 @@
             modal.classList.toggle('show-modal');
         });
         
+        // setting the editortype, so the js-code can be executed based on that distinction
+        window.EDITORTYPE = 'TEXT';
         // storing currentPageNumber as its needed for the label of a metaphor annotation
         window.CURRENTPAGENUMBER = /*[[${currentPage.pageNumber}]]*/ "default.number";
         // storing currentPageUrl as its needed for the target creation
@@ -503,7 +489,7 @@
 
         document.addEventListener("DOMContentLoaded", (_event) => {
             // initiliazing the editor
-            window.textEditor.init(JSON.parse(document.body.getAttribute('data-field')));
+            window.textEditor.init(document.body.getAttribute('data-field'));
 
             // initializing the sidebar
             window.sidebar.initializeSidebar();
@@ -514,11 +500,11 @@
                 // check if the annotations are compatible with the code, i.e. have
                 // one xPath for each target and not one long xPath including all targets.
                 // Make them compatible, if they are not
-                drawAnnos(JSON.parse
+                window.textEditor.drawAnnos(JSON.parse
                     (document.body.getAttribute('data-field'))
                     .map(annotation => {
-                        if (!checkIsTargetCompatible(annotation)){
-                            makeTargetsCompatible(annotation);
+                        if (!window.textEditor.checkIsTargetCompatible(annotation)){
+                            window.textEditor.makeTargetsCompatible(annotation);
                         }
                         return annotation;
                     })
@@ -528,7 +514,7 @@
                 window.sidebar.updateSidebar(window.TEXTLANGUAGE);
 
                 // display the annotation with the id stored in the url
-                const targetAnnotationId = navigation.getTargetAnnotationId();
+                const targetAnnotationId = window.navigation.getTargetAnnotationId();
                 if (targetAnnotationId) {
                     selectAnnotation(null, encodeAnnoId(targetAnnotationId));
                     if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
@@ -538,7 +524,7 @@
 
                 // Construct and display a navigation bar.
                 const $navbar = document.getElementById('textNavBar');
-                navigation.initializeNavigation($navbar);
+                window.navigation.initializeNavigation($navbar);
             });
         });
 

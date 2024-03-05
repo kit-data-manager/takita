@@ -36,19 +36,19 @@ export function selectAnnotation(_event, annoId) {
       // - edit/update function in editor_xml.js
       // - for the highlighting of the words targeted by the currently
       //   selected annotation/displayed textCard
-      globalSelectedAnnotation = JSON.parse(JSON.stringify(responseJson));
+      window.SELECTED_ANNOTATION = JSON.parse(JSON.stringify(responseJson));
       // check if the annotation is compatible with the code, i.e. has
       // one xPath for each target and not one long xPath including all targets.
       // Make it compatible, if is are not
-      if (document.getElementById('TEI') != null) {
-        if (!checkIsTargetCompatible(globalSelectedAnnotation)) {
-          makeTargetsCompatible(globalSelectedAnnotation);
+      if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
+        if (!checkIsTargetCompatible(window.SELECTED_ANNOTATION)) {
+          makeTargetsCompatible(window.SELECTED_ANNOTATION);
         }
         // highlight words targetted by the currently selected annotation
         // remove old highlights (TODO: include this in removeStyles(el) in editor_xml.js)
         document.querySelectorAll('.selected').forEach((element) => element.classList.remove('selected'));
         // add a class to all the targets of the selected annotation
-        globalSelectedAnnotation.targets.forEach((target) => {
+        window.SELECTED_ANNOTATION.targets.forEach((target) => {
           const targetId = target.selector.xPath.split('"')[1];
           document.getElementById(targetId).classList.add('selected');
         });
@@ -115,7 +115,7 @@ export function selectAnnotation(_event, annoId) {
       const headerFields = ['created', 'creators', 'modified', 'generator', 'motivation', 'target', 'via'];
       const omitFields = ['type', 'selector', 'fullJson', 'annotationId', 'motivation', 'created'];
 
-      for (field in headerFields) {
+      for (let field in headerFields) {
         if (responseJson[headerFields[field]]) {
           //console.log(responseJson[headerFields[field]]);
           formDataModel = completeFormDataModel(responseJson, formDataModel, headerFields[field], omitFields);
@@ -245,6 +245,7 @@ export function selectAnnotation(_event, annoId) {
 
         for (let key in bodies[body]) {
           //console.log(key);
+          // eslint-disable-next-line no-prototype-builtins
           if (bodies[body].hasOwnProperty(key)) {
             formDataModel = completeFormDataModel(bodies[body], formBodyDataModel, key, omitFields);
             if (key !== 'value' && omitFields.indexOf(key) === -1) {
@@ -329,6 +330,7 @@ export function selectAnnotation(_event, annoId) {
         for (let key in bodies[body]) {
           //console.log(key);
           //console.log(bodies[body]);
+          // eslint-disable-next-line no-prototype-builtins
           if (bodies[body].hasOwnProperty(key)) {
             formBodyDataModelHorizontal = completeFormDataModel(
               bodies[body],
@@ -362,7 +364,7 @@ export function selectAnnotation(_event, annoId) {
         // replaced with the text of the linked mrw-annotation. The actual bodies[body] should stay
         // intact though, so bodies[body] will be deep copied
         let resourceHorizontal = JSON.parse(JSON.stringify(bodies[body]));
-        resourceHorizontal = await projectSpecificTextCardCreation(resourceHorizontal);
+        resourceHorizontal = await projectSpecificTextCardCreation(annoId, resourceHorizontal);
 
         let optionsHorizontal = {
           operation: operationHorizontal,
@@ -393,7 +395,7 @@ export function selectAnnotation(_event, annoId) {
               'Content-Type': 'application/json',
             },
 
-            success: function (responseData) {
+            success: function (_responseData) {
               //console.log(responseData);
               selectAnnotation(null, annoIdEncoded);
               // TODO: this is just a bandaid for now as it only updates the first
@@ -410,7 +412,7 @@ export function selectAnnotation(_event, annoId) {
             },
 
             error: function (errorData) {
-              //console.log(errorData);
+              console.log(errorData);
             },
           });
         });
@@ -421,6 +423,7 @@ export function selectAnnotation(_event, annoId) {
 
         // remove the wrapping fieldset. the form can't be created without the fieldset
         // due to the code in metadataeditor.js (eg. line 485) requires a JSON object
+        // eslint-disable-next-line @stylistic/js/max-len
         // https://stackoverflow.com/questions/19261197/how-can-i-remove-wrapper-parent-element-without-removing-the-child
         let fieldsetHorizontal = document.getElementById('formHorizontal' + bodies[body].id).firstChild.firstChild;
         fieldsetHorizontal.replaceWith(...fieldsetHorizontal.childNodes);
@@ -464,7 +467,7 @@ export function selectAnnotation(_event, annoId) {
 
       // adding the functionality to modify the selected text of an annotation
       // to the textCard display
-      if (document.getElementById('TEI') != null) {
+      if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
         var buttonModifySelection = document.createElement('button');
         buttonModifySelection.innerHTML = 'Modify Selection';
         buttonModifySelection.id = 'buttonModifySelection';
@@ -497,8 +500,8 @@ export function selectAnnotation(_event, annoId) {
 
 // TODO: CUSTOMISE this function and add corresponding imports
 // to change the horizontal display of a textcard
-async function projectSpecificTextCardCreation(resourceHorizontal) {
-  return await updateLinkingTextcard(resourceHorizontal);
+async function projectSpecificTextCardCreation(annoId, resourceHorizontal) {
+  return await updateLinkingTextcard(annoId, resourceHorizontal);
 }
 
 // TODO: CUSTOMISE this function and add corresponding imports

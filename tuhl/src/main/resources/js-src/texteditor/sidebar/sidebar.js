@@ -56,7 +56,7 @@ function goHome() {
   location.href = window.CONTEXTPATH;
 }
 
-function hideExpandedSidebar() {
+export function hideExpandedSidebar() {
   let sideBar = document.querySelector('.anno-side-bar');
   if (!sideBar.classList.contains('annocollapse')) {
     toggleAnnoSideBar();

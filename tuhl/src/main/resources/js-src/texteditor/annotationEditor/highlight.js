@@ -116,7 +116,7 @@ function removeStyles(el) {
 }
 
 // highlighting all annotations
-function drawAnnos(annoJson) {
+export function drawAnnos(annoJson) {
   let targetXmlId;
   let alreadyAnnotated;
   annoJson.forEach((annotation) => {
@@ -192,7 +192,8 @@ function drawAnnos(annoJson) {
               // nothing will happen
             } else {
               targetElement.classList.add('defaulthighlight');
-              //console.log("Tag value not matching the possible cases, 'defaulthighlight' class added for:", annotation);
+              //console.log("Tag value not matching the possible cases, 'defaulthighlight'
+              // class added for:", annotation);
             }
         }
       } else {
@@ -223,7 +224,7 @@ export async function updateDisplay() {
   try {
     // update annoJson to get the current tagging-body-values
     // as they are the basis for the highlighting
-    annoJson = await getAnnoJson();
+    let annoJson = await getAnnoJson();
     // check if the annotations are compatible with the code, i.e. have
     // one xPath for each target and not one long xPath including all targets.
     // Make them compatible, if they are not
@@ -238,6 +239,9 @@ export async function updateDisplay() {
     // highlight all annotated words
     drawAnnos(annoJson);
     console.log('Display and annoJson: ', annoJson, ' updated successfully.');
+    // TODO: this window variable could maybe be removed
+    window.ANNOJSON = annoJson;
+    return annoJson;
   } catch (error) {
     console.error('Display update failed ', error);
   }

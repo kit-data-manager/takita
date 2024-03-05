@@ -29,8 +29,9 @@ export function createTargetList(selection) {
       endOffset: selectionRange.endOffset,
     };
 
-    // check if the selected text starts with whitespace (/^\s/ = regex matching any whitespace at the start of a word from
-    // https://stackoverflow.com/questions/10844294/how-to-check-whether-a-string-has-whitespace-at-the-beginning-in-javascript)
+    // check if the selected text starts with whitespace (/^\s/ = regex matching any whitespace at the start of a word
+    // eslint-disable-next-line @stylistic/js/max-len
+    // from: https://stackoverflow.com/questions/10844294/how-to-check-whether-a-string-has-whitespace-at-the-beginning-in-javascript)
     // or if the first childs textContent is only whitespace. If it does
     // set the startOffest to 0 as the first selected element holding text
     // will have its start fully selected and the startOffset is used to
@@ -131,13 +132,13 @@ function createListOfIds(targetList) {
   // the web annotations; its a STRING
   // targetListJsonAsJson is the same as targetListJson but as JSON
   let targetsXmlIds = '';
-  let targetListJson;
-  let targetListJsonAsJson;
+  // let targetListJson;
+  // let targetListJsonAsJson;
   // following variables are needed to create a jsonish target
   let valueId;
-  let selectorObject;
-  let targetJson = {};
-  let targetArray = [];
+  // let selectorObject;
+  // let targetJson = {};
+  // let targetArray = [];
 
   // if the targetList holds only one element, as only one element got selected
   // only that will be stored in targetListJson
@@ -150,7 +151,7 @@ function createListOfIds(targetList) {
     targetsXmlIds = valueId;
     // if holds multiple elements, as multiple elements got selected
   } else if (targetList.length !== 0) {
-    targetListJson = '[';
+    // targetListJson = '[';
     targetList.forEach((item) => {
       // storing values to build a JSON and convert it to a STRING
       valueId = '//*[@xml:id="' + item.id + '"]';

@@ -1,18 +1,18 @@
-import { checkIsTargetCompatible, makeTargetsCompatible } from './highlight';
 import { encodeAnnoId, toggleOverview } from '../../common/utils';
 import { selectAnnotation } from '../../common/annotationDisplay';
+import { hideExpandedSidebar } from '../sidebar';
+import { checkIsTargetCompatible, makeTargetsCompatible } from './highlight';
 import { checkIsSelectionOnWorkspace, getContentOfSelection } from './textSelection';
-import { modifySelection, cancelModification } from './annotationModification';
+import { modifySelection, cancelModification, updateTarget } from './annotationModification';
 import { createTargetList, createXPath } from './targetCreation';
 import { pickTemplate } from './annotationCreation/creationTemplates';
 
-let annoJson;
+window.ANNOJSON;
 
-let selectingText = false;
-let initiated = false;
+window.SELECTING_TEXT = false;
 
 // this is needed for editor.js (l.575ff.) to work atm
-let paper;
+window.PAPER;
 
 // globalSelectedAnnotation stores the annotation, that gets
 // selected by right clicking on a highlighted word
@@ -20,17 +20,17 @@ let paper;
 // - edit/update the target of that annotation
 // - cycle through multiple annotations on one target and select them
 // - (CRC1475: to add a mrw-annotation to a metaphor annotation)
-let globalSelectedAnnotation;
+window.SELECTED_ANNOTATION;
 
 // selectedText stores the selected test as a string
 // it is needed to add it to the annotations body
-let globalSelectedText;
+window.SELECTED_TEXT;
 
 // mrwAnnos stores the mrws that are contained in a selection
 // it is needed to link mrw annotations with metaphor annotations
-let globalMrwAnnos = [];
+window.MRW_ANNOS = [];
 
-class Mode {
+window.MODE_CLASS = class Mode {
   static View = new Mode('view');
   static Create = new Mode('create');
   static Modify = new Mode('modify');
@@ -39,23 +39,24 @@ class Mode {
   constructor(name) {
     this.name = name;
   }
-}
+};
 
-let mode = Mode.View;
+window.MODE = window.MODE_CLASS.View;
 
 export function init(annotations) {
   // fill the annoJson with the annotations passed by the java backend
-  annoJson = JSON.parse(annotations);
+  window.ANNOJSON = JSON.parse(annotations);
   // check if the annotations are compatible with the code, i.e. have
   // one xPath for each target and not one long xPath including all targets.
   // Make them compatible, if they are not
-  annoJson = annoJson.map((annotation) => {
+  window.ANNOJSON = window.ANNOJSON.map((annotation) => {
     if (!checkIsTargetCompatible(annotation)) {
       makeTargetsCompatible(annotation);
     }
     return annotation;
   });
 
+  // bind eventHandlers to clicks and buttons
   // open textcard if rightclicking on a word that is highlighted due to it
   // having a css class, i.e. has an annotation
   document.getElementById('TEI').oncontextmenu = function (e) {
@@ -73,7 +74,7 @@ export function init(annotations) {
       e.target.classList.contains('defaulthighlight')
     ) {
       // add all the annotations targeting the selected word to an array
-      annoJson.forEach((item) => {
+      window.ANNOJSON.forEach((item) => {
         item.svg.forEach((target) => {
           if (e.target.id == target.split('"')[1]) {
             annotationOnTarget.push(item);
@@ -84,10 +85,10 @@ export function init(annotations) {
       // check if any annotation was selected previuosly or if the target word changed and therefore
       // the id of the previuosly selected annotation is not present in the list of annotations, that
       // target the word on which the onClick event was triggered
-      console.log('selectedAnnotation 1: ', globalSelectedAnnotation);
+      console.log('selectedAnnotation 1: ', window.SELECTED_ANNOTATION);
       if (
-        globalSelectedAnnotation === undefined ||
-        annotationOnTarget.find((annotation) => annotation.id === globalSelectedAnnotation.id) === undefined
+        window.SELECTED_ANNOTATION === undefined ||
+        annotationOnTarget.find((annotation) => annotation.id === window.SELECTED_ANNOTATION.id) === undefined
       ) {
         console.log('first annotationsOntarget ', annotationOnTarget[0]);
         annoIdEncoded = encodeAnnoId(annotationOnTarget[0].id);
@@ -95,7 +96,7 @@ export function init(annotations) {
         // check if the next index would be out off bounds, if yes select the first annotaiton in the list
         // to start at the beginning of the list again and cycle through
         if (
-          annotationOnTarget.findIndex((annotation) => annotation.id === globalSelectedAnnotation.id) + 1 >
+          annotationOnTarget.findIndex((annotation) => annotation.id === window.SELECTED_ANNOTATION.id) + 1 >
           annotationOnTarget.length - 1
         ) {
           annoIdEncoded = encodeAnnoId(annotationOnTarget[0].id);
@@ -103,13 +104,13 @@ export function init(annotations) {
         } else {
           annoIdEncoded = encodeAnnoId(
             annotationOnTarget[
-              annotationOnTarget.findIndex((annotation) => annotation.id === globalSelectedAnnotation.id) + 1
+              annotationOnTarget.findIndex((annotation) => annotation.id === window.SELECTED_ANNOTATION.id) + 1
             ].id,
           );
           console.log(
             '2-n annotationsOntarget ',
             annotationOnTarget[
-              annotationOnTarget.findIndex((annotation) => annotation.id === globalSelectedAnnotation.id) + 1
+              annotationOnTarget.findIndex((annotation) => annotation.id === window.SELECTED_ANNOTATION.id) + 1
             ],
           );
         }
@@ -118,7 +119,7 @@ export function init(annotations) {
       console.log('select anno id encoded: ', annoIdEncoded);
       selectAnnotation(null, annoIdEncoded);
       //alert("asd");
-      console.log('selectedAnnotation 2: ', globalSelectedAnnotation);
+      console.log('selectedAnnotation 2: ', window.SELECTED_ANNOTATION);
       if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
         toggleOverview('annotationCard');
       }
@@ -127,7 +128,7 @@ export function init(annotations) {
 
   document.getElementById('TEI').onmouseup = function (_event) {
     // only get a selection, if a user actually wants to select text
-    if (mode === Mode.Create && selectingText) {
+    if (window.MODE === window.MODE_CLASS.Create && window.SELECTING_TEXT) {
       annotateSelectedText();
 
       /*let target = [];
@@ -141,7 +142,7 @@ export function init(annotations) {
               
              */
     }
-    if (mode === Mode.Modify && selectingText) {
+    if (window.MODE === window.MODE_CLASS.Modify && window.SELECTING_TEXT) {
       modifySelection();
 
       /*let target = [];
@@ -157,35 +158,43 @@ export function init(annotations) {
     }
   };
 
+  // adding eventhandler for text selection
+  document.getElementById('selectTextListItem').addEventListener('mousedown', onclickSelectText);
+
   // adding the closing functionality to annotation creation modal
-  document.getElementById('closeButtonAnno').addEventListener('click', function (e) {
+  document.getElementById('closeButtonAnno').addEventListener('click', function (_e) {
     document.getElementById('createAnnotation').classList.toggle('show-modal');
 
     // disabling the option to create an annotation. needed, because selecting text
     // can be done before the mode was set to create by clicking the button after the text selection process
-    mode = Mode.View;
-    selectingText = false;
+    window.MODE = window.MODE_CLASS.View;
+    window.SELECTING_TEXT = false;
   });
 
   // adding the closing functionality to body creation modal
-  document.getElementById('closeButton').addEventListener('click', function (e) {
+  document.getElementById('closeButton').addEventListener('click', function (_e) {
     document.getElementById('createBody').classList.toggle('show-modal');
     // disabling the option to create an annotation. needed, because selecting text
     // can be done before the mode was set to create by clicking the button after the text selection process
-    mode = Mode.View;
-    selectingText = false;
+    window.MODE = window.MODE_CLASS.View;
+    window.SELECTING_TEXT = false;
   });
 
   // adding the closing functionality to text selection update modal
-  document.getElementById('closeButtonUpdate').addEventListener('click', function (e) {
+  document.getElementById('closeButtonUpdate').addEventListener('click', function (_e) {
     document.getElementById('updateSelection').classList.toggle('show-modal');
     // document.getElementById('modifyButton').parentElement.classList.remove('active');
     cancelModification();
     // disabling the option to create an annotation. needed, because selecting text
     // can be done before the mode was set to create by clicking the button after the text selection process
-    mode = Mode.View;
-    selectingText = false;
+    window.MODE = window.MODE_CLASS.View;
+    window.SELECTING_TEXT = false;
   });
+
+  // adding the update target functionality to the button of the text selection update modal
+  document.getElementById('updateTaregtButton').addEventListener('click', updateTarget);
+
+  // add all global variable to the window.object
 }
 
 function annotateSelectedText() {
@@ -223,7 +232,7 @@ function annotateSelectedText() {
     // so they can be accessed in creation_templates_text.js to generate
     // a list of selected mrws inside a metaphor and link the mrw annotations
     // to the metaphor annotation
-    globalMrwAnnos = [];
+    window.MRW_ANNOS = [];
     targetRangeList.forEach((range) => {
       // to prevent duplicates in the globalMrwAnnos array, it has to be cleaned
       // after more mrw-annotations got included, which might be duplicates. This is needed, because
@@ -232,18 +241,18 @@ function annotateSelectedText() {
       // https://medium.com/@rivoltafilippo/javascript-merge-arrays-without-duplicates-3fbd8f4881be
       // TODO: this can be improved by using a set. This will affect storeSelectedMRWAnnos() and
       // the opints in the creation_templates_text.js where the globalMrwAnno array is used.
-      const tmpMrwAnnos = globalMrwAnnos.concat(storeSelectedMRWAnnos(range.targetList));
-      globalMrwAnnos = tmpMrwAnnos.filter((item, idx) => tmpMrwAnnos.indexOf(item) === idx);
+      const tmpMrwAnnos = window.MRW_ANNOS.concat(storeSelectedMRWAnnos(range.targetList));
+      window.MRW_ANNOS = tmpMrwAnnos.filter((item, idx) => tmpMrwAnnos.indexOf(item) === idx);
     });
 
     // set globalSelectedText so it can be displayed in the modal and remove all whitespaces
     // TODO: this should use removeWhitespaceFromSelectionTextContent()
-    globalSelectedText = getContentOfSelection(window.getSelection()).textContent.replace(/\s{4}|[\t\n\r]|\s/g, ' ');
-    while (globalSelectedText.includes('  ')) {
-      globalSelectedText = globalSelectedText.replaceAll('  ', ' ');
+    window.SELECTED_TEXT = getContentOfSelection(window.getSelection()).textContent.replace(/\s{4}|[\t\n\r]|\s/g, ' ');
+    while (window.SELECTED_TEXT.includes('  ')) {
+      window.SELECTED_TEXT = window.SELECTED_TEXT.replaceAll('  ', ' ');
     }
-    globalSelectedText = globalSelectedText.trim();
-    console.log('GlobalSelectedText: ', globalSelectedText);
+    window.SELECTED_TEXT = window.SELECTED_TEXT.trim();
+    console.log('GlobalSelectedText: ', window.SELECTED_TEXT);
 
     // showing the modal/dropdown to select the annotation template, which can be populated
     // by the user
@@ -258,8 +267,8 @@ function annotateSelectedText() {
 
     // resetting parameters, so no new annotation can be created without clicking on
     // the button at the sidebar, that enables annotation
-    mode = Mode.View;
-    selectingText = false;
+    window.MODE = window.MODE_CLASS.View;
+    window.SELECTING_TEXT = false;
   }
 }
 
@@ -267,7 +276,7 @@ function annotateSelectedText() {
 export function storeSelectedMRWAnnos(targetList) {
   // empty the mrwAnno list beforehand
   let mrwAnnos = [];
-  annoJson.forEach((annotation) => {
+  window.ANNOJSON.forEach((annotation) => {
     //annoXmlId = annotation.svg.split("\"")[1];
     //console.log(annotation);
     // checking if the annotation is a mrw-annotation by checking its color,
@@ -300,4 +309,11 @@ export function storeSelectedMRWAnnos(targetList) {
   console.log('MRW annotations present in current selection: ', mrwAnnos);
 
   return mrwAnnos;
+}
+
+function onclickSelectText(event) {
+  hideExpandedSidebar();
+  window.SELECTING_TEXT = true;
+  window.MODE = window.MODE_CLASS.Create;
+  annotateSelectedText();
 }

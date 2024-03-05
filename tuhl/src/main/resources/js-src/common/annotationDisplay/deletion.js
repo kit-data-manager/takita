@@ -18,26 +18,26 @@ export function deleteBodyFromAnnotation(annoId, bodyId) {
       type: 'DELETE',
       url: window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + '/bodies/' + bodyId,
 
-      success: function (responseData) {
+      success: function (_responseData) {
         //console.log(responseData);
         selectAnnotation(null, annoIdEncoded);
         // updating the display for text annotation
         // checking if TEI-element is null. it is defined for text annotation,
         // but not for image annotation
-        if (document.getElementById('TEI') != null) {
+        if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
           // redrawing all annotations
           updateDisplay();
         }
       },
 
       error: function (errorData) {
-        //console.log(errorData);
+        console.log(errorData);
 
         $.ajax({
           type: 'DELETE',
           url: window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + '/tags/' + bodyId,
 
-          success: function (responseData) {
+          success: function (_responseData) {
             //console.log(responseData);
             selectAnnotation(null, annoIdEncoded);
             // TODO: this is just a bandaid for now as it empties the tags array completly
@@ -47,7 +47,7 @@ export function deleteBodyFromAnnotation(annoId, bodyId) {
             // updating the display for text annotation
             // checking if TEI-element is null. it is defined for text annotation,
             // but not for image annotation
-            if (document.getElementById('TEI') != null) {
+            if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
               // redrawing all annotations
               updateDisplay();
             }
@@ -68,7 +68,7 @@ export function deleteAnnotation(annoId) {
       type: 'DELETE',
       url: window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded,
 
-      success: function (responseData) {
+      success: function (_responseData) {
         //console.log(responseData);
         if (!document.getElementById('annotationCard').classList.contains('is-hidden')) {
           toggleOverview('annotationCard');
@@ -77,8 +77,8 @@ export function deleteAnnotation(annoId) {
         // updating the display for image annotation
         // checking if paper is defined. it is defined for image annotation,
         // but not for text annotation
-        if (paper != undefined) {
-          paper.forEach(function (element) {
+        if (window.EDITORTYPE == 'IMAGE' && window.PAPER != undefined) {
+          window.PAPER.forEach(function (element) {
             if (element.annoId === annoId) {
               element.remove();
             }
@@ -88,24 +88,24 @@ export function deleteAnnotation(annoId) {
         // this for-loop is unnecessary for the textEditor
         // as the updateDisplay()-function updates the annoJson as well
         // the imageEditor still needs the for-loop
-        for (let anno in annoJson) {
-          if (annoJson[anno].id === annoId) {
+        for (let anno in window.ANNOJSON) {
+          if (window.ANNOJSON[anno].id === annoId) {
             //console.log(annoId + " this must go!")
-            annoJson.splice(anno, 1);
+            window.ANNOJSON.splice(anno, 1);
           }
         }
 
         // updating the display for text annotation
         // checking if TEI-element is null. it is defined for text annotation,
         // but not for image annotation
-        if (document.getElementById('TEI') != null) {
+        if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
           // redrawing all annotations
           updateDisplay();
         }
 
         // maybe move it within the if clause?
         //console.log(annoJson);
-        fillMetaDataEditorTable(annoJson);
+        fillMetaDataEditorTable(window.ANNOJSON);
       },
     });
   }

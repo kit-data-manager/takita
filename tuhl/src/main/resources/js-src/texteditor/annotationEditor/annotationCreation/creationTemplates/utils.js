@@ -1,11 +1,16 @@
 // external modules
-import { $ } from 'jquery';
+import jQuery from 'jquery';
+import jsonForm from 'jsonform';
 //internal modules
 import { encodeAnnoId, toggleOverview, fillMetaDataEditorTable } from '../../../../common/utils';
 import { selectAnnotation } from '../../../../common/annotationDisplay/selection';
-import { updateDisplay, storeSelectedMRWAnnos } from '../../annotationEditor';
+import { updateDisplay, storeSelectedMRWAnnos } from '../../../annotationEditor';
 import { formObjectCreateAnnotation } from './creationTemplateTextCRC1475';
 import { formObjectCreateBody } from './creationTemplateTextCRC1475body';
+
+function jsonForms(para) {
+  jsonForm(para);
+}
 
 // preselect all checkboxes for the mrw-annos present in the current selection
 // during metaphor annotation creation via the template
@@ -28,6 +33,7 @@ function preselectAllMRWAnnos() {
 // a message on how to enable it.
 // currently not used as users are allowed to create a metaphor
 // annotation without a mrw-annotation
+// eslint-disable-next-line no-unused-vars
 function disableAnnotationCreation() {
   document.querySelector('#createAnnotationForm > div:nth-child(1) > input:nth-child(2)').remove();
   let explanationDiv = document.createElement('div');
@@ -62,7 +68,7 @@ function getSelectMRWButton(mrwEnum) {
   const selectMRWButton = {
     type: 'button',
     title: 'Select/unselect all mrws',
-    onClick: function (e) {
+    onClick: function (_e) {
       // select all input fields, where the name starts with "mrws"
       // the input fields storing the mrws present in a selection
       // get their name from the ordering in the mrws-array:
@@ -159,7 +165,7 @@ export function getFormModel(chosenTemplate) {
           selectedText: {
             type: 'string',
             title: 'Selected text',
-            default: globalSelectedText,
+            default: window.SELECTED_TEXT,
             readOnly: true,
           },
           classification: {
@@ -200,7 +206,7 @@ export function getFormModel(chosenTemplate) {
           selectedText: {
             type: 'string',
             title: 'Selected text',
-            default: globalSelectedText,
+            default: window.SELECTED_TEXT,
             readOnly: true,
           },
           classification: {
@@ -241,7 +247,7 @@ export function getFormModel(chosenTemplate) {
           selectedText: {
             type: 'string',
             title: 'Selected text',
-            default: globalSelectedText,
+            default: window.SELECTED_TEXT,
             readOnly: true,
           },
           classification: {
@@ -282,7 +288,7 @@ export function getFormModel(chosenTemplate) {
           selectedText: {
             type: 'string',
             title: 'Selected text',
-            default: globalSelectedText,
+            default: window.SELECTED_TEXT,
             readOnly: true,
           },
           classification: {
@@ -325,7 +331,7 @@ export function getFormModel(chosenTemplate) {
         selectedText: {
           type: 'string',
           title: 'Selected text',
-          default: globalSelectedText,
+          default: window.SELECTED_TEXT,
           readOnly: true,
         },
         classification: {
@@ -377,13 +383,13 @@ export function getFormModel(chosenTemplate) {
       // if there are mrw-annotations present in the current selection
       // modify the dataModel and uiForm in a way to show a checkbox
       // for each mrw-annotation present
-      if (globalMrwAnnos.length > 0) {
+      if (window.MRW_ANNOS.length > 0) {
         // if a user wants to create a metaphor annotation,
-        // get all the mrws that are present in his selection (globalMrwAnnos)
+        // get all the mrws that are present in his selection (window.MRW_ANNOS)
         // and store them in the enum to hold all the mrwAnnoIds, so the user can
         // choose a mrw to link it to a metaphor
 
-        let enumAndTitleMap = getEnumAndTitleMap(globalMrwAnnos);
+        let enumAndTitleMap = getEnumAndTitleMap(window.MRW_ANNOS);
         let mrwEnum = enumAndTitleMap[0];
         // metaphorTitleMap is necessary to have the actual words displayed,
         // but to have the annoId as a value on the submission of the form
@@ -394,7 +400,7 @@ export function getFormModel(chosenTemplate) {
           selectedText: {
             type: 'string',
             title: 'Selected text',
-            default: globalSelectedText,
+            default: window.SELECTED_TEXT,
             readOnly: true,
           },
           classification: {
@@ -529,7 +535,7 @@ export function getFormModel(chosenTemplate) {
 
       // store all elements targeted by the metaphor annotation and mrw annotations
       let elementsTargeted = [];
-      globalSelectedAnnotation.targets.forEach((target) => {
+      window.SELECTED_ANNOTATION.targets.forEach((target) => {
         elementsTargeted.push(document.getElementById(target.selector.xPath.split('"')[1]));
       });
       // get all mrwAnnos that target the same words as the metaphor annotation
@@ -537,7 +543,7 @@ export function getFormModel(chosenTemplate) {
       // remove all mrw annotations, which are linked to the metaphor annotation already
       // from mrwAnnosForBody to prevent users from linking the same mrwAnno
       // multiple times
-      globalSelectedAnnotation.textCards.forEach((textCard) => {
+      window.SELECTED_ANNOTATION.textCards.forEach((textCard) => {
         if (textCard.purpose === 'linking') {
           mrwAnnosForBody = mrwAnnosForBody.filter((anno) => textCard.value !== anno.id);
         }
@@ -592,7 +598,7 @@ export function projectSpecifics() {
   // if a user wants to create a metaphor-annotation, preselect the checkboxes
   // for the linking of mrw-annotations
   if (
-    globalMrwAnnos.length > 0 &&
+    window.MRW_ANNOS.length > 0 &&
     document.querySelector(
       '#pickAnnotationTemplateForm > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > select:nth-child(1)',
     ).value === 'METAPHOR'
@@ -602,8 +608,9 @@ export function projectSpecifics() {
 
   // if a user wants to create a metaphor-annotation, but there is no
   // mrw-annotation present in the selection, disable annotation creation
-  //if (globalMrwAnnos.length === 0 &&
-  //document.querySelector("#pickAnnotationTemplateForm > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > select:nth-child(1)").value === "METAPHOR"){
+  //if (window.MRW_ANNOS.length === 0 &&
+  //document.querySelector("#pickAnnotationTemplateForm > div:nth-child(1) > div:nth-child(1)
+  // > div:nth-child(2) > select:nth-child(1)").value === "METAPHOR"){
   //disableAnnotationCreation();
   //}
 }
@@ -621,7 +628,7 @@ export function storeBody(responseJson, jsonObject, index) {
       switch (jsonObject.color) {
         case '#e2b8f7':
           bodyDataJson = { purpose: 'classifying', subject: 'PageRegion' };
-          $.ajax({
+          jQuery.ajax({
             type: 'POST',
             url: endpoint,
             data: JSON.stringify(bodyDataJson),
@@ -645,7 +652,7 @@ export function storeBody(responseJson, jsonObject, index) {
             subject: 'TextRegion',
             source: 'http://episteme.org/A04Vokabular#text_block',
           };
-          $.ajax({
+          jQuery.ajax({
             type: 'POST',
             url: endpoint,
             data: JSON.stringify(bodyDataJson),
@@ -704,7 +711,7 @@ export function storeBody(responseJson, jsonObject, index) {
         }
       }
 
-      $.ajax({
+      jQuery.ajax({
         type: 'POST',
         url: endpoint,
         data: JSON.stringify(bodyDataJson),
@@ -712,7 +719,7 @@ export function storeBody(responseJson, jsonObject, index) {
           'Content-Type': 'application/json',
         },
 
-        success: function (responseData) {
+        success: function (_responseData) {
           storeBody(responseJson, jsonObject, index + 1);
         },
 
@@ -740,15 +747,17 @@ export function storeBody(responseJson, jsonObject, index) {
 
     // this is not needed anymore for the textEditor since commit 0f347413a3250dd7b79c4a9171630b7556a28f9b on 14.06.23
     // as tAkita js now gets a new annoJson from tAkita core and doesn't update it by itself
-    /* let newAnnotation = {"created" : new Date(responseJson.created.seconds * 1000 + responseJson.created.nanos / 1000000).toISOString(), 
-              "creator" : responseJson.creators, "id" : responseJson.id, "idEncoded" : encodeAnnoId(responseJson.id), 
-              "modified" : new Date(responseJson.modified.seconds * 1000 + responseJson.modified.nanos / 1000000).toISOString(), 
-              "motivation" : responseJson.motivation, "visible" : true}; */
+    /* let newAnnotation = {
+    "created" : new Date(responseJson.created.seconds * 1000 + responseJson.created.nanos / 1000000).toISOString(), 
+    "creator" : responseJson.creators, "id" : responseJson.id, "idEncoded" : encodeAnnoId(responseJson.id), 
+    "modified" : new Date(responseJson.modified.seconds * 1000 + responseJson.modified.nanos / 1000000).toISOString(), 
+    "motivation" : responseJson.motivation, "visible" : true}; 
+    */
 
     // redrawing all annotations
     updateDisplay();
 
-    fillMetaDataEditorTable(annoJson);
+    fillMetaDataEditorTable(window.ANNOJSON);
     //document.getElementById('createRectangleButton').parentElement.classList.remove('active');
     //document.getElementById('createPolygonButton').parentElement.classList.remove('active');
     document.getElementById('createAnnotationForm').removeAttribute('title');
@@ -789,11 +798,12 @@ export function pickTemplate(svgCode, encodedId, createFormId, pickFormId, templ
     document.getElementById(createFormId).title = svgCode;
   }
 
+  console.log(jQuery('#' + pickFormId));
   // creates dropdown from enum objects defined at the top
   if (template === 'bodyTemplate') {
-    $('#' + pickFormId).jsonForm(formObjectCreateBody);
+    jQuery('#' + pickFormId).jsonForm(formObjectCreateBody);
   } else {
-    $('#' + pickFormId).jsonForm(formObjectCreateAnnotation);
+    jQuery('#' + pickFormId).jsonForm(formObjectCreateAnnotation);
   }
 }
 

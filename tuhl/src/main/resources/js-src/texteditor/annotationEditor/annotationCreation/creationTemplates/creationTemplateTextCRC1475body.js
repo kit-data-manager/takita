@@ -76,7 +76,7 @@ export const formObjectCreateBody = {
             // responseJson is needed.
             // The only thing that storeBody(responseJson, jsonObject, index) needs from the responseJson is the
             // id of the annotation. So a "dummy" responseJson is created holding only the annotation id.
-            storeBody({ id: globalSelectedAnnotation.id }, jsonObject, 0);
+            storeBody({ id: window.SELECTED_ANNOTATION.id }, jsonObject, 0);
             // hiding the modal.
             document.getElementById('createBody').classList.toggle('show-modal');
           } else {

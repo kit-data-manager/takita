@@ -71,7 +71,8 @@ export const formObjectCreateAnnotation = {
             color = '#89f099';
           }
 
-          // window.location.pathname.split('/').pop() returns the last part of the url, which is the pageId, which is required
+          // window.location.pathname.split('/').pop() returns the last part of the url,
+          // which is the pageId, which is required
           // to create an annotation
           let annotationDataJson = {
             pageId: window.location.pathname.split('/').pop(),
