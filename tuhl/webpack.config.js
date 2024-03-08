@@ -1,3 +1,4 @@
+const webpack = require('webpack');
 const path = require('path');
 //const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -61,7 +62,13 @@ module.exports = {
       }),
     ],
   },
-  plugins: [new ESLintPlugin()],
+  plugins: [
+    new ESLintPlugin(),
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery',
+    }),
+  ],
   resolve: {
     extensions: ['.js', '.jsx'],
   },
