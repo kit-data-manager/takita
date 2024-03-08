@@ -1,7 +1,5 @@
-// external modules
-import { $ } from 'jquery';
-
 // internal modules
+//import './../../../../common/utils/metadataeditor';
 import { getFormModel, spreadMRWArray, storeBody, projectSpecifics } from './utils';
 
 // enum for different annotation templates
@@ -83,7 +81,6 @@ export const formObjectCreateAnnotation = {
             annotationDataJson.svgCode = document.getElementById('createAnnotationForm').title;
           }
           console.log(annotationDataJson);
-
           $.ajax({
             type: 'POST',
             url: window.CONTEXTPATH + 'editor_rest/annotations',

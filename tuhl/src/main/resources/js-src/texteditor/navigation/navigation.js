@@ -1,3 +1,7 @@
+// internal modules
+import { selectAnnotation } from '../../common/annotationDisplay';
+import { encodeAnnoId, toggleOverview } from '../../common/utils';
+
 const POSSIBLE_TEXT_PART_TYPES = ['chapter', 'section'];
 
 /**
@@ -79,6 +83,16 @@ export function initializeNavigation($navBar) {
           behavior: 'smooth',
         });
       }, 100);
+    }
+  }
+}
+
+// TODO: merge this into the initializeNavbar function
+export function navigateToAnnotation(targetAnnotationId) {
+  if (targetAnnotationId) {
+    selectAnnotation(null, encodeAnnoId(targetAnnotationId));
+    if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
+      toggleOverview('annotationCard');
     }
   }
 }

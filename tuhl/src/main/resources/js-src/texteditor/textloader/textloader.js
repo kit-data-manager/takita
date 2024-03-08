@@ -8,7 +8,6 @@ export async function loadText(linkToResource) {
     const $teiElement = document.getElementById('TEI');
     $teiElement.innerHTML = '';
     $teiElement.appendChild($data);
-    console.log($teiElement);
     setTextLanguage($teiElement);
     applyStyles($teiElement, window.TEXTLANGUAGE);
   });

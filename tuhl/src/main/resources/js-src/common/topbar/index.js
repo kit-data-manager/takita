@@ -1,0 +1,1 @@
+export { initializeTopbar } from './topbar';

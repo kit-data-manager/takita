@@ -1,7 +1,6 @@
-// external modules
-import jQuery from 'jquery';
 // internal modules
 import { selectAnnotation, deleteAnnotation } from '../annotationDisplay';
+//import './metadataeditor';
 
 export function encodeAnnoId(annoId) {
   var annoIdEncoded = encodeURIComponent(annoId);
@@ -247,5 +246,5 @@ export function fillMetaDataEditorTable(annoJson) {
     //}
   };
 
-  jQuery('#table').metadataeditorTable(inputs);
+  $('#table').metadataeditorTable(inputs);
 }

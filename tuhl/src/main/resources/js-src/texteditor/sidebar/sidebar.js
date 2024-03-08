@@ -1,8 +1,8 @@
 import { toggleOverview } from '../../common/utils';
 
 export function initializeSidebar() {
-  // go home button
-  document.getElementById('goHomeButton').addEventListener('click', goHome);
+  // expand/hide sidebar
+  document.getElementById('logo-name__icon').addEventListener('click', toggleAnnoSideBar);
 
   // font manipulation buttons
   document.getElementById('fontIncreaseButton').addEventListener('click', function () {
@@ -32,7 +32,7 @@ export function initializeSidebar() {
     resetFontSize();
   });
 
-  // sho parts navigatoion
+  // show parts navigatoion
   document.getElementById('pagesButton').addEventListener('click', function () {
     hideExpandedSidebar();
     toggleOverview('pages');
@@ -49,11 +49,6 @@ export function initializeSidebar() {
 export function updateSidebar(language) {
   // add language specific buttons
   initializeSpecificButtons(language);
-}
-
-// returning to table view of repository data
-function goHome() {
-  location.href = window.CONTEXTPATH;
 }
 
 export function hideExpandedSidebar() {

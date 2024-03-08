@@ -25,17 +25,6 @@
     <link rel="stylesheet" th:href="@{/css/editor_text.css}">
     <!-- loading the stylesheet associated with the project -->
     <link rel="stylesheet" th:href="@{'/css/projectSpecific/'+${currentProject}+'.css'}">
-
-    <!-- JS, jQuery -->
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"
-            th:src="@{https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js}"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
-            integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"
-            th:src="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js}"></script>
-
-
 </head>
 <body class="container-fluid p-0" th:data-field="${currentAnnotationsJson}"
     onresize="resizeViewbox()">
@@ -49,7 +38,6 @@
           <i
             class="bx bx-arrow-from-left logo-name__icon annocollapse"
             id="logo-name__icon"
-            onclick="toggleAnnoSideBar()"
           ></i>
           <span class="tooltip">Expand</span>
         </div>
@@ -120,9 +108,8 @@
                 th:value="${user.getName()}"
                 disabled>
                 <div class="col-3 input-group-append is-vertical-align">
-                    <button id="editButton"
+                    <button id="pseudonymEditButton"
                     class="bx bx-edit"
-                    onclick="clickButton()"
                     > </button>
                 </div>
             </div>
@@ -214,8 +201,7 @@
     </div>
 
     <div id="editor">
-        <!-- th:fragment="editor -->
-
+    <!-- th:fragment="editor -->
     <!-- manuscript page -->
     <div class="row is-full-width">
         <div class="col-7">
@@ -363,119 +349,21 @@
             </form>
         </div>
     </div>
-
-    <script th:inline="javascript">
-
-        function clickDe(){
-            console.log("click de");
-            $.ajax({
-                type: 'GET',
-                url: window.CONTEXTPATH + 'assistance/lang/de',
-                dataType: 'text',
-            })
-            return true;
-        }
-
-        function clickEn(){
-            console.log("click en");
-            $.ajax({
-                type: 'GET',
-                url: window.CONTEXTPATH + 'assistance/lang/en',
-                dataType: 'text',
-            })
-
-            return true;
-        }
-
-        function getHelp(){
-            location.href = window.CONTEXTPATH + 'assistance/help';
-        }
-
-        function clickButton(){
-            /*<![CDATA[*/
-            let button = document.getElementById('editButton');
-            let input = document.getElementById('pseudonymInput');
-            let edit = [[#{buttons.edit}]];
-                let ok = [[#{buttons.ok}]];
-            if (button.classList.contains('bx-edit')){
-                button.classList.remove('bx-edit');
-                button.classList.add('bx-check');
-                input.disabled = false;
-            }
-            else {
-                button.classList.remove('bx-check');
-                button.classList.add('bx-edit');
-                input.disabled = true;
-                // the "event" argument is the default event triggered by the click on "#editButton"
-                setPseudonym(event, "pseudonymInput");
-            }
-            /*]]>*/
-        }
-
-        function setPseudonym(event, pseudonymForm) {
-            // prevent the default reload of the page on submit-events
-            event.preventDefault();
-            let input = $('#' + pseudonymForm).val();
-            // $('#pseudonymInput').val();
-            $.ajax({
-                type: 'GET',
-                url: '../assistance/' + input,
-                dataType: 'text',
-                success: function (responseData) {
-                    console.log("Response from succesfull pseudonym update: ", responseData);
-                    //location.href = '?lang=' + responseData;
-                    // reload the page with the new pseudonym
-                    location.reload();
-                },
-                error: function (responseData) {
-                    console.error(responseData);
-                }
-            });
-        }
-
-        // adapted from main_page.html - may be exchanged in the future
-        $(document).ready(function () {
-            let userName = /*[[${user.getName()}]]*/ "default";
-            if (userName === 'default') {
-              document.getElementById("pseudonymInputModal").classList.toggle("show-modal");
-            }
-        });
-    </script>
-
-	<script th:src="@{/js/raphael.js}"></script>
-    <script th:src="@{/js/ajv7.js}"></script>
-    <script th:src="@{/js/tabulator.min.js}"></script>
-    <script th:src="@{/js/metadataeditor.js}"></script>
     <script th:src="@{/js/texteditor.js}" type="module"></script>
-    <script th:inline="javascript">
-        // Adding/Binding eventhandlers to buttons
-
-        // adding eventhandler for pseudonym change to the pseudonym input modal
-        document.querySelector("#pseudonymInputModal > div:nth-child(1) > form:nth-child(1)")
-            .addEventListener("submit", (event) => setPseudonym(event, "pseudonymInitInput"));
-        
-        /*
-        // adding eventHandler for saving of modification to a text selection
-        function onclickSaveModification(event) {
-            hideExpandedSidebar();
-            saveModification();
-        }
-        document.getElementById("saveModificationListItem").addEventListener("mousedown", onclickSaveModification);
-        */
-       
-    </script>
 	<script th:inline="javascript">
-        // from editor.js
-        // show the animated book as loading icon whenever an ajax call is running
-        $(document)
-        .ajaxStart(function () {
-            const modal = document.getElementById('loading');
-            modal.classList.toggle('show-modal');
-        })
-        .ajaxStop(function () {
-            const modal = document.getElementById('loading');
-            modal.classList.toggle('show-modal');
-        });
+        // thymeleaf template variables
+        let userName = /*[[${user.getName()}]]*/ 'default';
+        /*<![CDATA[*/
+        window.TL_VARIABLES = {
+            "user" : {
+                "name" : /*[[${user.getName()}]]*/ 'default'
+            },
+            "buttons" : {
+                "edit" :[[#{buttons.edit}]],
+                "ok" : [[#{buttons.ok}]]
+            }
+        }
+        /*]]>*/
         
         // setting the editortype, so the js-code can be executed based on that distinction
         window.EDITORTYPE = 'TEXT';
@@ -488,11 +376,21 @@
         const linkToResource = window.CONTEXTPATH + "editor_rest/content/" + window.CURRENTPAGEID + "/" + [[${fileName}]];
 
         document.addEventListener("DOMContentLoaded", (_event) => {
-            // initiliazing the editor
-            window.textEditor.init(document.body.getAttribute('data-field'));
+            // initializing the topbar
+            window.topbar.initializeTopbar();
 
+
+            // TODO: maybe the sidebar can be initilized after the text has loaded
+            // as there is no need for the sidebar, if there is no text.
             // initializing the sidebar
             window.sidebar.initializeSidebar();
+            
+            // TODO: maybe the textEditor can be initilized after the text has loaded
+            // as there is no need for the textEditor, if there is no text. Furthermore
+            // textEditor.init() could then draw the annotations instead of the code
+            // in the html template
+            // initiliazing the editor
+            window.textEditor.init(document.body.getAttribute('data-field'));
 
             // adding the TEI file to the DOM
             window.textloader.loadText(linkToResource).then( () => {
@@ -516,10 +414,7 @@
                 // display the annotation with the id stored in the url
                 const targetAnnotationId = window.navigation.getTargetAnnotationId();
                 if (targetAnnotationId) {
-                    selectAnnotation(null, encodeAnnoId(targetAnnotationId));
-                    if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
-                        toggleOverview('annotationCard');
-                    }
+                    window.navigation.navigateToAnnotation(targetAnnotationId);
                 }
 
                 // Construct and display a navigation bar.

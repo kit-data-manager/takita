@@ -1,5 +1,3 @@
-// external modules
-import { $ } from 'jquery';
 // internal modules
 import { toggleOverview, encodeAnnoId, fillMetaDataEditorTable } from '../utils';
 import { selectAnnotation } from './selection';

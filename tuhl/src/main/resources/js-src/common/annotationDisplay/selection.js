@@ -1,6 +1,5 @@
-// external modules
-import { $ } from 'jquery';
 // internal modules
+//import '../utils/metadataeditor';
 import { encodeAnnoId, completeFormDataModel, toggleExpand } from '../utils';
 import { deleteAnnotation, deleteBodyFromAnnotation } from './deletion';
 import {
@@ -125,7 +124,6 @@ export function selectAnnotation(_event, annoId) {
       //console.log(formDataModel);
 
       let options = { operation: 'READ', dataModel: formDataModel, uiForm: '*', resource: responseJson };
-
       $('#annotationCard').metadataeditorForm(options, function onSubmitValid(_value) {
         //console.log(value);
       });
@@ -269,7 +267,6 @@ export function selectAnnotation(_event, annoId) {
         //console.log(bodies[body]);
 
         let options = { operation: 'UPDATE', dataModel: formBodyDataModel, uiForm: uiForm, resource: bodies[body] };
-
         $('#form' + bodies[body].id).metadataeditorForm(options, function onSubmitValid(value) {
           //console.log(value);
           var jsonObject = JSON.parse(value);
@@ -283,7 +280,6 @@ export function selectAnnotation(_event, annoId) {
           } else {
             endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + '/bodies/' + jsonObject.id;
           }
-
           $.ajax({
             type: 'PUT',
             url: endpoint,
@@ -386,7 +382,6 @@ export function selectAnnotation(_event, annoId) {
           } else {
             endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + '/bodies/' + jsonObject.id;
           }
-
           $.ajax({
             type: 'PUT',
             url: endpoint,

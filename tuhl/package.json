@@ -4,6 +4,7 @@
 		"test": "jest"
 	},
 	"dependencies": {
+		"@popperjs/core": "^2.11.8",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
 		"react-quill": "^2.0.0",
@@ -13,10 +14,12 @@
 	},
 	"peerDependencies": {
 		"@jsonforms/core": "^3.2.1",
+		"bootstrap": "^4.6.2",
 		"CETEIcean": "^1.9.2",
 		"jquery": "^3.5.1",
 		"jsonform": "^2.2.5",
 		"lodash": "^4.17.21",
+		"tabulator-tables": "^4.8.1",
 		"underscore": "^1.13.6"
 	},
 	"devDependencies": {
@@ -28,10 +31,11 @@
 		"@testing-library/jest-dom": "^6.1.4",
 		"@testing-library/react": "^14.1.2",
 		"@testing-library/user-event": "^14.5.1",
+		"autoprefixer": "^10.4.18",
 		"babel-jest": "^29.7.0",
 		"babel-loader": "^9.1.2",
 		"babel-plugin-styled-components": "^2.1.4",
-		"css-loader": "^6.7.4",
+		"css-loader": "^6.10.0",
 		"eslint": "^8.40.0",
 		"eslint-config-prettier": "^9.0.0",
 		"eslint-plugin-prettier": "^5.0.1",
@@ -43,8 +47,11 @@
 		"jest": "^29.7.0",
 		"jest-environment-jsdom": "^29.7.0",
 		"jest-styled-components": "^7.2.0",
+		"postcss-loader": "^8.1.1",
 		"prettier": "^3.1.0",
-		"style-loader": "^3.3.3",
+		"sass": "^1.71.1",
+		"sass-loader": "^14.1.1",
+		"style-loader": "^3.3.4",
 		"terser-webpack-plugin": "^5.3.9",
 		"webpack": "^5.83.1",
 		"webpack-bundle-analyzer": "^4.10.1",

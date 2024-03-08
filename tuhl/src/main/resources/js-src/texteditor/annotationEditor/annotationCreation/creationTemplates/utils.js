@@ -1,5 +1,4 @@
 // external modules
-import jQuery from 'jquery';
 import jsonForm from 'jsonform';
 //internal modules
 import { encodeAnnoId, toggleOverview, fillMetaDataEditorTable } from '../../../../common/utils';
@@ -628,7 +627,7 @@ export function storeBody(responseJson, jsonObject, index) {
       switch (jsonObject.color) {
         case '#e2b8f7':
           bodyDataJson = { purpose: 'classifying', subject: 'PageRegion' };
-          jQuery.ajax({
+          $.ajax({
             type: 'POST',
             url: endpoint,
             data: JSON.stringify(bodyDataJson),
@@ -652,7 +651,7 @@ export function storeBody(responseJson, jsonObject, index) {
             subject: 'TextRegion',
             source: 'http://episteme.org/A04Vokabular#text_block',
           };
-          jQuery.ajax({
+          $.ajax({
             type: 'POST',
             url: endpoint,
             data: JSON.stringify(bodyDataJson),
@@ -711,7 +710,7 @@ export function storeBody(responseJson, jsonObject, index) {
         }
       }
 
-      jQuery.ajax({
+      $.ajax({
         type: 'POST',
         url: endpoint,
         data: JSON.stringify(bodyDataJson),
@@ -798,12 +797,12 @@ export function pickTemplate(svgCode, encodedId, createFormId, pickFormId, templ
     document.getElementById(createFormId).title = svgCode;
   }
 
-  console.log(jQuery('#' + pickFormId));
+  console.log($('#' + pickFormId));
   // creates dropdown from enum objects defined at the top
   if (template === 'bodyTemplate') {
-    jQuery('#' + pickFormId).jsonForm(formObjectCreateBody);
+    $('#' + pickFormId).jsonForm(formObjectCreateBody);
   } else {
-    jQuery('#' + pickFormId).jsonForm(formObjectCreateAnnotation);
+    $('#' + pickFormId).jsonForm(formObjectCreateAnnotation);
   }
 }
 

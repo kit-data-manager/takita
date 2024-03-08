@@ -1,6 +1,5 @@
-// external modules
-import { $ } from 'jquery';
 // internal modules
+//import './../../../../common/utils/metadataeditor';
 import { getFormModel, spreadMRWArray, storeBody } from './utils';
 import { selectAnnotation } from '../../../../common/annotationDisplay/selection';
 
