@@ -402,7 +402,7 @@
                     (document.body.getAttribute('data-field'))
                     .map(annotation => {
                         if (!window.textEditor.checkIsTargetCompatible(annotation)){
-                            window.textEditor.makeTargetsCompatible(annotation);
+                            annotation.svg = window.textEditor.makeTargetsCompatible(annotation);
                         }
                         return annotation;
                     })

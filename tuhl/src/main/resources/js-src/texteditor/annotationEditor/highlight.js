@@ -51,7 +51,7 @@ export function makeTargetsCompatible(annotation) {
   // annotation passed to the function is part of the annoJson
   if (annotation.svg) {
     if (annotation.svg[0].includes('xml:id') || annotation.svg[0].includes('id(')) {
-      annotation.svg = convertXPath(annotation.svg[0]);
+      return convertXPath(annotation.svg[0]);
     }
   }
 
@@ -65,7 +65,7 @@ export function makeTargetsCompatible(annotation) {
         newTarget.selector.xPath = xPath;
         newTargets.push(newTarget);
       });
-      annotation.targets = newTargets;
+      return newTargets;
     }
   }
 }
@@ -230,7 +230,7 @@ export async function updateDisplay() {
     // Make them compatible, if they are not
     annoJson = annoJson.map((annotation) => {
       if (!checkIsTargetCompatible(annotation)) {
-        makeTargetsCompatible(annotation);
+        annotation.svg = makeTargetsCompatible(annotation);
       }
       return annotation;
     });

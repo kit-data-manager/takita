@@ -41,7 +41,7 @@ export function selectAnnotation(_event, annoId) {
       // Make it compatible, if is are not
       if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
         if (!checkIsTargetCompatible(window.SELECTED_ANNOTATION)) {
-          makeTargetsCompatible(window.SELECTED_ANNOTATION);
+          window.SELECTED_ANNOTATION.targets = makeTargetsCompatible(window.SELECTED_ANNOTATION);
         }
         // highlight words targetted by the currently selected annotation
         // remove old highlights (TODO: include this in removeStyles(el) in editor_xml.js)

@@ -2,7 +2,11 @@ import { encodeAnnoId, toggleOverview } from '../../common/utils';
 import { selectAnnotation } from '../../common/annotationDisplay';
 import { hideExpandedSidebar } from '../sidebar';
 import { checkIsTargetCompatible, makeTargetsCompatible } from './highlight';
-import { checkIsSelectionOnWorkspace, getContentOfSelection } from './textSelection';
+import {
+  checkIsNodeOnWorkspace,
+  getContentOfSelection,
+  removeWhitespaceFromSelectionTextContent,
+} from './textSelection';
 import { modifySelection, cancelModification, updateTarget } from './annotationModification';
 import { createTargetList, createXPath } from './targetCreation';
 import { pickTemplate } from './annotationCreation/creationTemplates';
@@ -51,7 +55,7 @@ export function init(annotations) {
   // Make them compatible, if they are not
   window.ANNOJSON = window.ANNOJSON.map((annotation) => {
     if (!checkIsTargetCompatible(annotation)) {
-      makeTargetsCompatible(annotation);
+      annotation.svg = makeTargetsCompatible(annotation);
     }
     return annotation;
   });
@@ -198,29 +202,26 @@ export function init(annotations) {
 }
 
 function annotateSelectedText() {
-  // check if the string is filled, because on a double click the first onmouseup
+  const selection = window.getSelection();
+  // check
+  // - if the string is filled, because on a double click the first onmouseup
   // will have no selection and therefore no string
-  if (
-    window.getSelection().toString() &&
-    checkIsSelectionOnWorkspace(window.getSelection().getRangeAt(0).commonAncestorContainer)
-  ) {
-    // selectionRange and selectionRangeContents are not used anymore and can
-    // be removed
-    let selectionRange = window.getSelection().getRangeAt(0);
-    let selectionRangeContents = getContentOfSelection(window.getSelection());
+  // - and if the selection is on the workspace
+  if (selection.toString() && checkIsNodeOnWorkspace(window.getSelection().getRangeAt(0).commonAncestorContainer)) {
+    const selectionRangeContents = getContentOfSelection(selection);
 
-    console.log('Selection object: ', window.getSelection());
-    console.log('SelectionRange[0] object: ', selectionRange);
+    console.log('Selection object: ', selection);
+    console.log('SelectionRange[0] object: ', selection.getRangeAt(0));
     console.log('Contents of a Selection object: ', selectionRangeContents);
 
     // stop the function, if the selection does not contain any text, only whitespace
-    if (getContentOfSelection(window.getSelection()).textContent.trim() == '') {
+    if (selectionRangeContents.textContent.trim() == '') {
       console.log('No text selected, therefore early return.');
       return;
     }
 
     // targetRangeList holds all the nodes from the selection, that are <w> elements
-    let targetRangeList = createTargetList(window.getSelection());
+    let targetRangeList = createTargetList(selection);
     console.log('Filled targetRangeList for annotation creation: ', targetRangeList);
 
     // targetXPath hold the xPath resolving to the elements in targeRangetList
@@ -246,12 +247,7 @@ function annotateSelectedText() {
     });
 
     // set globalSelectedText so it can be displayed in the modal and remove all whitespaces
-    // TODO: this should use removeWhitespaceFromSelectionTextContent()
-    window.SELECTED_TEXT = getContentOfSelection(window.getSelection()).textContent.replace(/\s{4}|[\t\n\r]|\s/g, ' ');
-    while (window.SELECTED_TEXT.includes('  ')) {
-      window.SELECTED_TEXT = window.SELECTED_TEXT.replaceAll('  ', ' ');
-    }
-    window.SELECTED_TEXT = window.SELECTED_TEXT.trim();
+    window.SELECTED_TEXT = removeWhitespaceFromSelectionTextContent(selectionRangeContents.textContent);
     console.log('GlobalSelectedText: ', window.SELECTED_TEXT);
 
     // showing the modal/dropdown to select the annotation template, which can be populated
@@ -259,11 +255,6 @@ function annotateSelectedText() {
     const modal = document.getElementById('createAnnotation');
     modal.classList.toggle('show-modal');
     pickTemplate(targetXPath, '', 'createAnnotationForm', 'pickAnnotationTemplateForm', 'annotationTemplate');
-
-    // redrawing the annotations; TODO
-    /*console.log("redrawing");
-          removeStyles(document.getElementById("TEI"));
-          drawAnnos(annoJson);*/
 
     // resetting parameters, so no new annotation can be created without clicking on
     // the button at the sidebar, that enables annotation
