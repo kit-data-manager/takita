@@ -1,15 +1,11 @@
 // external modules
-import jsonForm from 'jsonform';
+import 'jsonform';
 //internal modules
 import { encodeAnnoId, toggleOverview, fillMetaDataEditorTable } from '../../../../common/utils';
 import { selectAnnotation } from '../../../../common/annotationDisplay/selection';
 import { updateDisplay, storeSelectedMRWAnnos } from '../../../annotationEditor';
 import { formObjectCreateAnnotation } from './creationTemplateTextCRC1475';
 import { formObjectCreateBody } from './creationTemplateTextCRC1475body';
-
-function jsonForms(para) {
-  jsonForm(para);
-}
 
 // preselect all checkboxes for the mrw-annos present in the current selection
 // during metaphor annotation creation via the template
