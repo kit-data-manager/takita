@@ -1,16 +1,15 @@
 // check if the selection happened on the textworkspace/tei element
-export function checkIsSelectionOnWorkspace(node) {
+export function checkIsNodeOnWorkspace(node) {
   if (node.parentNode.id === 'TEI') {
     return true;
   } else if (node.parentElement != null) {
-    return checkIsSelectionOnWorkspace(node.parentElement);
+    return checkIsNodeOnWorkspace(node.parentElement);
   } else {
     return false;
   }
 }
 
-// get one range of the selection(s)
-// old function, not necessary any more after 01.02.2023 (commit 1267ea6)
+// merge all ranges of the selection into one and return the content
 export function getContentOfSelection(selection) {
   let selectionRangeContents = selection.getRangeAt(0).cloneContents();
   // if there are multiple selection ranges (eg. in the B04 case)

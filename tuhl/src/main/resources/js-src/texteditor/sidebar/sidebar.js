@@ -112,7 +112,7 @@ function toggleBoxIcon(element, iconA, iconB) {
 // hebrew specific display
 function toggleHebrewView() {
   // adds the "zeroOpacity" class to a list of elements, to make the affected elements
-  // invisible (/hide them)
+  // invisible (/hide them) without moving anything aroung
   document.querySelectorAll('tei-reg').forEach((element) => {
     element.classList.toggle('zeroOpacity');
   });
@@ -122,7 +122,7 @@ function toggleHebrewView() {
 
 // sanskrit specific display
 function toggleSanskritView() {
-  // hides elements/text by adding the "is-hidden" class (form chota), but moves the text around a bit
+  // hides elements/text by adding the "is-hidden" class (from chota), but moves the text around a bit
   document.querySelectorAll('tei-orig').forEach((element) => {
     element.classList.toggle('is-hidden');
   });
