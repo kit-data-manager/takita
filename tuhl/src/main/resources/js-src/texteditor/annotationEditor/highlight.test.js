@@ -1,0 +1,249 @@
+import { checkIsTargetCompatible, makeTargetsCompatible } from '.';
+
+describe('checking if a target is compatible with tAkita', () => {
+  it('checks compatible annotations that are part of the annoJson and have a substring selector', () => {
+    const annotation = {
+      svg: ['substring(id("w.206"),  2,  4)', 'id("w.207")', 'id("w.208")', 'id("w.209")'],
+    };
+    const result = checkIsTargetCompatible(annotation);
+    expect(result).toBe(true);
+  });
+
+  it('checks incompatible annotations that are part of the annoJson and have a substring selector', () => {
+    const annotation = {
+      svg: ['concat(substring(id("w.206"), 2, 4), " ", id("w.207"), " ", id("w.208"), " ", id("w.209"), " ")'],
+    };
+    const result = checkIsTargetCompatible(annotation);
+    expect(result).toBe(false);
+  });
+
+  it('checks compatible annotations that are part of the annoJson and have a multiple id selectors', () => {
+    const annotation = {
+      svg: ['id("w.131")', 'id("w.132")', 'id("w.99990")', 'id("pc.1")'],
+    };
+    const result = checkIsTargetCompatible(annotation);
+    expect(result).toBe(true);
+  });
+
+  it('checks incompatible annotations that are part of the annoJson and have a multiple id selectors', () => {
+    const annotation = {
+      svg: ['id("w.1") | id("w.2") | id("w.3") | id("w.4") | id("w.5")'],
+    };
+    const result = checkIsTargetCompatible(annotation);
+    expect(result).toBe(false);
+  });
+
+  it('checks the compatible globaly selected annotation having a substring selector', () => {
+    const annotation = {
+      targets: [
+        {
+          type: 'TEXT',
+          linkToResource: 'Book_of_Psalms.xml',
+          selector: {
+            xPath: 'substring(id("w.206"),  2,  4)',
+          },
+        },
+        {
+          type: 'TEXT',
+          linkToResource: 'Book_of_Psalms.xml',
+          selector: {
+            xPath: 'id("w.207")',
+          },
+        },
+        {
+          type: 'TEXT',
+          linkToResource: 'Book_of_Psalms.xml',
+          selector: {
+            xPath: 'id("w.208")',
+          },
+        },
+        {
+          type: 'TEXT',
+          linkToResource: 'Book_of_Psalms.xml',
+          selector: {
+            xPath: 'id("w.209")',
+          },
+        },
+      ],
+    };
+    const result = checkIsTargetCompatible(annotation);
+    expect(result).toBe(true);
+  });
+
+  it('checks the incompatible globaly selected annotation having a substring selector', () => {
+    const annotation = {
+      targets: [
+        {
+          type: 'TEXT',
+          linkToResource: '8c458d2443b0',
+          selector: {
+            xPath: 'concat(substring(id("w.206"), 2, 4), " ", id("w.207"), " ", id("w.208"), " ", id("w.209"), " ")',
+          },
+        },
+      ],
+    };
+    const result = checkIsTargetCompatible(annotation);
+    expect(result).toBe(false);
+  });
+
+  it('checks the compatible globaly selected annotation having multiple id selectors', () => {
+    const annotation = {
+      targets: [
+        {
+          type: 'TEXT',
+          linkToResource: 'Book_of_Psalms.xml',
+          selector: {
+            xPath: 'id("w.131")',
+          },
+        },
+        {
+          type: 'TEXT',
+          linkToResource: 'Book_of_Psalms.xml',
+          selector: {
+            xPath: 'id("w.132")',
+          },
+        },
+        {
+          type: 'TEXT',
+          linkToResource: 'Book_of_Psalms.xml',
+          selector: {
+            xPath: 'id("w.99990")',
+          },
+        },
+        {
+          type: 'TEXT',
+          linkToResource: 'Book_of_Psalms.xml',
+          selector: {
+            xPath: 'id("pc.1")',
+          },
+        },
+      ],
+    };
+    const result = checkIsTargetCompatible(annotation);
+    expect(result).toBe(true);
+  });
+
+  it('checks the incompatible globaly selected annotation having multiple id selectors', () => {
+    const annotation = {
+      targets: [
+        {
+          type: 'TEXT',
+          linkToResource: '8c458d2443b0',
+          selector: {
+            xPath: 'id("w.131") | id("w.132") | id("w.99990") | id("pc.1")',
+          },
+        },
+      ],
+    };
+    const result = checkIsTargetCompatible(annotation);
+    expect(result).toBe(false);
+  });
+});
+
+describe('making a target compatible to tAkita', () => {
+  it('makes incompatible annotations that are part of the annoJson and have a substring selector compatible', () => {
+    const annotation = {
+      svg: ['concat(substring(id("w.206"), 2, 4), " ", id("w.207"), " ", id("w.208"), " ", id("w.209"), " ")'],
+    };
+    const result = makeTargetsCompatible(annotation);
+    expect(result).toStrictEqual(['substring(id("w.206"),  2,  4)', 'id("w.207")', 'id("w.208")', 'id("w.209")']);
+  });
+
+  it('makes incompatible annotations that are part of the annoJson and have a multiple id selectors compatible', () => {
+    const annotation = {
+      svg: ['id("w.1") | id("w.2") | id("w.3") | id("pc.1")'],
+    };
+    const result = makeTargetsCompatible(annotation);
+    expect(result).toStrictEqual(['id("w.1")', 'id("w.2")', 'id("w.3")', 'id("pc.1")']);
+  });
+
+  it('makes the incompatible globaly selected annotation having a substring selector compatible', () => {
+    const annotation = {
+      targets: [
+        {
+          type: 'TEXT',
+          linkToResource: 'Book_of_Psalms.xml',
+          selector: {
+            xPath: 'concat(substring(id("w.206"), 2, 4), " ", id("w.207"), " ", id("w.208"), " ", id("w.209"), " ")',
+          },
+        },
+      ],
+    };
+    const result = makeTargetsCompatible(annotation);
+    expect(result).toStrictEqual([
+      {
+        type: 'TEXT',
+        linkToResource: 'Book_of_Psalms.xml',
+        selector: {
+          xPath: 'substring(id("w.206"),  2,  4)',
+        },
+      },
+      {
+        type: 'TEXT',
+        linkToResource: 'Book_of_Psalms.xml',
+        selector: {
+          xPath: 'id("w.207")',
+        },
+      },
+      {
+        type: 'TEXT',
+        linkToResource: 'Book_of_Psalms.xml',
+        selector: {
+          xPath: 'id("w.208")',
+        },
+      },
+      {
+        type: 'TEXT',
+        linkToResource: 'Book_of_Psalms.xml',
+        selector: {
+          xPath: 'id("w.209")',
+        },
+      },
+    ]);
+  });
+
+  it('makes the incompatible globaly selected annotation having multiple id selectors compatible', () => {
+    const annotation = {
+      targets: [
+        {
+          type: 'TEXT',
+          linkToResource: 'Book_of_Psalms.xml',
+          selector: {
+            xPath: 'id("w.131") | id("w.132") | id("w.99990") | id("pc.1")',
+          },
+        },
+      ],
+    };
+    const result = makeTargetsCompatible(annotation);
+    expect(result).toStrictEqual([
+      {
+        type: 'TEXT',
+        linkToResource: 'Book_of_Psalms.xml',
+        selector: {
+          xPath: 'id("w.131")',
+        },
+      },
+      {
+        type: 'TEXT',
+        linkToResource: 'Book_of_Psalms.xml',
+        selector: {
+          xPath: 'id("w.132")',
+        },
+      },
+      {
+        type: 'TEXT',
+        linkToResource: 'Book_of_Psalms.xml',
+        selector: {
+          xPath: 'id("w.99990")',
+        },
+      },
+      {
+        type: 'TEXT',
+        linkToResource: 'Book_of_Psalms.xml',
+        selector: {
+          xPath: 'id("pc.1")',
+        },
+      },
+    ]);
+  });
+});
