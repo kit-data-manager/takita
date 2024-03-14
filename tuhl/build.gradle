@@ -6,10 +6,15 @@ plugins {
 
 group = 'de.pse'
 version = '0.0.2-SNAPSHOT'
-sourceCompatibility = '11'
 
 repositories {
 	mavenCentral()
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
 }
 
 dependencies {
