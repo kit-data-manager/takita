@@ -1,16 +1,11 @@
 package edu.kit.scc.dem.tuhl.model.body;
 
-import edu.kit.scc.dem.tuhl.dataaccess.AnnotationStoreStrings;
-import edu.kit.scc.dem.tuhl.dataaccess.TimeStampFormats;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.elasticsearch.annotations.DateFormat;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 

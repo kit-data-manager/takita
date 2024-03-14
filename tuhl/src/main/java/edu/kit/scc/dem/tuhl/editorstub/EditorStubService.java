@@ -1,6 +1,5 @@
 package edu.kit.scc.dem.tuhl.editorstub;
 
-import com.google.gson.Gson;
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
 import edu.kit.scc.dem.tuhl.dataaccess.AnnotationConverter;
@@ -13,9 +12,8 @@ import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import java.io.IOException;
 import java.time.Instant;
-import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -77,8 +75,9 @@ public class EditorStubService implements IEditorStubService {
     newAnnotation.setPageId(pageId);
     newAnnotation.setCreators(Collections.singletonList(
         assistanceService.getCurrentUser().getName()));
-    newAnnotation.setCreated(Instant.now());
-    newAnnotation.setModified(Instant.now());
+    // nanosecond resolution seems unnecessary
+    newAnnotation.setCreated(Instant.now().truncatedTo(ChronoUnit.SECONDS));
+    newAnnotation.setModified(Instant.now().truncatedTo(ChronoUnit.SECONDS));
 
     if (color != null) {
       newAnnotation.setColor(Color.stringToColor(color));
@@ -136,7 +135,7 @@ public class EditorStubService implements IEditorStubService {
         .getCurrentUser().getName())) {
       updatedAnnotation.addCreator(assistanceService.getCurrentUser().getName());
     }
-    updatedAnnotation.setModified(Instant.now());
+    updatedAnnotation.setModified(Instant.now().truncatedTo(ChronoUnit.SECONDS));
 
     if (color != null && !color.trim().equals("")) {
       updatedAnnotation.setColor(Color.stringToColor(color));
@@ -174,7 +173,7 @@ public class EditorStubService implements IEditorStubService {
   public Annotation validateAnnotation(String annotationId)
       throws NoSuchIndexEntryException, InterruptedException, IOException {
     Annotation annotation = searchIndexService.getAnnotationById(annotationId);
-    annotation.setModified(Instant.now());
+    annotation.setModified(Instant.now().truncatedTo(ChronoUnit.SECONDS));
     annotation.addCreator(assistanceService.getCurrentUser().getName());
     try {
       annotation = searchIndexService.validateAnnotation(annotation);
@@ -224,8 +223,8 @@ public class EditorStubService implements IEditorStubService {
     newTextCard.setAnnotationId(annotationId);
     newTextCard.setCreators(Collections.singletonList(
         assistanceService.getCurrentUser().getName()));
-    newTextCard.setCreated(Instant.now());
-    newTextCard.setModified(Instant.now());
+    newTextCard.setCreated(Instant.now().truncatedTo(ChronoUnit.SECONDS));
+    newTextCard.setModified(Instant.now().truncatedTo(ChronoUnit.SECONDS));
 
     if (title != null && !title.trim().equals("")) {
       newTextCard.setTitle(title);
@@ -275,8 +274,8 @@ public class EditorStubService implements IEditorStubService {
     logger.info("newTag: " + newTag.toString());
     newTag.setAnnotationId(annotationId);
     newTag.setCreators(Collections.singletonList(assistanceService.getCurrentUser().getName()));
-    newTag.setCreated(Instant.now());
-    newTag.setModified(Instant.now());
+    newTag.setCreated(Instant.now().truncatedTo(ChronoUnit.SECONDS));
+    newTag.setModified(Instant.now().truncatedTo(ChronoUnit.SECONDS));
 
     if (title != null && !title.trim().equals("")) {
       newTag.setTitle(title);
@@ -345,7 +344,7 @@ public class EditorStubService implements IEditorStubService {
     if (!updatedTextCard.getCreators().contains(assistanceService.getCurrentUser().getName())) {
       updatedTextCard.addCreator(assistanceService.getCurrentUser().getName());
     }
-    updatedTextCard.setModified(Instant.now());
+    updatedTextCard.setModified(Instant.now().truncatedTo(ChronoUnit.SECONDS));
 
     if (title != null && !title.trim().equals("")) {
       updatedTextCard.setTitle(title);
@@ -398,7 +397,7 @@ public class EditorStubService implements IEditorStubService {
     if (!updatedTag.getCreators().contains(assistanceService.getCurrentUser().getName())) {
       updatedTag.addCreator(assistanceService.getCurrentUser().getName());
     }
-    updatedTag.setModified(Instant.now());
+    updatedTag.setModified(Instant.now().truncatedTo(ChronoUnit.SECONDS));
 
     if (title != null && !title.trim().equals("")) {
       updatedTag.setTitle(title);

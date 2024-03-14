@@ -355,7 +355,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
    * @throws JSONException if the response body could not be parsed to json
    */
   @Override
-  public JSONObject validateAnnotation(JSONObject jsonAnnotation)
+  public JSONObject validateAnnotation(JSONObject jsonAnnotation, String projectId)
       throws IOException, InterruptedException, JSONException {
     jsonAnnotation.put(AnnotationStoreStrings.VIA.getName(), jsonAnnotation.getString(
         AnnotationStoreStrings.ID.getName()));
@@ -363,7 +363,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
         AnnotationStoreStrings.ID.getName()));
     jsonAnnotation.remove(AnnotationStoreStrings.ID.getName());
     HttpResponse<String> response = httpRequestHelper.postAnnotations(urlPrefix
-        + VALIDATED_URL, jsonAnnotation);
+        + projectId + VALIDATED_URL, jsonAnnotation);
   
     JSONObject result = new JSONObject(response.body());
   
@@ -388,6 +388,8 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
       throws IOException, InterruptedException, JSONException {
 
     // put in deinterpretatione and add via and canonical fields if anno is already in validated
+    // TODO: serious doubts about the function of this method - investigate!
+    // TODO: extend test when fixed
     if (jsonAnnotation.has(AnnotationStoreStrings.CANONICAL.getName())) {
       JSONObject deInterpretationeAnnotation = getAnnotationById(jsonAnnotation.getString(
           AnnotationStoreStrings.CANONICAL.getName()));

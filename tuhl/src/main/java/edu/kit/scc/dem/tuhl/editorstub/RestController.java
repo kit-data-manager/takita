@@ -1,6 +1,9 @@
 package edu.kit.scc.dem.tuhl.editorstub;
 
-import com.google.gson.Gson;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
@@ -10,7 +13,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -64,7 +67,10 @@ public ResponseEntity getAnnotationsForId(@RequestParam("id") String id, final W
    String annotationsJson;
    try {
        List <Annotation> annotations = editorStubService.getAnnotationsForId(id);
-       annotationsJson = new Gson().toJson(annotations);
+       ObjectMapper mapper = new ObjectMapper(); 
+       mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+       mapper.registerModule(new JavaTimeModule());
+       annotationsJson = mapper.writeValueAsString(annotations);
     } catch (IOException | JSONException e) {
         return ResponseEntity.status(500).body(e.getMessage());
     } catch (NoSuchIndexEntryException e) {
@@ -100,7 +106,10 @@ public ResponseEntity createAnnotation(@RequestBody String jsonString, final Web
         }
         String motivation = json.getString("motivation");
         Annotation annotation = editorStubService.addAnnotation(pageId, color, svgCode, motivation);
-        annotationJson = new Gson().toJson(annotation);
+        ObjectMapper mapper = new ObjectMapper(); 
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.registerModule(new JavaTimeModule());
+        annotationJson = mapper.writeValueAsString(annotation);
     } catch (IOException | JSONException e) {
         return ResponseEntity.status(500).body(e.getMessage());
     } catch (NoSuchIndexEntryException e) {
@@ -128,10 +137,15 @@ public ResponseEntity getAnnotationById(@PathVariable("id") final String id, fin
     String annotationJson;
     try {
         Annotation annotation = editorStubService.getAnnotation(decodeURL(id));
-        annotationJson = new Gson().toJson(annotation);
+        ObjectMapper mapper = new ObjectMapper(); 
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.registerModule(new JavaTimeModule());
+        annotationJson = mapper.writeValueAsString(annotation);
     } catch (NoSuchIndexEntryException e) {
         return ResponseEntity.status(404).body(e.getMessage());
     } catch (UnsupportedEncodingException e) {
+        return ResponseEntity.status(500).body(e.getMessage());
+    } catch (IOException e) {
         return ResponseEntity.status(500).body(e.getMessage());
     }
     return ResponseEntity.ok().body(annotationJson);
@@ -188,7 +202,10 @@ public ResponseEntity updateAnnotationById(@PathVariable("id") final String id, 
         String motivation = json.getString("motivation");
         Annotation annotation = editorStubService
           .updateAnnotation(decodeURL(id), color, svgCode, motivation);
-        annotationJson = new Gson().toJson(annotation);
+        ObjectMapper mapper = new ObjectMapper(); 
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.registerModule(new JavaTimeModule());
+        annotationJson = mapper.writeValueAsString(annotation);
     } catch (IOException | JSONException e) {
         return ResponseEntity.status(500).body(e.getMessage());
     } catch (NoSuchIndexEntryException e) {
@@ -216,7 +233,10 @@ public ResponseEntity deleteAnnotationById(@PathVariable("id") final String id, 
     String annotationJson;
     try {
         Annotation annotation = editorStubService.deleteAnnotation(decodeURL(id));
-        annotationJson = new Gson().toJson(annotation);
+        ObjectMapper mapper = new ObjectMapper(); 
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.registerModule(new JavaTimeModule());
+        annotationJson = mapper.writeValueAsString(annotation);
     } catch (IOException e) {
         return ResponseEntity.status(500).body(e.getMessage());
     } catch (NoSuchIndexEntryException e) {
@@ -245,10 +265,15 @@ public ResponseEntity getBodiesForAnnotationById(@PathVariable("id") final Strin
     try {
         Annotation annotation = editorStubService.getAnnotation(decodeURL(id));
         List<TextCard> textCards = annotation.getTextCards();
-        textCardsJson = new Gson().toJson(textCards);
+        ObjectMapper mapper = new ObjectMapper(); 
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.registerModule(new JavaTimeModule());
+        textCardsJson = mapper.writeValueAsString(textCards);
     } catch (NoSuchIndexEntryException e) {
         return ResponseEntity.status(404).body(e.getMessage());
     } catch (UnsupportedEncodingException e) {
+        return ResponseEntity.status(500).body(e.getMessage());
+    } catch (IOException e) {
         return ResponseEntity.status(500).body(e.getMessage());
     }
     return ResponseEntity.ok().body(textCardsJson);
@@ -289,7 +314,10 @@ public ResponseEntity createBodyForAnnotationById(@PathVariable("id") final Stri
         }
         String purpose = json.getString("purpose");
         TextCard textCard = editorStubService.addTextCard(decodeURL(id), title, subject, value, source, purpose);
-        textCardJson = new Gson().toJson(textCard);
+        ObjectMapper mapper = new ObjectMapper(); 
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.registerModule(new JavaTimeModule());
+        textCardJson = mapper.writeValueAsString(textCard);
     } catch (IOException | JSONException e) {
         return ResponseEntity.status(500).body(e.getMessage());
     } catch (NoSuchIndexEntryException e) {
@@ -318,9 +346,14 @@ public ResponseEntity getBodyByIdForAnnotationById(@PathVariable("id") final Str
     String textCardJson;
     try {
         TextCard textCard = editorStubService.getTextCard(bodyId);
-        textCardJson = new Gson().toJson(textCard);
+        ObjectMapper mapper = new ObjectMapper(); 
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.registerModule(new JavaTimeModule());
+        textCardJson = mapper.writeValueAsString(textCard);
     } catch (NoSuchIndexEntryException e) {
         return ResponseEntity.status(404).body(e.getMessage());
+    } catch (IOException e) {
+        return ResponseEntity.status(500).body(e.getMessage());
     }
     return ResponseEntity.ok().body(textCardJson);
 }
@@ -340,10 +373,10 @@ public ResponseEntity getBodyByIdForAnnotationById(@PathVariable("id") final Str
 @ResponseBody
 public ResponseEntity getBodyByIdForAnnotationByIdWadm(@PathVariable("id") final String id, @PathVariable("bodyId") final String bodyId, final WebRequest request, final HttpServletResponse response) {
     TextCard textCard;
-    JSONObject fullJson;
+    String fullJson;
     try {
         textCard = editorStubService.getTextCard(bodyId);
-        fullJson = textCard.getFullJson();
+        fullJson = textCard.getFullJson().toString(2).replace("\\/", "/");
     } catch (NoSuchIndexEntryException e) {
         return ResponseEntity.status(404).body(e.getMessage());
     } catch (JSONException e) {
@@ -391,7 +424,10 @@ public ResponseEntity updateBodyByIdForAnnotationById(@PathVariable("id") final 
             purpose = json.getString("purpose");
         }
         TextCard textCard = editorStubService.updateTextCard(bodyId, title, subject, value, source, purpose);
-        textCardJson = new Gson().toJson(textCard);
+        ObjectMapper mapper = new ObjectMapper(); 
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.registerModule(new JavaTimeModule());
+        textCardJson = mapper.writeValueAsString(textCard);
     } catch (IOException | JSONException e) {
         return ResponseEntity.status(500).body(e.getMessage());
     } catch (NoSuchIndexEntryException e) {
@@ -421,7 +457,10 @@ public ResponseEntity deleteBodyByIdForAnnotationById(@PathVariable("id") final 
     String textCardJson;
     try {
         TextCard textCard = editorStubService.deleteTextCard(bodyId);
-        textCardJson = new Gson().toJson(textCard);
+        ObjectMapper mapper = new ObjectMapper(); 
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.registerModule(new JavaTimeModule());
+        textCardJson = mapper.writeValueAsString(textCard);
     } catch (NoSuchIndexEntryException e) {
         return ResponseEntity.status(404).body(e.getMessage());
     } catch (IOException e) {
@@ -429,7 +468,7 @@ public ResponseEntity deleteBodyByIdForAnnotationById(@PathVariable("id") final 
     } catch (InterruptedException e) {
         Thread.currentThread().interrupt();
         return ResponseEntity.status(500).body(e.getMessage());
-    }
+    } 
     return ResponseEntity.noContent().build();
 }
 
@@ -450,10 +489,15 @@ public ResponseEntity getTagsForAnnotationById(@PathVariable("id") final String 
     try {
         Annotation annotation = editorStubService.getAnnotation(decodeURL(id));
         List<Tag> tags = annotation.getTags();
-        tagsJson = new Gson().toJson(tags);
+        ObjectMapper mapper = new ObjectMapper(); 
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.registerModule(new JavaTimeModule());
+        tagsJson = mapper.writeValueAsString(tags);
     } catch (NoSuchIndexEntryException e) {
         return ResponseEntity.status(404).body(e.getMessage());
     } catch (UnsupportedEncodingException e) {
+        return ResponseEntity.status(500).body(e.getMessage());
+    } catch (IOException e) {
         return ResponseEntity.status(500).body(e.getMessage());
     }
     return ResponseEntity.ok().body(tagsJson);
@@ -482,7 +526,7 @@ public ResponseEntity createTagForAnnotationById(@PathVariable("id") final Strin
             title = json.getString("title");
         }
         if (json.has("subject")) {
-            title = json.getString("subject");
+            subject = json.getString("subject");
         }
         String value = "";
         String source = "";
@@ -493,7 +537,10 @@ public ResponseEntity createTagForAnnotationById(@PathVariable("id") final Strin
             source = json.getString("source");
         }
         Tag tag = editorStubService.addTag(decodeURL(id), title, subject, value, source);
-        tagJson = new Gson().toJson(tag);
+        ObjectMapper mapper = new ObjectMapper(); 
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.registerModule(new JavaTimeModule());
+        tagJson = mapper.writeValueAsString(tag);
     } catch (IOException | JSONException e) {
         return ResponseEntity.status(500).body(e.getMessage());
     } catch (NoSuchIndexEntryException e) {
@@ -522,9 +569,14 @@ public ResponseEntity getTagByIdForAnnotationById(@PathVariable("id") final Stri
     String tagJson;
     try {
         Tag tag = editorStubService.getTag(tagId);
-        tagJson = new Gson().toJson(tag);
+        ObjectMapper mapper = new ObjectMapper(); 
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.registerModule(new JavaTimeModule());
+        tagJson = mapper.writeValueAsString(tag);
     } catch (NoSuchIndexEntryException e) {
         return ResponseEntity.status(404).body(e.getMessage());
+    } catch (IOException e) {
+        return ResponseEntity.status(500).body(e.getMessage());
     }
     return ResponseEntity.ok().body(tagJson);
 }
@@ -544,10 +596,10 @@ public ResponseEntity getTagByIdForAnnotationById(@PathVariable("id") final Stri
 @ResponseBody
 public ResponseEntity getTagByIdForAnnotationByIdWadm(@PathVariable("id") final String id, @PathVariable("tagId") final String tagId, final WebRequest request, final HttpServletResponse response) {
     Tag tag;
-    JSONObject fullJson;
+    String fullJson;
     try {
         tag = editorStubService.getTag(tagId);
-        fullJson = tag.getFullJson();
+        fullJson = tag.getFullJson().toString(2).replace("\\/", "/");
     } catch (NoSuchIndexEntryException e) {
         return ResponseEntity.status(404).body(e.getMessage());
     } catch (JSONException e) {
@@ -591,7 +643,10 @@ public ResponseEntity updateTagByIdForAnnotationById(@PathVariable("id") final S
             source = json.getString("source");
         }
         Tag tag = editorStubService.updateTag(tagId, title, subject, value, source);
-        tagJson = new Gson().toJson(tag);
+        ObjectMapper mapper = new ObjectMapper(); 
+        mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        mapper.registerModule(new JavaTimeModule());
+        tagJson = mapper.writeValueAsString(tag);
     } catch (IOException | JSONException e) {
         return ResponseEntity.status(500).body(e.getMessage());
     } catch (NoSuchIndexEntryException e) {

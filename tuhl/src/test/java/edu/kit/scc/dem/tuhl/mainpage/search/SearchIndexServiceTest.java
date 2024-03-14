@@ -5,12 +5,13 @@ import edu.kit.scc.dem.tuhl.dataaccess.IAccessService;
 import edu.kit.scc.dem.tuhl.dataaccess.TimeStampFormats;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
-import edu.kit.scc.dem.tuhl.model.Motivation;
 import edu.kit.scc.dem.tuhl.model.body.Body;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import edu.kit.scc.dem.tuhl.model.page.ImagePage;
 import edu.kit.scc.dem.tuhl.model.page.Page;
+import edu.kit.scc.dem.tuhl.model.page.ResourceType;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -20,7 +21,7 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
@@ -35,8 +36,9 @@ import java.time.Instant;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyString;
 
-@SpringBootTest
+@SpringBootTest(classes = SearchIndexService.class)
 class SearchIndexServiceTest {
   @Autowired
   private ISearchIndexService searchIndexService;
@@ -48,12 +50,12 @@ class SearchIndexServiceTest {
   private ManuscriptRepository mockedManuscriptRepository;
 
   @MockBean
-  private ElasticsearchRestTemplate mockedElasticsearchRestTemplate;
+  private ElasticsearchOperations mockedElasticsearchOperations;
 
   private List<Manuscript> manuscriptList;
 
   @BeforeEach
-  void init() throws ParseException {
+  void init() throws JSONException, ParseException {
     manuscriptList = initManuscriptList();
   }
 
@@ -75,7 +77,7 @@ class SearchIndexServiceTest {
     newAnnotation.setEtag(null);
 
     Mockito.when(mockedAccessService.addAnnotation(Mockito.any(Annotation.class), Mockito.eq(manuscriptList.get(0)
-        .getPages().get(0).getPageNumber()))).thenAnswer(invocation -> {
+        .getPages().get(0).getPageNumber()), anyString())).thenAnswer(invocation -> {
       Annotation thisAnnotation = invocation.getArgument(0);
       assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
       assertEquals(annotation.getSvgCode(), thisAnnotation.getSvgCode());
@@ -121,7 +123,7 @@ class SearchIndexServiceTest {
   void validateAnnotation() throws ParseException, InterruptedException, IOException, JSONException, NoSuchIndexEntryException {
     Annotation annotation = manuscriptList.get(0).getPages().get(0).getAnnotations().get(0);
 
-    Mockito.when(mockedAccessService.validateAnnotation(annotation, manuscriptList.get(0).getPages().get(0).getPageNumber()))
+    Mockito.when(mockedAccessService.validateAnnotation(annotation, manuscriptList.get(0).getPages().get(0).getPageNumber(), "a04/"))
         .thenReturn(annotation);
     Mockito.when(mockedManuscriptRepository.findById(Mockito.anyString()))
         .thenAnswer(invocation -> {
@@ -154,10 +156,19 @@ class SearchIndexServiceTest {
     Annotation annotation = manuscriptList.get(0).getPages().get(0).getAnnotations().get(0);
     Body body = new TextCard(UUID.randomUUID().toString());
     body.setAnnotationId(annotation.getId());
-    body.setCreated(Date.from(Instant.now()));
-    body.setModified(Date.from(Instant.now()));
+    body.setCreated(Instant.now());
+    body.setModified(Instant.now());
     body.setValue("value");
     body.setTitle("title");
+    
+    JSONObject bodyJson = new JSONObject();
+    bodyJson.put("id", body.getId());
+    bodyJson.put("annotationId", body.getAnnotationId());
+    bodyJson.put("created", body.getCreated());
+    bodyJson.put("modified", body.getModified());
+    bodyJson.put("value", body.getValue());
+    bodyJson.put("title", body.getTitle());
+    body.setFullJson(bodyJson);
 
     Mockito.when(mockedAccessService.updateAnnotation(annotation, manuscriptList.get(0).getPages().get(0).getPageNumber()))
         .thenReturn(annotation);
@@ -175,12 +186,24 @@ class SearchIndexServiceTest {
   @Test
   void addTag() throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException {
     Annotation annotation = manuscriptList.get(0).getPages().get(0).getAnnotations().get(0);
+    System.out.println(annotation);
     Body body = new Tag(UUID.randomUUID().toString());
     body.setAnnotationId(annotation.getId());
-    body.setCreated(Date.from(Instant.now()));
-    body.setModified(Date.from(Instant.now()));
+    body.setCreated(Instant.now());
+    body.setModified(Instant.now());
     body.setValue("value");
     body.setTitle("title");
+
+    JSONObject bodyJson = new JSONObject();
+    bodyJson.put("id", body.getId());
+    bodyJson.put("annotationId", body.getAnnotationId());
+    bodyJson.put("created", body.getCreated());
+    bodyJson.put("modified", body.getModified());
+    bodyJson.put("value", body.getValue());
+    bodyJson.put("title", body.getTitle());
+    body.setFullJson(bodyJson);
+
+    System.out.println("addTagTest: " + body + body.getAnnotationId() + body.getCreated());
 
     Mockito.when(mockedAccessService.updateAnnotation(annotation, manuscriptList.get(0).getPages().get(0).getPageNumber()))
         .thenReturn(annotation);
@@ -220,10 +243,17 @@ class SearchIndexServiceTest {
     Annotation annotation = manuscriptList.get(0).getPages().get(0).getAnnotations().get(0);
     Body body = annotation.getTextCards().get(0);
     body.setAnnotationId(annotation.getId());
-    body.setModified(Date.from(Instant.now()));
+    body.setModified(Instant.now());
     body.setValue("value");
     body.setTitle("title");
-    body.setPurpose(Motivation.DESCRIBING);
+    body.setPurpose("describing");
+    JSONObject bodyJson = body.getFullJson();
+    bodyJson.put("annotationId", body.getAnnotationId());
+    bodyJson.put("modified", body.getModified());
+    bodyJson.put("value", body.getValue());
+    bodyJson.put("title", body.getTitle());
+    bodyJson.put("purpose", body.getPurpose());
+    body.setFullJson(bodyJson);
 
     Mockito.when(mockedAccessService.updateAnnotation(annotation, manuscriptList.get(0).getPages().get(0).getPageNumber()))
         .thenReturn(annotation);
@@ -243,9 +273,15 @@ class SearchIndexServiceTest {
     Annotation annotation = manuscriptList.get(1).getPages().get(0).getAnnotations().get(0);
     Body body = annotation.getTags().get(0);
     body.setAnnotationId(annotation.getId());
-    body.setModified(Date.from(Instant.now()));
+    body.setModified(Instant.now());
     body.setValue("value");
     body.setTitle("title");
+    JSONObject bodyJson = body.getFullJson();
+    bodyJson.put("annotationId", body.getAnnotationId());
+    bodyJson.put("modified", body.getModified());
+    bodyJson.put("value", body.getValue());
+    bodyJson.put("title", body.getTitle());
+    body.setFullJson(bodyJson);
 
     Mockito.when(mockedAccessService.updateAnnotation(annotation, manuscriptList.get(1).getPages().get(0).getPageNumber()))
         .thenReturn(annotation);
@@ -362,7 +398,7 @@ class SearchIndexServiceTest {
     assertEquals(manuscript, searchIndexService.getRawManuscriptXml(manuscriptList.get(0).getId()));
   }
 
-  private List<Manuscript> initManuscriptList() throws ParseException {
+  private List<Manuscript> initManuscriptList() throws JSONException, ParseException {
     DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat();
     List<Manuscript> manuscripts = new ArrayList<>();
 
@@ -371,32 +407,41 @@ class SearchIndexServiceTest {
         dateFormatMillis.parse("2019-03-11T14:13:45.000Z"),
         "Vatikan Vat Gr 247", "SFB 980 - A04", 2019);
     manuscript1.getPages().add(new ImagePage("b2f8e261-a6ca-4ae5-ab91-5fb18d64d5b6",
-        "1", dateFormatMillis.parse("2019-03-11T14:13:39.000Z"), "", ""));
+        ResourceType.IMAGE, "1", dateFormatMillis.parse("2019-03-11T14:13:39.000Z"), "", ""));
     Annotation anno1 = new Annotation();
     anno1.setId("11");
     List<TextCard> textCards1 = new ArrayList<>();
     TextCard t1 = new TextCard("11111");
     t1.setAnnotationId(anno1.getId());
-    t1.setCreated(Date.from(Instant.now()));
+    t1.setCreated(Instant.now());
+    JSONObject t1json = new JSONObject();
+    t1json.put("id", t1.getId());
+    t1json.put("annotationId", t1.getAnnotationId());
+    t1json.put("created", t1.getCreated());
+    t1.setFullJson(t1json);
     textCards1.add(t1);
     anno1.setTextCards(textCards1);
     anno1.setPageId(manuscript1.getPages().get(0).getId());
     ((ImagePage) manuscript1.getPages().get(0)).addAnnotation(anno1);
     manuscript1.getPages().get(0).setManuscriptId(manuscript1.getId());
     manuscript1.getPages().add(new ImagePage("b2f8e261-a6ca-4ae5-ab91-5fb18d64d5b7",
-        "2", dateFormatMillis.parse("2019-03-11T14:13:40.000Z"), "", ""));
+        ResourceType.IMAGE, "2", dateFormatMillis.parse("2019-03-11T14:13:40.000Z"), "", ""));
 
     Manuscript manuscript2 = new Manuscript(
         "000b458c-67d5-445e-8274-73e8e4582952",
         dateFormatMillis.parse("2019-04-11T14:13:45.000Z"),
         "Vatikan Vat Gr 666", "SFB 980 - A04", 2019);
     manuscript2.getPages().add(new ImagePage("5c17cfb4-151b-4f5d-9679-242a2434edaf",
-        "1", dateFormatMillis.parse("2019-04-11T14:13:39.000Z"), "", ""));
+        ResourceType.IMAGE, "1", dateFormatMillis.parse("2019-04-11T14:13:39.000Z"), "", ""));
     Annotation anno2 = new Annotation();
     anno2.setId("22");
     List<Tag> tags1 = new ArrayList<>();
     Tag tag1 = new Tag("22222");
-    tag1.setCreated(Date.from(Instant.now()));
+    tag1.setCreated(Instant.now());
+    JSONObject tag1json = new JSONObject();
+    tag1json.put("id", tag1.getId());
+    tag1json.put("created", tag1.getCreated());
+    tag1.setFullJson(tag1json);
     tags1.add(tag1);
     anno2.setTags(tags1);
     anno2.setPageId(manuscript2.getPages().get(0).getId());
@@ -406,12 +451,12 @@ class SearchIndexServiceTest {
     anno3.setId("33");
     List<Tag> tags3 = new ArrayList<>();
     Tag tag2 = new Tag("33333");
-    tag2.setCreated(Date.from(Instant.now()));
+    tag2.setCreated(Instant.now());
     tags3.add(tag2);
     anno3.setTags(tags3);
     List<TextCard> textCards3 = new ArrayList<>();
     TextCard t3 = new TextCard("33334");
-    t3.setCreated(Date.from(Instant.now()));
+    t3.setCreated(Instant.now());
     textCards3.add(t3);
     anno3.setTextCards(textCards3);
     anno3.setPageId(manuscript2.getPages().get(0).getId());
@@ -495,7 +540,7 @@ class SearchIndexServiceTest {
     Mockito.when(mockedHit.getContent()).thenReturn(manuscript);
     SearchHits<Manuscript> mockedHits = Mockito.mock(SearchHits.class);
     Mockito.when(mockedHits.getSearchHit(0)).thenReturn(mockedHit);
-    Mockito.when(mockedElasticsearchRestTemplate.search(Mockito.any(Query.class),
+    Mockito.when(mockedElasticsearchOperations.search(Mockito.any(Query.class),
         Mockito.eq(Manuscript.class), Mockito.any(IndexCoordinates.class)))
         .thenReturn(mockedHits);
     Mockito.when(mockedHits.hasSearchHits()).thenReturn(true);

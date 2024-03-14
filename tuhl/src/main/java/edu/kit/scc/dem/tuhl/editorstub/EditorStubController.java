@@ -1,19 +1,9 @@
 package edu.kit.scc.dem.tuhl.editorstub;
 
-import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
-import edu.kit.scc.dem.tuhl.model.Annotation;
-import edu.kit.scc.dem.tuhl.model.body.Tag;
-import edu.kit.scc.dem.tuhl.model.body.TextCard;
-import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 /**
@@ -25,19 +15,19 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/editor_stub")
 public class EditorStubController {
   
-  private static final String REDIRECT_ERROR = "redirect:/error/";
+  //private static final String REDIRECT_ERROR = "redirect:/error/";
   public static final String FRAGMENT_ANNOTATION_VIEWER
       = "editor_stub_fragments :: annotationViewer";
   public static final String FRAGMENT_BODY_VIEWER = "editor_stub_fragments :: bodyViewer";
   public static final String FRAGMENT_RAW_JSON_VIEWER = "editor_stub_fragments :: rawJsonViewer";
   public static final String FRAGMENT_RAW_XML_VIEWER = "editor_stub_fragments :: rawXmlViewer";
-  private static final String ANNOTATION_STRING = "annotation";
-  private static final String RAW_JSON_STRING = "rawJson";
-  private static final String TITLE_STRING = "title";
-  private static final String VALUE_STRING = "value";
-  private static final String ANNO_ID_STRING = "annoId";
-  private static final String ID_STRING = "id";
-  private static final String BODY_STRING = "body";
+  //private static final String ANNOTATION_STRING = "annotation";
+  //private static final String RAW_JSON_STRING = "rawJson";
+  //private static final String TITLE_STRING = "title";
+  //private static final String VALUE_STRING = "value";
+  //private static final String ANNO_ID_STRING = "annoId";
+  //private static final String ID_STRING = "id";
+  //private static final String BODY_STRING = "body";
   
   private final IEditorStubService editorStubService;
   private final IAssistanceService assistanceService;

@@ -2,9 +2,6 @@ package edu.kit.scc.dem.tuhl.editor;
 
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
-import edu.kit.scc.dem.tuhl.dataaccess.AnnotationConverter;
-import edu.kit.scc.dem.tuhl.dataaccess.IAnnotationStoreAccessService;
-import edu.kit.scc.dem.tuhl.dataaccess.IRepositoryAccessService;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
@@ -16,9 +13,7 @@ import edu.kit.scc.dem.tuhl.model.page.Page;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Date;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;

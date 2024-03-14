@@ -86,7 +86,7 @@ public interface IAccessService {
    * @throws IOException if an error occurs while sending or receiving http request
    * @throws InterruptedException if the http request is interrupted
    */
-  Annotation validateAnnotation(Annotation annotation, String pageNumber)
+  Annotation validateAnnotation(Annotation annotation, String pageNumber, String projectId)
       throws JSONException, IOException, InterruptedException;
 
   /**

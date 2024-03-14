@@ -1,14 +1,9 @@
 package edu.kit.scc.dem.tuhl.model.filter;
 
-import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
-
 import com.google.gson.annotations.Expose;
 import java.util.ArrayList;
 import java.util.List;
-import org.elasticsearch.index.query.RangeQueryBuilder;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.Criteria;
 
 public class RangeFilter implements Filter {
 
@@ -19,7 +14,7 @@ public class RangeFilter implements Filter {
   private final String field;
   private List<String> values;
   @Expose(serialize = false, deserialize = false)
-  private transient NativeSearchQuery query;
+  private transient Criteria criteria;
 
   public RangeFilter(String field) {
     this.field = field;
@@ -52,16 +47,16 @@ public class RangeFilter implements Filter {
   public void setValues(List<String> values) {
     this.values = values;
     if (!values.isEmpty() && values.size() > 1) {
-      RangeQueryBuilder rangeQueryBuilder = rangeQuery(field);
+      Criteria criteria = new Criteria(field);
       if (!values.get(0).trim().equals("")) {
-        rangeQueryBuilder = rangeQueryBuilder.gte(values.get(0));
+        criteria = criteria.greaterThanEqual(values.get(0));
       }
       if (!values.get(1).trim().equals("")) {
-        rangeQueryBuilder = rangeQueryBuilder.lte(values.get(1));
+        criteria = criteria.lessThanEqual(values.get(1));
       }
-      this.query = new NativeSearchQueryBuilder().withQuery(rangeQueryBuilder).build();
+      this.criteria = criteria;
     } else {
-      this.query = new NativeSearchQueryBuilder().withQuery(matchAllQuery()).build();
+      this.criteria = new Criteria();
     }
   }
 
@@ -70,8 +65,8 @@ public class RangeFilter implements Filter {
    * @return query as NativeSearchQuery
    */
   @Override
-  public NativeSearchQuery getQuery() {
-    return query;
+  public Criteria getCriteria() {
+    return criteria;
   }
 
   /**

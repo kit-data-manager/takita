@@ -3,10 +3,7 @@ package edu.kit.scc.dem.tuhl.editor;
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
-import edu.kit.scc.dem.tuhl.model.Color;
-import edu.kit.scc.dem.tuhl.model.body.TextCard;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -21,12 +18,8 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Handles requests and directs them to the EditorService.
@@ -37,7 +30,7 @@ public class EditorController {
   private final IEditorService editorService;
   private final IAssistanceService assistanceService;
 
-  private static final String NOT_IMPLEMENTED = "not implemented";
+  //private static final String NOT_IMPLEMENTED = "not implemented";
   private static final String REDIRECT_ERROR = "redirect:/error/";
 
   private static final Logger logger = LoggerFactory.getLogger(EditorController.class);
