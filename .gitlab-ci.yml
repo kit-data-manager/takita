@@ -1,0 +1,34 @@
+stages:
+  - build
+  - test
+
+build:
+  image: eclipse-temurin:17.0.9_9-jdk
+  stage: build
+  only:
+    refs:
+      - master
+      - development
+  script:
+    - cd tuhl
+    - ./gradlew clean build
+  artifacts:
+    paths:
+      - ./tuhl/build/libs/*.jar
+
+coverage:
+  image: eclipse-temurin:17.0.9_9-jdk
+  stage: test
+  only:
+    refs:
+      - master
+      - development
+  script:
+    - cd tuhl
+    - ./gradlew check jacocoTestReport
+    - ls -l
+    - cat ./build/reports/jacoco/test/html/index.html
+  artifacts:
+    reports:
+      - ./tuhl/build/reports/jacoco/test/*
+  coverage: "/TOTAL.+ ([0-9]{1,3}%)/"
