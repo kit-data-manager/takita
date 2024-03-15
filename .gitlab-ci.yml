@@ -29,6 +29,6 @@ coverage:
     - ls -l
     - cat ./build/reports/jacoco/test/html/index.html
   artifacts:
-    reports:
+    paths:
       - ./tuhl/build/reports/jacoco/test/*
   coverage: "/TOTAL.+ ([0-9]{1,3}%)/"
