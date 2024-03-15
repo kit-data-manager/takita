@@ -1,11 +1,9 @@
-// external modules
-import { $ } from 'jquery';
 //internal modules
 import { selectAnnotation } from '../../common/annotationDisplay';
 import { encodeAnnoId } from '../../common/utils';
 import { updateDisplay } from './highlight';
 import {
-  checkIsSelectionOnWorkspace,
+  checkIsNodeOnWorkspace,
   getContentOfSelection,
   removeWhitespaceFromSelectionTextContent,
 } from './textSelection';
@@ -37,7 +35,7 @@ export function modifySelection() {
 export function saveModification() {
   if (
     window.getSelection().toString() &&
-    checkIsSelectionOnWorkspace(window.getSelection().getRangeAt(0).commonAncestorContainer)
+    checkIsNodeOnWorkspace(window.getSelection().getRangeAt(0).commonAncestorContainer)
   ) {
     // let selectionRange = window.getSelection().getRangeAt(0);
     let selectionRangeContents = getContentOfSelection(window.getSelection());
