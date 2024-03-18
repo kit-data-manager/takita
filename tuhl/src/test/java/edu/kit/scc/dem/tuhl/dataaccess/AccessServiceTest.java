@@ -107,9 +107,7 @@ class AccessServiceTest {
     manuscript.getPages().add(page1);
     manuscript.getPages().add(page2);
     List<Manuscript> expectedManuscripts = new ArrayList<>();
-    //TODO: workaround, fix when method fix is applied
-    expectedManuscripts.add(manuscript);
-    expectedManuscripts.add(manuscript);
+
     expectedManuscripts.add(manuscript);
 
     Mockito.when(mockedSearchIndexService.getManuscriptById("123")).thenReturn(manuscript);
