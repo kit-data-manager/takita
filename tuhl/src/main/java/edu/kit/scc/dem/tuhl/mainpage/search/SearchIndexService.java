@@ -165,8 +165,10 @@ public class  SearchIndexService implements ISearchIndexService {
       
       try {
         newManuscripts = accessService.getAllManuscriptsModifiedAfter(timestamp);
-      } catch (ParseException | NoSuchIndexEntryException e) {
+      } catch (ParseException e) {
         throw new IllegalArgumentException("The timestamp format is not correct");
+      } catch ( NoSuchIndexEntryException e) {
+        throw new IllegalArgumentException("Failure to retrieve all necessary index entries ");
       }
       logger.info("Indexing new or modified Manuscripts.");
       for (Manuscript manuscript : newManuscripts) {

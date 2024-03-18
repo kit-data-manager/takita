@@ -92,7 +92,8 @@ public class RepositoryAccessService implements IRepositoryAccessService {
   @Override
   public JSONArray getPageAssignmentForManuscriptId(String manuscriptId)
       throws InterruptedException, JSONException, IOException {
-      logger.info("Trying to get pages.json");
+      logger.info("Trying to get pages.json"); //Keeping logging for now due to expectations
+      logger.info("Get pages.json for manuscript with id {}", manuscriptId);
     return new JSONArray(httpRequestHelper
         .get(baseUrl + staticPath + manuscriptId + DATA_PATH + PAGES_JSON)
         .body());
