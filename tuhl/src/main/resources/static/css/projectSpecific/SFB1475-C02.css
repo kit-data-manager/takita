@@ -1,6 +1,16 @@
 /* C02 specifics */
 /* ------------------------------------*/
 
+/* setting the font style for different languages */
+#TEI *[lang="akk-Latn"]{
+	font-style: italic;
+}
+
+#TEI *[lang="sux-Latn"]{
+	font-style: normal;
+}
+
+
 /* ruby annotations used in akkadian/summerian texts */
 tei-ruby {
 	display: ruby
@@ -18,4 +28,101 @@ tei-rb {
 
 tei-rt {
 	display: ruby-text;	
+}
+
+/* overriding the default styling of editorial interventions */
+tei-supplied::before {
+    color: grey;
+    content: "<";
+}
+
+tei-supplied::after {
+    color: grey;
+    content: ">";
+}
+
+tei-supplied[reason="augment"]::before {
+    color: grey;
+    content: "<";
+}
+
+tei-supplied[reason="augment"]::after {
+    color: grey;
+    content: ">";
+}
+
+/* preliminary encoding of gaps, this might be exchanged with CETEIcean behaviors*/
+tei-gap[quantity="1"]::after{
+	content: "x";
+	color: grey;
+}
+tei-gap[quantity="2"]::after{
+	content: "x x";
+	color: grey;
+}
+tei-gap[quantity="3"]::after{
+	content: "x x x";
+	color: grey;
+}
+tei-gap[quantity="4"]::after{
+	content: "x x x x";
+	color: grey;
+}
+tei-gap[quantity="5"]::after{
+	content: "x x x x x";
+	color: grey;
+}
+tei-gap[quantity="6"]::after{
+	content: "x x x x x x";
+	color: grey;
+}
+tei-gap[quantity="7"]::after{
+	content: "x x x x x x x";
+	color: grey;
+}
+tei-gap[quantity="8"]::after{
+	content: "x x x x x x x x";
+	color: grey;
+}
+tei-gap[quantity="9"]::after{
+	content: "x x x x x x x x x";
+	color: grey;
+}
+
+/* preliminary encoding of gaps, this might be exchanged with CETEIcean behaviors*/
+tei-gap[quantity="1"][reason="lost"]::after{
+	content: "[x]";
+	color: grey;
+}
+tei-gap[quantity="2"][reason="lost"]::after{
+	content: "[x x]";
+	color: grey;
+}
+tei-gap[quantity="3"][reason="lost"]::after{
+	content: "[x x x]";
+	color: grey;
+}
+tei-gap[quantity="4"][reason="lost"]::after{
+	content: "[x x x x]";
+	color: grey;
+}
+tei-gap[quantity="5"][reason="lost"]::after{
+	content: "[x x x x x]";
+	color: grey;
+}
+tei-gap[quantity="6"][reason="lost"]::after{
+	content: "[x x x x x x]";
+	color: grey;
+}
+tei-gap[quantity="7"][reason="lost"]::after{
+	content: "[x x x x x x x]";
+	color: grey;
+}
+tei-gap[quantity="8"][reason="lost"]::after{
+	content: "[x x x x x x x x]";
+	color: grey;
+}
+tei-gap[quantity="9"][reason="lost"]::after{
+	content: "[x x x x x x x x x]";
+	color: grey;
 }
