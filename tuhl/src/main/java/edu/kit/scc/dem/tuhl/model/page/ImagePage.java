@@ -1,7 +1,7 @@
 package edu.kit.scc.dem.tuhl.model.page;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 
 
 /**
@@ -18,7 +18,7 @@ public class ImagePage extends Page {
    * @param resourceUrl URL of the image of the page
    * @param thumbResourceUrl URL of the thumbnail of the page
    */
-  public ImagePage(String id, ResourceType resourceType, String pageNumber, Date created,
+  public ImagePage(String id, ResourceType resourceType, String pageNumber, Instant created,
                    String resourceUrl, String thumbResourceUrl) {
     super(id, resourceType, pageNumber, created, resourceUrl);
     annotations = new ArrayList<>();
