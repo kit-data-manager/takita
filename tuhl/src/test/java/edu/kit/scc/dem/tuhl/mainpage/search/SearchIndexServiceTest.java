@@ -2,7 +2,6 @@ package edu.kit.scc.dem.tuhl.mainpage.search;
 
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.dataaccess.IAccessService;
-import edu.kit.scc.dem.tuhl.dataaccess.TimeStampFormats;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
 import edu.kit.scc.dem.tuhl.model.body.Body;
@@ -30,7 +29,6 @@ import org.springframework.data.elasticsearch.core.query.Query;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.time.Instant;
 import java.util.*;
@@ -399,15 +397,15 @@ class SearchIndexServiceTest {
   }
 
   private List<Manuscript> initManuscriptList() throws JSONException, ParseException {
-    DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat();
+    //DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat();
     List<Manuscript> manuscripts = new ArrayList<>();
 
     Manuscript manuscript1 = new Manuscript(
         "000073cd-c425-4214-9648-b380ff20c61a",
-        dateFormatMillis.parse("2019-03-11T14:13:45.000Z"),
+        Instant.parse("2019-03-11T14:13:45.000Z"),
         "Vatikan Vat Gr 247", "SFB 980 - A04", 2019);
     manuscript1.getPages().add(new ImagePage("b2f8e261-a6ca-4ae5-ab91-5fb18d64d5b6",
-        ResourceType.IMAGE, "1", dateFormatMillis.parse("2019-03-11T14:13:39.000Z"), "", ""));
+        ResourceType.IMAGE, "1", Instant.parse("2019-03-11T14:13:39.000Z"), "", ""));
     Annotation anno1 = new Annotation();
     anno1.setId("11");
     List<TextCard> textCards1 = new ArrayList<>();
@@ -425,14 +423,14 @@ class SearchIndexServiceTest {
     ((ImagePage) manuscript1.getPages().get(0)).addAnnotation(anno1);
     manuscript1.getPages().get(0).setManuscriptId(manuscript1.getId());
     manuscript1.getPages().add(new ImagePage("b2f8e261-a6ca-4ae5-ab91-5fb18d64d5b7",
-        ResourceType.IMAGE, "2", dateFormatMillis.parse("2019-03-11T14:13:40.000Z"), "", ""));
+        ResourceType.IMAGE, "2", Instant.parse("2019-03-11T14:13:40.000Z"), "", ""));
 
     Manuscript manuscript2 = new Manuscript(
         "000b458c-67d5-445e-8274-73e8e4582952",
-        dateFormatMillis.parse("2019-04-11T14:13:45.000Z"),
+        Instant.parse("2019-04-11T14:13:45.000Z"),
         "Vatikan Vat Gr 666", "SFB 980 - A04", 2019);
     manuscript2.getPages().add(new ImagePage("5c17cfb4-151b-4f5d-9679-242a2434edaf",
-        ResourceType.IMAGE, "1", dateFormatMillis.parse("2019-04-11T14:13:39.000Z"), "", ""));
+        ResourceType.IMAGE, "1", Instant.parse("2019-04-11T14:13:39.000Z"), "", ""));
     Annotation anno2 = new Annotation();
     anno2.setId("22");
     List<Tag> tags1 = new ArrayList<>();

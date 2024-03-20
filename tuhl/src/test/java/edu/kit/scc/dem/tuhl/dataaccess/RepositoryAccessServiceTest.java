@@ -20,6 +20,7 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
+import java.time.Instant;
 import java.util.*;
 
 @SpringBootTest(classes = RepositoryAccessService.class)
@@ -140,7 +141,7 @@ class RepositoryAccessServiceTest {
     expected.add(new JSONObject(readStringFromRelativePath("getAllManuscripts/expectedObject2.json")));
   
     List<JSONObject> actual = repositoryAccessService.getManuscriptsModifiedAfter(
-        TimeStampFormats.TIMESTAMP_FORMAT_REPO.getDateFormat().parse("2019-03-11T14:13:46Z"));
+        Instant.parse("2019-03-11T14:13:46Z"));
   
     assertEquals(expected.size(), actual.size());
     for (int i = 0; i < expected.size(); i++) {

@@ -22,6 +22,7 @@ import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.ui.Model;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -63,19 +64,19 @@ class SearchServiceTest {
         Mockito.any(IndexCoordinates.class))).thenAnswer(invocation -> resultPagesCount);
     
     String id = "000073cd-c425-4214-9648-b380ff20c61a";
-    long created = 1552309842000L;
+    //long created = 1552309842000L;
     String title = "Florenz Laur 72.5";
     String publisher = "SFB 980 - A04";
     int publicationYear = 2019;
-    long lastModified = 1552309842000L;
+    //long lastModified = 1552309842000L;
     int noPages = 1;
 
-    Manuscript searchHit = new Manuscript(id, new Date(created), title, publisher, publicationYear);
-    searchHit.setLastModified(new Date(lastModified));
+    Manuscript searchHit = new Manuscript(id, Instant.parse("2019-04-11T14:13:45.000Z"), title, publisher, publicationYear);
+    searchHit.setLastModified(Instant.parse("2019-04-11T14:13:45.000Z"));
     searchHit.setNoPages(noPages);
     searchHit.setHasAlgorithmAnnotations(true);
 
-    Page imagePage = new ImagePage("3f3bf25b-e0b9-48a9-b344-20630f733f8b", ResourceType.IMAGE, "076r", new Date(1552310017000L), "http://samplerepo.edu/api/v1/dataresources/3f3bf25b" +
+    Page imagePage = new ImagePage("3f3bf25b-e0b9-48a9-b344-20630f733f8b", ResourceType.IMAGE, "076r", Instant.parse("2019-04-11T14:13:45.000Z"), "http://samplerepo.edu/api/v1/dataresources/3f3bf25b" +
     "-e0b9-48a9-b344-20630f733f8b/data/076r.master.jpg", "http://samplerepo.edu/api/v1/dataresources/3f3bf25b-e0b9-48a9-b344-20630f733f8b/data/076r.thumb.jpg");
     imagePage.setManuscriptId(id);
     List<Page> pageList = new ArrayList<>();
@@ -103,11 +104,11 @@ class SearchServiceTest {
     assertEquals(1, results.size());
     Manuscript result = results.get(0);
     assertEquals(id, result.getId());
-    assertEquals(created, result.getCreated().getTime());
+    assertEquals(Instant.parse("2019-04-11T14:13:45.000Z"), result.getCreated());
     assertEquals(title, result.getTitle());
     assertEquals(publisher, result.getPublisher());
     assertEquals(publicationYear, result.getPublicationYear());
-    assertEquals(lastModified, result.getLastModified().getTime());
+    assertEquals(Instant.parse("2019-04-11T14:13:45.000Z"), result.getLastModified());
     assertEquals(noPages, result.getNoPages());
     assertTrue(result.hasAlgorithmAnnotations());
     
@@ -116,7 +117,7 @@ class SearchServiceTest {
     assertEquals("3f3bf25b-e0b9-48a9-b344-20630f733f8b", page.getId());
     assertEquals("http://samplerepo.edu/api/v1/dataresources/" +
         "3f3bf25b-e0b9-48a9-b344-20630f733f8b/data/076r.thumb.jpg", page.getThumbResourceUrl());
-    assertEquals(Long.valueOf(1552310017000L), page.getCreated().getTime());
+    assertEquals(Instant.parse("2019-04-11T14:13:45.000Z"), page.getCreated());
     assertEquals("http://samplerepo.edu/api/v1/dataresources/" +
         "3f3bf25b-e0b9-48a9-b344-20630f733f8b/data/076r.master.jpg", page.getResourceUrl());
     assertEquals(result.getId(), page.getManuscriptId());
