@@ -7,6 +7,7 @@ import edu.kit.scc.dem.tuhl.model.Manuscript;
 import edu.kit.scc.dem.tuhl.model.page.Page;
 import java.io.IOException;
 import java.text.ParseException;
+import java.time.Instant;
 import java.util.*;
 
 import org.slf4j.Logger;
@@ -100,7 +101,7 @@ public class AccessService implements IAccessService {
    * index
    */
   @Override
-  public List<Manuscript> getAllManuscriptsModifiedAfter(Date timestamp)
+  public List<Manuscript> getAllManuscriptsModifiedAfter(Instant timestamp)
       throws InterruptedException, JSONException, IOException, ParseException,
       NoSuchIndexEntryException {
     logger.info("Getting all manuscripts modified after {}.", timestamp);

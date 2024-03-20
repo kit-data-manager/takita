@@ -1,7 +1,7 @@
 package edu.kit.scc.dem.tuhl.dataaccess;
 
 import java.io.IOException;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -72,7 +72,7 @@ public interface IAnnotationStoreAccessService {
    * @throws IOException if an I/O error occurs when sending or receiving http request
    * @throws InterruptedException if the http request is interrupted
    */
-  List<JSONObject> getAnnotationsModifiedAfter(Date timestamp)
+  List<JSONObject> getAnnotationsModifiedAfter(Instant timestamp)
       throws JSONException, IOException, InterruptedException;
 
   /**
