@@ -181,7 +181,7 @@ function createListOfIds(targetList) {
 }
 
 // get the offset/substringPosition for a selected word
-function getSubstringPosition(target, range) {
+export function getSubstringPosition(target, range) {
   let substringPosition = {};
 
   // if the target is the first word of the selectionRange use
@@ -214,12 +214,11 @@ function getSubstringPosition(target, range) {
     substringPosition.start = range.startOffset;
     substringPosition.end = range.endOffset;
   }
-
   return substringPosition;
 }
 
 // get the nextSibling of a node
-function getNextSibling(node) {
+export function getNextSibling(node) {
   let nextSibling = node.nextSibling;
   // if the node has no nextSibling, get the nextSibling of the parentNode
   if (nextSibling === null) {

@@ -14,11 +14,12 @@ export async function loadText(linkToResource) {
 }
 
 // store the language of a text
-function setTextLanguage($text) {
+// TODO: set a default value
+export function setTextLanguage($text) {
   window.TEXTLANGUAGE = $text.querySelector('tei-text').lang;
 }
 
-function applyStyles($text, language) {
+export function applyStyles($text, language) {
   // displaying right to left languages accordingly
   if (language === 'hbo' || language === 'he' || language === 'arb' || language === 'fa') {
     document.getElementById('TEI').dir = 'rtl';
@@ -44,23 +45,25 @@ function applyStyles($text, language) {
   // B03 hebrew specific:
   // the "paseq" sign "׀" will be removed, but it needs to be displayed
   // so any word followed by a "paseq" will get a class "paseq", so the css rule applies
+  // TODO: orig should have thepaseq class, if choice is followed by the symbol
   if (language === 'hbo') {
-    $text.querySelectorAll('tei-w').forEach((word) => {
+    /*$text.querySelectorAll('tei-w').forEach((word) => {
       if (!word.id.includes('_')) {
         //if (word.nextElementSibling !== null && word.nextElementSibling.localName === "tei-pc"){
         /*if (word.nextElementSibling !== null && word.nextElementSibling.innerHTML === "־"){
                   word.classList.add("maqqef");
-              }*/
+              }*/ /*
         if (word.nextElementSibling !== null && word.nextElementSibling.innerHTML === '׀') {
           word.classList.add('paseq');
         }
       }
-    });
+    });*/
     // delete all the "paseq" signs as they will be rendered via css
     $text.querySelectorAll('tei-pc').forEach((punct) => {
       // if (punct.innerHTML === "־" || punct.innerHTML === "׀"){
       if (punct.innerHTML === '׀') {
-        punct.remove();
+        punct.classList.add('paseq');
+        punct.innerHTML = '';
       }
     });
   }

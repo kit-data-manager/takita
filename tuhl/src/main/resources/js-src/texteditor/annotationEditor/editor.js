@@ -302,7 +302,7 @@ export function storeSelectedMRWAnnos(targetList) {
   return mrwAnnos;
 }
 
-function onclickSelectText(event) {
+function onclickSelectText(_event) {
   hideExpandedSidebar();
   window.SELECTING_TEXT = true;
   window.MODE = window.MODE_CLASS.Create;

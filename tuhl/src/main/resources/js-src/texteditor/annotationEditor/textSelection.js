@@ -23,12 +23,12 @@ export function getContentOfSelection(selection) {
 }
 
 export function removeWhitespaceFromSelectionTextContent(text) {
-  console.log('Before cleaning: ', text);
+  // console.log('Before cleaning: ', text);
   text = text.replace(/\s{4}|[\t\n\r]|\s/g, ' ');
   while (text.includes('  ')) {
     text = text.replaceAll('  ', ' ');
   }
   text = text.trim();
-  console.log('After cleaning: ', text);
+  // console.log('After cleaning: ', text);
   return text;
 }

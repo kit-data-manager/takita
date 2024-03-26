@@ -1,0 +1,15 @@
+export {
+  getElementById,
+  getElementByXPath,
+  enterPseudonym,
+  leftclick,
+  leftclickNode,
+  rightclick,
+  markWord,
+  markWords,
+  showAnnoCreationModal,
+  chooseAnnoTemplate,
+  createAnnotation,
+  checkIsAnnotationCardVisible,
+  getDisplayedAnnoId,
+} from './utils';

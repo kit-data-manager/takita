@@ -1,5 +1,5 @@
 import { fillMetaDataEditorTable } from '../../common/utils';
-
+import * as highlight from './highlight';
 // converts a long concatenated/joined xPath consisting of
 // multiple xPaths into multiple xPaths
 function convertXPath(longXPath) {
@@ -100,7 +100,7 @@ export function checkIsTargetCompatible(annotation) {
 
 // remove the style from all elements
 // https://stackoverflow.com/questions/9252839/simplest-way-to-remove-all-the-styles-in-a-page
-function removeStyles(el) {
+export function removeStyles(el) {
   // TODO: CUSTOMISE classes to remove (linked to classes assigned in
   // drawAnnos() function)
   // specify the classe to remove here
@@ -209,7 +209,7 @@ export function drawAnnos(annoJson) {
 // get all displayable annotations and store them in the annoJson
 // this function is used to get an updated annoJson after an
 // annotation got created/modified/deleted
-async function getAnnoJson() {
+export async function getAnnoJson() {
   const response = await fetch(window.CONTEXTPATH + 'editor/' + window.CURRENTPAGEID + '/displayableAnnotationsJSON', {
     method: 'GET',
     headers: {
@@ -224,7 +224,7 @@ export async function updateDisplay() {
   try {
     // update annoJson to get the current tagging-body-values
     // as they are the basis for the highlighting
-    let annoJson = await getAnnoJson();
+    let annoJson = await highlight.getAnnoJson();
     // check if the annotations are compatible with the code, i.e. have
     // one xPath for each target and not one long xPath including all targets.
     // Make them compatible, if they are not

@@ -92,7 +92,7 @@ function getSelectMRWButton(mrwEnum) {
 // - an enum holding all the ids of these annotations
 // - a titleMap linking the ids to targeted strings and the type of the mrw annotation
 //   which is set according to its color, which is based on the classifying body
-function getEnumAndTitleMap(mrwAnnos) {
+export function getEnumAndTitleMap(mrwAnnos) {
   const idEnum = mrwAnnos.map((anno) => anno.id);
   const mrwTitleMap = {};
 

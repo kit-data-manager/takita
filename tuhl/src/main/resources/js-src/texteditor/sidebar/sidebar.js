@@ -91,26 +91,26 @@ function changeFontSize(id, changeFactor) {
   $txt.style.fontSize = currentSize + changeFactor + 'px';
 }
 
-function increaseFontSize() {
+export function increaseFontSize() {
   changeFontSize('TEI', 1);
 }
 
-function decreaseFontSize() {
+export function decreaseFontSize() {
   changeFontSize('TEI', -1);
 }
 
-function resetFontSize() {
+export function resetFontSize() {
   document.getElementById('TEI').style.fontSize = 'initial';
 }
 
 // adds one box-icon and removes the other one from an element
-function toggleBoxIcon(element, iconA, iconB) {
+export function toggleBoxIcon(element, iconA, iconB) {
   element.classList.toggle(iconA);
   element.classList.toggle(iconB);
 }
 
 // hebrew specific display
-function toggleHebrewView() {
+export function toggleHebrewView() {
   // adds the "zeroOpacity" class to a list of elements, to make the affected elements
   // invisible (/hide them) without moving anything aroung
   document.querySelectorAll('tei-reg').forEach((element) => {
@@ -121,7 +121,7 @@ function toggleHebrewView() {
 }
 
 // sanskrit specific display
-function toggleSanskritView() {
+export function toggleSanskritView() {
   // hides elements/text by adding the "is-hidden" class (from chota), but moves the text around a bit
   document.querySelectorAll('tei-orig').forEach((element) => {
     element.classList.toggle('is-hidden');
@@ -169,7 +169,7 @@ function initializeSpecificButtons(language) {
 // enables tooltips for the sidebar by creating a new div-element, which
 // is placed based on the item hovered by the user.
 // https://stackoverflow.com/questions/66382585/tooltip-inside-a-scrollable-component
-function enableTooltips() {
+export function enableTooltips() {
   const hoverAreas = document.querySelectorAll('.features-item');
   const hoverTooltip = document.createElement('div');
 
@@ -177,7 +177,6 @@ function enableTooltips() {
   document.body.appendChild(hoverTooltip);
 
   hoverAreas.forEach((hoverArea) => {
-    console.log(hoverArea);
     // Show the tooltip
     hoverArea.addEventListener('mouseenter', () => {
       hoverTooltip.innerHTML = hoverArea.querySelector('.tooltip').innerHTML;
