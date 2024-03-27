@@ -10,16 +10,9 @@
 }
   
 /* setting the correct font */
-/* early modern korean */
-#TEI *[lang="okm-Kore"] {
+/* early modern korean and early modern chinese */
+#TEI *[lang="okm-Kore"], #TEI *[lang="lzh"] {
     font-family: "NotoSansKR";
-}
-
-/* early modern chinese */
-/* change font to batang 
-	TODO: check if this actually works correct*/
-tei-text[lang=lzh] {
-	font-family: Batang, serif;
 }
 
 /* adding page numbers */
