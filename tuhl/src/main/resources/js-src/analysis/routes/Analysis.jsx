@@ -13,13 +13,6 @@ import Header from '../components/header';
 import Icon from '../components/icon';
 
 /**
- * Automatically called when this route's form is submitted.
- */
-const action = async ({ params, request }) => {
-  console.log('Analysis.action()');
-};
-
-/**
  * Data fetcher, automatically called when this route is requested.
  */
 const loader = async () => {
@@ -190,7 +183,7 @@ const Analysis = () => {
       <AnalysisSidebar segments={navigation}></AnalysisSidebar>
 
       <div className='analysis-content'>
-        <Header target={normalizeBasename(window.ANALYSIS_TOOL_BASENAME)} />
+        <Header target={'/'} />
 
         <div className='main-content-area'>
           <p className='debug'></p>
@@ -206,5 +199,5 @@ const Analysis = () => {
   );
 };
 
-export { action, loader };
+export { loader };
 export default Analysis;

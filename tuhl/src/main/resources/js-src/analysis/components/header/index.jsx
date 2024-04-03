@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import { AbsoluteIconButton } from '../button';
-import { Container } from '../container';
+import { LeftAlignedContainer } from '../container';
 import Icon from '../icon';
 import { H1, TinyText } from '../text';
 import { StyledHeader } from './style';
@@ -21,14 +21,14 @@ const Header = (props) => {
   return (
     <StyledHeader>
       {showIcon && <Methan />}
-      <Container>
+      <LeftAlignedContainer>
         <Link to={target}>
           <H1>
             Metaphor Analysis Tool
             <TinyText>(β–version)</TinyText>
           </H1>
         </Link>
-      </Container>
+      </LeftAlignedContainer>
       <AbsoluteIconButton
         href='mailto:gitlab-incoming+sfb1475-inf-takita-9732-issue-@ruhr-uni-bochum.de'
         label='Feedback'
