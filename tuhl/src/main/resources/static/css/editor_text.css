@@ -243,34 +243,6 @@
 /* end of textcard display */
 /* ------------------------------------*/
 
-
-/* ------------------------------------*/
-/* LANGUAGE SPECIFICS */
-/* ------------------------------------*/
-
-/* hebrew */
-/* add a "maqqef" sign used in hebrew texts */
-.maqqef::after {
-	color: grey;
-	content: "־";
-}
-
-/* add a "paseq" sign used in hebrew texts */
-.paseq::after {
-	color: grey;
-	content: "׀";
-}
-
-/* early modern chinese */
-/* change font to batang */
-tei-text[lang=lzh] {
-	font-family: Batang, serif;
-}
-
-/* end of language specifics */
-/* ------------------------------------*/
-
-
 /* ------------------------------------*/
 /* TEXT STRUCTURE SPECIFICS*/
 /* ------------------------------------*/
@@ -291,6 +263,15 @@ tei-ab {
 
 tei-ab {
 	margin-bottom: .5em;
+}
+
+/* setting the backgrund color of line- and pagebeginnings
+	so they always stay white */
+tei-pb {
+	background-color: white;
+}
+tei-lb {
+	background-color: white;
 }
 
 /* linebreak before the start of a new line */
@@ -325,24 +306,33 @@ tei-quote::after {
 }
 
 /* text highlights */
-*[rend="sup"] {
+tei-text *[rend="sup"] {
 	font-size: 70%;
 	vertical-align: super;
 }
 
-*[rend="superscript"] {
+tei-text *[rend="superscript"] {
 	font-size: 70%;
 	vertical-align: super;
 }
 
-*[rend="sub"] {
+tei-text *[rend="sub"] {
 	font-size: 70%;
 	vertical-align: sub;
 }
 
-*[rend="subscript"] {
+tei-text *[rend="subscript"] {
 	font-size: 70%;
 	vertical-align: sub;
+}
+
+/* indentation */
+tei-text *[rend="indent"]{
+	margin-left: 1em;
+}
+  
+tei-text *[rend="indentTwo"]{
+	margin-left: 2em;
 }
 
 /* editorial additions (Leiden-style)

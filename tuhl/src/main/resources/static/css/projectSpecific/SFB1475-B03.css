@@ -26,3 +26,16 @@ tei-text[lang="hbo"] tei-orig {
 .zeroOpacity {
 	opacity: 0;
 }
+
+/* hebrew */
+/* add a "maqqef" sign used in hebrew texts */
+.maqqef::after {
+	color: grey;
+	content: "־";
+}
+
+/* add a "paseq" sign used in hebrew texts */
+.paseq::after {
+	color: grey;
+	content: "׀";
+}
