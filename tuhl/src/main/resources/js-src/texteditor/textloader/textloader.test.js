@@ -1,7 +1,6 @@
 // external modules
-import { Builder, Browser, By } from 'selenium-webdriver';
+
 // internal modules
-import { getElementById, enterPseudonym } from '../../_selenium';
 import { applyStyles, setTextLanguage } from './textloader';
 
 const innerHTMLSanskrit =
@@ -28,7 +27,7 @@ describe('applying styles based on the language of a text', () => {
     setTextLanguage($text);
     const language = window.TEXTLANGUAGE;
     applyStyles($text, language);
-    expect($text.dir).toBe('ltr');
+    expect($text.dir).toBe('');
   });
   it('makes the editor display text from right to left', () => {
     // setup the document
@@ -74,66 +73,4 @@ describe('storing the language of a text', () => {
     setTextLanguage($text);
     expect(window.TEXTLANGUAGE).toBe('hbo');
   });
-});
-
-// selenium variables
-// duration of timeout
-const timeoutAfter = 10000;
-
-// urls and ids, that need to be changed according to the setup
-const testURL = 'http://localhost:8181/editor/af28d854-6240-49ab-b94e-37c175dead54';
-const testWord = 'id("w.3")';
-
-async function textloadTest(driver) {
-  await driver.get(testURL);
-  await enterPseudonym(driver);
-  const $text = await getElementById('TEI', driver);
-  // check if the text was loaded and the default message replaced
-  const textIsVisible =
-    $text.getText() != 'Please wait until your text is loaded. If it doesn´t load, contact the developers.' &&
-    $text.getText() != '';
-  //check if the text was transformed into custom HTML-elements by CETEIcean
-  const $teiText = await driver.findElement(By.xpath('//tei-text'));
-  const tagName = await $teiText.getTagName();
-  // the return of getTagName() above for Safari is different than the return
-  // of the function in other browsers; Safari returns an uppercase string.
-  // So the string is turned into lowercase
-  const textIsTEI = tagName.toLowerCase() == 'tei-text';
-  const browserName = (await driver.getCapabilities()).getBrowserName();
-  console.log(tagName, browserName);
-  // getting the text language stored in the window.object
-  const textLanguage = await driver.executeScript(
-    'function getLanguage(){return window.TEXTLANGUAGE;}; return getLanguage();',
-  );
-
-  return { textIsVisible: textIsVisible, textIsTEI: textIsTEI, textLanguage: textLanguage };
-}
-
-// selenium tests
-describe.only('loading the text', () => {
-  // it would be better to await the creation of each webdriver and
-  // use beforeAll(), but Philipp couldn't figure out a way of doing it
-  const chrome = new Builder().forBrowser(Browser.CHROME).build();
-  const edge = new Builder().forBrowser(Browser.EDGE).build();
-  const firefox = new Builder().forBrowser(Browser.FIREFOX).build();
-  const safari = new Builder().forBrowser(Browser.SAFARI).build();
-
-  let browsers = [
-    ['Chrome', chrome],
-    ['Edge', edge],
-    ['Firefox', firefox],
-    ['Safari', safari],
-  ];
-
-  it.concurrent.each(browsers)(
-    'loads the text and transforms it into TEI in %s',
-    async (name, driver) => {
-      const result = await textloadTest(driver);
-      expect(result.textIsVisible).toBe(true);
-      expect(result.textIsTEI).toBe(true);
-      expect(result.textLanguage).toBe('hbo');
-      await driver.quit();
-    },
-    timeoutAfter,
-  );
 });

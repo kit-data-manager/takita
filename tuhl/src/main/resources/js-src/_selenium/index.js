@@ -1,4 +1,10 @@
 export {
+  createDriver,
+  createDrivers,
+  createChromeDriver,
+  createEdgeDriver,
+  createFirefoxDriver,
+  createSafariDriver,
   getElementById,
   getElementByXPath,
   enterPseudonym,

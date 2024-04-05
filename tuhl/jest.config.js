@@ -90,7 +90,7 @@ const config = {
 
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   moduleNameMapper: {
-	"\\.(css|less|scss)$": "identity-obj-proxy"
+    '\\.(css|less|scss)$': 'identity-obj-proxy',
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
@@ -106,7 +106,18 @@ const config = {
   //preset: undefined,
 
   // Run tests from one or more projects
-  // projects: undefined,
+  // projects: [
+  //   {
+  //     displayName: 'regular test',
+  //     testMatch: ['<rootDir>/src/main/resources/js-src/**/*[^selenium].test.js'],
+  //     testEnvironment: 'jsdom',
+  //   },
+  //   {
+  //     displayName: 'selenium test',
+  //     testMatch: ['<rootDir>/src/main/resources/js-src/**/*.selenium.test.js'],
+  //     testEnvironment: 'jsdom',
+  //   },
+  // ],
 
   // Use this configuration option to add custom reporters to Jest
   // reporters: undefined,
@@ -127,9 +138,7 @@ const config = {
   // rootDir: undefined,
 
   // A list of paths to directories that Jest should use to search for files in
-  roots: [
-     "<rootDir>/src/main/resources/js-src"
-  ],
+  roots: ['<rootDir>/src/main/resources/js-src'],
 
   // Allows you to use a custom runner instead of Jest's default test runner
   // runner: "jest-runner",
@@ -138,7 +147,7 @@ const config = {
   // setupFiles: [],
 
   // A list of paths to modules that run some code to configure or set up the testing framework before each test
-  setupFilesAfterEnv: ["<rootDir>/src/main/resources/js-src/analysis/setupTests.js"],
+  setupFilesAfterEnv: ['<rootDir>/src/main/resources/js-src/analysis/setupTests.js'],
 
   // The number of seconds after which a test is considered as slow and reported as such in the results.
   // slowTestThreshold: 5,
@@ -147,7 +156,7 @@ const config = {
   // snapshotSerializers: [],
 
   // The test environment that will be used for testing
-  testEnvironment: "jsdom",
+  testEnvironment: 'jsdom',
 
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},
@@ -181,10 +190,7 @@ const config = {
   //},
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
-  transformIgnorePatterns: [
-     "/node_modules/(?!(CETEIcean)/)",
-     "\\.pnp\\.[^\\/]+$"
-  ],
+  transformIgnorePatterns: ['/node_modules/(?!(CETEIcean)/)', '\\.pnp\\.[^\\/]+$'],
 
   // An array of regexp pattern strings that are matched against all modules before the module loader will automatically return a mock for them
   // unmockedModulePathPatterns: undefined,

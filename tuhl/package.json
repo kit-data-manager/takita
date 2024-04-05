@@ -1,8 +1,10 @@
 {
   "scripts": {
     "build": "webpack --mode production",
-    "test": "jest",
-    "coverage": "jest --coverage"
+    "test": "jest '^((?!selenium).)*.test.js$'",
+    "test-all": "jest --runInBand",
+    "test-selenium": "jest --runInBand '.*selenium\\.test\\.js'",
+    "coverage": "jest --coverage --runInBand"
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
