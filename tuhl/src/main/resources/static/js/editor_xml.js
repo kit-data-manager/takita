@@ -668,6 +668,12 @@ function drawAnnos(annoJson) {
                     case "#000014":
                         targetElement.classList.add("mflag");
                         break;
+                    case "#000015":
+                        targetElement.classList.add("mrw");
+                        break;
+                    case "#000016":
+                        targetElement.classList.add("mrw");
+                        break;
                     default:
                         // this is not ideal, but without the if clause, most of words
                         // will get the defaulthighlighting class
@@ -675,7 +681,9 @@ function drawAnnos(annoJson) {
                             annotation.color === "#000011" ||
                             annotation.color === "#000012" ||
                             annotation.color === "#000013" ||
-                            annotation.color === "#000014"){
+                            annotation.color === "#000014" ||
+                            annotation.color === "#000015" ||
+                            annotation.color === "#000016"){
                                 // nothing will happen
                         } else {
                             targetElement.classList.add("defaulthighlight");
@@ -1407,7 +1415,9 @@ function storeSelectedMRWAnnos(targetList){
         if (annotation.color === "#000011" || 
             annotation.color === "#000012" || 
             annotation.color === "#000013" || 
-            annotation.color === "#000014"){
+            annotation.color === "#000014" ||
+            annotation.color === "#000015" ||
+            annotation.color === "#000016"){
 				targetList.forEach( target => {
 					annotation.svg.forEach( svg => {
 						if (target.id === svg.split("\"")[1]){
@@ -1632,6 +1642,12 @@ function getColorHexFromEnumEntry(colorEnumEntry){
         case "MFLAG":
             colorHex = "#000014";
             break;
+        case "MRW":
+            colorHex = "#000015";
+            break;
+        case "MRW_CANDIDATE":
+            colorHex = "#000016";
+            break;
         case "METAPHOR":
             colorHex = "#000021";
             break;
@@ -1653,6 +1669,12 @@ function getColorNameFromEnumEntry(colorEnumEntry){
             break;
         case "MRW_IMPLICIT":
             colorName = "mrw (implicit)";
+            break;
+        case "MRW":
+            colorName = "mrw";
+            break;
+        case "MRW_CANDIDATE":
+            colorName = "mrw candidate";
             break;
         case "MFLAG":
             colorName = "mflag";

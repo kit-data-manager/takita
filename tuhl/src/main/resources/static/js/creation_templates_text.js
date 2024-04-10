@@ -3,7 +3,7 @@
 // getFormModel(chosenTemplate)
 const bodyTemplate = {
     COMMENT : "comment",
-    MRW : "mrw"
+    LINKMRW : "mrw"
 };
 
 // enum for different annotation templates
@@ -11,6 +11,8 @@ const bodyTemplate = {
 // for adding new: include name here and add dataModel in 
 // getFormModel(chosenTemplate)
 const annotationTemplate = {
+    MRW: "mrw",
+    MRWCANDIDATE: "mrwcandidate",
     MRWDIRECT : "mrwdirect",
     MRWINDIRECT : "mrwindirect",
     MRWIMPLICIT : "mrwimplicit",
@@ -103,6 +105,12 @@ function getEnumAndTitleMap(mrwAnnos){
                 break;
             case "#000014":
                 mrwType = "mflag";
+                break;
+            case "#000015":
+                mrwType = "mrw";
+                break;
+            case "#000016":
+                mrwType = "mrw candidate";
                 break;
         }
         mrwTitleMap[anno.id] = targetedString + " | " + mrwType;
@@ -449,6 +457,87 @@ function getFormModel(chosenTemplate) {
 	        };
 	    	break;
         
+
+            case "MRW":
+                dataModel = {
+                    "type" : "object",
+                    "properties" : {
+                        "selectedText": {
+                            "type" : "string",
+                            "title" : "Selected text",
+                            "default" : globalSelectedText,
+                            "readOnly" : true	
+                        },
+                        "classification" : {
+                            "type" : "string",
+                            "title" : "Classification",
+                            "default" : "mrw",
+                            "readOnly" : true
+                        },
+                        "color" : {
+                            "type" : "string",
+                            "title" : "color",
+                            "default" : "#000015",
+                            "readOnly" : true
+                        }
+                    }
+                };
+                uiForm = {
+                    "type" : "fieldset",
+                    "items" : [
+                        "selectedText",
+                        {
+                            "key" : "classification",
+                            "readOnly" : true
+                        },
+                        {
+                            "key" : "color",
+                            "readOnly" : true,
+                            "htmlClass" : "is-hidden"
+                        }                
+                ]};
+                break;
+    
+            case "MRWCANDIDATE":
+                dataModel = {
+                    "type" : "object",
+                    "properties" : {
+                        "selectedText": {
+                            "type" : "string",
+                            "title" : "Selected text",
+                            "default" : globalSelectedText,
+                            "readOnly" : true	
+                        },
+                        "classification" : {
+                            "type" : "string",
+                            "title" : "Classification",
+                            "default" : "mrw candidate",
+                            "readOnly" : true
+                        },
+                        "color" : {
+                            "type" : "string",
+                            "title" : "color",
+                            "default" : "#000016",
+                            "readOnly" : true
+                        }
+                    }
+                };
+                uiForm = {
+                    "type" : "fieldset",
+                    "items" : [
+                        "selectedText",
+                        {
+                            "key" : "classification",
+                            "readOnly" : true
+                        },
+                        {
+                            "key" : "color",
+                            "readOnly" : true,
+                            "htmlClass" : "is-hidden"
+                        }                     
+                ]};
+                break;  
+
         case "CONTEXT":
             dataModel = {
                 "type" : "object",
@@ -502,7 +591,7 @@ function getFormModel(chosenTemplate) {
             };
             break;
 
-        case "MRW":
+        case "LINKMRW":
             // if a user wants to link another mrw annotation to a metaphor annotation,
 	        // get all the mrws that share their target with the metaphor annotation
 	        // and store them in the enum to hold all the mrwAnnoIds, so the user can
