@@ -1,6 +1,8 @@
 import {
+  initializeSidebar,
   updateSidebar,
   hideExpandedSidebar,
+  toggleAnnoSideBar,
   increaseFontSize,
   decreaseFontSize,
   resetFontSize,
@@ -10,6 +12,10 @@ import {
   enableTooltips,
 } from './sidebar';
 
+// initializeNavbar mostly attaches eventHandlers, which presence can't be tested, so there is no
+// test for it.
+// font size manipulation isn't tested either see below.
+
 // loading the full html file according to:
 // https://dev.to/snowleo208/things-i-learned-after-writing-tests-for-js-and-html-page-4lja
 const fs = require('fs');
@@ -18,7 +24,23 @@ const html = fs.readFileSync(path.resolve(__dirname, './testing.html'), 'utf8');
 
 jest.dontMock('fs');
 
-describe.skip('updating buttons in the sidebar', () => {
+describe('initializing the sidebar', () => {
+  beforeEach(() => {
+    document.documentElement.innerHTML = html.toString();
+  });
+
+  afterEach(() => {
+    // restore the original func after test
+    jest.resetModules();
+  });
+
+  it('initializes the sidebar', () => {
+    const initializedSidebar = initializeSidebar();
+    expect(initializedSidebar).toBe(true);
+  });
+});
+
+describe('updating buttons in the sidebar', () => {
   beforeEach(() => {
     document.documentElement.innerHTML = html.toString();
   });
@@ -30,24 +52,37 @@ describe.skip('updating buttons in the sidebar', () => {
 
   it('updates the buttons in the sidebar by initiliazing the buttons for texts in Hebrew', () => {
     const language = 'hbo';
-    updateSidebar(language);
+    const sidebarUpdated = updateSidebar(language);
     const wrapperIsVisible = !document.getElementById('toggleViews').classList.contains('is-hidden');
-    const buttonHasEventListener = document.getElementById('toggleViewsButton').getAttribute('onclick') != null;
-    const spanHasEventListener = document.getElementById('toggleViewsSpan').getAttribute('onclick') != null;
     expect(wrapperIsVisible).toBe(true);
-    expect(buttonHasEventListener).toBe(true);
-    expect(spanHasEventListener).toBe(true);
+    expect(sidebarUpdated).toBe(true);
   });
   it('updates the buttons in the sidebar by initiliazing the buttons for texts in Sanskrit', () => {
     const language = 'sa-Latn';
-    updateSidebar(language);
+    const sidebarUpdated = updateSidebar(language);
     const wrapperIsVisible = !document.getElementById('toggleViews').classList.contains('is-hidden');
-    const buttonHasEventListener = document.getElementById('toggleViewsButton').getAttribute('onclick') != null;
-    const spanHasEventListener = document.getElementById('toggleViewsSpan').getAttribute('onclick') != null;
     expect(wrapperIsVisible).toBe(true);
-    expect(buttonHasEventListener).toBe(true);
-    expect(spanHasEventListener).toBe(true);
+    expect(sidebarUpdated).toBe(true);
   });
+  it('does not update the buttons in the sidebar as the text is not in Sanskrit or Hebrew', () => {
+    const language = 'arb';
+    const sidebarUpdated = updateSidebar(language);
+    const wrapperIsVisible = !document.getElementById('toggleViews').classList.contains('is-hidden');
+    expect(wrapperIsVisible).toBe(false);
+    expect(sidebarUpdated).toBe(false);
+  });
+  // old test; not working as Philipp couldn't check for the presence of eventListeners.
+  // The new tests use a return value by the called function, which is true, if everything worked.
+  // it('updates the buttons in the sidebar by initiliazing the buttons for texts in Sanskrit', () => {
+  //   const language = 'sa-Latn';
+  //   updateSidebar(language);
+  //   const wrapperIsVisible = !document.getElementById('toggleViews').classList.contains('is-hidden');
+  //   const buttonHasEventListener = document.getElementById('toggleViewsButton').getAttribute('onclick') != null;
+  //   const spanHasEventListener = document.getElementById('toggleViewsSpan').getAttribute('onclick') != null;
+  //   expect(wrapperIsVisible).toBe(true);
+  //   expect(buttonHasEventListener).toBe(true);
+  //   expect(spanHasEventListener).toBe(true);
+  // });
 });
 
 describe('hiding the sidebar', () => {
@@ -62,20 +97,26 @@ describe('hiding the sidebar', () => {
 
   it('hides the sidebar after a button was clicked, if the sidebar was visible', () => {
     const $sidebar = document.querySelector('.anno-side-bar');
+    const $icon = document.getElementById('logo-name__icon');
     $sidebar.classList.remove('annocollapse');
+    $icon.classList.remove('annocollapse');
     hideExpandedSidebar();
     const sidebarIsHidden = $sidebar.classList.contains('annocollapse');
+    const iconPointsRight = $icon.classList.contains('bx-arrow-from-left');
     expect(sidebarIsHidden).toBe(true);
+    expect(iconPointsRight).toBe(true);
   });
   it('keeps the sidebar hidden after a button was clicked, if the sidebar was hidden already', () => {
     const $sidebar = document.querySelector('.anno-side-bar');
     hideExpandedSidebar();
     const sidebarIsHidden = $sidebar.classList.contains('annocollapse');
+    const iconPointsRight = document.getElementById('logo-name__icon').classList.contains('bx-arrow-from-left');
     expect(sidebarIsHidden).toBe(true);
+    expect(iconPointsRight).toBe(true);
   });
 });
 
-describe('manipulating the font size', () => {
+describe('showing the sidebar', () => {
   beforeEach(() => {
     document.documentElement.innerHTML = html.toString();
   });
@@ -85,25 +126,52 @@ describe('manipulating the font size', () => {
     jest.resetModules();
   });
 
-  it.skip('increases the font size', () => {
+  it('shows the sidebar after clicking on the arrow in the top left corner', () => {
+    const $sidebar = document.querySelector('.anno-side-bar');
+    const $icon = document.getElementById('logo-name__icon');
+    // showing the sidebar
+    toggleAnnoSideBar();
+    const sidebarIsHidden = $sidebar.classList.contains('annocollapse');
+    const iconPointsLeft = $icon.classList.contains('bx-arrow-from-right');
+    expect(sidebarIsHidden).toBe(false);
+    expect(iconPointsLeft).toBe(true);
+  });
+});
+
+// Philipp couldn't figure out a way to get the stlye/fontsize of the elements
+// and thinks its impossible as jest doesnt render the HTML.
+// This is tested using selenium see ./sidebar.selenium.test.js
+describe.skip('manipulating the font size', () => {
+  beforeEach(() => {
+    document.documentElement.innerHTML = html.toString();
+  });
+
+  afterEach(() => {
+    // restore the original func after test
+    jest.resetModules();
+  });
+
+  it('increases the font size', () => {
     const $txt = document.getElementById('TEI');
     const sizeBeforeChange = window.getComputedStyle($txt).fontSize;
+    console.log($txt.style.fontSize);
     console.log(window.getComputedStyle($txt).fontSize);
     console.log(window.getComputedStyle($txt));
     increaseFontSize();
     const sizeAfterChange = window.getComputedStyle($txt).fontSize;
+    console.log(document.getElementById('TEI').style.fontSize);
     console.log(window.getComputedStyle($txt).fontSize);
     console.log(window.getComputedStyle($txt));
     expect(sizeBeforeChange < sizeAfterChange).toBe(true);
   });
-  it.skip('decreases the font size', () => {
+  it('decreases the font size', () => {
     const $txt = document.getElementById('TEI');
     const sizeBeforeChange = $txt.style.fontSize;
     decreaseFontSize();
     const sizeAfterChange = $txt.style.fontSize;
     expect(sizeBeforeChange > sizeAfterChange).toBe(true);
   });
-  it.skip('resets the font size', () => {
+  it('resets the font size', () => {
     const $txt = document.getElementById('TEI');
     resetFontSize();
     const textFontSize = $txt.style.fontSize;
@@ -224,13 +292,10 @@ describe('enabling tooltips', () => {
     jest.resetModules();
   });
 
-  it.skip('enables the tooltips for the sidebar by attaching eventListeners', () => {
-    enableTooltips();
-    const hoverAreaHasEventListeners =
-      document.querySelectorAll('.features-item')[0].getAttribute('mouseenter') != null &&
-      document.querySelectorAll('.features-item')[0].getAttribute('mouseleave') != null;
+  it('enables the tooltips for the sidebar by attaching eventListeners', () => {
+    const tooltipsEnabled = enableTooltips();
     const hoverTooltipExists = document.querySelectorAll('.hoverTooltip')[0] != undefined;
-    expect(hoverAreaHasEventListeners).toBe(true);
+    expect(tooltipsEnabled).toBe(true);
     expect(hoverTooltipExists).toBe(true);
   });
 });

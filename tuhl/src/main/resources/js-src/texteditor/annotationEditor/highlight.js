@@ -2,7 +2,7 @@ import { fillMetaDataEditorTable } from '../../common/utils';
 import * as highlight from './highlight';
 // converts a long concatenated/joined xPath consisting of
 // multiple xPaths into multiple xPaths
-function convertXPath(longXPath) {
+export function convertXPath(longXPath) {
   let xPathArray = [];
 
   // if the xPath contains only joined xPaths resolving to nodes
@@ -32,6 +32,7 @@ function convertXPath(longXPath) {
           return xPath;
         } else if (xPath.startsWith('substring(//*[@xml:id=') || xPath.startsWith('substring(id(')) {
           // add the startingPosition and the length of the substring to the xPath
+          // TODO: remove the leading/traling whitespace from the startingPosition and the length of the substring
           return xPath + ', ' + xPaths[index + 1] + ', ' + xPaths[index + 2];
         }
       })

@@ -1,5 +1,5 @@
 // get the smallest available nodes, that have an xmlId and store them in a list
-function getSmallestNodesWithXmlIds(node, nodeList) {
+export function getSmallestNodesWithXmlIds(node, nodeList) {
   if (node.children.length !== 0) {
     Array.from(node.children).forEach((child) => {
       getSmallestNodesWithXmlIds(child, nodeList);
@@ -7,6 +7,8 @@ function getSmallestNodesWithXmlIds(node, nodeList) {
   } else {
     if (node.id) {
       nodeList.push(node);
+      console.log(node.id);
+      console.log(node.innerHTML);
     }
   }
 }
@@ -103,15 +105,22 @@ export function createTargetList(selection) {
     // "cleaning" the targetList, because sometimes an empty w-element will be included
     // in the bgeinning or at the end of the targetList as the user selected some
     // whitespace before/after the first word she wanted to select as well
+    console.log(targetList.length);
+    console.log('cond1 ', targetList[targetList.length - 1].innerHTML.trim() == '');
+    console.log(targetList[targetList.length - 1].innerHTML);
+    console.log('cond2 ', targetList[0].innerHTML.trim() == '');
+    console.log(targetList[0].innerHTML);
     if (targetList.length > 1) {
       if (targetList[targetList.length - 1].innerHTML.trim() == '') {
         targetList.pop();
+        console.log('popped');
       }
       if (targetList[0].innerHTML.trim() == '') {
         targetList.shift();
+        console.log('shifted');
       }
     }
-
+    console.log(targetList.length);
     // add the start/end offsets/character positions of the text
     // create the json object containing all information
     let rangeItem = {
@@ -120,11 +129,13 @@ export function createTargetList(selection) {
       endOffset: selectionRangeOffsets.endOffset,
     };
     targetRangeList.push(rangeItem);
+    console.log(targetRangeList[0].targetList.length);
   }
 
   return targetRangeList;
 }
 
+/* NOT USED, BUT MIGHT BE HELPFUL AGAIN LATER
 // creates a concatenated list of each xPath resolving to one element, that
 // is present in the selction
 function createListOfIds(targetList) {
@@ -164,21 +175,22 @@ function createListOfIds(targetList) {
     //targetListJson = (targetListJson.slice(0,-1) + "]").replaceAll("\\","");
     targetsXmlIds = targetsXmlIds.slice(0, -1);
 
-    /*targetList.forEach( item => {
-              // storing values to build a JSON
-              targetJson = {};
-              valueId = "//*[@xml:id =\"" + item.id + "\"]";
-              selectorObject = {type: "XPathSelector", value: valueId};
-              targetJson = {source: window.CURRENTPAGEURL, selector: selectorObject};
-              targetArray.push(targetJson);
+    // targetList.forEach( item => {
+    //           // storing values to build a JSON
+    //           targetJson = {};
+    //           valueId = "//*[@xml:id =\"" + item.id + "\"]";
+    //           selectorObject = {type: "XPathSelector", value: valueId};
+    //           targetJson = {source: window.CURRENTPAGEURL, selector: selectorObject};
+    //           targetArray.push(targetJson);
               
-          });*/
+    //       });
     //targetListAsJson = {target: targetArray};
     //console.log(targetListJson);
     //console.log(JSON.stringify(targetListAsJson));
   }
   return targetsXmlIds;
 }
+*/
 
 // get the offset/substringPosition for a selected word
 export function getSubstringPosition(target, range) {
@@ -237,6 +249,8 @@ export function createXPath(targetRangeList) {
     range.targetList.forEach((target) => {
       let xPathToElement = 'id("' + target.id + '")';
       // check if the targetted words are fully selected
+      console.log('filly selected', target.innerText === document.getElementById(target.id).innerText);
+      console.log('text', target.innerText, ' ', document.getElementById(target.id).innerText);
       if (target.innerText === document.getElementById(target.id).innerText) {
         xPaths.push(xPathToElement);
       } else {

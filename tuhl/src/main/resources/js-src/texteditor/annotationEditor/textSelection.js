@@ -9,7 +9,13 @@ export function checkIsNodeOnWorkspace(node) {
   }
 }
 
-// merge all ranges of the selection into one and return the content
+// merge all ranges of the selection into one DocumentFragment and return the content.
+// This is necessary as firefox can create selections with multiple ranges, hence
+// the rangeCount will be bigger than 1. firefox behavior violates the selection spec
+// (see https://w3c.github.io/selection-api/#dom-selection-rangecount).
+// NOTE: changes to this function should be reflected in textSelection.selenium.test.js,
+// where the function is turned into a String and passed to Selenium. This should work
+// automatically, but checking is recommended.
 export function getContentOfSelection(selection) {
   let selectionRangeContents = selection.getRangeAt(0).cloneContents();
   // if there are multiple selection ranges (eg. in the B04 case)

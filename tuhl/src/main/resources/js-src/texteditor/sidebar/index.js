@@ -1,1 +1,1 @@
-export { initializeSidebar, updateSidebar, hideExpandedSidebar } from './sidebar';
+export { initializeSidebar, updateSidebar, hideExpandedSidebar, toggleAnnoSideBar } from './sidebar';

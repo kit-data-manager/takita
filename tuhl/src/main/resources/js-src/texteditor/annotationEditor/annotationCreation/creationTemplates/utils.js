@@ -534,7 +534,7 @@ export function getFormModel(chosenTemplate) {
         elementsTargeted.push(document.getElementById(target.selector.xPath.split('"')[1]));
       });
       // get all mrwAnnos that target the same words as the metaphor annotation
-      let mrwAnnosForBody = storeSelectedMRWAnnos(elementsTargeted);
+      let mrwAnnosForBody = storeSelectedMRWAnnos(window.ANNOJSON.elementsTargeted);
       // remove all mrw annotations, which are linked to the metaphor annotation already
       // from mrwAnnosForBody to prevent users from linking the same mrwAnno
       // multiple times

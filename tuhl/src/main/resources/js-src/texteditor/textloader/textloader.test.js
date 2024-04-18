@@ -1,7 +1,7 @@
 // external modules
 
 // internal modules
-import { applyStyles, setTextLanguage } from './textloader';
+import { applyStyles, loadText, setTextLanguage } from './textloader';
 
 const innerHTMLSanskrit =
   '<div id="TEI"><tei-text xml:lang="sa-Latn" lang="sa-Latn" type="book" data-xmlns="http://www.tei-c.org/ns/1.0">' +
@@ -72,5 +72,22 @@ describe('storing the language of a text', () => {
     const $text = document.getElementById('TEI');
     setTextLanguage($text);
     expect(window.TEXTLANGUAGE).toBe('hbo');
+  });
+});
+
+// doesn't work, bc of appendChild()
+// TypeError: Failed to execute 'appendChild' on 'Node': parameter 1 is not of type 'Node'.
+// at Object.exports.convert (takita/tuhl/node_modules/jsdom/lib/jsdom/living/generated/Node.js:25:9)
+// at HTMLDivElement.appendChild (takita/tuhl/node_modules/jsdom/lib/jsdom/living/generated/Node.js:404:26)
+// at appendChild (takita/tuhl/src/main/resources/js-src/texteditor/textloader/textloader.js:10:17)
+describe.skip('loading a text', () => {
+  it('loads a text given an URL', () => {
+    // setup the document
+    document.body.innerHTML = innerHTMLHebrew;
+    const $text = loadText('./../../../../../../testfiles/HebrewBibleFull.xml');
+    const $teiElement = document.getElementById('TEI');
+    setTextLanguage($text);
+    expect(window.TEXTLANGUAGE).toBe('hbo');
+    expect($teiElement.dir).toBe('rtl');
   });
 });

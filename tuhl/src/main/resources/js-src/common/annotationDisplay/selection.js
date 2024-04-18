@@ -483,9 +483,13 @@ export function selectAnnotation(_event, annoId) {
         buttonCancelModification.classList.add('is-hidden');
 
         annotationDiv.append(buttonModifySelection);
-        document.getElementById('buttonModifySelection').addEventListener('mousedown', modifySelection);
+        document.getElementById('buttonModifySelection').addEventListener('mousedown', (event) => {
+          modifySelection(event, window.SELECTED_ANNOTATION);
+        });
         annotationDiv.append(buttonSaveModification);
-        document.getElementById('buttonSaveModification').addEventListener('mousedown', saveModification);
+        document.getElementById('buttonSaveModification').addEventListener('mousedown', (event) => {
+          saveModification(event, window.getSelection(), window.SELECTED_ANNOTATION);
+        });
         annotationDiv.append(buttonCancelModification);
         document.getElementById('buttonCancelModification').addEventListener('mousedown', cancelModification);
       }

@@ -1,8 +1,7 @@
 import '../../common/utils/metadataeditor';
 import { fillMetaDataEditorTable } from '../../common/utils';
-import { checkIsTargetCompatible, makeTargetsCompatible } from '.';
+import { checkIsTargetCompatible, makeTargetsCompatible, convertXPath, drawAnnos, removeStyles } from './highlight';
 import { mockAnnoJson } from './examples/annoJsonData';
-import { drawAnnos, removeStyles } from './highlight';
 import * as highlight from './highlight';
 
 const innerHtml =
@@ -276,6 +275,34 @@ describe('making a target compatible to tAkita', () => {
   });
 });
 
+// TODO: adapt the folling tests after the leading/trailing whitespace was removed
+describe('converting long xPath to an array of xPaths', () => {
+  it('converts a long xPath only including ids (old xPaths not using id()-function)', () => {
+    const longXPath = '//*[@xml:id="w.121"] | //*[@xml:id="w.122"]';
+    const result = convertXPath(longXPath);
+    expect(result).toStrictEqual(['//*[@xml:id="w.121"]', '//*[@xml:id="w.122"]']);
+  });
+  it('converts a long xPath only including ids (new xPaths using id()-function)', () => {
+    const longXPath = 'id("w.121") | id("w.122")';
+    const result = convertXPath(longXPath);
+    expect(result).toStrictEqual(['id("w.121")', 'id("w.122")']);
+  });
+  it('converts a long xPath including substrings (old xPaths not using id()-function)', () => {
+    const longXPath = 'concat(//*[@xml:id="w.75"], //*[@xml:id="pc.12"], "   ", substring(//*[@xml:id="w.76"], 1, 5))';
+    const result = convertXPath(longXPath);
+    expect(result).toStrictEqual([
+      '//*[@xml:id="w.75"]',
+      '//*[@xml:id="pc.12"]',
+      'substring(//*[@xml:id="w.76"],  1,  5)',
+    ]);
+  });
+  it('converts a long xPath including substrings (new xPaths using id()-function)', () => {
+    const longXPath = 'concat(id("w.75"), id("pc.12"), "   ", substring(id("w.76"), 1, 5))';
+    const result = convertXPath(longXPath);
+    expect(result).toStrictEqual(['id("w.75")', 'id("pc.12")', 'substring(id("w.76"),  1,  5)']);
+  });
+});
+
 describe('removing styles from target', () => {
   it('removes all the relevant css classes from the target of the annotations', () => {
     // set up our document body
@@ -305,6 +332,7 @@ describe('drawing the annotations', () => {
     const eleW141 = document.getElementById('w.141');
     const eleW142 = document.getElementById('w.142');
     const eleW143 = document.getElementById('w.143');
+    const eleW144 = document.getElementById('w.144');
 
     // check if drawAnnos() works
     expect(eleW132.classList).toMatchObject({
@@ -340,6 +368,10 @@ describe('drawing the annotations', () => {
     });
     expect(eleW143.classList).toMatchObject({
       0: 'metaphorSecond',
+      1: 'defaulthighlight',
+    });
+    expect(eleW144.classList).toMatchObject({
+      0: 'defaulthighlight',
     });
   });
 });

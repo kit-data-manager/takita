@@ -49,4 +49,23 @@ export const mockAnnoJson = [
     motivation: 'describing',
     tags: [],
   },
+  {
+    svg: ['id("w.143")'],
+    color: '#999999',
+    visible: true,
+    created: '2024-03-13T14:01:42Z',
+    creator: '[Philipp]',
+    modified: '2024-03-13T14:01:42Z',
+    motivation: 'describing',
+    tags: [],
+  },
+  {
+    svg: ['id("w.144")'],
+    visible: true,
+    created: '2024-03-13T14:01:42Z',
+    creator: '[Philipp]',
+    modified: '2024-03-13T14:01:42Z',
+    motivation: 'describing',
+    tags: [],
+  },
 ];

@@ -10,7 +10,7 @@ import {
   chooseAnnoTemplate,
   createAnnotation,
   checkIsAnnotationCardVisible,
-  checkDisplayedAnnotation,
+  getDisplayedAnnoId,
 } from '../../_selenium';
 
 // duration of timeout
@@ -37,6 +37,7 @@ async function singleWordAnnotationCreationTest(xPath, driver) {
   await markWord(xPath, driver);
 
   // show annotaton creation modal
+  // doesn't work in Safari for some reason
   await showAnnoCreationModal(driver);
 
   // choose the metaphor template and create the anntoation
@@ -46,9 +47,9 @@ async function singleWordAnnotationCreationTest(xPath, driver) {
   await createAnnotation(driver);
 
   // check if the annotation card is displayed
-  const annotationCardIsVisible = checkIsAnnotationCardVisible(driver);
+  const annotationCardIsVisible = await checkIsAnnotationCardVisible(driver);
   // check if an annotation is displayed
-  const displayedAnnotation = checkDisplayedAnnotation(driver);
+  const displayedAnnotation = await getDisplayedAnnoId(driver);
   return { annotationCardIsVisible: annotationCardIsVisible, displayedAnnotation: displayedAnnotation != null };
 }
 
@@ -67,6 +68,7 @@ async function multiWordAnnotationCreationTest(xPath, driver) {
   await markWords(xPath, driver);
 
   // show annotaton creation modal
+  // doesn't work in Safari for some reason
   await showAnnoCreationModal(driver);
 
   // choose the metaphor template and create the anntoation
@@ -78,7 +80,7 @@ async function multiWordAnnotationCreationTest(xPath, driver) {
   // check if the annotation card is displayed
   const annotationCardIsVisible = await checkIsAnnotationCardVisible(driver);
   // check if an annotation is displayed
-  const displayedAnnotation = await checkDisplayedAnnotation(driver);
+  const displayedAnnotation = await getDisplayedAnnoId(driver);
   return { annotationCardIsVisible: annotationCardIsVisible, displayedAnnotation: displayedAnnotation != null };
 }
 
@@ -108,12 +110,12 @@ async function crc1475multiWordAnnotationCreationTest(xPath, driver) {
   // check if the annotation card is displayed
   const annotationCardIsVisible = await checkIsAnnotationCardVisible(driver);
   // check if an annotation is displayed
-  const displayedAnnotation = await checkDisplayedAnnotation(driver);
+  const displayedAnnotation = await getDisplayedAnnoId(driver);
   return { annotationCardIsVisible: annotationCardIsVisible, displayedAnnotation: displayedAnnotation != null };
 }
 
 // selenium tests
-describe.skip('creating a single word annotation', () => {
+describe('creating a single word annotation', () => {
   let driver;
   afterEach(() => {
     driver.quit();
@@ -125,7 +127,6 @@ describe.skip('creating a single word annotation', () => {
       const result = await singleWordAnnotationCreationTest(testWord, driver);
       expect(result.annotationCardIsVisible).toBe(true);
       expect(result.displayedAnnotation).toBe(true);
-      await driver.quit();
     },
     timeoutAfter,
   );
@@ -136,7 +137,6 @@ describe.skip('creating a single word annotation', () => {
       const result = await singleWordAnnotationCreationTest(testWord, driver);
       expect(result.annotationCardIsVisible).toBe(true);
       expect(result.displayedAnnotation).toBe(true);
-      await driver.quit();
     },
     timeoutAfter,
   );
@@ -147,7 +147,6 @@ describe.skip('creating a single word annotation', () => {
       const result = await singleWordAnnotationCreationTest(testWord, driver);
       expect(result.annotationCardIsVisible).toBe(true);
       expect(result.displayedAnnotation).toBe(true);
-      await driver.quit();
     },
     timeoutAfter,
   );
@@ -158,13 +157,12 @@ describe.skip('creating a single word annotation', () => {
       const result = await singleWordAnnotationCreationTest(testWord, driver);
       expect(result.annotationCardIsVisible).toBe(true);
       expect(result.displayedAnnotation).toBe(true);
-      await driver.quit();
     },
     timeoutAfter,
   );
 });
 
-describe.skip('creating a multi word annotation', () => {
+describe('creating a multi word annotation', () => {
   let driver;
   afterEach(() => {
     driver.quit();
@@ -176,7 +174,6 @@ describe.skip('creating a multi word annotation', () => {
       const result = await multiWordAnnotationCreationTest(testWord, driver);
       expect(result.annotationCardIsVisible).toBe(true);
       expect(result.displayedAnnotation).toBe(true);
-      await driver.quit();
     },
     timeoutAfter,
   );
@@ -187,7 +184,6 @@ describe.skip('creating a multi word annotation', () => {
       const result = await multiWordAnnotationCreationTest(testWord, driver);
       expect(result.annotationCardIsVisible).toBe(true);
       expect(result.displayedAnnotation).toBe(true);
-      await driver.quit();
     },
     timeoutAfter,
   );
@@ -198,7 +194,6 @@ describe.skip('creating a multi word annotation', () => {
       const result = await multiWordAnnotationCreationTest(testWord, driver);
       expect(result.annotationCardIsVisible).toBe(true);
       expect(result.displayedAnnotation).toBe(true);
-      await driver.quit();
     },
     timeoutAfter,
   );
@@ -209,7 +204,6 @@ describe.skip('creating a multi word annotation', () => {
       const result = await multiWordAnnotationCreationTest(testWord, driver);
       expect(result.annotationCardIsVisible).toBe(true);
       expect(result.displayedAnnotation).toBe(true);
-      await driver.quit();
     },
     timeoutAfter,
   );

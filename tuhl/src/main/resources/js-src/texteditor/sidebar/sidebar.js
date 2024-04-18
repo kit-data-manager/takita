@@ -1,6 +1,13 @@
 import { toggleOverview } from '../../common/utils';
 
+/**
+ * initializing the sidebar by adding eventListeners and tooltips
+ *
+ * @returns a boolean storing if the sidebar initialized (used for testing)
+ */
 export function initializeSidebar() {
+  let initializedSidebar = false;
+
   // expand/hide sidebar
   document.getElementById('logo-name__icon').addEventListener('click', toggleAnnoSideBar);
 
@@ -32,7 +39,7 @@ export function initializeSidebar() {
     resetFontSize();
   });
 
-  // show parts navigatoion
+  // show parts navigation
   document.getElementById('pagesButton').addEventListener('click', function () {
     hideExpandedSidebar();
     toggleOverview('pages');
@@ -43,12 +50,25 @@ export function initializeSidebar() {
   });
 
   // enable the tooltips for the sidebar
-  enableTooltips();
+  initializedSidebar = enableTooltips();
+
+  return initializedSidebar;
 }
 
+/**
+ * updates the sidebar for a given language (called by editor_text.html after
+ * the text is loaded).
+ * This function can be expanded to accomodate more texts/languages.
+ *
+ * @param {String} language of a text
+ * @returns a boolean storing if the sidebar was update (used for testing)
+ */
 export function updateSidebar(language) {
+  // storing if the sidebar was update
+  let sidebarUpdated = false;
   // add language specific buttons
-  initializeSpecificButtons(language);
+  sidebarUpdated = initializeSpecificButtons(language);
+  return sidebarUpdated;
 }
 
 export function hideExpandedSidebar() {
@@ -60,7 +80,7 @@ export function hideExpandedSidebar() {
 
 // toggling the side bar
 // all text elements should not be hoverable when side bar is collapsed
-function toggleAnnoSideBar() {
+export function toggleAnnoSideBar() {
   let sideBar = document.querySelector('.anno-side-bar');
   let arrowCollapse = document.querySelector('#logo-name__icon');
   let textElements = document.querySelectorAll('.features-item-text');
@@ -130,7 +150,14 @@ export function toggleSanskritView() {
   toggleBoxIcon(document.getElementById('toggleViewsButton'), 'bx-toggle-left', 'bx-toggle-right');
 }
 
+/**
+ *
+ * @param {String} language of a text
+ * @returns a boolean storing if the buttons are intialized (used for testing)
+ */
 function initializeSpecificButtons(language) {
+  // storing if the buttons are intialized (used for testing)
+  let initializedButtons = false;
   // B04 specific adding of a syllable marker between the unsandhied words
   // and activating the toggleViews button, which removes/adds
   // the sandhied version of the text to the display
@@ -145,6 +172,7 @@ function initializeSpecificButtons(language) {
         hideExpandedSidebar();
         toggleSanskritView();
       });
+      initializedButtons = true;
     }
   }
 
@@ -163,13 +191,21 @@ function initializeSpecificButtons(language) {
     });
     // trigger the button to hide the unvocalized version on page load
     document.getElementById('toggleViewsButton').click();
+    initializedButtons = true;
   }
+
+  return initializedButtons;
 }
 
-// enables tooltips for the sidebar by creating a new div-element, which
-// is placed based on the item hovered by the user.
-// https://stackoverflow.com/questions/66382585/tooltip-inside-a-scrollable-component
+/**
+ * enables tooltips for the sidebar by creating a new div-element, which
+ * is placed based on the item hovered by the user.
+ * see: https://stackoverflow.com/questions/66382585/tooltip-inside-a-scrollable-component
+ *
+ * @returns a boolean storing if the tooltips got enabled (used for testing)
+ */
 export function enableTooltips() {
+  let tooltipsEnabled = false;
   const hoverAreas = document.querySelectorAll('.features-item');
   const hoverTooltip = document.createElement('div');
 
@@ -184,9 +220,12 @@ export function enableTooltips() {
       hoverTooltip.style.top = `${hoverArea.getBoundingClientRect().top + 25}px`;
       hoverTooltip.style.display = 'block';
     });
-    // Hide to tooltip
+    // Hide the tooltip
     hoverArea.addEventListener('mouseleave', () => {
       hoverTooltip.style.display = 'none';
     });
+
+    tooltipsEnabled = true;
   });
+  return tooltipsEnabled;
 }

@@ -133,7 +133,7 @@ export function init(annotations) {
   document.getElementById('TEI').onmouseup = function (_event) {
     // only get a selection, if a user actually wants to select text
     if (window.MODE === window.MODE_CLASS.Create && window.SELECTING_TEXT) {
-      annotateSelectedText();
+      annotateSelectedText(window.getSelection(), window.ANNOJSON);
 
       /*let target = [];
               
@@ -146,8 +146,10 @@ export function init(annotations) {
               
              */
     }
+    // TODO: this might be a remant of the old way of modifying a selection. Check, if this
+    // can be removed
     if (window.MODE === window.MODE_CLASS.Modify && window.SELECTING_TEXT) {
-      modifySelection();
+      modifySelection(null, window.SELECTED_ANNOTATION);
 
       /*let target = [];
               
@@ -163,7 +165,9 @@ export function init(annotations) {
   };
 
   // adding eventhandler for text selection
-  document.getElementById('selectTextListItem').addEventListener('mousedown', onclickSelectText);
+  document.getElementById('selectTextListItem').addEventListener('mousedown', (event) => {
+    onclickSelectText(event, window.getSelection(), window.ANNOJSON);
+  });
 
   // adding the closing functionality to annotation creation modal
   document.getElementById('closeButtonAnno').addEventListener('click', function (_e) {
@@ -196,16 +200,28 @@ export function init(annotations) {
   });
 
   // adding the update target functionality to the button of the text selection update modal
-  document.getElementById('updateTaregtButton').addEventListener('click', updateTarget);
+  document.getElementById('updateTargetButton').addEventListener('click', (event) => {
+    // pass the current selected annotation, the new Xpath stored in the 'updateSelection' element
+    // and the newly selected text stored in the 'newSelectedText' element
+    // TODO: fix, when it goes into production, bc then the innerHTML will only be
+    // the selected text without any "|"s
+    updateTarget(
+      event,
+      window.SELECTED_ANNOTATION,
+      document.getElementById('updateSelection').dataset.newTargetXmlId,
+      document.getElementById('newSelectedText').children[0].innerHTML.split('|')[0],
+    );
+  });
 
   // add all global variable to the window.object
 }
 
-function annotateSelectedText() {
-  const selection = window.getSelection();
+export function annotateSelectedText(selection, annoJson) {
   // check
   // - if the string is filled, because on a double click the first onmouseup
-  // will have no selection and therefore no string
+  // will have no selection and therefore no string. `selection.toString()` returns
+  // true, if the String is filled, because it's a truthlike variable in this context
+  // see: https://developer.mozilla.org/en-US/docs/Glossary/Truthy?retiredLocale=de
   // - and if the selection is on the workspace
   if (selection.toString() && checkIsNodeOnWorkspace(window.getSelection().getRangeAt(0).commonAncestorContainer)) {
     const selectionRangeContents = getContentOfSelection(selection);
@@ -216,8 +232,12 @@ function annotateSelectedText() {
 
     // stop the function, if the selection does not contain any text, only whitespace
     if (selectionRangeContents.textContent.trim() == '') {
+      // resetting parameters, so no new annotation can be created without clicking on
+      // the button at the sidebar, that enables annotation
+      window.MODE = window.MODE_CLASS.View;
+      window.SELECTING_TEXT = false;
       console.log('No text selected, therefore early return.');
-      return;
+      return false;
     }
 
     // targetRangeList holds all the nodes from the selection, that are <w> elements
@@ -241,8 +261,8 @@ function annotateSelectedText() {
       // range the globalMrwAnno array is appended, which can cause duplicates
       // https://medium.com/@rivoltafilippo/javascript-merge-arrays-without-duplicates-3fbd8f4881be
       // TODO: this can be improved by using a set. This will affect storeSelectedMRWAnnos() and
-      // the opints in the creation_templates_text.js where the globalMrwAnno array is used.
-      const tmpMrwAnnos = window.MRW_ANNOS.concat(storeSelectedMRWAnnos(range.targetList));
+      // the points in the creation_templates_text.js where the globalMrwAnno array is used.
+      const tmpMrwAnnos = window.MRW_ANNOS.concat(storeSelectedMRWAnnos(annoJson, range.targetList));
       window.MRW_ANNOS = tmpMrwAnnos.filter((item, idx) => tmpMrwAnnos.indexOf(item) === idx);
     });
 
@@ -264,10 +284,17 @@ function annotateSelectedText() {
 }
 
 // store all the mrw annotations that are contained in a selection
-export function storeSelectedMRWAnnos(targetList) {
+/**
+ *
+ * @param {JSONArray} annoJson contains all the annotation of the pages as JSONObjects
+ * @param {Array} targetList of ranges from the selection
+ * @returns an array holding all the annotation that are mrw-annotations and
+ * target words present in the current selection (targetList)
+ */
+export function storeSelectedMRWAnnos(annoJson, targetList) {
   // empty the mrwAnno list beforehand
   let mrwAnnos = [];
-  window.ANNOJSON.forEach((annotation) => {
+  annoJson.forEach((annotation) => {
     //annoXmlId = annotation.svg.split("\"")[1];
     //console.log(annotation);
     // checking if the annotation is a mrw-annotation by checking its color,
@@ -302,9 +329,16 @@ export function storeSelectedMRWAnnos(targetList) {
   return mrwAnnos;
 }
 
-function onclickSelectText(_event) {
+/**
+ * function to annotate selected text. It is bound to an eventHandler
+ *
+ * @param {Event} _event
+ * @param {Selection} selection the selection cerated by the user
+ * @param {JSONArray} annoJson contains all the annotation of the pages as JSONObjects
+ */
+function onclickSelectText(_event, selection, annoJson) {
   hideExpandedSidebar();
   window.SELECTING_TEXT = true;
   window.MODE = window.MODE_CLASS.Create;
-  annotateSelectedText();
+  annotateSelectedText(selection, annoJson);
 }

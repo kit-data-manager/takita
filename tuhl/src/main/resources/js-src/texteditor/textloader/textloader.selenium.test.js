@@ -1,7 +1,5 @@
-// external modules
-import { Builder, Browser, By } from 'selenium-webdriver';
 // internal modules
-import { createDriver, getElementById, enterPseudonym } from '../../_selenium';
+import { createDriver, getElementById, getElementByXPath, enterPseudonym } from '../../_selenium';
 
 // selenium variables
 // duration of timeout
@@ -25,7 +23,7 @@ async function textloadTest(driver) {
     $text.getText() != 'Please wait until your text is loaded. If it doesn´t load, contact the developers.' &&
     $text.getText() != '';
   //check if the text was transformed into custom HTML-elements by CETEIcean
-  const $teiText = await driver.findElement(By.xpath('//tei-text'));
+  const $teiText = await getElementByXPath('//tei-text', driver);
   const tagName = await $teiText.getTagName();
   // the return of getTagName() above for Safari is different than the return
   // of the function in other browsers; Safari returns an uppercase string.
@@ -40,7 +38,7 @@ async function textloadTest(driver) {
 }
 
 // selenium tests
-describe.only('loading the text', () => {
+describe('loading the text', () => {
   let driver;
   afterEach(() => {
     driver.quit();

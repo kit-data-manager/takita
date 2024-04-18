@@ -1,3 +1,6 @@
+// external modules
+import $ from 'jquery';
+
 export function initializeTopbar() {
   // TODO: maybe the following two jQuery functions should be somewhere else
   // from editor.js

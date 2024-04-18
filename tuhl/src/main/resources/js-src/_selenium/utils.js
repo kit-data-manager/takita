@@ -229,8 +229,10 @@ export async function markWord(xPath, driver) {
 export async function markWords(xPath, driver) {
   const $word = getElementByXPath(xPath, driver);
   const actions = driver.actions({ async: true });
-  await actions.move({ origin: $word }).press().perform();
-  await actions.move({ x: 0, y: 80, origin: Origin.POINTER }).perform();
+  await actions.dragAndDrop($word, { x: 0, y: 80 }).perform();
+  // old code, which does the same without a mouseUp at the end of the action
+  // await actions.move({ origin: $word }).press().perform();
+  // await actions.move({ x: 0, y: 80, origin: Origin.POINTER }).perform();
 }
 
 /**
@@ -241,8 +243,10 @@ export async function markWords(xPath, driver) {
 export async function showAnnoCreationModal(driver) {
   // trigger mousedown event on the button to show annotaton creation modal
   const mouseDownScript =
-    'const target = document.evaluate(\'id("selectTextButton")\', document,null,XPathResult.ANY_TYPE, XPathResult.singleNodeValue).iterateNext();' +
-    'const evt = new MouseEvent("mousedown", {bubbles: true,cancelable: true});target.dispatchEvent(evt);';
+    'const target = document.getElementById("selectTextButton");' +
+    'const evt = new MouseEvent("mousedown", {bubbles: true,cancelable: true});' +
+    'target.dispatchEvent(evt);';
+
   await driver.executeScript(mouseDownScript);
 }
 

@@ -1,7 +1,7 @@
 //internal modules
 import { selectAnnotation } from '../../common/annotationDisplay';
 import { encodeAnnoId } from '../../common/utils';
-import { updateDisplay } from './highlight';
+import { updateDisplay, checkIsTargetCompatible, makeTargetsCompatible } from './highlight';
 import {
   checkIsNodeOnWorkspace,
   getContentOfSelection,
@@ -10,18 +10,26 @@ import {
 import { createTargetList, createXPath } from './targetCreation';
 import { getColorNameFromEnumEntry } from './annotationCreation/creationTemplates';
 
-export function modifySelection() {
-  window.SELECTING_TEXT = true;
-  window.MODE = window.MODE_CLASS.Modify;
+/**
+ * function called by an eventHandler attached to `document.getElementById('buttonModifySelection')`
+ * to start the process of updating the target of an annotation
+ *
+ * @param {*} _event
+ * @param {JSONObject} annotation the curretnly selected annotation, which will have its target updated
+ * @returns a boolean (false), if no annotation is selected by a user and the function
+ * needs to be stopped early
+ */
+export function modifySelection(_event, annotation) {
   //document.getElementById('modifyButton').parentElement.classList.add('active');
-  if (window.SELECTED_ANNOTATION === undefined) {
+  if (annotation === undefined) {
     //document.getElementById('modifyButton').parentElement.classList.remove('active');
     window.MODE = window.MODE_CLASS.View;
     window.SELECTING_TEXT = false;
-    return;
+    return false;
   }
-  console.log('Selected annotation: ', window.SELECTED_ANNOTATION);
-
+  console.log('Selected annotation: ', annotation);
+  window.SELECTING_TEXT = true;
+  window.MODE = window.MODE_CLASS.Modify;
   // disable/enable and hide/show the buttons connected
   // to the modifaction of a text selection
   document.getElementById('buttonModifySelection').disabled = true;
@@ -32,13 +40,21 @@ export function modifySelection() {
   document.getElementById('buttonCancelModification').classList.remove('is-hidden');
 }
 
-export function saveModification() {
-  if (
-    window.getSelection().toString() &&
-    checkIsNodeOnWorkspace(window.getSelection().getRangeAt(0).commonAncestorContainer)
-  ) {
+/**
+ * function called by an eventHandler attached to `document.getElementById('buttonSaveModification')`
+ * to get store the new/old selected text and create the new Xpath during the process of updating
+ * the target of an annotation
+ *
+ * @param {*} _event
+ * @param {Selection} selection the selection created by a user
+ * @param {JSONObject} annotation the curretnly selected annotation, which will have its target updated
+ * @returns a boolean (false), if no text is selected by a user and the function
+ * needs to be stopped early
+ */
+export function saveModification(_event, selection, annotation) {
+  if (selection.toString() && checkIsNodeOnWorkspace(selection.getRangeAt(0).commonAncestorContainer)) {
     // let selectionRange = window.getSelection().getRangeAt(0);
-    let selectionRangeContents = getContentOfSelection(window.getSelection());
+    let selectionRangeContents = getContentOfSelection(selection);
 
     /*
           console.log("hereSaveMod");
@@ -56,11 +72,11 @@ export function saveModification() {
       window.MODE = window.MODE_CLASS.View;
       window.SELECTING_TEXT = false;
       alert('No text selected. Please redo');
-      return;
+      return false;
     }
 
     // targetRangeList holds all the nodes from the selection, that are <w> elements
-    let targetRangeList = createTargetList(window.getSelection());
+    let targetRangeList = createTargetList(selection);
     console.log('Filled targetRangeList for annotation target update: ', targetRangeList);
 
     // targetXPath hold the xPath resolving to the elements in targeRangetList
@@ -71,16 +87,26 @@ export function saveModification() {
 
     // get the previously selected text from the respective body (purpose: describing),
     // or reconstruct it from the target
-    let oldSelectedText = window.SELECTED_ANNOTATION.textCards.find((textCard) => textCard.purpose === 'describing');
+    let oldSelectedText = annotation.textCards.find((textCard) => textCard.purpose === 'describing');
     if (oldSelectedText != undefined) {
       oldSelectedText = oldSelectedText.value;
     } else {
+      // TODO: this ordering seems to be unnecessary as we store only one long xPath,
+      // which should have the proper order. This function
+      // can't deal with substrings. This needs to be checked
+      // make targets compatible, if necessary
+      if (!checkIsTargetCompatible(annotation)) {
+        annotation.targets = makeTargetsCompatible(annotation);
+      }
+
+      // store the ids of the words
       let idArray = [];
-      window.SELECTED_ANNOTATION.targets.forEach((target) => {
+      annotation.targets.forEach((target) => {
         idArray.push(target.selector.xPath.split('"')[1]);
       });
       // this sorts the xml:ids to retrieve a somehow appropriate reconstruction of the text out of the targets
       // in cases, where the ids are not in an ascending nummerical order, the reconstruction will be off
+      // especially regarding the punctuation
       idArray = idArray.sort((a, b) => {
         return a - b;
       });
@@ -90,9 +116,12 @@ export function saveModification() {
         return na - nb;
       });
       oldSelectedText = '';
-      idArray.forEach((id) => {
-        oldSelectedText += document.getElementById(id).textContent + ' ';
+      // get the text of each element
+      let stringArray = idArray.map((id) => {
+        return document.getElementById(id).textContent;
       });
+      // merge the text of each element into one string
+      oldSelectedText = stringArray.join(' ');
     }
 
     let newSelectedText = removeWhitespaceFromSelectionTextContent(selectionRangeContents.textContent);
@@ -117,14 +146,20 @@ export function saveModification() {
   }
 }
 
-export function updateTarget() {
-  const modal = document.getElementById('updateSelection');
-  let idOfAnnotationToUpdate = encodeAnnoId(window.SELECTED_ANNOTATION.id);
-  //let idOfAnnotationToUpdate = encodeAnnoId(modal.dataset.SelectedAnnotationId);
-  let targetXPath = modal.dataset.newTargetXmlId;
+/**
+ * function called by an eventHandler attached to `document.getElementById('updateTargetButton')`
+ * to update the target of an annotation
+ *
+ * @param {event} _event
+ * @param {JSONObject} annotation the curretnly selected annotation, which will have its target updated
+ * @param {String} targetXPath the new xPath
+ * @param {String} newSelectedText the new selected text
+ */
+export function updateTarget(_event, annotation, targetXPath, newSelectedText) {
+  let idOfAnnotationToUpdate = encodeAnnoId(annotation.id);
 
   // update the target of an annotation (and the "purpose:describing" body, if it exists) by sending a put request
-  let colorName = getColorNameFromEnumEntry(window.SELECTED_ANNOTATION.color);
+  let colorName = getColorNameFromEnumEntry(annotation.color);
   let annotationDataJson = { color: colorName, motivation: 'describing', svgCode: targetXPath };
   $.ajax({
     type: 'PUT',
@@ -146,8 +181,9 @@ export function updateTarget() {
       if (result != null && result.length > 0) {
         // TODO: fix, when it goes into production, bc then the innerHTML will only be
         // the selected text without any "|"s
-        let newSelectedText = document.getElementById('newSelectedText').children[0].innerHTML.split('|')[0];
-        newSelectedText.slice(0, newSelectedText.length - 1);
+        // let newSelectedText = document.getElementById('newSelectedText').children[0].innerHTML.split('|')[0];
+        // TODO: this following call makes no sense as its return is not stored
+        // newSelectedText.slice(0, newSelectedText.length - 1);
         // TODO: should there not be a field to store, who modified the body in addition
         // to the timestamp of the modification?
         // console.log(responseDataJson.creators);
