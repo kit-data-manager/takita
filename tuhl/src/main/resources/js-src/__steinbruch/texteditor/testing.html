@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="container">
+        <div id="textNavBar">
+            <button id="prevChaptButton">
+                Previous
+            </button>
+            <button id="nextChaptButton">
+                Next
+            </button>
+            <button id="goToChaptButton">
+                Go to&nbsp;
+            </button>
+            <select id="chapterSelect"></select>
+        </div>
+        <div class="text">
+            <tei-div type="chapter" n="one">
+                part one
+            </tei-div>
+            <tei-div type="chapter" n="two">
+                part two
+            </tei-div>
+        </div>
+    </div>
+
+    <script type="module">
+        import {initializeNavBar} from './navigation/navigation.js';
+        document.addEventListener('DOMContentLoaded', initializeNavBar);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1 @@
+export { pickTemplate } from './creationTemplates';
