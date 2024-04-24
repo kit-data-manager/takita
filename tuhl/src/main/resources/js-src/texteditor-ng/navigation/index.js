@@ -1,1 +1,1 @@
-export { getTargetAnnotationId, initializeNavigation, navigateToAnnotation } from './navigation';
+export { getTargetAnnotationId, initializeNavigation } from './navigation';

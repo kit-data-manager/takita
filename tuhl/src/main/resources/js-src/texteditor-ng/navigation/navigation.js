@@ -1,5 +1,7 @@
 //import { selectAnnotation } from '../../common/annotationDisplay';
-import { encodeAnnoId, toggleVisibility } from '../../common/utils';
+//import { encodeAnnoId, toggleVisibility } from '../../common/utils';
+import { createOption } from '../../common/utils';
+import { getTargetAnnotationId, getTargetFragment } from '../utils/url';
 
 const POSSIBLE_TEXT_PART_TYPES = ['chapter', 'section'];
 
@@ -10,11 +12,11 @@ const POSSIBLE_TEXT_PART_TYPES = ['chapter', 'section'];
  * callbacks for the existing UI elements which switch between
  * the different document parts.
  */
-export function initializeNavigation($navBar) {
+export function initializeNavigation($navBar, $text) {
   //console.log('initializing nav bar');
   // Text properties
-  const textPartType = getDivisionType();
-  const textParts = document.querySelectorAll('tei-div[type="' + textPartType + '"]');
+  const textPartType = getDivisionType($text);
+  const textParts = $text.querySelectorAll('tei-div[type="' + textPartType + '"]');
   const textPartLabels = [...textParts].map(getLabel);
 
   // No need for a navbar if there is only a single textPart
@@ -36,9 +38,11 @@ export function initializeNavigation($navBar) {
     // Fill select element with options
     textPartLabels.map(createOption).forEach((option) => $chapterSelect.appendChild(option));
 
-    // Keep track of the label of the currently displayed text part. Use the either a pre-selected
-    // text part, or if none is selected use the first part as default and display it.
-    const preselectedAnno = getTargetElement();
+    // Keep track of the label of the currently displayed text part. If an annotation has been
+    // pre-selected as part of the URL, find the text part it belongs to and use this as default.
+    // If none is selected use the first part as default and display it.
+    const fragmentId = getTargetFragment();
+    const preselectedAnno = getTargetElement(fragmentId, textParts);
     const defaultTextPart = getTargetDivision(preselectedAnno, textPartType);
     let currentTextPartLabel = defaultTextPart ? getLabel(defaultTextPart) : textPartLabels[0];
     selectTextPart(currentTextPartLabel, textParts);
@@ -73,7 +77,7 @@ export function initializeNavigation($navBar) {
     $nextButton.addEventListener('click', onClickNext);
 
     // After everything is set up, make navbar visible
-    console.log('make navbar visible');
+    //console.log('make navbar visible');
     $navBar.classList.remove('is-hidden');
 
     if (preselectedAnno !== undefined) {
@@ -93,11 +97,13 @@ export function initializeNavigation($navBar) {
  *  Maybe there should be a submodule, `navigation`, which is about showing/hiding
  *  certain segments of the document, and which might be a suitable place for a
  *  function like this.
- *  Then we should have a submodule `navbar` which renders the corresponding
+ *  Then we could have a submodule `navbar` which renders the corresponding
  *  UI element and makes use of the `navigation` module for switching display.
  *  But the more I think about this all, the more I feel like there should be
  *  a very general `textdisplay` module, which provides all the essential
- *  text rendering related functionality to other UI modules.
+ *  text rendering related functionality to other UI modules. As it is, all the
+ *  UI components mess with the text display all of the time, without clear
+ *  responsibilities.
  */
 // // TODO: merge this into the initializeNavbar function
 // export function navigateToAnnotation(targetAnnotationId) {
@@ -112,20 +118,21 @@ export function initializeNavigation($navBar) {
 
 /**
  * If an annotation is pre-selected via URL param, retrieve its Element in the text.
+ * @param {String} fragmentId the id of the fragment which has been selected
+ * @param {Element} $text the document in which the target element can be found
  * @returns {Element}
  */
-function getTargetElement() {
-  const searchParams = new URL(window.location).searchParams;
-  if (searchParams.size > 0 && searchParams.get('fragment')) {
-    return document.getElementById(searchParams.get('fragment'));
-  }
-  return undefined;
+export function getTargetElement(fragmentId, $text) {
+  return $text.querySelector(`#${fragmentId}`);
 }
 
 /**
  * If an annotation is pre-selected, retrieve the division where it is located.
+ * @param {Element} targetElement the element which is the target of a selected annotation
+ * @param {String} divisionType what is the desired granularity of our result
+ * @returns {Element} the element of the text part in which targetElement is located
  */
-function getTargetDivision(targetElement, divisionType) {
+export function getTargetDivision(targetElement, divisionType) {
   if (targetElement) {
     const closestDivision = (node) => {
       if (node?.attributes?.type?.value === divisionType) {
@@ -141,36 +148,11 @@ function getTargetDivision(targetElement, divisionType) {
 }
 
 /**
- * Get the ID of a pre-selected annotation (if any).
- */
-export function getTargetAnnotationId() {
-  const searchParams = new URL(window.location).searchParams;
-  if (searchParams.size > 0 && searchParams.get('annotationId')) {
-    return searchParams.get('annotationId');
-  } else {
-    return undefined;
-  }
-}
-
-/**
- * Create <option> Element with a specific label and value.
- * @param {String} label what is used both as label and value of the option
- * @returns {HTMLElement} a <option> element
- */
-function createOption(label) {
-  const option = document.createElement('option');
-  option.value = label;
-  const text = document.createTextNode(label);
-  option.appendChild(text);
-  return option;
-}
-
-/**
  * Hides all text parts which don't have the currently selected label.
  * @param {String} selectedLabel label of text part which should be displayed
  * @param {Array} allTextParts DOM nodes representing all displayable text parts
  */
-function selectTextPart(selectedLabel, allTextParts) {
+export function selectTextPart(selectedLabel, allTextParts) {
   allTextParts.forEach((tp) => tp.classList.add('is-hidden'));
   [...allTextParts]
     .filter((tp) => getLabel(tp) === selectedLabel)
@@ -184,7 +166,7 @@ function selectTextPart(selectedLabel, allTextParts) {
  * @param {HTMLElement} $prev button which selects previous text part
  * @param {HTMLElement} $next button which selects next text part
  */
-function updateButtons(selectedLabel, allTextPartLabels, $prev, $next, $chapterSelect) {
+export function updateButtons(selectedLabel, allTextPartLabels, $prev, $next, $chapterSelect) {
   $prev.disabled = allTextPartLabels.indexOf(selectedLabel) === 0;
   $next.disabled = allTextPartLabels.indexOf(selectedLabel) === allTextPartLabels.length - 1;
   $chapterSelect.value = selectedLabel;
@@ -192,27 +174,23 @@ function updateButtons(selectedLabel, allTextPartLabels, $prev, $next, $chapterS
 
 /**
  * Extract label for a text part DOM node.
- * @param {HTMLElement} textPart
+ * @param {HTMLElement} $textPart
  * @returns {String}
  */
-function getLabel(textPart) {
-  return textPart.attributes.n.nodeValue;
+export function getLabel($textPart) {
+  return $textPart.attributes.n.nodeValue;
 }
 
 /**
  * Check which types of text parts are present in the document.
  * Must be one of `POSSIBLE_TEXT_PART_TYPES` or "default".
- * @returns {String}
+ * @param {Element} $text the HTML element containing the document
+ * @returns {String} the divisionType which is present in the text, or 'default' if none is found
  */
-function getDivisionType() {
-  let divisionType = 'default';
-
+export function getDivisionType($text) {
   // setting divisionType based on the divisions used in the text
-  POSSIBLE_TEXT_PART_TYPES.forEach((possibility) => {
-    if (document.querySelector('tei-div[type="' + possibility + '"]') != null) {
-      divisionType = possibility;
-    }
-  });
-
-  return divisionType;
+  const foundTypes = POSSIBLE_TEXT_PART_TYPES.filter(
+    (possibility) => $text.querySelector('tei-div[type="' + possibility + '"]') != null,
+  );
+  return foundTypes.pop() || 'default';
 }

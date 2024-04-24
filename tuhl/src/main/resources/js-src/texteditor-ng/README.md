@@ -73,7 +73,7 @@ _Note: when the module folder is eventually renamed to just "texteditor", all th
 * `highlighting`: render underlines/backgrounds for each annotation
 * `annotationSelection`: provide interaction to trigger visual selection (done in `highlighting`) and rendering of textcards (done in `textcard`)
 * `sidebar`: render sidebar and provide various text-toggling functionality
-* `navigation` render chapter/section navigation above the document
+* `navigation`: render chapter/section navigation above a document 
 * `projectspecific`: not fully planned out yet, but there need to be places to hook into with project-specific functionality:
   * textcard display
   * annotation selection
