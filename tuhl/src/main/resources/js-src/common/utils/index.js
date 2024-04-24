@@ -1,1 +1,3 @@
-export { encodeAnnoId, toggleOverview, toggleExpand, completeFormDataModel, fillMetaDataEditorTable } from './utils';
+export { toggleBoxIcon, toggleVisibility } from './display';
+export { enableTooltips } from './tooltips';
+export { encodeAnnoId } from './data';

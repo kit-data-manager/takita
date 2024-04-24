@@ -91,6 +91,7 @@ function setPseudonym(event, pseudonymForm) {
   // $('#pseudonymInput').val();
   $.ajax({
     type: 'GET',
+    // TODO: this looks suspiciously like it would break with different CONTEXTPATHs...
     url: '../assistance/' + input,
     dataType: 'text',
     success: function (responseData) {

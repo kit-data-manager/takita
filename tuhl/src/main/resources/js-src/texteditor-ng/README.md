@@ -45,36 +45,48 @@ Current User:  SoT Java
 
 ## Tentative Architecture
 
-* `data` fetching & storing module
-  * fetch text (GET)
-  * annotations
-    * fetching (GETting)
-        * load all annos
-        * load single anno for selected textcard
-        * load single mrw-anno
-    * storing (PUTting / POST)
-        * single annotation w/o body
-        * body
-        * target
-    * delete (DELETE)
-* `textcard`
-  * render by uri
-  * probably needs to use `data/fetch*` functionality
-* `textloader`
-  * render after using `data/fetchText`
-* `highlighting`
-  * render underlines / background-colors for each annotation after textloader is done
-* `textSelection`
-  * transform browserSelection to target
-* `annotationSelection`
-* `topbar` --> adjust DOM
-* `sidebar` --> adjust DOM
-* `navigation` --> adjust DOM
-* `utils` --> encode annod id etc.
-* annotation modification, deletion, creation
-* `projectspecific`
+### texteditor-ng
+
+_Note: when the module folder is eventually renamed to just "texteditor", all the code should continue to just work._
+
+**Not Modifying the DOM**
+
+* `network`: a thin wrapper around the browsers fetch API to get or store documents and annotations _(maybe this should eventually be in `common` instead)_
+* `data`: data access module; uses `network` but provides a more convenient interface; extended as needed; _(maybe this should eventually be in `common` instead)_
+  * fetching (GETting)
+    * get text
+    * load all annos
+    * load single anno for selected textcard
+    * load single mrw-anno
+  * storing (PUTting / POST)
+    * single annotation w/o body
+    * body
+    * target
+  * delete (DELETE)
+* `textSelection`: transform browserSelection to target
+* annotation modification, deletion, creation (??)
+
+**Modifying the DOM**
+
+* `textloader`: render a document provided as an XML string; this is a prerequisite of pretty much all other rendering related modules.
+* `textcard`: render an annotation given its URI
+* `highlighting`: render underlines/backgrounds for each annotation
+* `annotationSelection`: provide interaction to trigger visual selection (done in `highlighting`) and rendering of textcards (done in `textcard`)
+* `sidebar`: render sidebar and provide various text-toggling functionality
+* `navigation` render chapter/section navigation above the document
+* `projectspecific`: not fully planned out yet, but there need to be places to hook into with project-specific functionality:
   * textcard display
   * annotation selection
   * creation templates with respective forms (incl. purposes)
   * colors/highlighting
+  
+### common
+
+_Note: the purpose of this module is to provide functionality which is useful to more than one "regular" module (like texteditor and analysis). It is therefore to be expected for some code from a regular module to move into this one, as soon as a second module is refactored to make use of this previously private implementation. It is **not** to be expected for code to move **out** of this, unless it has been ensured that this change does not break any of the regular modules which may rely on it._
+
+* `utils`: basically a placeholder name, until there is enough functionality to warrant more structure.
+  * `display`: functions related to showing/hiding DOM elements or changing the appearance of buttons
+  * `tooltips`: provide basic tooltip functionality
+  * `data`: encode anno id etc.
+* `topbar`: modify the topbar (set pseudonym functionality etc)
   

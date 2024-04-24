@@ -1,9 +1,9 @@
-export function postApplyStylesB04($text, language) {
+export function postApplyStylesB04($processedHTML, language) {
   // B04 sanskrit specific:
   // adding of a syllable marker between the unsandhied words
-  if ($text.querySelector('tei-choice') != undefined) {
-    if (language === 'sa-Latn' || $text.querySelector('tei-choice').n === 'sandhi') {
-      let regW = $text.querySelectorAll('tei-reg>tei-w');
+  if ($processedHTML.querySelector('tei-choice') != undefined) {
+    if (language === 'sa-Latn' || $processedHTML.querySelector('tei-choice').n === 'sandhi') {
+      let regW = $processedHTML.querySelectorAll('tei-reg>tei-w');
       regW.forEach((word) => {
         if (word.nextElementSibling !== null) {
           // delete whitespace between the tei-reg>tei-w elements
@@ -15,9 +15,13 @@ export function postApplyStylesB04($text, language) {
       });
     }
   }
+  return $processedHTML;
 }
 
-export function postApplyStylesB03($text, language) {
+export function postApplyStylesB03($processedHTML, language) {
+  /**
+   * Please NOTE: this test currently does not work!
+   */
   // B03 hebrew specific:
   // the "paseq" sign "׀" will be removed, but it needs to be displayed
   // so any word followed by a "paseq" will get a class "paseq", so the css rule applies
@@ -35,7 +39,7 @@ export function postApplyStylesB03($text, language) {
       }
     });*/
     // delete all the "paseq" signs as they will be rendered via css
-    $text.querySelectorAll('tei-pc').forEach((punct) => {
+    $processedHTML.querySelectorAll('tei-pc').forEach((punct) => {
       // if (punct.innerHTML === "־" || punct.innerHTML === "׀"){
       if (punct.innerHTML === '׀') {
         punct.classList.add('paseq');
@@ -43,4 +47,6 @@ export function postApplyStylesB03($text, language) {
       }
     });
   }
+
+  return $processedHTML;
 }
