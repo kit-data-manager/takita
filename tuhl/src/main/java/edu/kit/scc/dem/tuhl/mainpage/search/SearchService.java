@@ -268,8 +268,8 @@ public class SearchService implements ISearchService {
 	SearchResponse response = elasticsearchRestTemplate.execute(client -> client.search(
 		new SearchRequestBuilder(null, SearchAction.INSTANCE).setIndices(INDEX_NAME)
 			.setQuery(query.getQuery())
-			.setFrom((pageStart - 1) * pageSize)
-			.setSize(pageSize)
+			.setFrom(0)
+			.setSize(9990)
 			.addSort(sortField, sortAsc ? SortOrder.ASC : SortOrder.DESC)
 			//.setFetchSource(null, "pages.annotations")
 			.request(),
@@ -324,25 +324,25 @@ public class SearchService implements ISearchService {
   
   
   @SuppressWarnings("unchecked")
-private List<Annotation> parseAnnoResults(SearchHits hits) {
+  private List<Annotation> parseAnnoResults(SearchHits hits) {
 	    List<Annotation> searchAnnoResults = new ArrayList<>();
 	    for (SearchHit hit : hits.getHits()) {
 	      Map<String, Object> manuscriptMap = hit.getSourceAsMap();
 	      String manuscriptTitle = (String) manuscriptMap.get("title");
-	      
-	      @SuppressWarnings("unchecked")
-	      List<Map<String, Object>> pageMaps = (List<Map<String, Object>>) manuscriptMap.get("pages");
-	      List<Page> pages = new ArrayList<>();
-	      for (Map<String, Object> pageMap : pageMaps) {
-	    	  
-	        // getting the annotations
-	        List<Map<String, Object>> annotationMaps = (List<Map<String, Object>>) pageMap.get("annotations");
-	        // as a page might not contain annotations "annotationMaps" might be null,
-	        // so this needs to be checked to prevent an error
-	        if (annotationMaps != null) {
-	        	if (!annotationMaps.isEmpty()) {
-		        	for (Map<String, Object> annotationMap : annotationMaps) {
-			        	Annotation annotation = new Annotation();
+      @SuppressWarnings("unchecked")
+      List<Map<String, Object>> pageMaps = (List<Map<String, Object>>) manuscriptMap.get("pages");
+      List<Page> pages = new ArrayList<>();
+      for (Map<String, Object> pageMap : pageMaps) {
+    	  
+        // getting the annotations
+        List<Map<String, Object>> annotationMaps = (List<Map<String, Object>>) pageMap.get("annotations");
+        // as a page might not contain annotations "annotationMaps" might be null,
+        // so this needs to be checked to prevent an error
+        if (annotationMaps != null) {
+        	if (!annotationMaps.isEmpty()) {
+	        	for (Map<String, Object> annotationMap : annotationMaps) {
+	        		try {
+	        			Annotation annotation = new Annotation();
 			        	annotation.setId((String) annotationMap.get("id"));
 			        	annotation.setPageId((String) annotationMap.get("pageId"));
 			        	annotation.setManuscriptTitle(manuscriptTitle);
@@ -408,15 +408,20 @@ private List<Annotation> parseAnnoResults(SearchHits hits) {
 				        	}
 				        }
 				        searchAnnoResults.add(annotation);
-			        }
+	        		} catch (Exception e) {
+	        			System.out.println("Could not get annotations for manuscript: " + manuscriptMap.get("title") + " " + manuscriptMap.get("id"));
+	        			e.printStackTrace();
+	        		}
+		        	
 		        }
 	        }
-	        
-	      }
-	    }
-	    this.annoResults = searchAnnoResults;
-	    return searchAnnoResults;
-	  }
+        }
+        
+      }
+    }
+    this.annoResults = searchAnnoResults;
+    return searchAnnoResults;
+  }
   /**
    * Sets the search term.
    *
