@@ -274,9 +274,26 @@ tei-lb {
 	background-color: white;
 }
 
+tei-cb {
+	background-color: white;
+}
 /* linebreak before the start of a new line */
 tei-lb::before {
     content: "\00000a";
+    white-space: pre-wrap;
+}
+
+/* display the pagenumbers in front of the pagebeginnings */
+tei-pb[n]::before {
+	color: grey;
+    content: "\00000a"attr(n)"\00a0";
+    white-space: pre-wrap;
+}
+
+/* display the columnnumbers in front of the columnbeginnings */
+tei-cb[n]::before {
+	color: grey;
+    content: "\00000a"attr(n)"\00a0";
     white-space: pre-wrap;
 }
 
