@@ -90,3 +90,21 @@ _Note: the purpose of this module is to provide functionality which is useful to
   * `data`: encode anno id etc.
 * `topbar`: modify the topbar (set pseudonym functionality etc)
   
+## Projectspecific stuff
+
+* preMakeHTML hook
+* postApplyStyles hook
+* textcard
+  * editing of bodies in horizontal textcard: https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/common/annotationDisplay/selection.js#L343
+  * horizontal texcard: https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/common/annotationDisplay/selection.js#L496 has a hook already
+  * textcard button to analysisTool https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/common/annotationDisplay/selection.js#L502 has a hook already
+  * horizontal textcard "content" of the body https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/common/utils/utils.js#L113
+* creationTemplates and corresponding utils functions
+  * assignement of purposes https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/texteditor/annotationEditor/annotationCreation/creationTemplates/utils.js#L685
+* highlighting
+  * annotation selection based on css classes https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/texteditor/annotationEditor/editor.js#L71
+  * removal of css classes https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/texteditor/annotationEditor/highlight.js#L104
+  * addition of css classes https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/texteditor/annotationEditor/highlight.js#L142
+* window.variables
+  * editor js: ANNOJSON, SELECTING_TEXT, PAPER, SELECTED_ANNOTATION, MRW_ANNOS, MODE, TEXTLANGUAGE
+  * html: CONTEXTPATH, EDITORTYPE, TL_VARIABLES, CURRENTPAGENUMBER, CURRENTPAGEID, CURRENTPAGEURL
