@@ -1,6 +1,8 @@
 //import { selectAnnotation } from '../../common/annotationDisplay';
-//import { encodeAnnoId, toggleVisibility } from '../../common/utils';
-import { createOption } from '../../common/utils';
+// Common utils
+import { createOption, setVisibility, toggleVisibility } from '../../common/utils';
+
+// Texteditor specific utils
 import { getTargetAnnotationId, getTargetFragment } from '../utils/url';
 
 const POSSIBLE_TEXT_PART_TYPES = ['chapter', 'section'];
@@ -16,11 +18,11 @@ export function initializeNavigation($navBar, $text) {
   //console.log('initializing nav bar');
   // Text properties
   const textPartType = getDivisionType($text);
-  const textParts = $text.querySelectorAll('tei-div[type="' + textPartType + '"]');
+  const $textParts = $text.querySelectorAll('tei-div[type="' + textPartType + '"]');
   const textPartLabels = [...textParts].map(getLabel);
 
   // No need for a navbar if there is only a single textPart
-  if (textParts.length > 1) {
+  if ($textParts.length > 1) {
     // UI elements
     const $prevButton = $navBar.querySelector('#prevChaptButton');
     const $nextButton = $navBar.querySelector('#nextChaptButton');
@@ -33,7 +35,7 @@ export function initializeNavigation($navBar, $text) {
     $nextButton.innerHTML = 'Next ' + textPartType;
 
     // Hide all chapters initially
-    textParts.forEach((tp) => tp.classList.add('is-hidden'));
+    setVisibility($textParts, false);
 
     // Fill select element with options
     textPartLabels.map(createOption).forEach((option) => $chapterSelect.appendChild(option));
@@ -42,23 +44,23 @@ export function initializeNavigation($navBar, $text) {
     // pre-selected as part of the URL, find the text part it belongs to and use this as default.
     // If none is selected use the first part as default and display it.
     const fragmentId = getTargetFragment();
-    const preselectedAnno = getTargetElement(fragmentId, textParts);
+    const preselectedAnno = getTargetElement(fragmentId, $textParts);
     const defaultTextPart = getTargetDivision(preselectedAnno, textPartType);
     let currentTextPartLabel = defaultTextPart ? getLabel(defaultTextPart) : textPartLabels[0];
-    selectTextPart(currentTextPartLabel, textParts);
+    selectTextPart(currentTextPartLabel, $textParts);
     updateButtons(currentTextPartLabel, textPartLabels, $prevButton, $nextButton, $chapterSelect);
 
     // Define button callbacks
     const onClickGoTo = (_ev) => {
       currentTextPartLabel = $chapterSelect.value;
-      selectTextPart(currentTextPartLabel, textParts);
+      selectTextPart(currentTextPartLabel, $textParts);
       updateButtons(currentTextPartLabel, textPartLabels, $prevButton, $nextButton, $chapterSelect);
     };
     const onClickPrev = (_ev) => {
       const currentIdx = textPartLabels.indexOf(currentTextPartLabel);
       if (currentIdx > 0) {
         currentTextPartLabel = textPartLabels[currentIdx - 1];
-        selectTextPart(currentTextPartLabel, textParts);
+        selectTextPart(currentTextPartLabel, $textParts);
         updateButtons(currentTextPartLabel, textPartLabels, $prevButton, $nextButton, $chapterSelect);
       }
     };
@@ -66,7 +68,7 @@ export function initializeNavigation($navBar, $text) {
       const currentIdx = textPartLabels.indexOf(currentTextPartLabel);
       if (currentIdx < textPartLabels.length - 1) {
         currentTextPartLabel = textPartLabels[currentIdx + 1];
-        selectTextPart(currentTextPartLabel, textParts);
+        selectTextPart(currentTextPartLabel, $textParts);
         updateButtons(currentTextPartLabel, textPartLabels, $prevButton, $nextButton, $chapterSelect);
       }
     };
@@ -150,10 +152,10 @@ export function getTargetDivision(targetElement, divisionType) {
 /**
  * Hides all text parts which don't have the currently selected label.
  * @param {String} selectedLabel label of text part which should be displayed
- * @param {Array} allTextParts DOM nodes representing all displayable text parts
+ * @param {NodeList} allTextParts DOM nodes representing all displayable text parts
  */
-export function selectTextPart(selectedLabel, allTextParts) {
-  allTextParts.forEach((tp) => tp.classList.add('is-hidden'));
+export function selectTextPart(selectedLabel, $allTextParts) {
+  $allTextParts.forEach((tp) => tp.classList.add('is-hidden'));
   [...allTextParts]
     .filter((tp) => getLabel(tp) === selectedLabel)
     .forEach((selected) => selected.classList.remove('is-hidden'));

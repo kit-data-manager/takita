@@ -21,6 +21,21 @@ export function toggleOpacity($selection) {
 }
 
 /**
+ * Set opacity of one or more HTML element(s) to make them (in-)visible without
+ * affecting the page flow.
+ * @param {Element | NodeList} $selection 
+ * @param {Boolean} isHidden 
+ */
+export function setZeroOpacity($selection, isHidden) {
+  const $elements = $selection instanceof HTMLElement ? [$selection] : $selection;
+  if (isHidden) {
+    $elements.forEach((element) => element.classList.add('zeroOpacity'));
+  } else {
+    $elements.forEach((element) => element.classList.remove('zeroOpacity'));
+  }
+}
+
+/**
  * Toggle visibility of an HTML element, and optionally
  * designate the responsible button as active.
  *
@@ -34,12 +49,26 @@ export function toggleVisibility($element, $button) {
   if (elementWasHidden) {
     if ($button) {
       $button.parentElement.classList.add('active');
-      // Maybe make this more robust, in cases where scrolling is not available (like during testing)?
+      // TODO: Maybe make this more robust, in cases where scrolling is not available (like during testing)?
       $element.scrollIntoView();
     }
   } else {
     if ($button) {
       $button.parentElement.classList.remove('active');
     }
+  }
+}
+
+/**
+ * Set visibility of HTML element or NodeList by adding/removing a CSS class.
+ * @param {Element | NodeList} $selection affected HTML element(s) 
+ * @param {Boolean} isVisible whether the element(s) should be visible 
+ */
+export function setVisibility($selection, isVisible) {
+  const $elements = $selection instanceof HTMLElement ? [$selection] : $selection;
+  if (isVisible) {
+    $elements.forEach((element) => element.classList.remove('is-hidden'));
+  } else {
+    $elements.forEach((element) => element.classList.add('is-hidden'));
   }
 }
