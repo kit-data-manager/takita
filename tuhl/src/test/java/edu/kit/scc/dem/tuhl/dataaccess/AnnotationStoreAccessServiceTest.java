@@ -24,6 +24,7 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
+import java.time.Instant;
 import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -318,8 +319,8 @@ class AnnotationStoreAccessServiceTest {
         "%2F%2Fxmlns.com%2Ffoaf%2F0.1%2F%3E+PREFIX+dcterms%3A+%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Fterms%2F%3" +
         "E+SELECT+%3Fannotation+%7BGRAPH+%3Fg+%7B+%3Fannotation+a+oa%3AAnnotation.+%3Fannotation+dcterms" +
         "%3Acreated+%3Fcreated.+%3Fannotation+dcterms%3Amodified+%3Fmodified.+FILTER%28xsd%3AdateTime%28" +
-        "%3Fcreated%29+%3E+%222019-05-08T10:59:35.000Z%22%5E%5Exsd%3AdateTime%29+FILTER%28xsd%3AdateTime" +
-        "%28%3Fmodified%29+%3E+%222019-05-08T10:59:35.000Z%22%5E%5Exsd%3AdateTime%29+FILTER+NOT+EXISTS+%" +
+        "%3Fcreated%29+%3E+%222019-05-08T10:59:35Z%22%5E%5Exsd%3AdateTime%29+FILTER%28xsd%3AdateTime" +
+        "%28%3Fmodified%29+%3E+%222019-05-08T10:59:35Z%22%5E%5Exsd%3AdateTime%29+FILTER+NOT+EXISTS+%" +
         "7B+%3Fannotation+%3Chttp%3A%2F%2Fdem.scc.kit.edu%2Fwapserv%2Fns%23deleted%3E+%22true%22%5E%5Exs" +
         "d%3Aboolean%7D+%7D+%7D")).thenReturn(mockedResponsePage3);
 
@@ -329,7 +330,7 @@ class AnnotationStoreAccessServiceTest {
         "1749ce9c-a79a-4929-8299-edc9c0388fcc")).thenReturn(mockedAnnotation2);
 
     List<JSONObject> actual = annotationStoreAccessService.getAnnotationsModifiedAfter(
-        TimeStampFormats.TIMESTAMP_FORMAT_ANNO.getDateFormat().parse("2019-05-08T10:59:35Z"));
+        Instant.parse("2019-05-08T10:59:35Z"));
 
     List<JSONObject> expected = new ArrayList<>();
     expected.add(new JSONObject(readStringFromRelativePath("getAllAnnotationsModifiedAfter/annotation1.json")));

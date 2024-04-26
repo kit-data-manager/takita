@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -312,11 +313,12 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
    * @throws InterruptedException if the http request is interrupted
    */
   @Override
-  public List<JSONObject> getAnnotationsModifiedAfter(Date timestamp)
+  public List<JSONObject> getAnnotationsModifiedAfter(Instant timestamp)
       throws JSONException, IOException, InterruptedException {
     logger.info("Getting all annotations modified after {}.", timestamp);
 
-    String date = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat().format(timestamp);
+    //String date = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat().format(timestamp);
+    String date = timestamp.toString();
 
     //Sparql query to get only the annotations modified after date
     HttpResponse<String> response = httpRequestHelper.get(sparqlQueryUrlPrefix

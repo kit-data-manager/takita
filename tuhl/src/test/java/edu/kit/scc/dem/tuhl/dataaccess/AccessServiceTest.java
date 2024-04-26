@@ -78,8 +78,8 @@ class AccessServiceTest {
   @Test
   void getAllManuscriptsModifiedAfter() throws InterruptedException, ParseException, JSONException, IOException, NoSuchIndexEntryException {
     //List<Manuscript> expectedManuscripts = buildMocksAndExpectedManuscripts();
-    DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat();
-    Date timestamp = dateFormatMillis.parse("2019-03-10T14:13:45.000Z");
+    //DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat();
+    Instant timestamp = Instant.parse("2019-03-10T14:13:45.000Z");
 
     List<JSONObject> jsonAnnotations = new ArrayList<>();
     jsonAnnotations.add(new JSONObject(readStringFromRelativePath("addAnnotation/annotation1.json")));
@@ -87,10 +87,10 @@ class AccessServiceTest {
     jsonAnnotations.add(new JSONObject(readStringFromRelativePath("addAnnotation/validatedAnnotation2.json")));
 
     Page page1 = new ImagePage("758735a2-8e0d-4ac7-815e-bba2060217c3", ResourceType.IMAGE, "89v",
-        dateFormatMillis.parse("2019-04-23T14:13:45.000Z"), "", "");
+        Instant.parse("2019-04-23T14:13:45.000Z"), "", "");
     page1.setManuscriptId("123");
     Page page2 = new ImagePage("cb679599-7191-422c-923b-89c31c045f1d", ResourceType.IMAGE, "89r",
-        dateFormatMillis.parse("2019-04-23T14:13:45.000Z"), "", "");
+        Instant.parse("2019-04-23T14:13:45.000Z"), "", "");
     page2.setManuscriptId("123");
 
     List<Annotation> annotationsPage1 = buildAnnotations();
@@ -103,7 +103,7 @@ class AccessServiceTest {
     Mockito.when(mockedSearchIndexService.getPageById("cb679599-7191-422c-923b-89c31c045f1d"))
         .thenReturn(page2);
 
-    Manuscript manuscript = new Manuscript("123", dateFormatMillis.parse("2019-04-230T14:13:45.000Z"), "testMan1", "Leo", 300);
+    Manuscript manuscript = new Manuscript("123", Instant.parse("2019-04-23T14:13:45.000Z"), "testMan1", "Leo", 300);
     manuscript.getPages().add(page1);
     manuscript.getPages().add(page2);
     List<Manuscript> expectedManuscripts = new ArrayList<>();
@@ -262,26 +262,26 @@ class AccessServiceTest {
         "5172f6cb-78c6-403d-b6eb-64d7738c76aa",
         ResourceType.IMAGE,
         "076v",
-        dateFormat.parse("2019-03-11T14:13:38Z"), "", "");
+        Instant.parse("2019-03-11T14:13:38Z"), "", "");
     page1.setManuscriptId("000073cd-c425-4214-9648-b380ff20c61a");
 
     ImagePage page2 = new ImagePage(
         "3f3bf25b-e0b9-48a9-b344-20630f733f8b",
         ResourceType.IMAGE,
         "076r",
-        dateFormat.parse("2019-03-11T14:13:37Z"), "", "");
+        Instant.parse("2019-03-11T14:13:37Z"), "", "");
     page2.setManuscriptId("000073cd-c425-4214-9648-b380ff20c61a");
 
     ImagePage page3 = new ImagePage(
         "f68e307b-c41b-412a-a2e2-60418fbbef27",
         ResourceType.IMAGE,
         "63r",
-        dateFormat.parse("2019-03-11T14:10:39Z"), "", "");
+        Instant.parse("2019-03-11T14:10:39Z"), "", "");
     page3.setManuscriptId("0d5aa650-2f1e-4dd3-8eed-66a94771ca7c");
 
     Manuscript manuscript1 = new Manuscript(
         "000073cd-c425-4214-9648-b380ff20c61a",
-        dateFormat.parse("2019-03-11T14:13:45Z"),
+        Instant.parse("2019-03-11T14:13:45Z"),
         "Vatikan Vat Gr 247",
         "SFB 980 - A04",
         2019);
@@ -289,18 +289,18 @@ class AccessServiceTest {
     pagesManuscript1.add(page1);
     pagesManuscript1.add(page2);
     manuscript1.setPages(pagesManuscript1);
-    manuscript1.setLastModified(dateFormat.parse("2019-03-11T14:13:45Z"));
+    manuscript1.setLastModified(Instant.parse("2019-03-11T14:13:45Z"));
 
     Manuscript manuscript2 = new Manuscript(
         "0d5aa650-2f1e-4dd3-8eed-66a94771ca7c",
-        dateFormat.parse("2019-03-11T14:10:42Z"),
+        Instant.parse("2019-03-11T14:10:42Z"),
         "Florenz Laur 72.5",
         "SFB 980 - A04",
         2019);
     List<Page> pagesManuscript2 = new ArrayList<>();
     pagesManuscript2.add(page3);
     manuscript2.setPages(pagesManuscript2);
-    manuscript2.setLastModified(dateFormat.parse("2019-03-11T14:10:42Z"));
+    manuscript2.setLastModified(Instant.parse("2019-03-11T14:10:42Z"));
 
 
     List<String> creatorListAkita = new ArrayList<>();
@@ -420,7 +420,7 @@ class AccessServiceTest {
     Mockito.when(mockedRepositoryAccessService.getAllManuscripts(2))
         .thenReturn(manuscriptsJson);
     Mockito.when(mockedRepositoryAccessService.getManuscriptsModifiedAfter(
-        TimeStampFormats.TIMESTAMP_FORMAT_REPO.getDateFormat().parse("2019-03-10T14:13:45Z")))
+        Instant.parse("2019-03-10T14:13:45Z")))
         .thenReturn(manuscriptsJson);
     Mockito.when(mockedRepositoryAccessService.getManuscriptById(manuscript1.getId()))
         .thenReturn(manuscriptJson1);
@@ -518,55 +518,55 @@ class AccessServiceTest {
         "3b868555-f0ac-4de7-abbc-5c14c0742dbf",
         ResourceType.IMAGE,
         "6869",
-        dateFormat.parse("2019-03-12T14:11:35Z"), "", "");
+        Instant.parse("2019-03-12T14:11:35Z"), "", "");
     page1.setManuscriptId("000c557c-4a11-405e-8bbc-a0d4ea5844a4");
 
     ImagePage page2 = new ImagePage(
         "33f1a3cf-d06e-429b-996e-3ab794c9767e",
         ResourceType.IMAGE,
         "1069",
-        dateFormat.parse("2019-03-11T14:09:45Z"), "", "");
+        Instant.parse("2019-03-11T14:09:45Z"), "", "");
     page2.setManuscriptId("00125ead-bf62-475e-aeb6-0d2b30df5648");
 
     ImagePage page3 = new ImagePage(
         "4b756754-54a2-4932-8b1e-a33889ab0c37",
         ResourceType.IMAGE,
         "7559",
-        dateFormat.parse("2019-08-26T09:21:02Z"), "", "");
+        Instant.parse("2019-08-26T09:21:02Z"), "", "");
     page3.setManuscriptId("001abeb0-f0e4-43ed-be1e-ed37f02cd02b");
 
     Manuscript manuscript1 = new Manuscript(
         "000c557c-4a11-405e-8bbc-a0d4ea5844a4",
-        dateFormat.parse("2019-03-12T14:11:16Z"),
+        Instant.parse("2019-03-12T14:11:16Z"),
         "Modena α V 8 13, 069r",
         "SFB 980 - A04",
         2019);
     List<Page> pagesManuscript1 = new ArrayList<>();
     pagesManuscript1.add(page1);
     manuscript1.setPages(pagesManuscript1);
-    manuscript1.setLastModified(dateFormat.parse("2019-03-12T14:11:16Z"));
+    manuscript1.setLastModified(Instant.parse("2019-03-12T14:11:16Z"));
 
     Manuscript manuscript2 = new Manuscript(
         "00125ead-bf62-475e-aeb6-0d2b30df5648",
-        dateFormat.parse("2019-03-12T14:11:29Z"),
+        Instant.parse("2019-03-12T14:11:29Z"),
         "Vatikan Urb gr 56, 084v",
         "SFB 980 - A04",
         2019);
     List<Page> pagesManuscript2 = new ArrayList<>();
     pagesManuscript2.add(page2);
     manuscript2.setPages(pagesManuscript2);
-    manuscript2.setLastModified(dateFormat.parse("2019-03-12T14:11:29Z"));
+    manuscript2.setLastModified(Instant.parse("2019-03-12T14:11:29Z"));
 
     Manuscript manuscript3 = new Manuscript(
         "001abeb0-f0e4-43ed-be1e-ed37f02cd02b",
-        dateFormat.parse("2019-03-11T14:09:50Z"),
+        Instant.parse("2019-03-11T14:09:50Z"),
         "Vatikan Reg Gr 116, 073r",
         "SFB 980 - A04",
         2019);
     List<Page> pagesManuscript3 = new ArrayList<>();
     pagesManuscript3.add(page3);
     manuscript3.setPages(pagesManuscript3);
-    manuscript3.setLastModified(dateFormat.parse("2019-03-11T14:09:50Z"));
+    manuscript3.setLastModified(Instant.parse("2019-03-11T14:09:50Z"));
 
 
     List<String> creatorListAkita = new ArrayList<>();
@@ -953,7 +953,7 @@ class AccessServiceTest {
     annotations.get(1).addTextCard(expectedTextCard2);
 
     TextPage page = new TextPage("cb679599-7191-422c-923b-89c31c045f1d", ResourceType.TEXT, "082r",
-        dateFormat.parse("2019-07-04T00:00:00Z"), "");
+        Instant.parse("2019-07-04T00:00:00Z"), "");
     Mockito.when(mockedSearchIndexService.getPageById(annotations.get(0).getPageId()))
         .thenReturn(page);
 

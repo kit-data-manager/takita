@@ -15,7 +15,6 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -51,7 +50,7 @@ public class  SearchIndexService implements ISearchIndexService {
   private final ManuscriptRepository manuscriptRepository;
   private final ElasticsearchOperations elasticsearchOperations;
   
-  private Date lastUpdatedIndex;
+  private Instant lastUpdatedIndex;
   
   
   /**
@@ -72,7 +71,7 @@ public class  SearchIndexService implements ISearchIndexService {
     this.accessService = accessService;
     this.manuscriptRepository = manuscriptRepository;
     this.elasticsearchOperations = elasticsearchOperations;
-    lastUpdatedIndex = Date.from(Instant.EPOCH);
+    lastUpdatedIndex = Instant.EPOCH;
     accessService.setSearchIndexService(this);
   }
   
@@ -88,8 +87,8 @@ public class  SearchIndexService implements ISearchIndexService {
     IndexOperations indexOp = elasticsearchOperations.indexOps(Manuscript.class);
 
     logger.info("Index rebuild started. Deleting old index.");
-    final LocalDateTime startBuild = LocalDateTime.now();
-    lastUpdatedIndex = Date.from(Instant.now());
+    final Instant startBuild = Instant.now();
+    lastUpdatedIndex = Instant.now();
     deleteIndex(indexOp);
     
     logger.info("Building new index. This may take a while.");
@@ -108,7 +107,7 @@ public class  SearchIndexService implements ISearchIndexService {
     
     indexOp.refresh();
     
-    Duration duration = Duration.between(startBuild, LocalDateTime.now());
+    Duration duration = Duration.between(startBuild, Instant.now());
     logger.info("Finished index build in {} minutes and {} seconds",
         duration.toMinutes(),
         duration.getSeconds() % 60);
@@ -144,22 +143,22 @@ public class  SearchIndexService implements ISearchIndexService {
       buildIndex();
     } else {
       logger.info("Index update started. This may take a while.");
-      Date timestamp = lastUpdatedIndex;
+      Instant timestamp = lastUpdatedIndex;
       
       //after a restart or rebuild the application might have no information about the last update.
       //In this case try to use index creation date instead.
       //TODO: find a better solution, i.e. checking the most recent updates in the index somehow
-      if(timestamp.equals(Date.from(Instant.EPOCH))) {
+      if(timestamp.equals(Instant.EPOCH)) {
         logger.warn("No date for last index build found");
-        Date creationDate = indexCreationDate();
+        Instant creationDate = indexCreationDate();
         
-        if(creationDate != null && creationDate.after(Date.from(Instant.EPOCH))) {
+        if(creationDate != null && creationDate.isAfter(Instant.EPOCH)) {
           timestamp = creationDate;
         }
       }
 
-      lastUpdatedIndex = Date.from(Instant.now());
-      final LocalDateTime startUpdate = LocalDateTime.now();
+      lastUpdatedIndex = Instant.now();
+      final Instant startUpdate = Instant.now();
       
       List<Manuscript> newManuscripts;
       
@@ -185,13 +184,13 @@ public class  SearchIndexService implements ISearchIndexService {
         Manuscript savedManuscript = manuscriptRepository.save(manuscript);
 
       }
-      Duration duration = Duration.between(startUpdate, LocalDateTime.now());
+      Duration duration = Duration.between(startUpdate, Instant.now());
       logger.info("Finished index update in {} minutes and {} seconds", duration.toMinutes(),
           duration.getSeconds() % 60);
     }
   }
   
-  public Date indexCreationDate() {
+  public Instant indexCreationDate() {
     IndexOperations indexOp = elasticsearchOperations.indexOps(Manuscript.class);
 
     try {
@@ -199,7 +198,7 @@ public class  SearchIndexService implements ISearchIndexService {
       //return elasticsearchOperations.execute(client -> 
       //  Date.from(Instant.ofEpochMilli(Long.parseLong(client.indices().get(indexReq, RequestOptions.DEFAULT).getSetting(INDEX_NAME, "index.creation_date"))))    
       //); 
-      return Date.from(Instant.ofEpochMilli(indexOp.getSettings().getLong("index.creation_date")));     
+      return Instant.ofEpochMilli(indexOp.getSettings().getLong("index.creation_date"));     
     } catch (NullPointerException e) {
       logger.error("Search index creation date could not be parsed");
       return null;
@@ -219,7 +218,7 @@ public class  SearchIndexService implements ISearchIndexService {
     IndexOperations indexOp = elasticsearchOperations.indexOps(Manuscript.class);
 
     logger.info("Limited Index rebuild started. Deleting old index.");
-    final LocalDateTime startBuild = LocalDateTime.now();
+    final Instant startBuild = Instant.now();
     deleteIndex(indexOp);
     
     logger.info("Building new small index.");
@@ -238,7 +237,7 @@ public class  SearchIndexService implements ISearchIndexService {
     }
     indexOp.refresh();
     
-    Duration duration = Duration.between(startBuild, LocalDateTime.now());
+    Duration duration = Duration.between(startBuild, Instant.now());
     logger.info("Finished limited index build in {} minutes and {} seconds", duration.toMinutes(),
         duration.getSeconds() % 60);
   }
