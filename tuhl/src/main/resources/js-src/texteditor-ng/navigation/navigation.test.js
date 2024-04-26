@@ -1,4 +1,4 @@
-import { getTargetDivision, selectTextPart, getDivisionType } from './navigation';
+import { getTargetDivision, selectDivision, getDivisionType, getDivisionLabel } from './navigation';
 
 const teiWithUnknownDivtype = `
 <tei-text data-xmlns="http://www.tei-c.org/ns/1.0" xml:lang="och" lang="och" type="book" data-origname="text" data-origatts="xmlns xml:lang type" data-processed="">
@@ -61,7 +61,7 @@ const teiWithSections = `
       <tei-w xml:id="w.2721" id="w.2721" data-origname="w" data-origatts="xml:id" data-processed="">術</tei-w>
       <tei-w xml:id="w.2722" id="w.2722" data-origname="w" data-origatts="xml:id" data-processed="">上</tei-w>
     </tei-head>
-    <tei-div type="section" n="1" xml:id="c.10" id="c.10" data-origname="div" data-origatts="type n xml:id" data-processed="" class="is-hidden">
+    <tei-div type="section" n="1" xml:id="c.10" id="c.10" data-origname="div" data-origatts="type n xml:id" data-processed="">
       <tei-p xml:id="p.25" id="p.25" data-origname="p" data-origatts="xml:id" data-processed="">
         <tei-w xml:id="w.2723" id="w.2723" data-origname="w" data-origatts="xml:id" data-processed="">心</tei-w>
         <tei-w xml:id="w.2724" id="w.2724" data-origname="w" data-origatts="xml:id" data-processed="">之</tei-w>
@@ -70,6 +70,15 @@ const teiWithSections = `
         <tei-pc xml:id="pc.524" id="pc.524" data-origname="pc" data-origatts="xml:id" data-processed="">。</tei-pc>
       </tei-p>
     </tei-div>
+    <tei-div type="section" n="2" xml:id="c.20" id="c.20" data-origname="div" data-origatts="type n xml:id" data-processed="">
+      <tei-p xml:id="p.26" id="p.26" data-origname="p" data-origatts="xml:id" data-processed="">
+        <tei-w xml:id="w.2823" id="w.2823" data-origname="w" data-origatts="xml:id" data-processed="">心</tei-w>
+        <tei-w xml:id="w.2824" id="w.2824" data-origname="w" data-origatts="xml:id" data-processed="">之</tei-w>
+        <tei-w xml:id="w.2825" id="w.2825" data-origname="w" data-origatts="xml:id" data-processed="">在</tei-w>
+        <tei-w xml:id="w.2826" id="w.2826" data-origname="w" data-origatts="xml:id" data-processed="">體</tei-w>
+        <tei-pc xml:id="pc.525" id="pc.525" data-origname="pc" data-origatts="xml:id" data-processed="">。</tei-pc>
+      </tei-p>
+  </tei-div>
   </tei-body>
 </tei-text>
 `;
@@ -94,5 +103,25 @@ describe('navigation.getDivisionType()', () => {
     $text.innerHTML = teiWithSections;
     const divType = getDivisionType($text);
     expect(divType).toBe('section');
+  });
+});
+
+describe('navigation.getDivisionLabel()', () => {
+  it('retrieves correct text part label', () => {
+    const $container = document.createElement('div');
+    $container.innerHTML = '<tei-div type="section" n="1" xml:id="c.10" id="c.10"><tei-p>Test</tei-p></tei-div>';
+    const label = getDivisionLabel($container.firstChild);
+    expect(label).toBe('1');
+  });
+});
+
+describe('navigation.getTargetDivision()', () => {
+  it('finds correct existing target section', () => {
+    const $container = document.createElement('div');
+    $container.innerHTML = teiWithSections;
+    const $element = $container.querySelector('#w\\.2823');
+    const targetDivision = getTargetDivision($element, 'section');
+    expect(targetDivision).toBeDefined();
+    expect(targetDivision.id).toBe('c.20');
   });
 });

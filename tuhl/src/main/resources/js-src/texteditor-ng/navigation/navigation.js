@@ -1,11 +1,11 @@
-//import { selectAnnotation } from '../../common/annotationDisplay';
 // Common utils
 import { createOption, setVisibility, toggleVisibility } from '../../common/utils';
 
 // Texteditor specific utils
 import { getTargetAnnotationId, getTargetFragment } from '../utils/url';
 
-const POSSIBLE_TEXT_PART_TYPES = ['chapter', 'section'];
+// TODO: move "subchapter" to the second navigation level
+const POSSIBLE_DIVISION_TYPES = ['chapter', 'section', 'subchapter'];
 
 /**
  * Initialize a navigation bar with a given DOM element.
@@ -17,12 +17,12 @@ const POSSIBLE_TEXT_PART_TYPES = ['chapter', 'section'];
 export function initializeNavigation($navBar, $text) {
   //console.log('initializing nav bar');
   // Text properties
-  const textPartType = getDivisionType($text);
-  const $textParts = $text.querySelectorAll('tei-div[type="' + textPartType + '"]');
-  const textPartLabels = [...textParts].map(getLabel);
+  const divisionType = getDivisionType($text);
+  const $divisions = $text.querySelectorAll('tei-div[type="' + divisionType + '"]');
+  const divisionLabels = [...$divisions].map(getDivisionLabel);
 
   // No need for a navbar if there is only a single textPart
-  if ($textParts.length > 1) {
+  if ($divisions.length > 1) {
     // UI elements
     const $prevButton = $navBar.querySelector('#prevChaptButton');
     const $nextButton = $navBar.querySelector('#nextChaptButton');
@@ -30,46 +30,46 @@ export function initializeNavigation($navBar, $text) {
     const $chapterSelect = $navBar.querySelector('#chapterSelect');
 
     // Initialize Buttons
-    $prevButton.innerHTML = 'Previous ' + textPartType;
-    $gotoButton.innerHTML = 'Go to ' + textPartType;
-    $nextButton.innerHTML = 'Next ' + textPartType;
+    $prevButton.innerHTML = 'Previous ' + divisionType;
+    $gotoButton.innerHTML = 'Go to ' + divisionType;
+    $nextButton.innerHTML = 'Next ' + divisionType;
 
     // Hide all chapters initially
-    setVisibility($textParts, false);
+    setVisibility($divisions, false);
 
     // Fill select element with options
-    textPartLabels.map(createOption).forEach((option) => $chapterSelect.appendChild(option));
+    divisionLabels.map(createOption).forEach((option) => $chapterSelect.appendChild(option));
 
     // Keep track of the label of the currently displayed text part. If an annotation has been
     // pre-selected as part of the URL, find the text part it belongs to and use this as default.
     // If none is selected use the first part as default and display it.
     const fragmentId = getTargetFragment();
-    const preselectedAnno = getTargetElement(fragmentId, $textParts);
-    const defaultTextPart = getTargetDivision(preselectedAnno, textPartType);
-    let currentTextPartLabel = defaultTextPart ? getLabel(defaultTextPart) : textPartLabels[0];
-    selectTextPart(currentTextPartLabel, $textParts);
-    updateButtons(currentTextPartLabel, textPartLabels, $prevButton, $nextButton, $chapterSelect);
+    const preselectedAnno = getTargetElement(fragmentId, $divisions);
+    const defaultTextPart = getTargetDivision(preselectedAnno, divisionType);
+    let currentTextPartLabel = defaultTextPart ? getDivisionLabel(defaultTextPart) : divisionLabels[0];
+    selectDivision(currentTextPartLabel, $divisions);
+    updateButtons(currentTextPartLabel, divisionLabels, $prevButton, $nextButton, $chapterSelect);
 
     // Define button callbacks
     const onClickGoTo = (_ev) => {
       currentTextPartLabel = $chapterSelect.value;
-      selectTextPart(currentTextPartLabel, $textParts);
-      updateButtons(currentTextPartLabel, textPartLabels, $prevButton, $nextButton, $chapterSelect);
+      selectDivision(currentTextPartLabel, $divisions);
+      updateButtons(currentTextPartLabel, divisionLabels, $prevButton, $nextButton, $chapterSelect);
     };
     const onClickPrev = (_ev) => {
-      const currentIdx = textPartLabels.indexOf(currentTextPartLabel);
+      const currentIdx = divisionLabels.indexOf(currentTextPartLabel);
       if (currentIdx > 0) {
-        currentTextPartLabel = textPartLabels[currentIdx - 1];
-        selectTextPart(currentTextPartLabel, $textParts);
-        updateButtons(currentTextPartLabel, textPartLabels, $prevButton, $nextButton, $chapterSelect);
+        currentTextPartLabel = divisionLabels[currentIdx - 1];
+        selectDivision(currentTextPartLabel, $divisions);
+        updateButtons(currentTextPartLabel, divisionLabels, $prevButton, $nextButton, $chapterSelect);
       }
     };
     const onClickNext = (_ev) => {
-      const currentIdx = textPartLabels.indexOf(currentTextPartLabel);
-      if (currentIdx < textPartLabels.length - 1) {
-        currentTextPartLabel = textPartLabels[currentIdx + 1];
-        selectTextPart(currentTextPartLabel, $textParts);
-        updateButtons(currentTextPartLabel, textPartLabels, $prevButton, $nextButton, $chapterSelect);
+      const currentIdx = divisionLabels.indexOf(currentTextPartLabel);
+      if (currentIdx < divisionLabels.length - 1) {
+        currentTextPartLabel = divisionLabels[currentIdx + 1];
+        selectDivision(currentTextPartLabel, $divisions);
+        updateButtons(currentTextPartLabel, divisionLabels, $prevButton, $nextButton, $chapterSelect);
       }
     };
 
@@ -125,17 +125,17 @@ export function initializeNavigation($navBar, $text) {
  * @returns {Element}
  */
 export function getTargetElement(fragmentId, $text) {
-  return $text.querySelector(`#${fragmentId}`);
+  return $text.querySelector('#' + fragmentId);
 }
 
 /**
  * If an annotation is pre-selected, retrieve the division where it is located.
- * @param {Element} targetElement the element which is the target of a selected annotation
+ * @param {Element} $targetElement the element which is the target of a selected annotation
  * @param {String} divisionType what is the desired granularity of our result
  * @returns {Element} the element of the text part in which targetElement is located
  */
-export function getTargetDivision(targetElement, divisionType) {
-  if (targetElement) {
+export function getTargetDivision($targetElement, divisionType) {
+  if ($targetElement) {
     const closestDivision = (node) => {
       if (node?.attributes?.type?.value === divisionType) {
         return node;
@@ -143,7 +143,7 @@ export function getTargetDivision(targetElement, divisionType) {
       return closestDivision(node.parentNode);
     };
 
-    const targetDivision = closestDivision(targetElement);
+    const targetDivision = closestDivision($targetElement);
     return targetDivision;
   }
   return undefined;
@@ -152,13 +152,15 @@ export function getTargetDivision(targetElement, divisionType) {
 /**
  * Hides all text parts which don't have the currently selected label.
  * @param {String} selectedLabel label of text part which should be displayed
- * @param {NodeList} allTextParts DOM nodes representing all displayable text parts
+ * @param {NodeList} $allDivisions DOM nodes representing all displayable text divisions
  */
-export function selectTextPart(selectedLabel, $allTextParts) {
-  $allTextParts.forEach((tp) => tp.classList.add('is-hidden'));
-  [...allTextParts]
-    .filter((tp) => getLabel(tp) === selectedLabel)
-    .forEach((selected) => selected.classList.remove('is-hidden'));
+export function selectDivision(selectedLabel, $allDivisions) {
+  // Hide all text parts initially.
+  setVisibility($allDivisions, false);
+  // Display selected text parts.
+  [...$allDivisions]
+    .filter((tp) => getDivisionLabel(tp) === selectedLabel)
+    .forEach((selected) => setVisibility(selected, true));
 }
 
 /**
@@ -179,19 +181,19 @@ export function updateButtons(selectedLabel, allTextPartLabels, $prev, $next, $c
  * @param {HTMLElement} $textPart
  * @returns {String}
  */
-export function getLabel($textPart) {
+export function getDivisionLabel($textPart) {
   return $textPart.attributes.n.nodeValue;
 }
 
 /**
  * Check which types of text parts are present in the document.
- * Must be one of `POSSIBLE_TEXT_PART_TYPES` or "default".
+ * Must be one of `POSSIBLE_DIVISION_TYPES` or "default".
  * @param {Element} $text the HTML element containing the document
  * @returns {String} the divisionType which is present in the text, or 'default' if none is found
  */
 export function getDivisionType($text) {
   // setting divisionType based on the divisions used in the text
-  const foundTypes = POSSIBLE_TEXT_PART_TYPES.filter(
+  const foundTypes = POSSIBLE_DIVISION_TYPES.filter(
     (possibility) => $text.querySelector('tei-div[type="' + possibility + '"]') != null,
   );
   return foundTypes.pop() || 'default';

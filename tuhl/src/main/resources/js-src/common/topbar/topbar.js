@@ -1,69 +1,33 @@
-// external modules
-import $ from 'jquery';
+import { fetchWithSpinner } from '../utils/modals';
 
-export function initializeTopbar() {
-  // TODO: maybe the following two jQuery functions should be somewhere else
-  // from editor.js
-  // show the animated book as loading icon whenever an ajax call is running
-  $(document)
-    .ajaxStart(function () {
-      const modal = document.getElementById('loading');
-      modal.classList.toggle('show-modal');
-    })
-    .ajaxStop(function () {
-      const modal = document.getElementById('loading');
-      modal.classList.toggle('show-modal');
-    });
+/**
+ * Initialize topbar inputs and make sure that users input their pseudonym if
+ * they haven't already.
+ * @param {Element} $topbar HTML element where the inputs/buttons are located
+ * @param {Element} $pseudonymModal HTML element which allows users to input their pseudonym
+ * @param {String} userName available for calling code in `window.TL_VARIABLES.user.name`
+ */
+export function initializeTopbar($topbar, $pseudonymModal, userName) {
+  /* Show pseudonym modal if userName is not yet set. */
+  if (userName === 'default') {
+    $pseudonymModal.classList.add('show-modal');
+  }
 
-  // adapted from main_page.html - may be exchanged in the future
-  $(document).ready(function () {
-    let userName = window.TL_VARIABLES.user.name;
-    if (userName === 'default') {
-      document.getElementById('pseudonymInputModal').classList.toggle('show-modal');
-    }
-  });
-
-  // adding eventhandlers
+  /* Add event handlers for all the buttons and inputs. */
   // go home button
-  document.getElementById('goHomeButton').addEventListener('click', goHome);
+  $topbar.querySelector('#goHomeButton').addEventListener('click', goHome);
+  // pseudonym input in the topbar
+  $topbar.querySelector('#pseudonymEditButton').addEventListener('click', clickButton);
 
-  // adding eventhandler for the pseudonym change in the topbar
-  document.getElementById('pseudonymEditButton').addEventListener('click', clickButton);
-
-  // adding eventhandler for pseudonym change to the pseudonym input modal
-  document
-    .querySelector('#pseudonymInputModal > div:nth-child(1) > form:nth-child(1)')
+  // pseudonym input in the pseudonym modal
+  $pseudonymModal
+    .querySelector('div:nth-child(1) > form:nth-child(1)')
     .addEventListener('submit', (event) => setPseudonym(event, 'pseudonymInitInput'));
 }
 
 // returning to table view of repository data
 function goHome() {
   location.href = window.CONTEXTPATH;
-}
-
-function clickDe() {
-  console.log('click de');
-  $.ajax({
-    type: 'GET',
-    url: window.CONTEXTPATH + 'assistance/lang/de',
-    dataType: 'text',
-  });
-  return true;
-}
-
-function clickEn() {
-  console.log('click en');
-  $.ajax({
-    type: 'GET',
-    url: window.CONTEXTPATH + 'assistance/lang/en',
-    dataType: 'text',
-  });
-
-  return true;
-}
-
-function getHelp() {
-  location.href = window.CONTEXTPATH + 'assistance/help';
 }
 
 function clickButton() {
@@ -91,7 +55,6 @@ function setPseudonym(event, pseudonymForm) {
   // $('#pseudonymInput').val();
   $.ajax({
     type: 'GET',
-    // TODO: this looks suspiciously like it would break with different CONTEXTPATHs...
     url: '../assistance/' + input,
     dataType: 'text',
     success: function (responseData) {
