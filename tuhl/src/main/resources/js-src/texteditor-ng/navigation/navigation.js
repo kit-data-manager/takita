@@ -15,7 +15,10 @@ const POSSIBLE_DIVISION_TYPES = ['chapter', 'section', 'subchapter'];
  * the different document parts.
  */
 export function initializeNavigation($navBar, $text) {
-  //console.log('initializing nav bar');
+  // Local state, closed over and modified by the various button callbacks
+  let showAllDivisions = false;
+  let currentDivisionLabel;
+
   // Text properties
   const divisionType = getDivisionType($text);
   const $divisions = $text.querySelectorAll('tei-div[type="' + divisionType + '"]');
@@ -28,11 +31,13 @@ export function initializeNavigation($navBar, $text) {
     const $nextButton = $navBar.querySelector('#nextChaptButton');
     const $gotoButton = $navBar.querySelector('#goToChaptButton');
     const $chapterSelect = $navBar.querySelector('#chapterSelect');
+    const $showAllButton = $navBar.querySelector('#toggleShowAllButton');
 
     // Initialize Buttons
     $prevButton.innerHTML = 'Previous ' + divisionType;
     $gotoButton.innerHTML = 'Go to ' + divisionType;
     $nextButton.innerHTML = 'Next ' + divisionType;
+    $showAllButton.innerHTML = 'Show all ' + divisionLabels + 's'; // yay for English pluralization rules
 
     // Hide all chapters initially
     setVisibility($divisions, false);
@@ -45,38 +50,58 @@ export function initializeNavigation($navBar, $text) {
     // If none is selected use the first part as default and display it.
     const fragmentId = getTargetFragment();
     const preselectedAnno = getTargetElement(fragmentId, $divisions);
-    const defaultTextPart = getTargetDivision(preselectedAnno, divisionType);
-    let currentTextPartLabel = defaultTextPart ? getDivisionLabel(defaultTextPart) : divisionLabels[0];
-    selectDivision(currentTextPartLabel, $divisions);
-    updateButtons(currentTextPartLabel, divisionLabels, $prevButton, $nextButton, $chapterSelect);
+    const initialDivision = getTargetDivision(preselectedAnno, divisionType);
+    currentDivisionLabel = initialDivision ? getDivisionLabel(initialDivision) : divisionLabels[0];
+    selectDivision(currentDivisionLabel, $divisions);
+    updateButtons(
+      currentDivisionLabel,
+      showAllDivisions,
+      divisionLabels,
+      $prevButton,
+      $nextButton,
+      $chapterSelect,
+      $showAllButton,
+    );
 
     // Define button callbacks
     const onClickGoTo = (_ev) => {
-      currentTextPartLabel = $chapterSelect.value;
-      selectDivision(currentTextPartLabel, $divisions);
-      updateButtons(currentTextPartLabel, divisionLabels, $prevButton, $nextButton, $chapterSelect);
+      currentDivisionLabel = $chapterSelect.value;
+      selectDivision(currentDivisionLabel, $divisions);
+      updateButtons(currentDivisionLabel, showAllDivisions, divisionLabels, $prevButton, $nextButton, $chapterSelect);
     };
     const onClickPrev = (_ev) => {
-      const currentIdx = divisionLabels.indexOf(currentTextPartLabel);
+      const currentIdx = divisionLabels.indexOf(currentDivisionLabel);
       if (currentIdx > 0) {
-        currentTextPartLabel = divisionLabels[currentIdx - 1];
-        selectDivision(currentTextPartLabel, $divisions);
-        updateButtons(currentTextPartLabel, divisionLabels, $prevButton, $nextButton, $chapterSelect);
+        currentDivisionLabel = divisionLabels[currentIdx - 1];
+        selectDivision(currentDivisionLabel, $divisions);
+        updateButtons(currentDivisionLabel, showAllDivisions, divisionLabels, $prevButton, $nextButton, $chapterSelect);
       }
     };
     const onClickNext = (_ev) => {
-      const currentIdx = divisionLabels.indexOf(currentTextPartLabel);
+      const currentIdx = divisionLabels.indexOf(currentDivisionLabel);
       if (currentIdx < divisionLabels.length - 1) {
-        currentTextPartLabel = divisionLabels[currentIdx + 1];
-        selectDivision(currentTextPartLabel, $divisions);
-        updateButtons(currentTextPartLabel, divisionLabels, $prevButton, $nextButton, $chapterSelect);
+        currentDivisionLabel = divisionLabels[currentIdx + 1];
+        selectDivision(currentDivisionLabel, $divisions);
+        updateButtons(currentDivisionLabel, showAllDivisions, divisionLabels, $prevButton, $nextButton, $chapterSelect);
       }
+    };
+    const onClickShowAll = (_ev) => {
+      showAllDivisions = !showAllDivisions;
+      if (showAllDivisions) {
+        setVisibility($divisions, true);
+        $showAllButton.innerHTML = 'Show only ' + divisionType + ' ' + currentDivisionLabel;
+      } else {
+        selectDivision(currentDivisionLabel);
+        $showAllButton.innerHTML = 'Show all ' + divisionType + 's';
+      }
+      updateButtons(currentDivisionLabel, showAllDivisions, divisionLabels, $prevButton, $nextButton, $chapterSelect);
     };
 
     // Set up callbacks for all interactive UI elements
     $gotoButton.addEventListener('click', onClickGoTo);
     $prevButton.addEventListener('click', onClickPrev);
     $nextButton.addEventListener('click', onClickNext);
+    $showAllButton.addEventListener('click', onClickShowAll);
 
     // After everything is set up, make navbar visible
     //console.log('make navbar visible');
@@ -166,14 +191,21 @@ export function selectDivision(selectedLabel, $allDivisions) {
 /**
  * Enable or disable buttons depending on currently selected text part label.
  * @param {String} selectedLabel label of the currently selected text part
+ * @param {Boolean} showAllDivisions wether to ignore selection temporarily and show all divs instead
  * @param {Array} allTextPartLabels ordered list of all text part labels
  * @param {HTMLElement} $prev button which selects previous text part
  * @param {HTMLElement} $next button which selects next text part
  */
-export function updateButtons(selectedLabel, allTextPartLabels, $prev, $next, $chapterSelect) {
-  $prev.disabled = allTextPartLabels.indexOf(selectedLabel) === 0;
-  $next.disabled = allTextPartLabels.indexOf(selectedLabel) === allTextPartLabels.length - 1;
-  $chapterSelect.value = selectedLabel;
+export function updateButtons(selectedLabel, showAllDivisions, allTextPartLabels, $prev, $next, $chapterSelect) {
+  if (showAllDivisions) {
+    // Prev and next buttons are confusing when _everything_ is shown anyway.
+    $prev.disabled = true;
+    $next.disabled = true;
+  } else {
+    $prev.disabled = allTextPartLabels.indexOf(selectedLabel) === 0;
+    $next.disabled = allTextPartLabels.indexOf(selectedLabel) === allTextPartLabels.length - 1;
+    $chapterSelect.value = selectedLabel;
+  }
 }
 
 /**
