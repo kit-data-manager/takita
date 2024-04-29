@@ -1,5 +1,14 @@
 import React from 'react';
-import { StyledDirect, StyledImplicit, StyledIndirect, StyledMFlag, StyledRegular, StyledTextPreview } from './style';
+import {
+  StyledCandidate,
+  StyledDirect,
+  StyledGenericMRW,
+  StyledImplicit,
+  StyledIndirect,
+  StyledMFlag,
+  StyledRegular,
+  StyledTextPreview,
+} from './style';
 
 /**
  *
@@ -17,9 +26,11 @@ const extractMRWs = (text, mrws) => {
 const Highlight = (props) => {
   const { type, children } = props;
   const Components = {
+    'mrw candidate': StyledCandidate,
     'mrw (direct)': StyledDirect,
     'mrw (indirect)': StyledIndirect,
     'mrw (implicit)': StyledImplicit,
+    mrw: StyledGenericMRW,
     mflag: StyledMFlag,
   };
   const Component = Components[type] || StyledIndirect;
@@ -31,6 +42,7 @@ export const TextPreview = ({ text, mrws }) => {
   const segments = extractMRWs(text, mrws).map((str, idx) => {
     const currentMRW = mrws.filter((mrw) => mrw.text === str).pop();
     if (currentMRW) {
+      console.log(currentMRW.type, currentMRW.text);
       return (
         <Highlight type={currentMRW.type} key={idx}>
           {str}

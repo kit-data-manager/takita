@@ -6,6 +6,26 @@ import Toolbar from './Toolbar';
 
 const Inline = Quill.import('blots/inline');
 
+class MRWCandidateBlot extends Inline {
+  static blotName = 'mrw-candidate';
+  static className = 'mrw-candidate';
+  static tagName = 'span';
+
+  static formats() {
+    return true;
+  }
+}
+
+class MRWGeneralBlot extends Inline {
+  static blotName = 'mrw-general';
+  static className = 'mrw-general';
+  static tagName = 'span';
+
+  static formats() {
+    return true;
+  }
+}
+
 class MRWDirectBlot extends Inline {
   static blotName = 'mrw-direct';
   static className = 'mrw-direct';
@@ -46,6 +66,8 @@ class MRWMFlagBlot extends Inline {
   }
 }
 
+Quill.register(MRWCandidateBlot);
+Quill.register(MRWGeneralBlot);
 Quill.register(MRWDirectBlot);
 Quill.register(MRWImplicitBlot);
 Quill.register(MRWIndirectBlot);
@@ -53,7 +75,7 @@ Quill.register(MRWMFlagBlot);
 
 function HighlightEditor({ text, setText, readOnly }) {
   const mods = readOnly ? { toolbar: false } : { toolbar: { container: '#toolbar' } };
- 
+
   return (
     <div className='text-editor'>
       {!readOnly && <Toolbar />}
@@ -64,7 +86,7 @@ function HighlightEditor({ text, setText, readOnly }) {
         onChange={setText}
         readOnly={readOnly}
         modules={mods}
-        formats={['mrw-direct', 'mrw-indirect', 'mrw-implicit', 'mrw-mflag']}
+        formats={['mrw-candidate', 'mrw-general', 'mrw-direct', 'mrw-indirect', 'mrw-implicit', 'mrw-mflag']}
       />
     </div>
   );
