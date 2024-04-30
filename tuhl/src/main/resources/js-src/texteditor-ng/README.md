@@ -89,6 +89,15 @@ _Note: the purpose of this module is to provide functionality which is useful to
   * `tooltips`: provide basic tooltip functionality
   * `data`: encode anno id etc.
 * `topbar`: modify the topbar (set pseudonym functionality etc)
+* `selection` it should return the selected annotation
+  * elements:
+    * annotation: addBody, deleteAnnotationIcon, iconRowTop (needs annoId, contains addBody, deleteAnnotationIcon); at the end: buttonModifySelection, buttonSaveModification, buttonCancelModification
+    * bodies:
+      * bodyCard
+        * formRowDiv > bodyForm (anchor for the jsonForm)
+        * bodyRowDiv > bodyDiv (needs bodyId and annoId) > iconRow (contains expand, deleteBody)
+    * deleteAnnotationIcon and deleteBody can be created by the same function, if it accepts an id and a callback as parameters
+  * create the jsonForm function
   
 ## Projectspecific stuff
 
@@ -97,7 +106,8 @@ _Note: the purpose of this module is to provide functionality which is useful to
 * textcard
   * editing of bodies in horizontal textcard: https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/common/annotationDisplay/selection.js#L343
   * horizontal texcard: https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/common/annotationDisplay/selection.js#L496 has a hook already
-  * textcard button to analysisTool https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/common/annotationDisplay/selection.js#L502 has a hook already
+  * copyId button (similar to button to analysisTool, but gets appended earlier) https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/toroll/tuhl/src/main/resources/static/js/editor.js?ref_type=heads#L133 --> **create _pre_ appeding bodies to textcard hook**
+  * textcard button to analysisTool https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/common/annotationDisplay/selection.js#L502 has a hook already --> **create _post_ appeding bodies to textcard hook**
   * horizontal textcard "content" of the body https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/common/utils/utils.js#L113
 * creationTemplates and corresponding utils functions
   * assignement of purposes https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/texteditor/annotationEditor/annotationCreation/creationTemplates/utils.js#L685
