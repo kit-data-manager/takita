@@ -9,6 +9,11 @@ import { determineVariant, toggleHebrewView, toggleSanskritView, Variant } from 
  * @module sidebar
  */
 
+/**
+ * @param {Element} $sidebar HTML element which contains the sidebar
+ * @param {Element} $text HTML element which contains the text. Needed for language and project specific variants
+ * @param {Element} $pagesDialog HTML element which contains the dialog for page switching
+ */
 export function initializeSidebar($sidebar, $text, $pagesDialog) {
   const $pagesButton = $sidebar.querySelector('#pagesButton');
   const language = getTextLanguage($text);
