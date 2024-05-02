@@ -183,7 +183,7 @@ const Analysis = () => {
       <AnalysisSidebar segments={navigation}></AnalysisSidebar>
 
       <div className='analysis-content'>
-        <Header target={'/'} />
+        <Header target={normalizeBasename(window.ANALYSIS_TOOL_BASENAME)} />
 
         <div className='main-content-area'>
           <p className='debug'></p>

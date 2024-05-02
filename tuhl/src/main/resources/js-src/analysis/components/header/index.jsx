@@ -22,12 +22,12 @@ const Header = (props) => {
     <StyledHeader>
       {showIcon && <Methan />}
       <LeftAlignedContainer>
-        <Link to={target}>
+        <a href={target}>
           <H1>
             Metaphor Analysis Tool
             <TinyText>(β–version)</TinyText>
           </H1>
-        </Link>
+        </a>
       </LeftAlignedContainer>
       <AbsoluteIconButton
         href='https://ruhr-uni-bochum.sciebo.de/apps/files/?dir=/SFB%201475/5_Glossary%20%26%20Annotation%20Guidelines&fileid=1537725455#pdfviewer'
