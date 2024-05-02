@@ -1,30 +1,47 @@
+/**
+ * Toolbar
+ */
+
 .ql-toolbar.toolbar {
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     background: white;
 }
 
+.ql-toolbar.toolbar .mrw-button {
+    display: grid;
+    grid-template-columns: 5px auto;
+}
+.ql-toolbar.toolbar button.ql-mrw-candidate,
+.ql-toolbar.toolbar button.ql-mrw-general,
 .ql-toolbar.toolbar button.ql-mrw-direct,
 .ql-toolbar.toolbar button.ql-mrw-mflag,
 .ql-toolbar.toolbar button.ql-mrw-implicit,
 .ql-toolbar.toolbar button.ql-mrw-indirect {
-    width: 72px;
+    width: 82px;
     height: 48px;
     border: 1px solid lightgray;
     border-radius: 5px;
     margin: 1px;
-    padding: 5px 8px;
+    padding: 0 1px 0 0;
     text-align: center;
 }
+.ql-snow.ql-toolbar button.ql-mrw-candidate:hover,
+.ql-snow.ql-toolbar button.ql-mrw-general:hover,
 .ql-snow.ql-toolbar button.ql-mrw-direct:hover,
 .ql-snow.ql-toolbar button.ql-mrw-mflag:hover,
 .ql-snow.ql-toolbar button.ql-mrw-implicit:hover,
 .ql-snow.ql-toolbar button.ql-mrw-indirect:hover,
+.ql-toolbar.toolbar button.ql-mrw-candidate.ql-active,
+.ql-toolbar.toolbar button.ql-mrw-general.ql-active,
 .ql-toolbar.toolbar button.ql-mrw-direct.ql-active,
 .ql-toolbar.toolbar button.ql-mrw-mflag.ql-active,
 .ql-toolbar.toolbar button.ql-mrw-implicit.ql-active,
 .ql-toolbar.toolbar button.ql-mrw-indirect.ql-active {
     background-color: var(--highlight-border-color);
+}
+.ql-toolbar.toolbar .mrw-label {
+    align-self: center;
 }
 
 .ql-container {
@@ -32,6 +49,12 @@
     font-size: 16px;
 }
 
+/**
+ * Editor
+ */
+
+.ql-editor .mrw-candidate,
+.ql-editor .mrw-general,
 .ql-editor .mrw-direct,
 .ql-editor .mrw-implicit,
 .ql-editor .mrw-indirect,
@@ -40,6 +63,12 @@
     padding: 4px 2px 1px;
 }
 
+.ql-editor .mrw-candidate {
+    background-color: var(--mrw-candidate-bg-color);
+}
+.ql-editor .mrw-general {
+    background-color: var(--mrw-general-bg-color);
+}
 .ql-editor .mrw-direct {
     background-color: var(--mrw-direct-bg-color);
 }

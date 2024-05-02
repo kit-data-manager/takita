@@ -7,6 +7,14 @@ const StyledHighlight = styled.span`
   border-radius: 5px;
 `;
 
+export const StyledGenericMRW = styled(StyledHighlight)`
+  color: var(--default-color);
+  background-color: var(--mrw-general-bg-color);
+`;
+export const StyledCandidate = styled(StyledHighlight)`
+  color: var(--default-color);
+  background-color: var(--mrw-candidate-bg-color);
+`;
 export const StyledDirect = styled(StyledHighlight)`
   color: var(--default-color);
   background-color: var(--mrw-direct-bg-color);
