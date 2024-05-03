@@ -10,7 +10,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +37,7 @@ public class EditorController {
   private final IEditorService editorService;
   private final IAssistanceService assistanceService;
 
-  private static final String NOT_IMPLEMENTED = "not implemented";
+  //private static final String NOT_IMPLEMENTED = "not implemented";
   private static final String REDIRECT_ERROR = "redirect:/error/";
 
   private static final Logger logger = LoggerFactory.getLogger(EditorController.class);
@@ -127,10 +127,10 @@ public class EditorController {
    * @param objectId identifies the object to get meta data about
    * @param request to access the headers from the HTTP request
    * @param response to access the headers for the HTTP response
-   * @return HTTP entity sent back, either ok for a success including the 
+   * @return HTTP entity sent back, either ok for a success including the
    *    JSON or 500 for an internal error
    */
-  
+
 @RequestMapping(value = "/raw/{objectId}", method = RequestMethod.GET, produces = "application/json")
 @ResponseBody
 public ResponseEntity getObjectJson(@PathVariable("objectId") String objectId, final WebRequest request, final HttpServletResponse response) {
@@ -152,7 +152,7 @@ public ResponseEntity getObjectJson(@PathVariable("objectId") String objectId, f
    * @param objectId identifies the object to get meta data about
    * @param request to access the headers from the HTTP request
    * @param response to access the headers for the HTTP response
-   * @return HTTP entity sent back, either ok for a success including the 
+   * @return HTTP entity sent back, either ok for a success including the
    *    XML or 500 for an internal error
    */
 
@@ -170,5 +170,5 @@ public ResponseEntity getObjectJson(@PathVariable("objectId") String objectId, f
        }
       return ResponseEntity.ok().body(rawXml);
    }
-  
+
 }

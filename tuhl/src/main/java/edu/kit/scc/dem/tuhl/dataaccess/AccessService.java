@@ -4,15 +4,12 @@ import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
-import edu.kit.scc.dem.tuhl.model.page.ImagePage;
 import edu.kit.scc.dem.tuhl.model.page.Page;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.util.*;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -104,47 +101,78 @@ public class AccessService implements IAccessService {
    * index
    */
   @Override
-  public List<Manuscript> getAllManuscriptsModifiedAfter(Date timestamp)
+  public List<Manuscript> getAllManuscriptsModifiedAfter(Instant timestamp)
       throws InterruptedException, JSONException, IOException, ParseException,
       NoSuchIndexEntryException {
     logger.info("Getting all manuscripts modified after {}.", timestamp);
-    List<Manuscript> manuscripts = new ArrayList<>();
+    Set<Manuscript> manuscripts = new HashSet<>();
     List<Annotation> newAnnotations = new ArrayList<>();
+
+    //get modified annotations
     for (JSONObject jsonAnnotation :
         annotationStoreAccessService.getAnnotationsModifiedAfter(timestamp)) {
       newAnnotations.add(annotationConverter.buildAnnotationFromJson(jsonAnnotation));
     }
 
-    //checks if old manuscript has new annotations and adds those
-    for (Annotation annotation : newAnnotations) {
-      Page page = searchIndexService.getPageById(annotation.getPageId());
-      Manuscript manuscript = searchIndexService.getManuscriptById(page.getManuscriptId());
-
-      page = manuscript.getPageMap().get(page.getId()); //get real page object from manuscript you want to change
-
-      if (!page.getAnnotations().contains(annotation)) {
-        logger.debug("Number of annotations on page before {}", page.getAnnotations().size());
-        logger.info("Adding new annotation to page object {}", page.getId());
-        String changedPageID = page.getId();
-        page.addAnnotation(annotation);
-        logger.debug("Number of annotations on page after {}", page.getAnnotations().size());
-      }
-      manuscripts.add(manuscript);
-      
+    //get modified manuscripts
+    List<JSONObject> modifiedManuscriptJSONs = repositoryAccessService.getManuscriptsModifiedAfter(timestamp);
+    logger.info("Found {} modified manuscripts", modifiedManuscriptJSONs.size());
+    for (JSONObject manuscriptJson : modifiedManuscriptJSONs) {
+      Manuscript newManuscript = manuscriptConverter.buildManuscriptFromJson(manuscriptJson, null);
+      //manuscriptMap.put(newManuscript.getId(), newManuscript);
+      manuscripts.add(newManuscript);
     }
 
-    //adds new manuscripts
-    for (JSONObject manuscriptJson : repositoryAccessService
-        .getManuscriptsModifiedAfter(timestamp)) {
-
-      Manuscript newManuscript = manuscriptConverter.buildManuscriptFromJson(manuscriptJson, null);
-      if (!manuscripts.contains(newManuscript)) {
-        manuscripts.add(newManuscript);
+    //checks if old manuscript has new annotations and adds those
+    Map<String, Page> pageMap = new HashMap<>();
+    for (Annotation annotation : newAnnotations) {
+      Page page;
+      Manuscript manuscript = null; //careful what you do here, manuscript has to be properly initialized in all cases
+      if(pageMap.containsKey(annotation.getPageId())) {
+        //Use already updated page
+        page = pageMap.get(annotation.getPageId());
+      } else {
+        //TODO: change to a more java and less pythonian way of coding if you like :)
+        try {
+          //get page from index and store it for further updates
+          page = searchIndexService.getPageById(annotation.getPageId());
+          manuscript = searchIndexService.getManuscriptById(page.getManuscriptId());
+        } catch (NoSuchIndexEntryException e) {
+          //annotation is on a page from a newly ingested manuscript
+          logger.error("Page cannot be found in the current index. Is the manuscript indexed already?");
+          //find the correct manuscript from the new manuscripts
+          for(Manuscript mToCheck: manuscripts) {
+            if(mToCheck.getPageMap().containsKey(annotation.getPageId())) {
+              manuscript = mToCheck;
+              break;
+            }
+          }
+        } finally {
+          if(manuscript == null) {
+            logger.error("Found a modified annotation on page {} but there is no corresponding manuscript for this page. SKIPPING ANNOTATION FOR INDEXING", annotation.getPageId());
+            continue;
+          }
+          page = manuscript.getPageMap().get(annotation.getPageId()); //get real page object from manuscript you want to change
+          pageMap.put(annotation.getPageId(), page);
+          manuscripts.add(manuscript);
+        }
+        int oldAnnoCount = page.getAnnotations().size();
+        logger.debug("Number of annotations on page before {}", oldAnnoCount);
       }
+
+      Optional<Annotation> existingAnno = page.getAnnotations().stream().filter(anno -> anno.getId().equals(annotation.getId())).findFirst();
+      if (existingAnno.isPresent()) {
+        logger.info("Annotation {} already exists. Replacing with new version", annotation.getId());
+        page.getAnnotations().remove(existingAnno.get());
+      }
+      logger.info("Adding new annotation {} to page object {}", annotation.getId(), page.getId());
+      page.addAnnotation(annotation);
+      int newAnnoCount = page.getAnnotations().size();
+      logger.debug("Number of annotations on page after {}", newAnnoCount);
     }
 
     if(!manuscripts.isEmpty()) {logger.info("Found {} new or newly annotated manuscripts", manuscripts.size());}
-    return manuscripts;
+    return new ArrayList<>(manuscripts);
   }
 
   /**
@@ -202,10 +230,10 @@ public class AccessService implements IAccessService {
    * @throws InterruptedException if the http request is interrupted
    */
   @Override
-  public Annotation validateAnnotation(Annotation annotation, String pageNumber)
+  public Annotation validateAnnotation(Annotation annotation, String pageNumber, String projectId)
       throws JSONException, IOException, InterruptedException {
     JSONObject validatedAnnotation = annotationStoreAccessService
-        .validateAnnotation(annotationConverter.buildJsonFromAnnotation(annotation, pageNumber));
+        .validateAnnotation(annotationConverter.buildJsonFromAnnotation(annotation, pageNumber), projectId);
     return annotationConverter.buildAnnotationFromJson(validatedAnnotation);
   }
 

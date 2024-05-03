@@ -5,7 +5,6 @@ import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
-import edu.kit.scc.dem.tuhl.model.Motivation;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import edu.kit.scc.dem.tuhl.model.page.ImagePage;
@@ -14,55 +13,58 @@ import edu.kit.scc.dem.tuhl.model.page.ResourceType;
 import edu.kit.scc.dem.tuhl.model.page.TextPage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
-import org.mockito.internal.util.reflection.FieldSetter;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.util.ReflectionTestUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-@SpringBootTest
+@SpringBootTest (classes = AccessService.class)
 class AccessServiceTest {
   
   @Autowired
-  public IAccessService accessService;
+  private IAccessService accessService;
   
-  @Mock
-  public IRepositoryAccessService mockedRepositoryAccessService;
+  @MockBean
+  private IRepositoryAccessService mockedRepositoryAccessService;
   
-  @Mock
-  public IAnnotationStoreAccessService mockedAnnotationStoreAccessService;
+  @MockBean
+  private IAnnotationStoreAccessService mockedAnnotationStoreAccessService;
 
-  @Mock
-  public ISearchIndexService mockedSearchIndexService;
+  @MockBean
+  private ISearchIndexService mockedSearchIndexService;
+
+  @MockBean
+  private ManuscriptConverter mockedManuscriptConverter;
+
+  @MockBean
+  private AnnotationConverter mockedAnnotationConverter;
   
   @BeforeEach
   void init() throws NoSuchFieldException {
-    MockitoAnnotations.initMocks(this);
-  
     //Insert mock HttpRequestHelper into private field of the RepositoryAccessService instance
-    FieldSetter.setField(accessService,
-        accessService.getClass().getDeclaredField("repositoryAccessService"),
-        mockedRepositoryAccessService);
-    FieldSetter.setField(accessService,
-        accessService.getClass().getDeclaredField("annotationStoreAccessService"),
-        mockedAnnotationStoreAccessService);
+    ReflectionTestUtils.setField(accessService, "annotationConverter",mockedAnnotationConverter);
+    ReflectionTestUtils.setField(accessService, "manuscriptConverter", mockedManuscriptConverter);
     accessService.setSearchIndexService(mockedSearchIndexService);
   }
   
@@ -75,57 +77,60 @@ class AccessServiceTest {
   
   @Test
   void getAllManuscriptsModifiedAfter() throws InterruptedException, ParseException, JSONException, IOException, NoSuchIndexEntryException {
-    List<Manuscript> expectedManuscripts = buildMocksAndExpectedManuscripts();
-    DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat();
-    Date timestamp = dateFormatMillis.parse("2019-03-10T14:13:45.000Z");
+    //List<Manuscript> expectedManuscripts = buildMocksAndExpectedManuscripts();
+    //DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat();
+    Instant timestamp = Instant.parse("2019-03-10T14:13:45.000Z");
 
     List<JSONObject> jsonAnnotations = new ArrayList<>();
     jsonAnnotations.add(new JSONObject(readStringFromRelativePath("addAnnotation/annotation1.json")));
     jsonAnnotations.add(new JSONObject(readStringFromRelativePath("addAnnotation/annotation2.json")));
     jsonAnnotations.add(new JSONObject(readStringFromRelativePath("addAnnotation/validatedAnnotation2.json")));
 
-    Page page1 = new ImagePage("758735a2-8e0d-4ac7-815e-bba2060217c3", "89v",
-        dateFormatMillis.parse("2019-04-23T14:13:45.000Z"), "", "");
+    Page page1 = new ImagePage("758735a2-8e0d-4ac7-815e-bba2060217c3", ResourceType.IMAGE, "89v",
+        Instant.parse("2019-04-23T14:13:45.000Z"), "", "");
     page1.setManuscriptId("123");
-    Page page2 = new ImagePage("cb679599-7191-422c-923b-89c31c045f1d", "89r",
-        dateFormatMillis.parse("2019-04-23T14:13:45.000Z"), "", "");
+    Page page2 = new ImagePage("cb679599-7191-422c-923b-89c31c045f1d", ResourceType.IMAGE, "89r",
+        Instant.parse("2019-04-23T14:13:45.000Z"), "", "");
     page2.setManuscriptId("123");
 
+    List<Annotation> annotationsPage1 = buildAnnotations();
+    Annotation annotationPage2 = createAnnotation1();
+
     Mockito.when(mockedAnnotationStoreAccessService.getAnnotationsModifiedAfter(timestamp))
-        .thenAnswer(invocation -> {
-          return jsonAnnotations;
-        });
+        .thenReturn(jsonAnnotations);
     Mockito.when(mockedSearchIndexService.getPageById("758735a2-8e0d-4ac7-815e-bba2060217c3"))
-        .thenAnswer(invocation -> {
-          return page1;
-        });
+        .thenReturn(page1);
     Mockito.when(mockedSearchIndexService.getPageById("cb679599-7191-422c-923b-89c31c045f1d"))
-        .thenAnswer(invocation -> {
-          return page2;
-        });
-    Mockito.when(mockedSearchIndexService.getManuscriptById("123"))
-        .thenAnswer(invocation -> {
-          Manuscript manuscript = new Manuscript("123", dateFormatMillis.parse("2019-04-230T14:13:45.000Z"), "testMan1", "Leo", 300);
-          manuscript.getPages().add(page1);
-          manuscript.getPages().add(page2);
-          expectedManuscripts.add(manuscript);
-          return manuscript;
-        });
+        .thenReturn(page2);
+
+    Manuscript manuscript = new Manuscript("123", Instant.parse("2019-04-23T14:13:45.000Z"), "testMan1", "Leo", 300);
+    manuscript.getPages().add(page1);
+    manuscript.getPages().add(page2);
+    List<Manuscript> expectedManuscripts = new ArrayList<>();
+
+    expectedManuscripts.add(manuscript);
+
+    Mockito.when(mockedSearchIndexService.getManuscriptById("123")).thenReturn(manuscript);
+
+    Mockito.when(mockedAnnotationConverter.buildAnnotationFromJson(jsonAnnotations.get(0))).thenReturn(annotationPage2);
+    Mockito.when(mockedAnnotationConverter.buildAnnotationFromJson(jsonAnnotations.get(1))).thenReturn(annotationsPage1.get(0));
+    Mockito.when(mockedAnnotationConverter.buildAnnotationFromJson(jsonAnnotations.get(2))).thenReturn(annotationsPage1.get(1));
 
     List<Manuscript> actualManuscripts = accessService.getAllManuscriptsModifiedAfter(timestamp);
 
-    assertEquals(expectedManuscripts.size(), actualManuscripts.size());
-    for (Manuscript expectedManuscript : expectedManuscripts) {
-      for (Manuscript actualManuscript : actualManuscripts) {
-        if (expectedManuscript.getId().equals(actualManuscript.getId())) {
-          assertEquals(expectedManuscript.getCreated(), actualManuscript.getCreated());
-          assertEquals(expectedManuscript.getPages().size(), actualManuscript.getPages().size());
-          assertEquals(expectedManuscript.getPages().get(expectedManuscript.getPages().size() - 1).getId(),
-              actualManuscript.getPages().get(actualManuscript.getPages().size() - 1).getId());
-          assertEquals(expectedManuscript.getTitle(), actualManuscript.getTitle());
-        }
-      }
-    }
+    assertIterableEquals(expectedManuscripts, actualManuscripts);
+    //assertEquals(expectedManuscripts.size(), actualManuscripts.size());
+    //for (Manuscript expectedManuscript : expectedManuscripts) {
+    //  for (Manuscript actualManuscript : actualManuscripts) {
+    //    if (expectedManuscript.getId().equals(actualManuscript.getId())) {
+    //      assertEquals(expectedManuscript.getCreated(), actualManuscript.getCreated());
+    //      assertEquals(expectedManuscript.getPages().size(), actualManuscript.getPages().size());
+    //      assertEquals(expectedManuscript.getPages().get(expectedManuscript.getPages().size() - 1).getId(),
+    //          actualManuscript.getPages().get(actualManuscript.getPages().size() - 1).getId());
+    //      assertEquals(expectedManuscript.getTitle(), actualManuscript.getTitle());
+    //    }
+    //  }
+    //}
   }
 
   @Test
@@ -134,75 +139,26 @@ class AccessServiceTest {
     List<Manuscript> moreManuscripts = buildMoreMocksAndManuscripts();
     expectedManuscripts.addAll(moreManuscripts);
 
-    Mockito.when(mockedRepositoryAccessService.getAllManuscripts(5)).thenReturn(buildExpectedManuscriptsJSON());
+    List<JSONObject> buildExpectedManuscripts = buildExpectedManuscriptsJSON();
+
+    Mockito.when(mockedRepositoryAccessService.getAllManuscripts(5)).thenReturn(buildExpectedManuscripts);
+    Mockito.when(mockedManuscriptConverter.buildManuscriptFromJson(buildExpectedManuscripts.get(0), null)).thenReturn(expectedManuscripts.get(0));
+    Mockito.when(mockedManuscriptConverter.buildManuscriptFromJson(buildExpectedManuscripts.get(1), null)).thenReturn(expectedManuscripts.get(1));
+    Mockito.when(mockedManuscriptConverter.buildManuscriptFromJson(buildExpectedManuscripts.get(2), null)).thenReturn(moreManuscripts.get(0));
+    Mockito.when(mockedManuscriptConverter.buildManuscriptFromJson(buildExpectedManuscripts.get(3), null)).thenReturn(moreManuscripts.get(1));
+    Mockito.when(mockedManuscriptConverter.buildManuscriptFromJson(buildExpectedManuscripts.get(4), null)).thenReturn(moreManuscripts.get(2));
 
     List<Manuscript> actualManuscripts = accessService.getFewManuscripts();
     assertEqualManuscriptLists(expectedManuscripts, actualManuscripts);
   }
   
   @Test
-  void addAnnotation1() throws IOException, JSONException, InterruptedException, ParseException, NoSuchIndexEntryException {
-    DateFormat dateFormat = TimeStampFormats.TIMESTAMP_FORMAT_ANNO.getDateFormat();
-    DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat();
-    List<String> creatorList = new ArrayList<>();
-    creatorList.add("M. K.");
+  void addAnnotation() throws IOException, JSONException, InterruptedException, ParseException, NoSuchIndexEntryException {
 
     JSONObject jsonAnnotation1 = new JSONObject(readStringFromRelativePath("addAnnotation/annotation1.json"));
-    Annotation expectedAnnotation1 = new Annotation();
-    expectedAnnotation1.setId("http://sampleannoserver.edu/wap/a04/validated/bb43925c-9903-43f6-92c4-0b3ed4b1d3d9");
-    expectedAnnotation1.setCreated(dateFormatMillis.parse("2019-07-04T06:57:35.961Z"));
-    expectedAnnotation1.setCreators(creatorList);
-    expectedAnnotation1.setModified(dateFormat.parse("2019-07-04T07:03:03Z"));
-    expectedAnnotation1.setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/1749ce9c-a79a-4929-8299-edc9c0388fcc");
-    expectedAnnotation1.setIsAlgorithmAnnotation(false);
-    expectedAnnotation1.setPageId("cb679599-7191-422c-923b-89c31c045f1d");
-    expectedAnnotation1.setSvgCode("<svg><rect x=\"214\" y=\"73\" width=\"3008\" height=\"4467\"/></svg>");
-    expectedAnnotation1.setMotivation(Motivation.DESCRIBING);
-    expectedAnnotation1.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/1749ce9c-a79a-4929-8299-edc9c0388fcc");
-    expectedAnnotation1.setEtag("abc");
-    TextCard expectedTextCard = new TextCard(UUID.randomUUID().toString());
-    expectedTextCard.setCreators(creatorList);
-    expectedTextCard.setValue("Questionable text block");
-    expectedTextCard.setPurpose(Motivation.QUESTIONING);
-    expectedTextCard.setFullJson(new JSONObject("{\n" +
-        "    \"type\" : \"TextualBody\",\n" +
-        "    \"creator\" : {\n" +
-        "      \"type\" : \"Person\",\n" +
-        "      \"name\" : \"M. K.\"\n" +
-        "    },\n" +
-        "    \"value\" : \"Questionable text block\",\n" +
-        "    \"purpose\" : \"questioning\"\n" +
-        "  }"));
-    expectedAnnotation1.addTextCard(expectedTextCard);
-    Tag expectedTag = new Tag(UUID.randomUUID().toString());
-    expectedTag.setCreators(creatorList);
-    expectedTag.setValue("Questionable tag");
-    expectedTag.setPurpose(Motivation.TAGGING);
-    expectedTag.setFullJson(new JSONObject("{\n" +
-        "    \"type\" : \"TextualBody\",\n" +
-        "    \"creator\" : [ {\n" +
-        "      \"type\" : \"Person\",\n" +
-        "      \"name\" : \"M. K.\"\n" +
-        "    }, {\n" +
-        "      \"type\" : \"Software\",\n" +
-        "      \"name\" : \"Akita\"\n" +
-        "    } ],\n" +
-        "    \"value\" : \"Questionable tag\",\n" +
-        "    \"purpose\" : \"tagging\"\n" +
-        "  }"));
-    expectedAnnotation1.addTag(expectedTag);
+    Annotation expectedAnnotation1 = createAnnotation1();
 
-    TextPage page = new TextPage("cb679599-7191-422c-923b-89c31c045f1d", "082r",
-        dateFormat.parse("2019-07-04T00:00:00Z"), "");
-    Mockito.when(mockedSearchIndexService.getPageById(expectedAnnotation1.getPageId()))
-        .thenReturn(page);
-
-    Mockito.when(mockedAnnotationStoreAccessService.getAnnotationById(jsonAnnotation1.getString("id")))
-        .thenAnswer(invocation -> {
-          return jsonAnnotation1;
-        });
-
-    Mockito.when(mockedAnnotationStoreAccessService.addAnnotation(jsonAnnotation1))
+    Mockito.when(mockedAnnotationStoreAccessService.addAnnotation(jsonAnnotation1, "a04"))
         .thenAnswer(invocation -> {
           JSONObject actualJsonAnnotation1 = invocation.getArgument(0);
 
@@ -210,109 +166,29 @@ class AccessServiceTest {
           actualJsonAnnotation1.put("etag", "abc");
           return actualJsonAnnotation1;
         });
-    Annotation actualAnnotation1 = accessService.addAnnotation(expectedAnnotation1, page.getPageNumber());
+ 
+    Mockito.when(mockedAnnotationConverter.buildJsonFromAnnotation(expectedAnnotation1, "082r")).thenReturn(jsonAnnotation1);
+    Mockito.when(mockedAnnotationConverter.buildAnnotationFromJson(jsonAnnotation1)).thenReturn(expectedAnnotation1);
+
+    Annotation actualAnnotation1 = accessService.addAnnotation(expectedAnnotation1, "082r", "a04");
     assertEqualsAnnotations(expectedAnnotation1, actualAnnotation1);
-  }
-
-  @Test
-  void addAnnotation2() throws IOException, JSONException, InterruptedException, ParseException, NoSuchIndexEntryException {
-    DateFormat dateFormat = TimeStampFormats.TIMESTAMP_FORMAT_ANNO.getDateFormat();
-    DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat();
-    List<String> creatorList = new ArrayList<>();
-    creatorList.add("M. K.");
-
-    JSONObject jsonAnnotation1 = new JSONObject(readStringFromRelativePath("addAnnotation/annotation3.json"));
-    JSONObject jsonAnnotation2 = new JSONObject(readStringFromRelativePath("addAnnotation/validatedAnnotation3.json"));
-    Annotation expectedAnnotation = new Annotation();
-    expectedAnnotation.setCreated(dateFormatMillis.parse("2019-07-04T06:57:35.961Z"));
-    expectedAnnotation.setCreators(creatorList);
-    expectedAnnotation.setModified(dateFormatMillis.parse("2019-07-04T07:03:03.000Z"));
-    expectedAnnotation.setIsAlgorithmAnnotation(false);
-    expectedAnnotation.setPageId("cb679599-7191-422c-923b-89c31c045f1d");
-    expectedAnnotation.setSvgCode("<svg><rect x=\"101\" y=\"65\" width=\"3048\" height=\"4459\"/></svg>");
-    expectedAnnotation.setMotivation(Motivation.DESCRIBING);
-    expectedAnnotation.setEtag("abc");
-    Tag expectedTag = new Tag(UUID.randomUUID().toString());
-    expectedTag.setCreators(creatorList);
-    expectedTag.setValue("Questionable tag");
-    expectedTag.setCreated(dateFormatMillis.parse("2019-07-04T07:03:03.000Z"));
-    expectedTag.setModified(dateFormatMillis.parse("2019-07-04T07:03:03.000Z"));
-    expectedTag.setPurpose(Motivation.TAGGING);
-    expectedTag.setFullJson(new JSONObject("{\n" +
-        "    \"type\" : \"TextualBody\",\n" +
-        "    \"creator\" : [ {\n" +
-        "      \"type\" : \"Person\",\n" +
-        "      \"name\" : \"M. K.\"\n" +
-        "    }, {\n" +
-        "      \"type\" : \"Software\",\n" +
-        "      \"name\" : \"Akita\"\n" +
-        "    } ],\n" +
-        "    \"value\" : \"Questionable tag\",\n" +
-        "    \"purpose\" : \"tagging\"\n" +
-        "  }"));
-    expectedAnnotation.addTag(expectedTag);
-
-
-    TextPage page = new TextPage("cb679599-7191-422c-923b-89c31c045f1d", "082r",
-        dateFormat.parse("2019-07-04T00:00:00Z"), "");
-    Mockito.when(mockedSearchIndexService.getPageById(expectedAnnotation.getPageId()))
-        .thenReturn(page);
-
-    Mockito.when(mockedAnnotationStoreAccessService.addAnnotation(Mockito.any(JSONObject.class)))
-        .thenAnswer(invocation -> {
-          JSONObject actualJsonAnnotation = invocation.getArgument(0);
-
-          JSONAssert.assertEquals(jsonAnnotation1.toString(), actualJsonAnnotation.toString(), true);
-          jsonAnnotation2.put("etag", "abc");
-          return jsonAnnotation2;
-        });
-
-    Annotation actualAnnotation1 = accessService.addAnnotation(expectedAnnotation, page.getPageNumber());
-
-    expectedAnnotation.setId("http://sampleannoserver.edu/wap/a04/validated/bb43925c-9903-43f6-92c4-0b3ed4b1d3d9");
-    expectedAnnotation.setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/1749ce9c-a79a-4929-8299-edc9c0388fcc");
-    expectedAnnotation.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/1749ce9c-a79a-4929-8299-edc9c0388fcc");
-    assertEqualsAnnotations(expectedAnnotation, actualAnnotation1);
   }
   
   @Test
   void validateAnnotation() throws IOException, ParseException, JSONException, InterruptedException, NoSuchIndexEntryException {
-    DateFormat dateFormat = TimeStampFormats.TIMESTAMP_FORMAT_ANNO.getDateFormat();
 
     JSONObject jsonAnnotation2 = new JSONObject(readStringFromRelativePath("addAnnotation/annotation2.json"));
     JSONObject validatedJsonAnnotation2 = new JSONObject((readStringFromRelativePath("addAnnotation/validatedAnnotation2.json")));
     List<Annotation> annotations = buildAnnotations();
-    Annotation expectedAnnotation2 = annotations.get(0);
+    Annotation expectedAnnotation = annotations.get(0);
     Annotation actualAnnotationBefore = annotations.get(1);
 
-    TextPage page = new TextPage("cb679599-7191-422c-923b-89c31c045f1d", "082r",
-        dateFormat.parse("2019-07-04T00:00:00Z"), "");
-    Mockito.when(mockedSearchIndexService.getPageById(expectedAnnotation2.getPageId()))
-        .thenReturn(page);
+    Mockito.when(mockedAnnotationStoreAccessService.validateAnnotation(jsonAnnotation2, "a04/")).thenReturn(validatedJsonAnnotation2);
+    Mockito.when(mockedAnnotationConverter.buildAnnotationFromJson(validatedJsonAnnotation2)).thenReturn(expectedAnnotation);
+    Mockito.when(mockedAnnotationConverter.buildJsonFromAnnotation(actualAnnotationBefore, "082r")).thenReturn(jsonAnnotation2);
 
-    Mockito.when(mockedAnnotationStoreAccessService.getAnnotationById(jsonAnnotation2.getString("id")))
-        .thenAnswer(invocation -> {
-          return jsonAnnotation2;
-        });
-
-    Mockito.when(mockedAnnotationStoreAccessService.getAnnotationById(validatedJsonAnnotation2.getString("id")))
-        .thenAnswer(invocation -> {
-          return validatedJsonAnnotation2;
-        });
-
-    Mockito.when(mockedAnnotationStoreAccessService.validateAnnotation(jsonAnnotation2))
-        .thenAnswer(invocation -> {
-
-          JSONAssert.assertEquals(jsonAnnotation2.toString(), jsonAnnotation2.toString(), true);
-          jsonAnnotation2.put("via", jsonAnnotation2.getString("id"));
-          jsonAnnotation2.put("canonical", jsonAnnotation2.getString("id"));
-          jsonAnnotation2.put("id", expectedAnnotation2.getId());
-          jsonAnnotation2.put("etag", "def");
-          return jsonAnnotation2;
-        });
-
-    Annotation actualAnnotationAfter = accessService.validateAnnotation(actualAnnotationBefore, page.getPageNumber());
-    assertEqualsAnnotations(expectedAnnotation2, actualAnnotationAfter);
+    Annotation actualAnnotationAfter = accessService.validateAnnotation(actualAnnotationBefore, "082r", "a04/");
+    assertEqualsAnnotations(expectedAnnotation, actualAnnotationAfter);
   }
   
   @Test
@@ -323,27 +199,9 @@ class AccessServiceTest {
     Annotation expectedAnnotation = annotations.get(0);
     Annotation actualAnnotationBefore = annotations.get(1);
 
-    Mockito.when(mockedAnnotationStoreAccessService.getAnnotationById(jsonAnnotation2.getString("id")))
-        .thenAnswer(invocation -> {
-          return jsonAnnotation2;
-        });
-
-    Mockito.when(mockedAnnotationStoreAccessService.getAnnotationById(validatedJsonAnnotation2.getString("id")))
-        .thenAnswer(invocation -> {
-          return validatedJsonAnnotation2;
-        });
-
-    Mockito.when(mockedAnnotationStoreAccessService.updateAnnotation(Mockito.eq(jsonAnnotation2.getString("id")),
-        Mockito.any(JSONObject.class), Mockito.eq("abc")))
-        .thenAnswer(invocation -> {
-          JSONObject thisJsonAnnotation = invocation.getArgument(1);
-          JSONAssert.assertEquals(jsonAnnotation2.toString(), thisJsonAnnotation.toString(), true);
-          jsonAnnotation2.put("via", jsonAnnotation2.getString("id"));
-          jsonAnnotation2.put("canonical", jsonAnnotation2.getString("id"));
-          jsonAnnotation2.put("id", expectedAnnotation.getId());
-          jsonAnnotation2.put("etag", "def");
-          return jsonAnnotation2;
-        });
+    Mockito.when(mockedAnnotationStoreAccessService.updateAnnotation(actualAnnotationBefore.getId(), jsonAnnotation2, actualAnnotationBefore.getEtag())).thenReturn(validatedJsonAnnotation2);
+    Mockito.when(mockedAnnotationConverter.buildAnnotationFromJson(validatedJsonAnnotation2)).thenReturn(expectedAnnotation);
+    Mockito.when(mockedAnnotationConverter.buildJsonFromAnnotation(actualAnnotationBefore, "082r")).thenReturn(jsonAnnotation2);
 
     Annotation actualAnnotationAfter = accessService.updateAnnotation(actualAnnotationBefore, "082r");
     assertEqualsAnnotations(expectedAnnotation, actualAnnotationAfter);
@@ -399,29 +257,31 @@ class AccessServiceTest {
     annotationsJson.add(annotationJson4);
 
     DateFormat dateFormat = TimeStampFormats.TIMESTAMP_FORMAT_REPO.getDateFormat();
-    DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_REPO.getDateFormat();
 
     ImagePage page1 = new ImagePage(
         "5172f6cb-78c6-403d-b6eb-64d7738c76aa",
+        ResourceType.IMAGE,
         "076v",
-        dateFormat.parse("2019-03-11T14:13:38Z"), "", "");
+        Instant.parse("2019-03-11T14:13:38Z"), "", "");
     page1.setManuscriptId("000073cd-c425-4214-9648-b380ff20c61a");
 
     ImagePage page2 = new ImagePage(
         "3f3bf25b-e0b9-48a9-b344-20630f733f8b",
+        ResourceType.IMAGE,
         "076r",
-        dateFormat.parse("2019-03-11T14:13:37Z"), "", "");
+        Instant.parse("2019-03-11T14:13:37Z"), "", "");
     page2.setManuscriptId("000073cd-c425-4214-9648-b380ff20c61a");
 
     ImagePage page3 = new ImagePage(
         "f68e307b-c41b-412a-a2e2-60418fbbef27",
+        ResourceType.IMAGE,
         "63r",
-        dateFormat.parse("2019-03-11T14:10:39Z"), "", "");
+        Instant.parse("2019-03-11T14:10:39Z"), "", "");
     page3.setManuscriptId("0d5aa650-2f1e-4dd3-8eed-66a94771ca7c");
 
     Manuscript manuscript1 = new Manuscript(
         "000073cd-c425-4214-9648-b380ff20c61a",
-        dateFormat.parse("2019-03-11T14:13:45Z"),
+        Instant.parse("2019-03-11T14:13:45Z"),
         "Vatikan Vat Gr 247",
         "SFB 980 - A04",
         2019);
@@ -429,18 +289,18 @@ class AccessServiceTest {
     pagesManuscript1.add(page1);
     pagesManuscript1.add(page2);
     manuscript1.setPages(pagesManuscript1);
-    manuscript1.setLastModified(dateFormat.parse("2019-03-11T14:13:45Z"));
+    manuscript1.setLastModified(Instant.parse("2019-03-11T14:13:45Z"));
 
     Manuscript manuscript2 = new Manuscript(
         "0d5aa650-2f1e-4dd3-8eed-66a94771ca7c",
-        dateFormat.parse("2019-03-11T14:10:42Z"),
+        Instant.parse("2019-03-11T14:10:42Z"),
         "Florenz Laur 72.5",
         "SFB 980 - A04",
         2019);
     List<Page> pagesManuscript2 = new ArrayList<>();
     pagesManuscript2.add(page3);
     manuscript2.setPages(pagesManuscript2);
-    manuscript2.setLastModified(dateFormat.parse("2019-03-11T14:10:42Z"));
+    manuscript2.setLastModified(Instant.parse("2019-03-11T14:10:42Z"));
 
 
     List<String> creatorListAkita = new ArrayList<>();
@@ -454,52 +314,52 @@ class AccessServiceTest {
 
     Annotation annotation1 = new Annotation();
     annotation1.setId("http://sampleannoserver.edu/wap/a04/deinterpretatione/51e65450-1059-462f-91aa-cea2bb5de298");
-    annotation1.setCreated(dateFormat.parse("2018-02-06T11:06:01Z"));
+    annotation1.setCreated(Instant.parse("2018-02-06T11:06:01Z"));
     annotation1.setCreators(creatorAlgorithm);
-    annotation1.setModified(dateFormat.parse("2019-05-08T10:59:38Z"));
+    annotation1.setModified(Instant.parse("2019-05-08T10:59:38Z"));
     annotation1.setColor(Color.CUSTOM_REGION);
     annotation1.setIsAlgorithmAnnotation(true);
     annotation1.setPageId(page1.getId());
     annotation1.setSvgCode("<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"0\" y=\"3307\" width=\"587\" height=\"1047\"/></svg>");
-    annotation1.setMotivation(Motivation.TAGGING);
+    annotation1.setMotivation("tagging");
     annotation1.setVia("http://sampleannoserver.edu/wap/w3c/aea27124-b3be-417a-a3f3-ce9803f9afb4/0073d61a-5d3a-49c7-bffd-2cc0ae0d8443");
 
     Annotation annotation2 = new Annotation();
     annotation2.setId("http://sampleannoserver.edu/wap/a04/deinterpretatione/3fe548c5-8be6-40f7-88c8-0118e47c9ac8");
-    annotation2.setCreated(dateFormat.parse("2018-02-09T18:31:07Z"));
+    annotation2.setCreated(Instant.parse("2018-02-09T18:31:07Z"));
     annotation2.setCreators(creatorAlgorithm);
-    annotation2.setModified(dateFormat.parse("2019-05-08T10:59:34Z"));
+    annotation2.setModified(Instant.parse("2019-05-08T10:59:34Z"));
     annotation2.setColor(Color.NOISE_REGION);
     annotation2.setIsAlgorithmAnnotation(true);
     annotation2.setPageId(page2.getId());
     annotation2.setSvgCode("<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"2140\" y=\"3170\" width=\"200\" height=\"205\"/></svg>");
-    annotation2.setMotivation(Motivation.REPLYING);
+    annotation2.setMotivation("replying");
     annotation2.setVia("http://sampleannoserver.edu/wap/w3c/aea27124-b3be-417a-a3f3-ce9803f9afb4/00053422-d1b4-417d-b659-a294facb6485");
 
     Annotation annotation3 = new Annotation();
     annotation3.setId("http://sampleannoserver.edu/wap/a04/validated/7a82a8b2-0398-4b59-aed3-ab6597b26d39");
-    annotation3.setCreated(dateFormatMillis.parse("2019-07-04T09:23:24.014Z"));
+    annotation3.setCreated(Instant.parse("2019-07-04T09:23:24.014Z"));
     annotation3.setCreators(creatorList);
-    annotation3.setModified(dateFormat.parse("2019-07-04T09:25:56Z"));
+    annotation3.setModified(Instant.parse("2019-07-04T09:25:56Z"));
     annotation3.setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/471a5c9c-25a5-4485-a213-7b51221dba9b");
     annotation3.setColor(Color.DEFAULT);
     annotation3.setIsAlgorithmAnnotation(false);
     annotation3.setPageId(page3.getId());
     annotation3.setSvgCode("<svg><rect x=\"245\" y=\"-2\" width=\"3070\" height=\"4690\"/></svg>");
-    annotation3.setMotivation(Motivation.MODERATING);
+    annotation3.setMotivation("moderating");
     annotation3.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/471a5c9c-25a5-4485-a213-7b51221dba9b");
 
     Annotation annotation4 = new Annotation();
     annotation4.setId("http://sampleannoserver.edu/wap/a04/validated/cd9267d1-5402-4f48-ae99-8b5559ccc456");
-    annotation4.setCreated(dateFormatMillis.parse("2019-07-04T07:00:54.634Z"));
+    annotation4.setCreated(Instant.parse("2019-07-04T07:00:54.634Z"));
     annotation4.setCreators(creatorList);
-    annotation4.setModified(dateFormat.parse("2019-07-04T09:14:59Z"));
+    annotation4.setModified(Instant.parse("2019-07-04T09:14:59Z"));
     annotation4.setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/c6c83ff9-3b68-4965-9e7a-359abad3eb9d");
     annotation4.setColor(Color.TEXT_REGION);
     annotation4.setIsAlgorithmAnnotation(false);
     annotation4.setPageId(page3.getId());
     annotation4.setSvgCode("<svg><rect x=\"214\" y=\"73\" width=\"3008\" height=\"4467\"/></svg>");
-    annotation4.setMotivation(Motivation.IDENTIFYING);
+    annotation4.setMotivation("identifying");
     annotation4.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/c6c83ff9-3b68-4965-9e7a-359abad3eb9d");
 
     TextCard textCard1 = new TextCard("0");
@@ -560,7 +420,7 @@ class AccessServiceTest {
     Mockito.when(mockedRepositoryAccessService.getAllManuscripts(2))
         .thenReturn(manuscriptsJson);
     Mockito.when(mockedRepositoryAccessService.getManuscriptsModifiedAfter(
-        TimeStampFormats.TIMESTAMP_FORMAT_REPO.getDateFormat().parse("2019-03-10T14:13:45Z")))
+        Instant.parse("2019-03-10T14:13:45Z")))
         .thenReturn(manuscriptsJson);
     Mockito.when(mockedRepositoryAccessService.getManuscriptById(manuscript1.getId()))
         .thenReturn(manuscriptJson1);
@@ -589,6 +449,27 @@ class AccessServiceTest {
     List<Manuscript> manuscripts = new ArrayList<>();
     manuscripts.add(manuscript1);
     manuscripts.add(manuscript2);
+
+    List<Annotation> annotationPage1 = new ArrayList<>();
+    annotationPage1.add(annotation1);
+    List<Annotation> annotationPage2 = new ArrayList<>();
+    annotationPage2.add(annotation2);
+    List<Annotation> annotationPage3 = new ArrayList<>();
+    annotationPage3.add(annotation3);
+    annotationPage3.add(annotation4);
+
+    Map<String, List<Annotation>> sortedAnnotationsManuscript = new HashMap<>();
+    sortedAnnotationsManuscript.put(page1.getId(), annotationPage1);
+    sortedAnnotationsManuscript.put(page2.getId(), annotationPage2);
+    sortedAnnotationsManuscript.put(page3.getId(), annotationPage3);
+
+    Mockito.when(mockedManuscriptConverter.buildManuscriptFromJson(manuscriptJson1, sortedAnnotationsManuscript)).thenReturn(manuscript1);
+    Mockito.when(mockedManuscriptConverter.buildManuscriptFromJson(manuscriptJson2, sortedAnnotationsManuscript)).thenReturn(manuscript2);
+    Mockito.when(mockedAnnotationConverter.buildAnnotationFromJson(annotationJson1)).thenReturn(annotation1);
+    Mockito.when(mockedAnnotationConverter.buildAnnotationFromJson(annotationJson2)).thenReturn(annotation2);
+    Mockito.when(mockedAnnotationConverter.buildAnnotationFromJson(annotationJson3)).thenReturn(annotation3);
+    Mockito.when(mockedAnnotationConverter.buildAnnotationFromJson(annotationJson4)).thenReturn(annotation4);
+
     return manuscripts;
   }
 
@@ -632,58 +513,60 @@ class AccessServiceTest {
     annotationsJson.add(annotationJson4);
 
     DateFormat dateFormat = TimeStampFormats.TIMESTAMP_FORMAT_REPO.getDateFormat();
-    DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_REPO.getDateFormat();
 
     ImagePage page1 = new ImagePage(
         "3b868555-f0ac-4de7-abbc-5c14c0742dbf",
+        ResourceType.IMAGE,
         "6869",
-        dateFormat.parse("2019-03-12T14:11:35Z"), "", "");
+        Instant.parse("2019-03-12T14:11:35Z"), "", "");
     page1.setManuscriptId("000c557c-4a11-405e-8bbc-a0d4ea5844a4");
 
     ImagePage page2 = new ImagePage(
         "33f1a3cf-d06e-429b-996e-3ab794c9767e",
+        ResourceType.IMAGE,
         "1069",
-        dateFormat.parse("2019-03-11T14:09:45Z"), "", "");
+        Instant.parse("2019-03-11T14:09:45Z"), "", "");
     page2.setManuscriptId("00125ead-bf62-475e-aeb6-0d2b30df5648");
 
     ImagePage page3 = new ImagePage(
         "4b756754-54a2-4932-8b1e-a33889ab0c37",
+        ResourceType.IMAGE,
         "7559",
-        dateFormat.parse("2019-08-26T09:21:02Z"), "", "");
+        Instant.parse("2019-08-26T09:21:02Z"), "", "");
     page3.setManuscriptId("001abeb0-f0e4-43ed-be1e-ed37f02cd02b");
 
     Manuscript manuscript1 = new Manuscript(
         "000c557c-4a11-405e-8bbc-a0d4ea5844a4",
-        dateFormat.parse("2019-03-12T14:11:16Z"),
+        Instant.parse("2019-03-12T14:11:16Z"),
         "Modena α V 8 13, 069r",
         "SFB 980 - A04",
         2019);
     List<Page> pagesManuscript1 = new ArrayList<>();
     pagesManuscript1.add(page1);
     manuscript1.setPages(pagesManuscript1);
-    manuscript1.setLastModified(dateFormat.parse("2019-03-12T14:11:16Z"));
+    manuscript1.setLastModified(Instant.parse("2019-03-12T14:11:16Z"));
 
     Manuscript manuscript2 = new Manuscript(
         "00125ead-bf62-475e-aeb6-0d2b30df5648",
-        dateFormat.parse("2019-03-12T14:11:29Z"),
+        Instant.parse("2019-03-12T14:11:29Z"),
         "Vatikan Urb gr 56, 084v",
         "SFB 980 - A04",
         2019);
     List<Page> pagesManuscript2 = new ArrayList<>();
     pagesManuscript2.add(page2);
     manuscript2.setPages(pagesManuscript2);
-    manuscript2.setLastModified(dateFormat.parse("2019-03-12T14:11:29Z"));
+    manuscript2.setLastModified(Instant.parse("2019-03-12T14:11:29Z"));
 
     Manuscript manuscript3 = new Manuscript(
         "001abeb0-f0e4-43ed-be1e-ed37f02cd02b",
-        dateFormat.parse("2019-03-11T14:09:50Z"),
+        Instant.parse("2019-03-11T14:09:50Z"),
         "Vatikan Reg Gr 116, 073r",
         "SFB 980 - A04",
         2019);
     List<Page> pagesManuscript3 = new ArrayList<>();
     pagesManuscript3.add(page3);
     manuscript3.setPages(pagesManuscript3);
-    manuscript3.setLastModified(dateFormat.parse("2019-03-11T14:09:50Z"));
+    manuscript3.setLastModified(Instant.parse("2019-03-11T14:09:50Z"));
 
 
     List<String> creatorListAkita = new ArrayList<>();
@@ -697,52 +580,52 @@ class AccessServiceTest {
 
     Annotation annotation1 = new Annotation();
     annotation1.setId("http://sampleannoserver.edu/wap/a04/deinterpretatione/51e65450-1059-462f-91aa-cea2bb5de298");
-    annotation1.setCreated(dateFormat.parse("2018-02-06T11:06:01Z"));
+    annotation1.setCreated(Instant.parse("2018-02-06T11:06:01Z"));
     annotation1.setCreators(creatorAlgorithm);
-    annotation1.setModified(dateFormat.parse("2019-05-08T10:59:38Z"));
+    annotation1.setModified(Instant.parse("2019-05-08T10:59:38Z"));
     annotation1.setColor(Color.CUSTOM_REGION);
     annotation1.setIsAlgorithmAnnotation(true);
     annotation1.setPageId("5172f6cb-78c6-403d-b6eb-64d7738c76aa");
     annotation1.setSvgCode("<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"0\" y=\"3307\" width=\"587\" height=\"1047\"/></svg>");
-    annotation1.setMotivation(Motivation.TAGGING);
+    annotation1.setMotivation("tagging");
     annotation1.setVia("http://sampleannoserver.edu/wap/w3c/aea27124-b3be-417a-a3f3-ce9803f9afb4/0073d61a-5d3a-49c7-bffd-2cc0ae0d8443");
 
     Annotation annotation2 = new Annotation();
     annotation2.setId("http://sampleannoserver.edu/wap/a04/deinterpretatione/3fe548c5-8be6-40f7-88c8-0118e47c9ac8");
-    annotation2.setCreated(dateFormat.parse("2018-02-09T18:31:07Z"));
+    annotation2.setCreated(Instant.parse("2018-02-09T18:31:07Z"));
     annotation2.setCreators(creatorAlgorithm);
-    annotation2.setModified(dateFormat.parse("2019-03-11T14:09:50Z"));
+    annotation2.setModified(Instant.parse("2019-03-11T14:09:50Z"));
     annotation2.setColor(Color.NOISE_REGION);
     annotation2.setIsAlgorithmAnnotation(true);
     annotation2.setPageId("3f3bf25b-e0b9-48a9-b344-20630f733f8b");
     annotation2.setSvgCode("<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"2140\" y=\"3170\" width=\"200\" height=\"205\"/></svg>");
-    annotation2.setMotivation(Motivation.REPLYING);
+    annotation2.setMotivation("replying");
     annotation2.setVia("http://sampleannoserver.edu/wap/w3c/aea27124-b3be-417a-a3f3-ce9803f9afb4/00053422-d1b4-417d-b659-a294facb6485");
 
     Annotation annotation3 = new Annotation();
     annotation3.setId("http://sampleannoserver.edu/wap/a04/validated/7a82a8b2-0398-4b59-aed3-ab6597b26d39");
-    annotation3.setCreated(dateFormatMillis.parse("2019-07-04T09:23:24.014Z"));
+    annotation3.setCreated(Instant.parse("2019-07-04T09:23:24.014Z"));
     annotation3.setCreators(creatorList);
-    annotation3.setModified(dateFormat.parse("2019-07-04T09:25:56Z"));
+    annotation3.setModified(Instant.parse("2019-07-04T09:25:56Z"));
     annotation3.setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/471a5c9c-25a5-4485-a213-7b51221dba9b");
     annotation3.setColor(Color.DEFAULT);
     annotation3.setIsAlgorithmAnnotation(false);
     annotation3.setPageId("f68e307b-c41b-412a-a2e2-60418fbbef27");
     annotation3.setSvgCode("<svg><rect x=\"245\" y=\"-2\" width=\"3070\" height=\"4690\"/></svg>");
-    annotation3.setMotivation(Motivation.MODERATING);
+    annotation3.setMotivation("moderating");
     annotation3.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/471a5c9c-25a5-4485-a213-7b51221dba9b");
 
     Annotation annotation4 = new Annotation();
     annotation4.setId("http://sampleannoserver.edu/wap/a04/validated/cd9267d1-5402-4f48-ae99-8b5559ccc456");
-    annotation4.setCreated(dateFormatMillis.parse("2019-07-04T07:00:54.634Z"));
+    annotation4.setCreated(Instant.parse("2019-07-04T07:00:54.634Z"));
     annotation4.setCreators(creatorList);
-    annotation4.setModified(dateFormat.parse("2019-07-04T09:14:59Z"));
+    annotation4.setModified(Instant.parse("2019-07-04T09:14:59Z"));
     annotation4.setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/c6c83ff9-3b68-4965-9e7a-359abad3eb9d");
     annotation4.setColor(Color.TEXT_REGION);
     annotation4.setIsAlgorithmAnnotation(false);
     annotation4.setPageId("f68e307b-c41b-412a-a2e2-60418fbbef27");
     annotation4.setSvgCode("<svg><rect x=\"214\" y=\"73\" width=\"3008\" height=\"4467\"/></svg>");
-    annotation4.setMotivation(Motivation.IDENTIFYING);
+    annotation4.setMotivation("identifying");
     annotation4.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/c6c83ff9-3b68-4965-9e7a-359abad3eb9d");
 
     TextCard textCard1 = new TextCard("0");
@@ -1006,7 +889,6 @@ class AccessServiceTest {
 
   private List<Annotation> buildAnnotations() throws ParseException, NoSuchIndexEntryException, JSONException {
     DateFormat dateFormat = TimeStampFormats.TIMESTAMP_FORMAT_ANNO.getDateFormat();
-    DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat();
     List<String> creatorList = new ArrayList<>();
     creatorList.add("M. K.");
     creatorList.add("Elizabeth Bennet");
@@ -1014,15 +896,15 @@ class AccessServiceTest {
     List<Annotation> annotations = new ArrayList<>();
     annotations.add(new Annotation());
     annotations.get(0).setId("http://sampleannoserver.edu/wap/a04/validated/fc2f1c02-5b48-4a5e-8fda-83b2e15ae825");
-    annotations.get(0).setCreated(dateFormatMillis.parse("2019-07-04T06:59:33.33Z"));
+    annotations.get(0).setCreated(Instant.parse("2019-07-04T06:59:33.33Z"));
     annotations.get(0).setCreators(creatorList);
-    annotations.get(0).setModified(dateFormat.parse("2019-07-04T07:05:57Z"));
+    annotations.get(0).setModified(Instant.parse("2019-07-04T07:05:57Z"));
     annotations.get(0).setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/c3aeb1ef-af1e-41fe-823c-76ea3761ee89");
     annotations.get(0).setColor(Color.PAGE_REGION);
     annotations.get(0).setIsAlgorithmAnnotation(false);
     annotations.get(0).setPageId("758735a2-8e0d-4ac7-815e-bba2060217c3");
     annotations.get(0).setSvgCode("<svg><rect x=\"279\" y=\"48\" width=\"2951\" height=\"4500\"/></svg>");
-    annotations.get(0).setMotivation(Motivation.DESCRIBING);
+    annotations.get(0).setMotivation("describing");
     annotations.get(0).setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/c3aeb1ef-af1e-41fe-823c-76ea3761ee89");
     annotations.get(0).setEtag("def");
     TextCard expectedTextCard1 = new TextCard(UUID.randomUUID().toString());
@@ -1041,7 +923,7 @@ class AccessServiceTest {
     TextCard expectedTextCard2 = new TextCard(UUID.randomUUID().toString());
     expectedTextCard2.setCreators(creatorList);
     expectedTextCard2.setValue("Questionable text block");
-    expectedTextCard2.setPurpose(Motivation.QUESTIONING);
+    expectedTextCard2.setPurpose("questioning");
     expectedTextCard2.setFullJson(new JSONObject("{\n" +
         "    \"type\" : \"TextualBody\",\n" +
         "    \"creator\" : [ {\n" +
@@ -1058,20 +940,20 @@ class AccessServiceTest {
 
     annotations.add(new Annotation());
     annotations.get(1).setId("http://sampleannoserver.edu/wap/a04/deinterpretatione/c3aeb1ef-af1e-41fe-823c-76ea3761ee89");
-    annotations.get(1).setCreated(dateFormatMillis.parse("2019-07-04T06:59:33.33Z"));
+    annotations.get(1).setCreated(Instant.parse("2019-07-04T06:59:33.33Z"));
     annotations.get(1).setCreators(creatorList);
-    annotations.get(1).setModified(dateFormat.parse("2019-07-04T07:05:57Z"));
+    annotations.get(1).setModified(Instant.parse("2019-07-04T07:05:57Z"));
     annotations.get(1).setColor(Color.PAGE_REGION);
     annotations.get(1).setIsAlgorithmAnnotation(false);
     annotations.get(1).setPageId("758735a2-8e0d-4ac7-815e-bba2060217c3");
     annotations.get(1).setSvgCode("<svg><rect x=\"279\" y=\"48\" width=\"2951\" height=\"4500\"/></svg>");
-    annotations.get(1).setMotivation(Motivation.DESCRIBING);
+    annotations.get(1).setMotivation("describing");
     annotations.get(1).setEtag("abc");
     annotations.get(1).addTextCard(expectedTextCard1);
     annotations.get(1).addTextCard(expectedTextCard2);
 
-    TextPage page = new TextPage("cb679599-7191-422c-923b-89c31c045f1d", "082r",
-        dateFormat.parse("2019-07-04T00:00:00Z"), "");
+    TextPage page = new TextPage("cb679599-7191-422c-923b-89c31c045f1d", ResourceType.TEXT, "082r",
+        Instant.parse("2019-07-04T00:00:00Z"), "");
     Mockito.when(mockedSearchIndexService.getPageById(annotations.get(0).getPageId()))
         .thenReturn(page);
 
@@ -1081,5 +963,56 @@ class AccessServiceTest {
   private String readStringFromRelativePath(String relativePath) throws IOException {
     return Files.readString(
         Path.of("src/test/resources/accessService/" + relativePath));
+  }
+
+  private Annotation createAnnotation1() throws JSONException{
+    List<String> creatorList = new ArrayList<>();
+    creatorList.add("M. K.");
+
+    Annotation expectedAnnotation1 = new Annotation();
+    expectedAnnotation1.setId("http://sampleannoserver.edu/wap/a04/validated/bb43925c-9903-43f6-92c4-0b3ed4b1d3d9");
+    expectedAnnotation1.setCreated(Instant.parse("2019-07-04T06:57:35.961Z"));
+    expectedAnnotation1.setCreators(creatorList);
+    expectedAnnotation1.setModified(Instant.parse("2019-07-04T07:03:03Z"));
+    expectedAnnotation1.setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/1749ce9c-a79a-4929-8299-edc9c0388fcc");
+    expectedAnnotation1.setIsAlgorithmAnnotation(false);
+    expectedAnnotation1.setPageId("cb679599-7191-422c-923b-89c31c045f1d");
+    expectedAnnotation1.setSvgCode("<svg><rect x=\"214\" y=\"73\" width=\"3008\" height=\"4467\"/></svg>");
+    expectedAnnotation1.setMotivation("describing");
+    expectedAnnotation1.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/1749ce9c-a79a-4929-8299-edc9c0388fcc");
+    expectedAnnotation1.setEtag("abc");
+    TextCard expectedTextCard = new TextCard(UUID.randomUUID().toString());
+    expectedTextCard.setCreators(creatorList);
+    expectedTextCard.setValue("Questionable text block");
+    expectedTextCard.setPurpose("questioning");
+    expectedTextCard.setFullJson(new JSONObject("{\n" +
+        "    \"type\" : \"TextualBody\",\n" +
+        "    \"creator\" : {\n" +
+        "      \"type\" : \"Person\",\n" +
+        "      \"name\" : \"M. K.\"\n" +
+        "    },\n" +
+        "    \"value\" : \"Questionable text block\",\n" +
+        "    \"purpose\" : \"questioning\"\n" +
+        "  }"));
+    expectedAnnotation1.addTextCard(expectedTextCard);
+    Tag expectedTag = new Tag(UUID.randomUUID().toString());
+    expectedTag.setCreators(creatorList);
+    expectedTag.setValue("Questionable tag");
+    expectedTag.setPurpose("tagging");
+    expectedTag.setFullJson(new JSONObject("{\n" +
+        "    \"type\" : \"TextualBody\",\n" +
+        "    \"creator\" : [ {\n" +
+        "      \"type\" : \"Person\",\n" +
+        "      \"name\" : \"M. K.\"\n" +
+        "    }, {\n" +
+        "      \"type\" : \"Software\",\n" +
+        "      \"name\" : \"Akita\"\n" +
+        "    } ],\n" +
+        "    \"value\" : \"Questionable tag\",\n" +
+        "    \"purpose\" : \"tagging\"\n" +
+        "  }"));
+    expectedAnnotation1.addTag(expectedTag);
+
+    return expectedAnnotation1;
   }
 }

@@ -16,7 +16,7 @@ RUN /takita/build.sh
 
 RUN chmod -R +x /takita/tuhl/build
 
-RUN ["cp", "/takita/tuhl/build/libs/tuhl-0.0.2-SNAPSHOT.jar", "/takita/tuhl-0.0.2-SNAPSHOT.jar"]
+RUN ["cp", "/takita/tuhl/build/libs/tuhl-0.0.3-SNAPSHOT.jar", "/takita/tuhl-0.0.3-SNAPSHOT.jar"]
 
 ENTRYPOINT ["/takita/start.sh"]
 #ENTRYPOINT ["java", "-jar", "/takita/tuhl-0.0.2-SNAPSHOT.jar"]
