@@ -5,14 +5,14 @@ import { deleteAnnotation } from '../../commonOLD/annotationDisplay';
 import { toggleExpand } from '../../commonOLD/utils';
 import { deleteBodyFromAnnotation } from '../../commonOLD/annotationDisplay';
 import { updateDisplay } from '../../texteditor/annotationEditor';
-import { projectSpecificTextCardCreation } from '.';
+import { projectSpecificTextCardCreation } from '../utils';
 import { selectAnnotation } from '../../commonOLD/annotationDisplay';
 import { modifySelection, saveModification, cancelModification } from '../../texteditor/annotationEditor';
 import { addLinkToAnalysisTool } from '../../projectspecific/crc1475';
 // correct imorts
 import $ from 'jquery';
 import { getAnnotation } from '../../texteditor-ng/network/annotation';
-import { encodeAnnoId } from './url';
+import { encodeAnnoId } from '../utils/url';
 
 export function createTextcard(annoId, annotationData, hooks = {}) {
   // TODO: CUSTOMISE these fields. You can remove fields from the display with "omitFields"
@@ -502,6 +502,6 @@ function postBodyCreationModificationButtons($annotationDiv) {
   }
 }
 
-function postBodyCreationAddLinkToAnalysisTool(annotationData, annoId, $annotationDiv){
+function postBodyCreationAddLinkToAnalysisTool(annotationData, annoId, $annotationDiv) {
   addLinkToAnalysisTool(annotationData, annoId, $annotationDiv);
 }

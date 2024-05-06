@@ -10,6 +10,16 @@ export async function getAnnotation(url) {
 }
 
 /**
+ * get all annotations (annoJson)
+ *
+ * @param {String} url
+ * a valid url looks like `window.CONTEXTPATH + 'editor/' + window.CURRENTPAGEID + '/displayableAnnotationsJSON'`
+ * @returns {Response} containing takita's response
+ */
+export async function getAllAnnotations(url) {
+  return await fetch(url);
+}
+/**
  * create a new annotation
  *
  * @param {String} url
@@ -44,7 +54,7 @@ export async function deleteAnnotation(url) {
  * instead of "/bodies/", "/tags/" is also possible, since takita differentiates between these two kinds of bodies.
  * @returns {Response} containing takita's response
  */
-export async function deleteAnnotationBody(url) {
+export async function deleteBody(url) {
   return await fetch(url, { method: 'DELETE' });
 }
 
@@ -71,12 +81,12 @@ export async function updateBody(url, annoBodyData) {
  * @param {String} url
  * a valid url looks like `window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + '/bodies/' + bodyId`
  * instead of "/bodies/", "/tags/" is also possible, since takita differentiates between these two kinds of bodies.
- * @param {Object} newTarget conatins the color, motication and the new target (xPath)
+ * @param {Object} modifiedAnnotation conatins the color, motication and the new target (xPath)
  * @returns {Response} containing takita's response
  */
-export async function updateTarget(url, newTarget) {
+export async function updateTarget(url, modifiedAnnotation) {
   return await fetch(url, {
-    body: newTarget,
+    body: modifiedAnnotation,
     headers: { 'Content-Type': 'application/json' },
     method: 'PUT',
   });
