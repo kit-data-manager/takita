@@ -71,7 +71,7 @@ export async function updateBodyData(annoId, newBody) {
   const response = await updateBody(url, newBody);
   // TODO: find proper response code
   if (response.status == 200) {
-    return response;
+    return await response.json();
   } else {
     throw new Error('Body update failed with response: ', response);
   }
@@ -98,7 +98,7 @@ export async function updateTargetData(anno, newTarget) {
 
   // TODO: find proper response code
   if (response.status == 200) {
-    return response;
+    return await response.json();
   } else {
     throw new Error('Target update failed with response: ', response);
   }
@@ -127,6 +127,9 @@ export async function updateTargetAndBodyData(anno, newTarget, newText) {
     const newBody = createNewDescribingBody(targetUpdateResponse, newText);
     bodyUpdateResponse = await updateBodyData(anno.id, newBody);
 
+    // pasre the response into a JSONObject
+    targetUpdateResponse = await targetUpdateResponse.json();
+    bodyUpdateResponse = await bodyUpdateResponse.json();
     return [targetUpdateResponse, bodyUpdateResponse];
   } catch (exception) {
     console.error(exception);
@@ -178,7 +181,7 @@ export async function deleteAnnotationData(annoId) {
   const url = window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded;
   const response = deleteAnnotation(url);
   if (response == 204) {
-    return response;
+    return await response.json();
   } else {
     throw new Error('Annotation deletion failed with response: ', response);
   }
@@ -276,7 +279,7 @@ export async function deleteBodyData(annoId, body) {
   const response = await deleteBody(url);
 
   if (response.status == 204) {
-    return response;
+    return await response.json();
   } else {
     throw new Error('Body deletion failed with response: ', response);
   }
