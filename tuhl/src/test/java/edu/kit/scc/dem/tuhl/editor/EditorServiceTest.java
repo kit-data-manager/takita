@@ -647,6 +647,6 @@ class EditorServiceTest {
 
   private String readStringFromRelativePath(String relativePath) throws IOException {
     return Files.readString(
-        Path.of("src/test/resources/EditorService/" + relativePath));
+        Path.of("src/test/resources/editorService/" + relativePath));
   }
 }
