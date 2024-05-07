@@ -546,6 +546,6 @@ class SearchIndexServiceTest {
 
   private String readStringFromRelativePath(String relativePath) throws IOException {
     return Files.readString(
-        Path.of("src/test/resources/editorStubService/" + relativePath));
+        Path.of("src/test/resources/editorService/" + relativePath));
   }
 }
