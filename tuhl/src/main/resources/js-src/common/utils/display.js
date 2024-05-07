@@ -23,8 +23,8 @@ export function toggleOpacity($selection) {
 /**
  * Set opacity of one or more HTML element(s) to make them (in-)visible without
  * affecting the page flow.
- * @param {Element | NodeList} $selection 
- * @param {Boolean} isHidden 
+ * @param {Element | NodeList} $selection
+ * @param {Boolean} isHidden
  */
 export function setZeroOpacity($selection, isHidden) {
   const $elements = $selection instanceof HTMLElement ? [$selection] : $selection;
@@ -61,8 +61,8 @@ export function toggleVisibility($element, $button) {
 
 /**
  * Set visibility of HTML element or NodeList by adding/removing a CSS class.
- * @param {Element | NodeList} $selection affected HTML element(s) 
- * @param {Boolean} isVisible whether the element(s) should be visible 
+ * @param {Element | NodeList} $selection affected HTML element(s)
+ * @param {Boolean} isVisible whether the element(s) should be visible
  */
 export function setVisibility($selection, isVisible) {
   const $elements = $selection instanceof HTMLElement ? [$selection] : $selection;
@@ -71,4 +71,30 @@ export function setVisibility($selection, isVisible) {
   } else {
     $elements.forEach((element) => element.classList.add('is-hidden'));
   }
+}
+
+/**
+ * Toggle the state (disabled, enabled) of a button and hiding/showing it
+ *
+ * @param {Element} $button
+ */
+export function toggleButtonState($button) {
+  toggleVisibility($button);
+  const buttonWasDisabled = $button.disabled;
+  if (buttonWasDisabled) {
+    $button.disabled = false;
+  } else {
+    $button.disabled = true;
+  }
+}
+
+/**
+ * Expand/collapse an element by showing/hiding it and displaying the correct
+ * boxIcons
+ *
+ * @param {Element} $element affected HTML element
+ */
+export function toggleExpand($element) {
+  toggleVisibility($element);
+  toggleBoxIcon($element, 'bx-chevron-down', 'bx-chevron-right');
 }

@@ -1,7 +1,7 @@
 // external modules
 import { $ } from 'jquery';
 // internal modules
-import { encodeAnnoId, fillMetaDataEditorTable, toggleVisibility } from '../utils';
+import { encodeAnnoId, fillMetaDataEditorTable, toggleVisibility, toggleExpand } from '../utils';
 import {
   getAnnotationData,
   deleteAnnotationData,
@@ -10,29 +10,15 @@ import {
   updateTargetData,
   updateTargetAndBodyData,
 } from '../../texteditor-ng/data/annotations';
+import {
+  modifySelection,
+  saveModification,
+  updateTarget,
+  cancelModification,
+} from '../../texteditor-ng/targetModification';
 
 // dummy functions, which have to be replaced/implemented
-function toggleExpand() {
-  return;
-}
-
 function pickTemplate() {
-  return;
-}
-
-function modifySelection() {
-  return;
-}
-function saveModification() {
-  // CALL THIS
-  try {
-    updateTarget();
-  } catch (exception) {
-    console.error(exception);
-  }
-  return;
-}
-function cancelModification() {
   return;
 }
 function getMRWAnnoSelectedText() {
@@ -844,44 +830,6 @@ async function getData(annoId) {
 }
 
 /**
- * Update a target, hide the modal shown for target update, reselect the annotation
- * to update the textCard and update the display.
- * This is the callback for $buttonSaveModification.
- * TODO: this should be somewhere else. most likely in texteditor-ng/targetModification
- * TODO: this function needs some changes when the image editor is getting modularized
- *
- * @param {Object} anno the annotation to be updated
- * @param {String} newTarget containing the new target (svg code or xPath)
- * @param {String} newText containing the new selected texts
- * @returns {Boolean} true, if the body was succesfully updated, false, if the update failed
- */
-async function updateTarget(anno, newTarget, newText) {
-  let targetUpdated = false;
-  try {
-    const response = await targetUpdateCallback(anno, newTarget, newText);
-    targetUpdated = true;
-    // hide modal
-    document.getElementById('updateSelection').classList.toggle('show-modal');
-    //document.getElementById('modifyButton').parentElement.classList.remove('active');
-    window.MODE = window.MODE_CLASS.View;
-    window.SELECTING_TEXT = false;
-
-    // show the updated annotation
-    selectAnnotation(null, anno.id);
-    // updating the display for text annotation
-    // checking if TEI-element is null. it is defined for text annotation,
-    // but not for image annotation
-    if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
-      // redraw
-      updateDisplay();
-    }
-  } catch (exception) {
-    console.error(exception);
-  }
-  return targetUpdated;
-}
-
-/**
  *  update a body and reselect the annotation to update the textCard and update the display. This is
  * the callback for the "Save" buttons of the JSONForms (vertical and horizontal).
  *
@@ -1020,7 +968,7 @@ async function preHorizontalCreationGetLinkingAnno(annoId, body) {
  */
 function postTextCardCreationTargetModificationButtons($annotationDiv) {
   if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
-    var $buttonModifySelection = document.createElement('button');
+    const $buttonModifySelection = document.createElement('button');
     $buttonModifySelection.innerHTML = 'Modify Selection';
     $buttonModifySelection.id = 'buttonModifySelection';
     $buttonModifySelection.addEventListener('mousedown', (event) => {
@@ -1049,7 +997,25 @@ function postTextCardCreationTargetModificationButtons($annotationDiv) {
     $annotationDiv.append($buttonModifySelection);
     $annotationDiv.append($buttonSaveModification);
     $annotationDiv.append($buttonCancelModification);
-    document.getElementById('buttonCancelModification').addEventListener('mousedown', cancelModification);
+
+    // strictly speaking this is not part of the annotation card, but it is the
+    // last step of the target update for texts and all the other buttons/eventListeners
+    // are getting attached here
+    // updateTargetButton present in the modal
+    const $updateTargetButton = document.getElementById('updateTargetButton');
+    $updateTargetButton.addEventListener('click', (event) => {
+      // pass the current selected annotation, the new Xpath stored in the 'updateSelection' element
+      // and the newly selected text stored in the 'newSelectedText' element
+      // TODO: fix, when it goes into production, bc then the innerHTML will only be
+      // the selected text without any "|"s
+      updateTarget(
+        event,
+        targetUpdateCallback,
+        window.SELECTED_ANNOTATION,
+        document.getElementById('updateSelection').dataset.newTargetXmlId,
+        document.getElementById('newSelectedText').children[0].innerHTML.split('|')[0],
+      );
+    });
   }
   return $annotationDiv;
 }
