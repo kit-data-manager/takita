@@ -11,29 +11,29 @@
 }
 
 /* highlight words annotated as mrws in purple */
-.mrw {
+.backgroundOne {
 	background: #daa3ff;
 }
 
 /* highlight words annotated as mflags in purple */
-.mflag {
+.backgroundTwo {
 	background: yellow;
 }
 
 /* possible combinations of the rules from above */
-.mrw.mflag {
+.backgroundOne.backgroundTwo {
 	background: linear-gradient( to bottom, yellow 50%, #daa3ff 50% 100% )
 }
 
-.defaulthighlight.mrw {
+.defaulthighlight.backgroundOne {
 	background: linear-gradient( to bottom, lightgreen 50%, #daa3ff 50% 100% )
 }
 
-.defaulthighlight.mflag {
+.defaulthighlight.backgroundTwo {
 	background: linear-gradient( to bottom, lightgreen 50%, yellow 50% 100% )
 }
 
-.defaulthighlight.mrw.mflag {
+.defaulthighlight.backgroundOne.backgroundTwo {
 	background: linear-gradient( to bottom, lightgreen 33%, yellow 33% 66%, #daa3ff 66% 100% )
 }
 
@@ -47,13 +47,13 @@
 	and for rtl texts as the box-shadows 
 	always get created on the right/left side
 	regardless of text direction. */
-.metaphor {
+.underline {
 	box-shadow: 
 		0em 0em white, 
 		0em 0.2em #2196F3;
 }
 
-.metaphor.whitespaceAfter {
+.underline.whitespaceAfter {
 	box-shadow: 
 		0.29em 0em white, 
 		0em 0em white, 
@@ -61,7 +61,7 @@
 		0em 0.2em #2196F3;
 }
 
-#TEI[dir="rtl"] .metaphor.whitespaceAfter {
+#TEI[dir="rtl"] .underline.whitespaceAfter {
 	box-shadow: 
 		-0.29em 0em white, 
 		0em 0em white, 
@@ -74,14 +74,14 @@
 	another word is part of another metaphor
 	annotation and therefore, already highlighted 
 	-> only one underline */
-.metaphorSecond {
+.underlineSecond {
 	box-shadow: 
 		0em 0.2em white, 
 		0em 0.4em purple;
 	line-height: 1.75em;
 }
 
-.metaphorSecond.whitespaceAfter {
+.underlineSecond.whitespaceAfter {
 	box-shadow: 
 		0.29em 0.2em white, 
 		0em 0.2em white, 
@@ -90,7 +90,7 @@
 	line-height: 1.75em;
 }
 
-#TEI[dir="rtl"] .metaphorSecond.whitespaceAfter {
+#TEI[dir="rtl"] .underlineSecond.whitespaceAfter {
 	box-shadow: 
 		-0.29em 0.2em white, 
 		0em 0.2em white, 
@@ -103,7 +103,7 @@
 	another word is part of another metaphor
 	annotation and therefore, already highlighted 
 	-> two underlines */
-.metaphor.metaphorSecond {
+.underline.underlineSecond {
 	box-shadow: 
 		0em 0em white, 
 		0em 0em white,
@@ -114,7 +114,7 @@
 	line-height: 1.75em;
 }
 
-.metaphor.metaphorSecond.whitespaceAfter {
+.underline.underlineSecond.whitespaceAfter {
 	box-shadow: 
 		0.29em 0em white, 
 		0em 0em white,
@@ -125,7 +125,7 @@
 	line-height: 1.75em;
 }
 
-#TEI[dir="rtl"] .metaphor.metaphorSecond.whitespaceAfter {
+#TEI[dir="rtl"] .underline.underlineSecond.whitespaceAfter {
 	box-shadow: 
 		-0.29em 0em white, 
 		0em 0em white, 

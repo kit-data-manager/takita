@@ -1,0 +1,117 @@
+// external modules
+import $ from 'jquery';
+//internal modules
+import { deleteAnnotationData } from '../../texteditor-ng/data/annotations';
+import { encodeAnnoId } from './url';
+import { selectAnnotation } from '../annotationCard/annotationCard';
+import { toggleVisibility } from './display';
+
+/**
+ * TODO: what does this do @Danah
+ *
+ * @param {[Object]} annoJson all annotations of a page
+ */
+export function fillMetaDataEditorTable(annoJson) {
+  if (document.getElementById('editor-buttons')) {
+    document.getElementById('editor-buttons').remove();
+  }
+
+  // decision to only show page annotations in the table
+  // can be removed to simply show all annotations of the page
+  let filteredAnnoJson = annoJson.filter((anno) => anno.type !== 'Rectangle' && anno.type !== 'Polygon');
+
+  // to include the shape type of the annotation add:
+  // "Type": {"type": "string", "title": "Type"}
+  let dataModel = {
+    type: 'object',
+    properties: {
+      ID: {
+        type: 'string',
+        title: 'ID',
+      },
+      Color: {
+        type: 'string',
+        title: 'Color',
+      },
+    },
+  };
+  // storing the annotationCard element as its used multiple times in the following code
+  const $annotationCard = document.getElementById('annotationCard');
+  let items = [
+    {
+      title: 'Identifier',
+      field: 'id',
+      headerSort: false,
+      cellClick: function (e, cell) {
+        selectAnnotation(null, encodeAnnoId(cell.getValue()));
+        if ($annotationCard.classList.contains('is-hidden')) {
+          toggleVisibility($annotationCard);
+        }
+        // function to select shape on the canvas
+        // not needed as long only page annotations are shown
+        //
+        //paper.forEach(function(element) {
+        // select the shape corresponding to the row
+        //    if (element.annoId === cell.getValue()) {
+        //        toggleShapeSelect(element);
+        //    };
+        // deselect former selections
+        //    if (element.selected && element.annoId !== cell.getValue()) {
+        //        toggleShapeSelect(element);
+        //    }
+        //});
+      },
+    },
+    //{title: "", field: "icon", formatter:"html", width:60, hozAlign: "center"},
+    { title: '', field: 'color', formatter: 'color', width: 60 },
+  ];
+
+  let inputs = {
+    dataModel: dataModel,
+    uiForm: '*',
+    resource: filteredAnnoJson,
+    items: items,
+    // toggling shape visibility on the canvas
+    // not needed as long only page annotations are shown
+    //
+    //readOperation: function (rowColumnvalue){
+    //    paper.forEach(function(element) {
+    //        if (element.annoId === rowColumnvalue.id) {
+    //            toggleShapeVisibility(element);
+    //        };
+    //    });
+    //},
+    updateOperation: function (rowColumnvalue) {
+      selectAnnotation(null, encodeAnnoId(rowColumnvalue.id));
+      if ($annotationCard.classList.contains('is-hidden')) {
+        toggleVisibility($annotationCard);
+      }
+      // toggling shape selection on the canvas
+      // not needed as long only page annotations are shown
+      //
+      //paper.forEach(function(element) {
+      //    if (element.annoId === rowColumnvalue.id) {
+      //        toggleShapeSelect(element);
+      //    };
+      //});
+    },
+    deleteOperation: function (rowColumnvalue) {
+      deleteAnnotationData(rowColumnvalue.id);
+    },
+    //creation of page annotations is moved to the sidebar
+    //
+    //createOperation: { callback: function (){
+    //    const modal = document.getElementById("createAnnotation");
+    //    modal.classList.toggle("show-modal");
+    //    pickTemplate("", "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
+    //}, buttonTitle: "Create New Annotation"},
+
+    // list operation not needed in our use case right now
+    //
+    //listOperation: function(rowColumnvalue){
+    //project-specific implementation.
+    //}
+  };
+
+  $('#table').metadataeditorTable(inputs);
+}

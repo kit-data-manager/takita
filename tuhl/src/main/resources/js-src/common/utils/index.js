@@ -10,3 +10,4 @@ export {
 export { enableTooltips } from './tooltips';
 export { encodeAnnoId } from './url';
 export { createOption } from './elements';
+export { fillMetaDataEditorTable } from './metadataEditorWrapper';

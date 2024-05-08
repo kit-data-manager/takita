@@ -118,3 +118,6 @@ _Note: the purpose of this module is to provide functionality which is useful to
 * window.variables
   * editor js: ANNOJSON, SELECTING_TEXT, PAPER, SELECTED_ANNOTATION, MRW_ANNOS, MODE, TEXTLANGUAGE
   * html: CONTEXTPATH, EDITORTYPE, TL_VARIABLES, CURRENTPAGENUMBER, CURRENTPAGEID, CURRENTPAGEURL
+* exchange functions
+  * targetUpdateCallback
+  * highlightAnnotationFunction, getProjectSpecificClasses
