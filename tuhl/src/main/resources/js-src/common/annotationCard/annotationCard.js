@@ -9,45 +9,21 @@ import {
   updateBodyData,
   updateTargetData,
   updateTargetAndBodyData,
-} from '../../texteditor-ng/data/annotations';
+} from '../../texteditor-ng/data';
 import {
   modifySelection,
   saveModification,
   updateTarget,
   cancelModification,
 } from '../../texteditor-ng/targetModification';
+import { makeTargetsCompatible, checkIsTargetCompatible } from '../../texteditor-ng/utils';
+import { updateDisplay, highlightSelectedAnnotationsTarget } from '../../texteditor-ng/highlighting';
+import { getMRWAnnoSelectedText } from '../../texteditor-ng/utils/projectSpecific';
 
 // dummy functions, which have to be replaced/implemented
 function pickTemplate() {
   return;
 }
-function getMRWAnnoSelectedText() {
-  return;
-}
-function updateDisplay() {
-  return;
-}
-function checkIsTargetCompatible() {
-  return;
-}
-function makeTargetsCompatible() {
-  return;
-}
-
-/**
- * DRAFT
- *
- * [we listen for an event which should select an annotation]
- * ->
- * (event) => annoID [the concrete procedure is very different for img/text, but the same for ]
- * ->
- * (annoId) => fullAnnoData [aquire annotation data; the procedure is basically the same for the very first step,
- *             but additional steps are needed for SFB1475 (sometimes more annotations need to get loaded)]
- * ->
- * (fullAnnoData) => HTMLElement<> [create a textcard; it can contain more textcards]
- * ->
- * (textcard, maybeElementIdOfTextcardContainer) => effect: replace existing textcard with new one, display it
- */
 
 // TODO: CUSTOMIZE to be the correct function for your project case
 // - updateTargetData is the standard function to update a target, it will only update the target
@@ -57,7 +33,7 @@ const targetUpdateCallback = updateTargetAndBodyData;
 
 /**
  * Main entry point to handle a user interaction to select an annotation
- * by clicking on it. It will get the annotations data, create the textCard
+ * by clicking on it. It will get the annotations data, create the annotationCard
  * and highlight the selected words (if a text is present).
  *
  * @param {String} annoId single encoded ID of the annotation, that was selected
@@ -82,15 +58,15 @@ export async function selectAnnotation(_event, annoId, hooks = {}) {
 
   let $annotationDiv = document.getElementById('annotationCard');
 
-  // removing old textCard
+  // removing old annotationCard
   while ($annotationDiv.lastElementChild) {
     $annotationDiv.removeChild($annotationDiv.lastElementChild);
   }
 
-  // creating new textCard
+  // creating new annotationCard
   $annotationDiv = createAnnotationDiv(data, $annotationDiv, hooks);
-  if (hooks.postTextCardCreation) {
-    hooks.postTextCardCreation.forEach((hook) => {
+  if (hooks.postAnnotationCardCreation) {
+    hooks.postAnnotationCardCreation.forEach((hook) => {
       hook($annotationDiv);
     });
   }
@@ -99,7 +75,7 @@ export async function selectAnnotation(_event, annoId, hooks = {}) {
 
   // highlight the selected words
   if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
-    highlightSelectedWords(selectedAnnotation);
+    highlightSelectedAnnotationsTarget(selectedAnnotation);
   }
 
   return [selectedAnnotation, $annotationDiv];
@@ -427,28 +403,12 @@ export function createIconRow(isAnnotationRow, annoId, body, bodyIndex) {
   return $iconRow;
 }
 
-/**
- * highlight the ttarget (selected words) of the selected annotation
- *
- * @param {Object} selectedAnnotation annotation selected
- */
-function highlightSelectedWords(selectedAnnotation) {
-  // highlight words targetted by the currently selected annotation
-  // remove old highlights (TODO: include this in removeStyles(el) in editor_xml.js)
-  document.querySelectorAll('.selected').forEach((element) => element.classList.remove('selected'));
-  // add a class to all the targets of the selected annotation
-  selectedAnnotation.targets.forEach((target) => {
-    const targetId = target.selector.xPath.split('"')[1];
-    document.getElementById(targetId).classList.add('selected');
-  });
-}
-
 // JSONForm creation
 /**
  * Append the annotation form created by the metadataEditor.js (uses JSONForm) to the
  * annotation div
  *
- * @param {Element} annotationDiv the div holding the textcard
+ * @param {Element} annotationDiv the div holding the annotationCard
  * @param {Object} data the annotation as JSON
  * @param {Array} headerFields holds the fields to be added to the form
  * @param {Array} omitFields holds the fields to NOT be added to the form
@@ -830,8 +790,8 @@ async function getData(annoId) {
 }
 
 /**
- *  update a body and reselect the annotation to update the textCard and update the display. This is
- * the callback for the "Save" buttons of the JSONForms (vertical and horizontal).
+ * update a body and reselect the annotation to update the annotationCard and update the display.
+ * This is the callback for the "Save" buttons of the JSONForms (vertical and horizontal).
  *
  * @param {String} annoId single encoded Id of the annotation to be updated
  * @param {String} value of the body, containing the body Id and the new value
@@ -961,12 +921,12 @@ async function preHorizontalCreationGetLinkingAnno(annoId, body) {
 }
 
 /**
- * appends buttons to edit the selected text/target of an annotation to the textcard div
+ * appends buttons to edit the selected text/target of an annotation to the annotationCard div
  *
- * @param {Element} $annotationDiv the div holding the textcard
+ * @param {Element} $annotationDiv the div holding the annotationCard
  * @returns {Element} $annotationDiv after the buttons got appended
  */
-function postTextCardCreationTargetModificationButtons($annotationDiv) {
+function postAnnotationCardCreationTargetModificationButtons($annotationDiv) {
   if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
     const $buttonModifySelection = document.createElement('button');
     $buttonModifySelection.innerHTML = 'Modify Selection';
