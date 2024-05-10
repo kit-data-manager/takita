@@ -121,3 +121,5 @@ _Note: the purpose of this module is to provide functionality which is useful to
 * exchange functions
   * targetUpdateCallback
   * highlightAnnotationFunction, getProjectSpecificClasses
+* implement functions
+  * for annotation creation procedure the functions makeAnnotationData, makeBodyData and assignPurpose need to be implemented

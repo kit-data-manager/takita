@@ -47,6 +47,23 @@ export async function deleteAnnotation(url) {
 }
 
 /**
+ * create a new body
+ *
+ * @param {String} url
+ * a valid url looks like `window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + '/bodies/'`
+ * instead of "/bodies/", "/tags/" is also possible, since takita differentiates between these two kinds of bodies.
+ * @param {Object} bodyDataJson holding the necessary data for body creation
+ * @returns {Response} containing takita's response
+ */
+export async function createBody(url, bodyDataJson) {
+  return await fetch(url, {
+    body: JSON.stringify(bodyDataJson),
+    headers: { 'Content-Type': 'application/json' },
+    method: 'POST',
+  });
+}
+
+/**
  * delete one body from an annotation
  *
  * @param {String} url

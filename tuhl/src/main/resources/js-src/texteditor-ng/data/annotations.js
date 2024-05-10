@@ -1,6 +1,15 @@
 import { encodeAnnoId } from '../../common/utils';
 import { getColorNameFromEnumEntry } from '../../texteditor/annotationEditor/annotationCreation/creationTemplates';
-import { getAnnotation, getAllAnnotations, deleteBody, updateBody, deleteAnnotation, updateTarget } from '../network';
+import {
+  getAnnotation,
+  getAllAnnotations,
+  createAnnotation,
+  createBody,
+  deleteBody,
+  updateBody,
+  deleteAnnotation,
+  updateTarget,
+} from '../network';
 import { timestampsToISOString } from '../../common/annotationCard/annotationCard';
 /**
  * Build the URL under which we can access annotation data.
@@ -47,6 +56,48 @@ export async function getAllAnnotationsData() {
     return await response.json();
   } else {
     throw new Error('Getting all annotations failed with response: ', response);
+  }
+}
+
+// CREATE
+/**
+ * Helper/facade for network/annotation.js for the fetch call to create a new annotation
+ *
+ * @param {Object} annotationData to be stored as a new annotation
+ * @throws {Exception} if the annotation couldn't be created
+ * @returns {Object} annotation data
+ */
+export async function createAnnotationData(annotationData) {
+  const url = window.CONTEXTPATH + 'editor_rest/annotations/';
+  const response = await createAnnotation(url, annotationData);
+  // TODO: find proper response code
+  if (response.status == 201) {
+    return await response.json();
+  } else {
+    throw new Error('Annotation creation failed with response: ', response);
+  }
+}
+
+/**
+ * Helper/facade for network/annotation.js for the fetch call to create a new body
+ *
+ * @param {String} annoId unencoded annotation id
+ * @param {*} bodyData to be stored for the annotation with the given id
+ * @throws {Exception} if the body couldn't be created
+ * @returns {Object} annotation data
+ */
+export async function createBodyData(annoId, bodyData) {
+  // double encoding the id. This is only necessary for creation of bodies
+  const annoIdEncoded = encodeAnnoId(encodeAnnoId(annoId));
+  const type = bodyData.purpose === 'tagging' ? '/tags' : '/bodies';
+  const url = window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + type;
+
+  const response = await createBody(url, bodyData);
+  // TODO: find proper response code
+  if (response.status == 201) {
+    return await response.json();
+  } else {
+    throw new Error('Body creation failed with response: ', response);
   }
 }
 

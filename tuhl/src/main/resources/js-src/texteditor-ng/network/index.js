@@ -8,4 +8,12 @@
  * use a more specialized API.
  */
 export { fetchText } from './text';
-export { getAnnotation, updateBody, updateTarget, deleteAnnotation, deleteAnnotationBody } from './annotation';
+export {
+  createAnnotation,
+  getAnnotation,
+  createBody,
+  updateBody,
+  updateTarget,
+  deleteAnnotation,
+  deleteBody,
+} from './annotation';

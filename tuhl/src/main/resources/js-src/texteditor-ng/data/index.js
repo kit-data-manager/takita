@@ -1,4 +1,6 @@
 export {
+  createAnnotationData,
+  createBodyData,
   getAnnotationData,
   getAllAnnotationsData,
   deleteAnnotationData,
