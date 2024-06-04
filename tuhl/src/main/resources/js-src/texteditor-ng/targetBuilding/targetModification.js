@@ -1,5 +1,5 @@
 import { toggleButtonState } from '../../common/utils';
-
+import { createTargetString } from './targetCreation';
 let checkIsNodeOnWorkspace,
   getContentOfSelection,
   createTargetList,
@@ -55,13 +55,12 @@ export function modifySelection(_event, annotation) {
  * @param {JSONObject} annotation the curretnly selected annotation, which will have its target updated
  */
 export function saveModification(_event, selection, annotation) {
-  // TODO: we need a standard way of getting from a selection to the xpath, that can
-  // be used during annotation creation and target modification. Half of this code can be
-  // replaced by that
-  if (selection.toString() && checkIsNodeOnWorkspace(selection.getRangeAt(0).commonAncestorContainer)) {
-    // create new xPath
-    const newXPath = getNewXPath(selection);
+  // create new xPath
+  const newXPath = createTargetString(selection);
 
+  // newXPath will be an empty string/a "falsy" variable, if the target could
+  // not be created and therefore this saveModification function will return
+  if (newXPath) {
     // store the selected text
     const oldSelectedText = getOldSelectedText(annotation);
     const selectionRangeContents = getContentOfSelection(selection);
@@ -71,6 +70,8 @@ export function saveModification(_event, selection, annotation) {
     // create and show the modal used to save the new target
     const modal = document.getElementById('updateSelection');
     showSaveTargetModal(modal, oldSelectedText, newSelectedText, newXPath);
+  } else {
+    return;
   }
 }
 
@@ -149,7 +150,7 @@ export function cancelModification() {
  */
 function getNewXPath(selection) {
   // let selectionRange = window.getSelection().getRangeAt(0);
-  let selectionRangeContents = getContentOfSelection(selection);
+  const selectionRangeContents = getContentOfSelection(selection);
   // stop the function, if the selection does not contain any text, only whitespace
   if (selectionRangeContents.textContent.trim() == '') {
     console.log('No text selected, therefore early return.');
