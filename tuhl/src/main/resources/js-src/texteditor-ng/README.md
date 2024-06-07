@@ -119,7 +119,7 @@ _Note: the purpose of this module is to provide functionality which is useful to
   * editor js: ANNOJSON, SELECTING_TEXT, PAPER, SELECTED_ANNOTATION, MRW_ANNOS, MODE, TEXTLANGUAGE
   * html: CONTEXTPATH, EDITORTYPE, TL_VARIABLES, CURRENTPAGENUMBER, CURRENTPAGEID, CURRENTPAGEURL
 * exchange functions
-  * targetUpdateCallback
+  * targetUpdateCallback (this should be moved from annotationCard to projectspecific/index.js)
   * highlightAnnotationFunction, getProjectSpecificClasses
 * implement functions
   * for annotation creation procedure the functions makeAnnotationData, makeBodyData and assignPurpose need to be implemented

@@ -1,5 +1,6 @@
 //external modules
 import $ from 'jquery';
+import 'jsonform';
 //internal modules
 import { fillMetaDataEditorTable, toggleVisibility, encodeAnnoId } from '../utils';
 import { updateDisplay } from '../../texteditor-ng/highlighting';

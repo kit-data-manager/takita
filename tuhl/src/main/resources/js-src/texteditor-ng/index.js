@@ -1,5 +1,120 @@
-import { appendTEIDocument } from './textloader';
+import { $ } from 'jquery';
+import './../common/utils/metadataeditor';
 
-window.textloader = {
-  appendTEIDocument,
+import { initializeTextEditor } from './editor';
+import { initializeTopbar } from '../common/topbar';
+import { initializeSidebar } from './sidebar';
+import { initializeNavigation } from './navigation';
+import { appendTEIDocument } from './textloader/textloader';
+import { fetchText } from './network';
+import { hooks } from '../projectspecific';
+import { drawAnnos } from './highlighting';
+import { checkIsTargetCompatible, makeTargetsCompatible } from './utils';
+
+window.textEditor = {
+  initializeTextEditorComponent,
 };
+
+async function initializeTextEditorComponent(linkToResource, annotationsString, thymeleafVariables) {
+  // initializing the state
+  const annoJson = initializeState(annotationsString);
+
+  // initializing the topbar
+  const $topbar = document.querySelector('.topbar-row');
+  const $pseudonymModal = document.getElementById('pseudonymInputModal');
+  const userName = thymeleafVariables.user.name;
+  initializeTopbar($topbar, $pseudonymModal, userName);
+
+  // TODO: maybe the textEditor can be initilized after the text has loaded
+  // as there is no need for the textEditor, if there is no text. Furthermore
+  // textEditor.init() could then draw the annotations instead of the code
+  // in the html template
+  // initiliazing the editor
+  initializeTextEditor(annoJson);
+
+  // adding the TEI file to the DOM
+  const $teiContatinerElement = document.getElementById('TEI');
+  const xmlString = await fetchText(linkToResource);
+  appendTEIDocument(xmlString, $teiContatinerElement, hooks);
+
+  // highlight all the annotated words
+  drawAnnos(annoJson);
+
+  // initializing the sidebar
+  const $sidebar = document.querySelector('.anno-side-bar');
+  const $pagesDialog = document.getElementById('pages');
+  initializeSidebar($sidebar, $teiContatinerElement, $pagesDialog);
+
+  // Construct and display a navigation bar.
+  const $navbar = document.getElementById('textNavBar');
+  initializeNavigation($navbar, $teiContatinerElement);
+}
+
+/**
+ * called initially to create something like a "state" for the textEditor.
+ * Attaching a couple of variables to the window object:
+ * - stores the annotations of a page,
+ * - declares the raphael paper object
+ * - declares the varaible to store the currently selected annotation
+ * - creates the mode class
+ * - initiliazes the variable to storing the information, if text seelection is allowed.
+ * TODO: This should be more thought out and imporived.
+ */
+function initializeState(annotationsString) {
+  // setting the editortype, so the js-code can be executed based on that distinction
+  window.EDITORTYPE = 'TEXT';
+
+  window.ANNOJSON = createAnnoJson(annotationsString);
+  // this is needed for annotationCard.js to work atm
+  window.PAPER;
+
+  // globalSelectedAnnotation stores the annotation, that gets
+  // selected by right clicking on a highlighted word
+  // it is needed to
+  // - edit/update the target of that annotation
+  // - cycle through multiple annotations on one target and select them
+  // - (CRC1475: to add a mrw-annotation to a metaphor annotation)
+  window.SELECTED_ANNOTATION;
+
+  // TODO: check if the textEditor actualy needs a "Mode"
+  // Philipp can only think that it is necessary for the "onmouseup"-event,
+  // which is used for the text selection
+  window.MODE_CLASS = class Mode {
+    static View = new Mode('view');
+    static Create = new Mode('create');
+    static Modify = new Mode('modify');
+    static Move = new Mode('move');
+
+    constructor(name) {
+      this.name = name;
+    }
+  };
+
+  // TODO: check if the textEditor needs a MODE and SELECTING_TEXT
+  window.MODE = window.MODE_CLASS.View;
+  window.SELECTING_TEXT = false;
+
+  return window.ANNOJSON;
+}
+
+/**
+ * Converts the String passed from the java-model via the thymeleaf template into a JSONObject.
+ * It creates the data structure needed by the textEditor and converts the targets
+ * into a compatible format.
+ *
+ * @param {String} annotationsString JSON string containing all annotations of a page
+ * @returns {Object} containing all annotations of a page
+ */
+function createAnnoJson(annotationsString) {
+  let annoJson = JSON.parse(annotationsString);
+  // check if the annotations are compatible with the code, i.e. have
+  // one xPath for each target and not one long xPath including all targets.
+  // Make them compatible, if they are not
+  annoJson = annoJson.map((annotation) => {
+    if (!checkIsTargetCompatible(annotation)) {
+      annotation.svg = makeTargetsCompatible(annotation);
+    }
+    return annotation;
+  });
+  return annoJson;
+}

@@ -93,8 +93,9 @@ export function toggleButtonState($button) {
  * boxIcons
  *
  * @param {Element} $element affected HTML element
+ * @param {Element} $boxIcon affected HTML element containing the boxIcons
  */
-export function toggleExpand($element) {
+export function toggleExpand($element, $boxIcon) {
   toggleVisibility($element);
-  toggleBoxIcon($element, 'bx-chevron-down', 'bx-chevron-right');
+  toggleBoxIcon($boxIcon, 'bx-chevron-down', 'bx-chevron-right');
 }

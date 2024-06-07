@@ -83,7 +83,7 @@ export function initializeSidebar($sidebar, $text, $pagesDialog) {
  * Collapse sidebar
  * @param {Element} $sidebar the sidebar element
  */
-function collapseSidebar($sidebar) {
+export function collapseSidebar($sidebar) {
   if (!$sidebar.classList.contains('annocollapse')) {
     toggleSidebar($sidebar);
   }

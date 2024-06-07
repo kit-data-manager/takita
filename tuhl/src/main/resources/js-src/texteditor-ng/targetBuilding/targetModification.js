@@ -1,15 +1,9 @@
-import { toggleButtonState } from '../../common/utils';
+import { toggleButtonState, encodeAnnoId } from '../../common/utils';
+import { selectAnnotation } from '../../common/annotationCard';
+import { updateDisplay } from '../highlighting';
+import { makeTargetsCompatible, checkIsTargetCompatible } from '../utils';
 import { createTargetString } from './targetCreation';
-let checkIsNodeOnWorkspace,
-  getContentOfSelection,
-  createTargetList,
-  createXPath,
-  removeWhitespaceFromSelectionTextContent,
-  checkIsTargetCompatible,
-  makeTargetsCompatible,
-  updateDisplay,
-  selectAnnotation,
-  encodeAnnoId;
+import { removeWhitespaceFromSelectionTextContent, getContentOfSelection } from './utils';
 
 // eventHandlers for buttons
 /**
@@ -148,30 +142,30 @@ export function cancelModification() {
  * @param {Selection} selection the text selected by the user as a selection object
  * @returns {String} the new xPath of the selection
  */
-function getNewXPath(selection) {
-  // let selectionRange = window.getSelection().getRangeAt(0);
-  const selectionRangeContents = getContentOfSelection(selection);
-  // stop the function, if the selection does not contain any text, only whitespace
-  if (selectionRangeContents.textContent.trim() == '') {
-    console.log('No text selected, therefore early return.');
-    // TODO: check if this causes problems. It might prevent users from saving
-    // their updated selection, if the selected whitespace once
-    // document.getElementById('modifyButton').parentElement.classList.remove('active');
-    window.MODE = window.MODE_CLASS.View;
-    window.SELECTING_TEXT = false;
-    alert('No text selected. Please redo');
-    return false;
-  }
+// function getNewXPath(selection) {
+//   // let selectionRange = window.getSelection().getRangeAt(0);
+//   const selectionRangeContents = getContentOfSelection(selection);
+//   // stop the function, if the selection does not contain any text, only whitespace
+//   if (selectionRangeContents.textContent.trim() == '') {
+//     console.log('No text selected, therefore early return.');
+//     // TODO: check if this causes problems. It might prevent users from saving
+//     // their updated selection, if the selected whitespace once
+//     // document.getElementById('modifyButton').parentElement.classList.remove('active');
+//     window.MODE = window.MODE_CLASS.View;
+//     window.SELECTING_TEXT = false;
+//     alert('No text selected. Please redo');
+//     return false;
+//   }
 
-  // targetRangeList holds all the nodes from the selection, that are <w> elements
-  let targetRangeList = createTargetList(selection);
-  console.log('Filled targetRangeList for annotation target update: ', targetRangeList);
+//   // targetRangeList holds all the nodes from the selection, that are <w> elements
+//   let targetRangeList = createTargetList(selection);
+//   console.log('Filled targetRangeList for annotation target update: ', targetRangeList);
 
-  // targetXPath hold the xPath resolving to the elements in targeRangetList
-  const targetXPath = createXPath(targetRangeList);
-  console.log('Target/XPath of the NEW selection: ', targetXPath);
-  return targetXPath;
-}
+//   // targetXPath hold the xPath resolving to the elements in targeRangetList
+//   const targetXPath = createXPath(targetRangeList);
+//   console.log('Target/XPath of the NEW selection: ', targetXPath);
+//   return targetXPath;
+// }
 
 /**
  * get the previously selected text from the respective body (purpose: describing),

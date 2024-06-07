@@ -1,8 +1,9 @@
 // Common utils
 import { createOption, setVisibility, toggleVisibility } from '../../common/utils';
-
+import { selectAnnotation } from '../../common/annotationCard';
+import { encodeAnnoId } from '../../common/utils';
 // Texteditor specific utils
-import { getTargetAnnotationId, getTargetFragment } from '../utils/url';
+import { getTargetAnnotationId, getTargetFragment } from '../utils';
 
 // TODO: move "subchapter" to the second navigation level
 const POSSIBLE_DIVISION_TYPES = ['chapter', 'section', 'subchapter'];
@@ -49,8 +50,8 @@ export function initializeNavigation($navBar, $text) {
     // pre-selected as part of the URL, find the text part it belongs to and use this as default.
     // If none is selected use the first part as default and display it.
     const fragmentId = getTargetFragment();
-    const preselectedAnno = getTargetElement(fragmentId, $divisions);
-    const initialDivision = getTargetDivision(preselectedAnno, divisionType);
+    const preselectedAnnoTarget = getTargetElement(fragmentId, $text);
+    const initialDivision = getTargetDivision(preselectedAnnoTarget, divisionType);
     currentDivisionLabel = initialDivision ? getDivisionLabel(initialDivision) : divisionLabels[0];
     selectDivision(currentDivisionLabel, $divisions);
     updateButtons(
@@ -107,11 +108,13 @@ export function initializeNavigation($navBar, $text) {
     //console.log('make navbar visible');
     $navBar.classList.remove('is-hidden');
 
-    if (preselectedAnno !== undefined) {
+    if (preselectedAnnoTarget !== null) {
+      const preselectedAnnotationId = getTargetAnnotationId();
       setTimeout(() => {
-        preselectedAnno.scrollIntoView(true, {
+        preselectedAnnoTarget.scrollIntoView(true, {
           behavior: 'smooth',
         });
+        navigateToAnnotation(preselectedAnnotationId);
       }, 100);
     }
   }
@@ -133,15 +136,15 @@ export function initializeNavigation($navBar, $text) {
  *  responsibilities.
  */
 // // TODO: merge this into the initializeNavbar function
-// export function navigateToAnnotation(targetAnnotationId) {
-//   if (targetAnnotationId) {
-//     selectAnnotation(null, encodeAnnoId(targetAnnotationId));
-//     const annoCard = document.getElementById('annotationCard');
-//     if (annoCard.classList.contains('is-hidden')) {
-//       toggleVisibility(annoCard);
-//     }
-//   }
-// }
+export function navigateToAnnotation(targetAnnotationId) {
+  if (targetAnnotationId) {
+    selectAnnotation(null, encodeAnnoId(targetAnnotationId));
+    const annoCard = document.getElementById('annotationCard');
+    if (annoCard.classList.contains('is-hidden')) {
+      toggleVisibility(annoCard);
+    }
+  }
+}
 
 /**
  * If an annotation is pre-selected via URL param, retrieve its Element in the text.

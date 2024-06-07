@@ -1,73 +1,70 @@
 // external modules
-//import { $ } from 'jquery';
-import '../utils/metadataeditor';
-// internal modules
-import { encodeAnnoId, fillMetaDataEditorTable, toggleVisibility, toggleExpand } from '../utils';
-import {
-  getAnnotationData,
-  deleteAnnotationData,
-  deleteBodyData,
-  updateBodyData,
-  updateTargetData,
-  updateTargetAndBodyData,
-} from '../../texteditor-ng/data';
-import {
-  modifySelection,
-  saveModification,
-  updateTarget,
-  cancelModification,
-} from '../../texteditor-ng/targetBuilding';
-import { makeTargetsCompatible, checkIsTargetCompatible } from '../../texteditor-ng/utils';
-import { updateDisplay, highlightSelectedAnnotationsTarget, removeStyles } from '../../texteditor-ng/highlighting';
-import { getMRWAnnoSelectedText } from '../../texteditor-ng/utils/projectSpecific';
+import { $ } from 'jquery';
 
 // dummy functions, which have to be replaced/implemented
+function deleteAnnotation(annoId) {
+  return;
+}
+function deleteBody(annoId, bodyIndex) {
+  return;
+}
+function toggleExpand() {
+  return;
+}
 function pickTemplate() {
   return;
 }
-
-// TODO: CUSTOMIZE to be the correct function for your project case
-// - updateTargetData is the standard function to update a target, it will only update the target
-// - updateTargetAndBodyData is the function used by CRC1475 to update the target and the body, which
-//   stores the selected text (describing body)
-const targetUpdateCallback = updateTargetAndBodyData;
+function encodeAnnoId() {
+  return;
+}
+function modifySelection() {
+  return;
+}
+function saveModification() {
+  return;
+}
+function cancelModification() {
+  return;
+}
+function completeFormDataModel() {
+  return;
+}
+function getMRWAnnoSelectedText() {
+  return;
+}
+function updateDisplay() {
+  return;
+}
+function checkIsTargetCompatible() {
+  return;
+}
+function makeTargetsCompatible() {
+  return;
+}
 
 /**
  * Main entry point to handle a user interaction to select an annotation
- * by clicking on it. It will get the annotations data, create the annotationCard
+ * by clicking on it. It will get the annotations data, create the textCard
  * and highlight the selected words (if a text is present).
  *
- * @param {String} annoId single encoded ID of the annotation, that was selected
+ * @param {String} annoId ID of the annotation, that was selected
  * @param {Object} [hooks] containing an array for various hooks
- * @returns {Object} selectedAnnotation the selected annotation or an empty object, if the
- * card could not be created
+ * @returns {Object} selectedAnnotation the selected annotation
  */
-export async function selectAnnotation(_event, annoId, hooks = {}) {
-  let data = await getData(annoId);
-
-  // exit if there is a problem with the data
-  if (data == null) {
-    console.error('Could not get data and create the annotation card for ', annoId);
-    return {};
-  }
-
-  if (hooks.manipulatingData) {
-    hooks.manipulatingData.forEach((hook) => {
-      data = hook(data);
-    });
-  }
+export async function selectAnnotation(annoId, hooks = {}) {
+  let data = getData(annoId);
 
   let $annotationDiv = document.getElementById('annotationCard');
 
-  // removing old annotationCard
+  // removing old textCard
   while ($annotationDiv.lastElementChild) {
     $annotationDiv.removeChild($annotationDiv.lastElementChild);
   }
 
-  // creating new annotationCard
+  // creating new textCard
   $annotationDiv = createAnnotationDiv(data, $annotationDiv, hooks);
-  if (hooks.postAnnotationCardCreation) {
-    hooks.postAnnotationCardCreation.forEach((hook) => {
+  if (hooks.postTextCardCreation) {
+    hooks.postTextCardCreation.forEach((hook) => {
       hook($annotationDiv);
     });
   }
@@ -76,10 +73,10 @@ export async function selectAnnotation(_event, annoId, hooks = {}) {
 
   // highlight the selected words
   if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
-    highlightSelectedAnnotationsTarget(selectedAnnotation);
+    highlightSelectedWords(selectedAnnotation);
   }
 
-  return [selectedAnnotation, $annotationDiv];
+  return selectedAnnotation;
 }
 
 // creation of various elements
@@ -94,17 +91,11 @@ export async function selectAnnotation(_event, annoId, hooks = {}) {
  * @returns {Element} filled div
  */
 function createAnnotationDiv(annotationData, $annotationDiv, hooks = {}) {
-  // TODO: Cutsomize the following arrays. You can:
-  // - remove fields from the form entirely by removing them from "headerFields"
-  // (some are necessary though)
-  // - remove them from the display by adding them to "omitFields"
-  // - make certain fields in the horizontal view read-only
-
+  // adding the JSONForm for the full annotation
   const headerFields = ['created', 'creators', 'modified', 'generator', 'motivation', 'target', 'via'];
   const omitFields = ['type', 'selector', 'fullJson', 'annotationId', 'motivation', 'created'];
   // field (bodies with purposes listed here) that can be edited in the horizontal view
   const editableFields = ['tagging', 'commenting', 'identifying', 'classifying'];
-  // adding the JSONForm for the full annotation
   let formDataModel;
   // using Destructuring assignment here, see:
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
@@ -122,18 +113,13 @@ function createAnnotationDiv(annotationData, $annotationDiv, hooks = {}) {
   // merging the tags and textCards
   const bodies = mergeBodies(annotationData);
 
-  // creating the container for and adding the JSONForms for each body.
-  // The container has to be created first, as JSONForm appends the form
-  // to the container. If the container is not present in the DOM, JSONForm
-  // can't append the form to it.
+  // adding the JSONForms for each body
   bodies.forEach((body, index) => {
     body = timestampsToISOString(body);
 
-    // create the bodyCard (container for the JSONForm) and append it to the DOM
     const $bodyCard = createBodyCard(annotationData.id, body, index, omitFields, editableFields, formDataModel, hooks);
+
     $annotationDiv.append($bodyCard);
-    // create the JSONForm for the body
-    createAndAppendBodyForms(body, omitFields, editableFields, formDataModel, hooks);
   });
 
   // postAppendingBodiesHook
@@ -141,17 +127,13 @@ function createAnnotationDiv(annotationData, $annotationDiv, hooks = {}) {
   if (hooks.postAppendingBodies) {
     hooks.postAppendingBodies.forEach((hook) => hook());
   }
-
-  if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
-    appendTextTargetModificationButtons(annotationData, $annotationDiv);
-  }
   return $annotationDiv;
 }
 
 /**
  * Create a div element holding the information from one body
  *
- * @param {String} annoId single encoded the id of the annotaiton
+ * @param {String} annoId the id of the annotaiton
  * @param {Object} body the body as JSON
  * @param {number} index the index of the body in the bodies array
  * @param {Array} omitFields holds fields that should not be rendered
@@ -169,10 +151,10 @@ function createBodyCard(annoId, body, index, omitFields, editableFields, formDat
   $bodyCard.append($bodyRowDiv);
   // create the bodyDiv and append it to the bodyRowDiv
   const $bodyDiv = createBodyDiv(body);
-  const $iconRow = createIconRow(false, annoId, body, index);
-  $bodyDiv.append($iconRow);
-  const $bodyFormHorizontal = createBodyFormHorizontal(body);
+  const $bodyFormHorizontal = createBodyFormHorizontal();
   $bodyDiv.append($bodyFormHorizontal);
+  const $iconRow = createIconRow(false, annoId, index);
+  $bodyDiv.append($iconRow);
   $bodyRowDiv.append($bodyDiv);
 
   // create the formRowDiv
@@ -181,6 +163,29 @@ function createBodyCard(annoId, body, index, omitFields, editableFields, formDat
   $formRowDiv.append($bodyForm);
   $bodyCard.append($formRowDiv);
 
+  // create the two JSONForms and append them
+  // create the expandable vertical JSONForm
+  // using Destructuring assignment here, see:
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
+  const [formBodyDataModel, uiForm] = getFormBodyDataModelAndUiForm(body, omitFields, formDataModel);
+  appendBodyForm(formBodyDataModel, uiForm, body);
+  // create the hoirzontal ("quick view") JSONForm
+  const [operationHorizontal, formBodyDataModelHorizontal, uiFormHorizontal] = getFormBodyDataModelAndUiFormHorizontal(
+    body,
+    omitFields,
+    editableFields,
+  );
+
+  // as we don't want to display the URI, but the actual text of the linked mrw-annotation
+  // the resource passed to the metadataeditorForm() via the options needs to have the URI
+  // replaced with the text of the linked mrw-annotation. The actual bodies[body] should stay
+  // intact though, so bodies[body] will be deep copied
+  let modifiedBody = JSON.parse(JSON.stringify(body));
+  if (hooks.preHorizontalCreation) {
+    modifiedBody = hooks.preHorizontalCreation.forEach((hook) => hook(body));
+  }
+
+  appendBodyFormHorizontal(operationHorizontal, formBodyDataModelHorizontal, uiFormHorizontal, modifiedBody);
   return $bodyCard;
 }
 
@@ -224,7 +229,6 @@ function createFormRowDiv() {
   const $formRowDiv = document.createElement('div');
   $formRowDiv.classList.add('row');
   $formRowDiv.classList.add('is-full-width');
-  $formRowDiv.classList.add('is-hidden');
   return $formRowDiv;
 }
 
@@ -271,7 +275,7 @@ function createBodyFormHorizontal(body) {
  * Create an icon html element with a callback to delete an annotation/body
  *
  * @param {String} elementId of the delete icon
- * Note: This should match 'deleteAnnotation' or 'deleteBody' depending on what
+ * Note: This should match 'deleteAnnotation' or 'delete$bodyId' depending on what
  * you want to delete and match the corresponding callback
  * @param {Function} callback to be added to the delete icon for the onClick event.
  * Note: This callback should be deleteAnnotation/deleteBody depending on what you
@@ -311,7 +315,7 @@ export function createDeleteIcon(elementId, callback) {
 /**
  * Create an icon html element to add a body
  *
- * @param {String} annoId single encoded id of the annotation
+ * @param {String} annoId id of the annotation
  * @returns {Element} $addBodyIcon that was created
  */
 export function createAddBodyIcon(annoId) {
@@ -344,9 +348,8 @@ export function createExpandIcon(bodyIndex) {
   $expandIcon.classList.add('bx-chevron-right');
   //expand.style.color = "#b5b5be";
   $expandIcon.addEventListener('click', () => {
-    //console.log(this.id);
-    const $ancestorDiv = $expandIcon.parentNode.parentNode.parentNode.nextElementSibling;
-    toggleExpand($ancestorDiv, $expandIcon);
+    console.log(this.id);
+    toggleExpand($expandIcon.parentNode.parentNode.parentNode.nextElementSibling);
     //toggleExpand(document.getElementById(this.id).parentNode.parentNode.parentNode.nextElementSibling);
   });
   return $expandIcon;
@@ -359,14 +362,12 @@ export function createExpandIcon(bodyIndex) {
  *
  * @param {Boolean} isAnnotationRow to decide if the icon row should be created
  * for the annotation card or for a body card
- * @param {String} annoId single encoded id of the annotation
- * The following parameters are needed in the case a
+ * @param {String} annoId id of the annotation
+ * @param {String} bodyIndex the index/number of the body. It is needed in the case a
  * body card row has to be created (if 'isAnnotationRow' is false)
- * @param {String} bodyId id of the body
- * @param {String} bodyIndex the index/number of the body
  * @returns {Element} $iconRow that was created
  */
-export function createIconRow(isAnnotationRow, annoId, body, bodyIndex) {
+export function createIconRow(isAnnotationRow, annoId, bodyIndex) {
   const $iconRow = document.createElement('div');
   if (isAnnotationRow) {
     // create icon row for annotation card
@@ -375,9 +376,7 @@ export function createIconRow(isAnnotationRow, annoId, body, bodyIndex) {
     // create and append child elements
     const $addBodyIcon = createAddBodyIcon(annoId);
     $iconRow.append($addBodyIcon);
-    const $annoDeleteIcon = createDeleteIcon('deleteAnnotation', (_event) => {
-      deleteAnnotation(annoId);
-    });
+    const $annoDeleteIcon = createDeleteIcon('deleteAnnotation', deleteAnnotation(annoId));
     $iconRow.append($annoDeleteIcon);
     // add stlying
     $iconRow.classList.add('is-right');
@@ -388,12 +387,42 @@ export function createIconRow(isAnnotationRow, annoId, body, bodyIndex) {
     // create and append child elements
     const $expandIcon = createExpandIcon('expand' + bodyIndex);
     $iconRow.append($expandIcon);
-    const $bodyDeleteIcon = createDeleteIcon('delete' + bodyIndex, (_event) => {
-      deleteBody(annoId, body);
-    });
+    const $bodyDeleteIcon = createDeleteIcon('delete' + bodyIndex, deleteBody(annoId, bodyIndex));
     $iconRow.append($bodyDeleteIcon);
   }
   return $iconRow;
+}
+
+// TODO: implement this
+async function getData(annoId) {
+  let data; // fetch data =
+  // converting timestamps to ISOStrings
+  data = timestampsToISOString(data);
+
+  // make targets compatible for the new textEditor, if necessary
+  if (document.getElementById('TEI') != null) {
+    if (!checkIsTargetCompatible(data)) {
+      data.targets = makeTargetsCompatible(data);
+    }
+  }
+
+  return data;
+}
+
+/**
+ * highlight the ttarget (selected words) of the selected annotation
+ *
+ * @param {Object} selectedAnnotation annotation selected
+ */
+function highlightSelectedWords(selectedAnnotation) {
+  // highlight words targetted by the currently selected annotation
+  // remove old highlights (TODO: include this in removeStyles(el) in editor_xml.js)
+  document.querySelectorAll('.selected').forEach((element) => element.classList.remove('selected'));
+  // add a class to all the targets of the selected annotation
+  selectedAnnotation.targets.forEach((target) => {
+    const targetId = target.selector.xPath.split('"')[1];
+    document.getElementById(targetId).classList.add('selected');
+  });
 }
 
 // JSONForm creation
@@ -401,7 +430,7 @@ export function createIconRow(isAnnotationRow, annoId, body, bodyIndex) {
  * Append the annotation form created by the metadataEditor.js (uses JSONForm) to the
  * annotation div
  *
- * @param {Element} annotationDiv the div holding the annotationCard
+ * @param {Element} annotationDiv the div holding the textcard
  * @param {Object} data the annotation as JSON
  * @param {Array} headerFields holds the fields to be added to the form
  * @param {Array} omitFields holds the fields to NOT be added to the form
@@ -429,40 +458,6 @@ function appendAnnotationForm($annotationDiv, data, headerFields, omitFields) {
 }
 
 /**
- *
- * @param {Object} body the body as JSON
- * @param {Array} omitFields holds fields that should not be rendered
- * @param {Array} editableFields holds fields that should not be editeable
- * @param {Object} formDataModel used while creating the annotation form
- * @param {Object} [hooks] containing an array for the hook to be called at "preHorizontalCreation"
- */
-function createAndAppendBodyForms(body, omitFields, editableFields, formDataModel, hooks = {}) {
-  // create the two JSONForms and append them
-  // create the expandable vertical JSONForm
-  // using Destructuring assignment here, see:
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
-  const [formBodyDataModel, uiForm] = getFormBodyDataModelAndUiForm(body, omitFields, formDataModel);
-  createAndAppendBodyForm(formBodyDataModel, uiForm, body);
-  // create the hoirzontal ("quick view") JSONForm
-  const [operationHorizontal, formBodyDataModelHorizontal, uiFormHorizontal] = getFormBodyDataModelAndUiFormHorizontal(
-    body,
-    omitFields,
-    editableFields,
-  );
-
-  // as we don't want to display the URI, but the actual text of the linked mrw-annotation
-  // the resource passed to the metadataeditorForm() via the options needs to have the URI
-  // replaced with the text of the linked mrw-annotation. The actual bodies[body] should stay
-  // intact though, so bodies[body] will be deep copied
-  let modifiedBody = JSON.parse(JSON.stringify(body));
-  if (hooks.preHorizontalCreation) {
-    modifiedBody = hooks.preHorizontalCreation.forEach((hook) => hook(body));
-  }
-
-  createAndAppendBodyFormHorizontal(operationHorizontal, formBodyDataModelHorizontal, uiFormHorizontal, modifiedBody);
-}
-
-/**
  * Append the vertical form for a body created by the metadataEditor.js
  * (uses JSONForm) to the annotation div
  *
@@ -470,11 +465,54 @@ function createAndAppendBodyForms(body, omitFields, editableFields, formDataMode
  * @param {Object} uiForm the uiForm used by JSONForms
  * @param {Object} body the body as JSON
  */
-function createAndAppendBodyForm(formBodyDataModel, uiForm, body) {
+function appendBodyForm(formBodyDataModel, uiForm, body) {
   const options = { operation: 'UPDATE', dataModel: formBodyDataModel, uiForm: uiForm, resource: body };
   $('#form' + body.id).metadataeditorForm(options, async function onSubmitValid(value) {
-    const annoId = document.getElementById('iconRowTop').title;
-    await updateBody(annoId, value);
+    await updateBody(value);
+  });
+}
+
+async function updateBody(value) {
+  //console.log(value);
+  var jsonObject = JSON.parse(value);
+
+  var endpoint;
+  var annoIdEncoded = encodeAnnoId(document.getElementById('iconRowTop').title);
+  //console.log(document.activeElement);
+
+  if (jsonObject.purpose === 'tagging') {
+    endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + '/tags/' + jsonObject.id;
+  } else {
+    endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + '/bodies/' + jsonObject.id;
+  }
+
+  $.ajax({
+    type: 'PUT',
+    url: endpoint,
+    data: value,
+    headers: {
+      'Content-Type': 'application/json',
+    },
+
+    success: function (_responseData) {
+      //console.log(responseData);
+      selectAnnotation(null, annoIdEncoded);
+      // TODO: this is just a bandaid for now as it only updates the first
+      // entry of the tags array and not only the updated tag
+      // For now in (CRC1475) an annotation only has one tag anyways.
+
+      // updating the display for text annotation
+      // checking if TEI-element is null. it is defined for text annotation,
+      // but not for image annotation
+      if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
+        // redraw
+        updateDisplay();
+      }
+    },
+
+    error: function (errorData) {
+      console.error('Body update failed: ', errorData);
+    },
   });
 }
 
@@ -486,40 +524,57 @@ function createAndAppendBodyForm(formBodyDataModel, uiForm, body) {
  * @param {Object} formBodyDataModelHorizontal the dataModel used by JSONForms
  * @param {Object} uiFormHorizontal the uiForm used by JSONForms
  * @param {Object} modifiedBody the body as JSON
- * @returns {Element} the horizontal form
  */
-function createAndAppendBodyFormHorizontal(
-  operationHorizontal,
-  formBodyDataModelHorizontal,
-  uiFormHorizontal,
-  modifiedBody,
-) {
+function appendBodyFormHorizontal(operationHorizontal, formBodyDataModelHorizontal, uiFormHorizontal, modifiedBody) {
   const optionsHorizontal = {
     operation: operationHorizontal,
     dataModel: formBodyDataModelHorizontal,
     uiForm: uiFormHorizontal,
     resource: modifiedBody,
   };
-  $('#formHorizontal' + modifiedBody.id).metadataeditorForm(optionsHorizontal, async function onSubmitValid(value) {
-    const annoId = document.getElementById('iconRowTop').title;
-    await updateBody(annoId, value);
+  $('#formHorizontal' + modifiedBody.id).metadataeditorForm(optionsHorizontal, function onSubmitValid(value) {
+    console.log(value);
+    var jsonObject = JSON.parse(value);
+
+    var endpoint;
+    var annoIdEncoded = encodeAnnoId(document.getElementById('iconRowTop').title);
+    //console.log(document.activeElement);
+
+    if (jsonObject.purpose === 'tagging') {
+      endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + '/tags/' + jsonObject.id;
+    } else {
+      endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + '/bodies/' + jsonObject.id;
+    }
+
+    $.ajax({
+      type: 'PUT',
+      url: endpoint,
+      data: value,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+
+      success: function (_responseData) {
+        //console.log(responseData);
+        selectAnnotation(null, annoIdEncoded);
+        // TODO: this is just a bandaid for now as it only updates the first
+        // entry of the tags array and not only the updated tag
+        // For now in (CRC1475) an annotation only has one tag anyways.
+
+        // updating the display for text annotation
+        // checking if TEI-element is null. it is defined for text annotation,
+        // but not for image annotation
+        if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
+          // redraw
+          updateDisplay();
+        }
+      },
+
+      error: function (errorData) {
+        console.error('Body update failed: ', errorData);
+      },
+    });
   });
-
-  let $horizontalForm = document.getElementById('formHorizontal' + modifiedBody.id);
-  $horizontalForm = modifyBodyFormHorizontal($horizontalForm, modifiedBody);
-  return $horizontalForm;
-}
-
-/**
- * - remove a wrapping element from the form
- * - style each input of the form and attach an eventListener to the button, that checks if the value changes
- * - manipulate and disable the button of the form
- *
- * @param {Element} $horizontalForm
- * @param {Object} modifiedBody the body as JSON
- * @returns the modified form
- */
-function modifyBodyFormHorizontal($horizontalForm, modifiedBody) {
   // styling of the horizontal form
   // this is done after the form is created as the forms style can't be changed during creation
   // TODO: move parts of this to css
@@ -527,14 +582,14 @@ function modifyBodyFormHorizontal($horizontalForm, modifiedBody) {
   // remove the wrapping fieldset. the form can't be created without the fieldset
   // due to the code in metadataeditor.js (eg. line 485) requires a JSON object
   // https://stackoverflow.com/questions/19261197/how-can-i-remove-wrapper-parent-element-without-removing-the-child
-  let fieldsetHorizontal = $horizontalForm.firstChild.firstChild;
+  let fieldsetHorizontal = document.getElementById('formHorizontal' + modifiedBody.id).firstChild.firstChild;
   fieldsetHorizontal.replaceWith(...fieldsetHorizontal.childNodes);
 
-  const inputButtonHorizontal = $horizontalForm.querySelectorAll('input[type="submit"]')[0];
-  // TODO: check if this really needs to be a loop. As this modifies only one form,
-  // the loop might be unnecessary
+  const formHorizontal = document.getElementById('formHorizontal' + modifiedBody.id);
+  const inputButtonHorizontal = formHorizontal.querySelectorAll('input[type="submit"]')[0];
+  // display everything in one line
   // improve readibility of the value of the "disabled" input fields
-  $horizontalForm.querySelectorAll('input[type="text"]').forEach((input) => {
+  formHorizontal.querySelectorAll('input[type="text"]').forEach((input) => {
     if (input.name === 'value') {
       input.style.color = 'black';
       input.style.opacity = 1;
@@ -557,8 +612,6 @@ function modifyBodyFormHorizontal($horizontalForm, modifiedBody) {
     inputButtonHorizontal.disabled = true;
     inputButtonHorizontal.classList.add('horizontalFormInput');
   }
-
-  return $horizontalForm;
 }
 
 // JSONForm dataModel and uiForm
@@ -581,7 +634,7 @@ function getFormBodyDataModelAndUiForm(body, omitFields, formDataModel) {
     items: [],
   };
 
-  Object.keys(body).forEach((key) => {
+  body.forEach((key) => {
     if (Object.prototype.hasOwnProperty.call(body, key)) {
       // TODO: The following line might be useles. Check if it can be left out and
       // then remove "formDataModel" from the function parameters and calls
@@ -633,7 +686,7 @@ function getFormBodyDataModelAndUiFormHorizontal(body, omitFields, editableField
     items: [],
   };
 
-  Object.keys(body).forEach((key) => {
+  body.forEach((key) => {
     //console.log(key);
     //console.log(bodies[body]);
     if (Object.prototype.hasOwnProperty.call(body, key)) {
@@ -664,21 +717,11 @@ function getFormBodyDataModelAndUiFormHorizontal(body, omitFields, editableField
 /**
  * Merges all the bodies of an annotation (tags and textcards) into one array
  *
- * @param {Object} data of the annotation
- * @returns {Array} of Objects holding both the bodies (textcards) and tags of the annotation
+ * @param {Object} data
+ * @returns {Array} of Objects
  */
 function mergeBodies(data) {
-  // let bodies;
-  // if (data.tags) {
-  //   if (data.textCards) {
-  //     bodies = data.tags.concat(data.textCards);
-  //   }
-  // } else if (data.textCards) {
-  //   bodies = data.textCards;
-  // } else {
-  //   console.error('No bodies (tags/textCards) available in: ', data);
-  // }
-  return data.tags.concat(data.textCards);
+  return data.tags.concat(data.bodies);
 }
 
 /**
@@ -688,7 +731,7 @@ function mergeBodies(data) {
  * @param {Object} object can be a body or annotation JSONObject
  * @returns {Object} with timestamps converted to ISOString
  */
-export function timestampsToISOString(object) {
+function timestampsToISOString(object) {
   if (object.created) {
     object.created = new Date(object.created.seconds * 1000 + object.created.nanos / 1000000).toISOString();
   }
@@ -700,262 +743,12 @@ export function timestampsToISOString(object) {
   return object;
 }
 
-// HELPER FUNCTIONS
-
-// some helpers
-
-function completeFormDataModel(responseJson, formDataModel, addition, omitFields) {
-  if (Array.isArray(responseJson[addition])) {
-    if (responseJson[addition][0] instanceof Object && omitFields.indexOf(addition) === -1) {
-      var properties = {};
-      var keys = [];
-      for (let jsonObject in responseJson[addition]) {
-        keys.push(Object.keys(responseJson[addition][jsonObject]));
-      }
-
-      var uniqueKeys = [...new Set(keys.flat())];
-
-      for (let key in uniqueKeys) {
-        if (omitFields.indexOf(uniqueKeys[key]) === -1) {
-          properties[uniqueKeys[key]] = {
-            type: 'string',
-            title: uniqueKeys[key],
-          };
-        }
-      }
-
-      formDataModel.properties[addition] = {
-        type: 'array',
-        items: {
-          type: 'object',
-          title: addition,
-          properties: properties,
-        },
-      };
-    } else if (omitFields.indexOf(addition) === -1) {
-      formDataModel.properties[addition] = {
-        type: 'array',
-        items: {
-          type: 'string',
-          title: addition,
-        },
-      };
-    }
-  } else if (responseJson[addition] instanceof Object && omitFields.indexOf(addition) === -1) {
-    var objectKeys = Object.keys(responseJson[addition]);
-
-    var objectProperties = {
-      type: 'object',
-      properties: {},
-    };
-
-    for (let key in objectKeys) {
-      if (omitFields.indexOf(objectKeys[key]) === -1) {
-        objectProperties.properties[objectKeys[key]] = {
-          type: 'string',
-          title: objectKeys[key],
-        };
-      }
-    }
-
-    formDataModel.properties[addition] = objectProperties;
-  } else {
-    // changes to work for the "quick-view"
-    let title = addition;
-    // if the formDataModel entry for the "value" of the body is created
-    // relpace the title with the "purpose" of the body
-    if (addition === 'value') {
-      // title = responseJson.purpose;
-      // TODO: CUSTOMISE the text to be displayed on the "quick-view" of the
-      // textCard
-      switch (responseJson.purpose) {
-        case 'tagging':
-          title = 'Tag: ';
-          break;
-        case 'linking':
-          title = 'Linked mrw-annotation: ';
-          break;
-        case 'classifying':
-          title = 'Classification: ';
-          break;
-        case 'describing':
-          title = 'Selected text: ';
-          break;
-        case 'identifying':
-          title = 'Label: ';
-          break;
-        case 'assessing':
-          title = 'Analysis: ';
-          break;
-        case 'commenting':
-          title = 'Comment: ';
-          break;
-        default:
-          title = responseJson.purpose + ': ';
-      }
-    }
-    // console.log(title);
-    if (omitFields.indexOf(addition) === -1) {
-      formDataModel.properties[addition] = {
-        type: 'string',
-        title: title,
-      };
-    }
-  }
-  return formDataModel;
-}
-
-// data helpers
-/**
- * gets the data needed and transfroms it accordingly to create the annotationCard
- *
- * @param {String} annoId single encoded Id of the annotation
- * @returns {Object} the annotation as Object
- */
-async function getData(annoId) {
-  let data = null;
-
-  try {
-    data = await getAnnotationData(annoId);
-    // converting timestamps to ISOStrings
-    data = timestampsToISOString(data);
-
-    // make targets compatible for the new textEditor, if necessary
-    if (document.getElementById('TEI') != null) {
-      if (!checkIsTargetCompatible(data)) {
-        data.targets = makeTargetsCompatible(data);
-      }
-    }
-  } catch (exception) {
-    console.error(exception);
-  }
-  return data;
-}
-
-/**
- * update a body and reselect the annotation to update the annotationCard and update the display.
- * This is the callback for the "Save" buttons of the JSONForms (vertical and horizontal).
- *
- * @param {String} annoId single encoded Id of the annotation to be updated
- * @param {String} value of the body, containing the body Id and the new value
- * @returns {Boolean} true, if the body was succesfully updated, false, if the update failed
- */
-async function updateBody(annoId, value) {
-  console.log(value);
-  let bodyUpdated = false;
-  try {
-    const response = await updateBodyData(annoId, value);
-    bodyUpdated = true;
-    selectAnnotation(null, annoId);
-    // updating the display for text annotation
-    // checking if TEI-element is null. it is defined for text annotation,
-    // but not for image annotation
-    if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
-      // redraw
-      updateDisplay();
-    }
-  } catch (exception) {
-    console.error(exception);
-  }
-  return bodyUpdated;
-}
-
-/**
- * Helper function to delete a body from an annotation. This is the callback for the
- * $deleteBodyIcon.
- *
- * @param {String} annoId single encoded id of the annotation, where to body has to be deleted
- * @param {Object} body to be deleted
- * @returns {Boolean} true, if the body was succesfully deleted, false, if the user
- * canceled the process or deletion failed
- */
-async function deleteBody(annoId, body) {
-  let confirmation = confirm('Are you sure to delete this body?');
-
-  if (confirmation) {
-    try {
-      const response = await deleteBodyData(annoId, body);
-      selectAnnotation(null, annoId);
-      if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
-        // redraw
-        updateDisplay();
-      }
-    } catch (exception) {
-      console.error(exception);
-      confirmation = false;
-    }
-  }
-  return confirmation;
-}
-
-/**
- * Helper function to an annotation. This is the callback for the $deleteAnnotationIcon.
- *
- * @param {String} annoId single encoded id of the annotation, which has to be deleted
- * @returns {Boolean} true, if the annotation was succesfully deleted, false, if the user
- * canceled the process or deletion failed
- */
-async function deleteAnnotation(annoId) {
-  let confirmation = confirm('Are you sure to delete this annotation?');
-
-  if (confirmation) {
-    try {
-      const response = await deleteAnnotationData(annoId);
-      const $annotationDiv = document.getElementById('annotationCard');
-      if (!$annotationDiv.classList.contains('is-hidden')) {
-        toggleVisibility($annotationDiv);
-      }
-
-      // updating the display for image annotation
-      // checking if paper is defined. it is defined for image annotation,
-      // but not for text annotation
-      // eslint-disable-next-line no-undef
-      if (window.PAPER != undefined) {
-        // eslint-disable-next-line no-undef
-        window.PAPER.forEach(function (element) {
-          if (element.annoId === annoId) {
-            element.remove();
-          }
-        });
-      }
-
-      // this for-loop is unnecessary for the textEditor
-      // as the updateDisplay()-function updates the annoJson as well
-      // the imageEditor still needs the for-loop
-      for (let anno in window.ANNOJSON) {
-        if (window.ANNOJSON[anno].id === annoId) {
-          //console.log(annoId + " this must go!")
-          window.ANNOJSON.splice(anno, 1);
-        }
-      }
-
-      // updating the display for text annotation
-      // checking if TEI-element is null. it is defined for text annotation,
-      // but not for image annotation
-      if (document.getElementById('TEI') != null) {
-        // redrawing all annotations
-        updateDisplay();
-        // removing the highlighting of the now deleted annotation
-        removeStyles(document.getElementById('TEI'), ['selected']);
-      }
-
-      // maybe move it within the if clause?
-      //console.log(annoJson);
-      fillMetaDataEditorTable(window.ANNOJSON);
-    } catch (exception) {
-      console.error(exception);
-      confirmation = false;
-    }
-  }
-  return confirmation;
-}
-
 // HOOKS
 /**
  * Replaces the value of the body, which is an URI of an annotation, with the
  * selected text of that annotation
  *
- * @param {String} annoId single encoded id of the annotation
+ * @param {String} annoId id of the annotation
  * @param {Object} body that will get its value changed, if it is a linked
  * mrw-annotation
  * @returns {Object} body with the new value
@@ -967,18 +760,18 @@ async function preHorizontalCreationGetLinkingAnno(annoId, body) {
 }
 
 /**
- * appends buttons to edit the selected text/target of an annotation to the annotationCard div
+ * appends buttons to edit the selected text/target of an annotation to the textcard div
  *
- * @param {Element} $annotationDiv the div holding the annotationCard
+ * @param {Element} $annotationDiv the div holding the textcard
  * @returns {Element} $annotationDiv after the buttons got appended
  */
-function appendTextTargetModificationButtons(annotationData, $annotationDiv) {
+function postTextCardCreationTargetModificationButtons($annotationDiv) {
   if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
-    const $buttonModifySelection = document.createElement('button');
+    var $buttonModifySelection = document.createElement('button');
     $buttonModifySelection.innerHTML = 'Modify Selection';
     $buttonModifySelection.id = 'buttonModifySelection';
     $buttonModifySelection.addEventListener('mousedown', (event) => {
-      modifySelection(event, annotationData);
+      modifySelection(event, window.SELECTED_ANNOTATION);
     });
 
     var $buttonSaveModification = document.createElement('button');
@@ -988,7 +781,7 @@ function appendTextTargetModificationButtons(annotationData, $annotationDiv) {
     $buttonSaveModification.disabled = true;
     $buttonSaveModification.classList.add('is-hidden');
     $buttonSaveModification.addEventListener('mousedown', (event) => {
-      saveModification(event, window.getSelection(), annotationData);
+      saveModification(event, window.getSelection(), window.SELECTED_ANNOTATION);
     });
 
     var $buttonCancelModification = document.createElement('button');
@@ -1003,35 +796,7 @@ function appendTextTargetModificationButtons(annotationData, $annotationDiv) {
     $annotationDiv.append($buttonModifySelection);
     $annotationDiv.append($buttonSaveModification);
     $annotationDiv.append($buttonCancelModification);
-
-    // strictly speaking this is not part of the annotation card, but it is the
-    // last step of the target update for texts and all the other buttons/eventListeners
-    // are getting attached here
-    // updateTargetButton, which is present in the modal
-    const $updateTargetButton = document.getElementById('updateTargetButton');
-    $updateTargetButton.addEventListener('click', (event) => {
-      // pass the current selected annotation, the new Xpath stored in the 'updateSelection' element
-      // and the newly selected text stored in the 'newSelectedText' element
-      // TODO: fix, when it goes into production, bc then the innerHTML will only be
-      // the selected text without any "|"s
-      const newXPath = document.getElementById('updateSelection').dataset.newTargetXmlId;
-      const newSelectedText = document.getElementById('newSelectedText').children[0].innerHTML.split('|')[0];
-      updateTarget(event, targetUpdateCallback, annotationData, newXPath, newSelectedText);
-    });
+    document.getElementById('buttonCancelModification').addEventListener('mousedown', cancelModification);
   }
-
-  // strictly speaking this is not part of the annotation card, but it cancels
-  // the target update for texts and all the other buttons/eventListeners
-  // are getting attached here
-  // adding the closing functionality to text selection update modal
-  document.getElementById('closeButtonUpdate').addEventListener('click', function (_e) {
-    document.getElementById('updateSelection').classList.toggle('show-modal');
-    // document.getElementById('modifyButton').parentElement.classList.remove('active');
-    cancelModification();
-    // disabling the option to create an annotation. needed, because selecting text
-    // can be done before the mode was set to create by clicking the button after the text selection process
-    window.MODE = window.MODE_CLASS.View;
-    window.SELECTING_TEXT = false;
-  });
   return $annotationDiv;
 }

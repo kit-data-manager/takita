@@ -8,7 +8,10 @@ import CETEI from 'CETEIcean';
  */
 export function appendTEIDocument(xmlString, $teiElement, hooks = {}) {
   const $TEIDoc = prepareTEIDocument(xmlString, hooks);
+  // emptying the element
+  $teiElement.innerHTML = '';
   $teiElement.appendChild($TEIDoc);
+  return $TEIDoc;
 }
 
 export function prepareTEIDocument(xmlString, hooks = {}) {
@@ -20,7 +23,7 @@ export function prepareTEIDocument(xmlString, hooks = {}) {
       xmlString = hook(xmlString);
     });
   }
-
+  console.log('texloader ', xmlString);
   const $html = CETEIcean.makeHTML5(xmlString);
   const language = getTextLanguage($html);
   // Apply generic transformations, and optionally custom postApplyStyles hooks.

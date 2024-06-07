@@ -103,7 +103,7 @@ export async function updateBody(url, annoBodyData) {
  */
 export async function updateTarget(url, modifiedAnnotation) {
   return await fetch(url, {
-    body: modifiedAnnotation,
+    body: JSON.stringify(modifiedAnnotation),
     headers: { 'Content-Type': 'application/json' },
     method: 'PUT',
   });

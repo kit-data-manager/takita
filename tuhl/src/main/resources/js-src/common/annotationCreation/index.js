@@ -1,1 +1,1 @@
-export { createAnnotation } from './annotationCreation';
+export { createAnnotation, pickTemplate } from './annotationCreation';

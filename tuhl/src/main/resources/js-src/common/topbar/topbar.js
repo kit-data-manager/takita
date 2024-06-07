@@ -31,7 +31,7 @@ function goHome() {
 }
 
 function clickButton() {
-  let button = document.getElementById('editButton');
+  let button = document.getElementById('pseudonymEditButton');
   let input = document.getElementById('pseudonymInput');
   let edit = window.TL_VARIABLES.buttons.edit;
   let ok = window.TL_VARIABLES.buttons.ok;

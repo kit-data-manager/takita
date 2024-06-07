@@ -11,6 +11,7 @@ export { fetchText } from './text';
 export {
   createAnnotation,
   getAnnotation,
+  getAllAnnotations,
   createBody,
   updateBody,
   updateTarget,

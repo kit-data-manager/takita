@@ -350,10 +350,9 @@
             </form>
         </div>
     </div>
-    <script th:src="@{/js/texteditor.js}" type="module"></script>
+    <script th:src="@{/js/texteditor-ng.js}" type="module"></script>
 	<script th:inline="javascript">
         // thymeleaf template variables
-        let userName = /*[[${user.getName()}]]*/ 'default';
         /*<![CDATA[*/
         window.TL_VARIABLES = {
             "user" : {
@@ -366,8 +365,6 @@
         }
         /*]]>*/
         
-        // setting the editortype, so the js-code can be executed based on that distinction
-        window.EDITORTYPE = 'TEXT';
         // storing currentPageNumber as its needed for the label of a metaphor annotation
         window.CURRENTPAGENUMBER = /*[[${currentPage.pageNumber}]]*/ "default.number";
         // storing currentPageUrl as its needed for the target creation
@@ -377,51 +374,8 @@
         const linkToResource = window.CONTEXTPATH + "editor_rest/content/" + window.CURRENTPAGEID + "/" + [[${fileName}]];
 
         document.addEventListener("DOMContentLoaded", (_event) => {
-            // initializing the topbar
-            window.topbar.initializeTopbar();
-
-
-            // TODO: maybe the sidebar can be initilized after the text has loaded
-            // as there is no need for the sidebar, if there is no text.
-            // initializing the sidebar
-            window.sidebar.initializeSidebar(document.querySelector('.anno-side-bar'));
-            
-            // TODO: maybe the textEditor can be initilized after the text has loaded
-            // as there is no need for the textEditor, if there is no text. Furthermore
-            // textEditor.init() could then draw the annotations instead of the code
-            // in the html template
-            // initiliazing the editor
-            window.textEditor.init(document.body.getAttribute('data-field'));
-
-            // adding the TEI file to the DOM
-            window.textloader.loadText(linkToResource).then( () => {
-                // highlight all the annotated words
-                // check if the annotations are compatible with the code, i.e. have
-                // one xPath for each target and not one long xPath including all targets.
-                // Make them compatible, if they are not
-                window.textEditor.drawAnnos(JSON.parse
-                    (document.body.getAttribute('data-field'))
-                    .map(annotation => {
-                        if (!window.textEditor.checkIsTargetCompatible(annotation)){
-                            annotation.svg = window.textEditor.makeTargetsCompatible(annotation);
-                        }
-                        return annotation;
-                    })
-                );
-
-                // updating the sidebar, because maybe some buttons have to be added
-                window.sidebar.updateSidebar(window.TEXTLANGUAGE);
-
-                // display the annotation with the id stored in the url
-                const targetAnnotationId = window.navigation.getTargetAnnotationId();
-                if (targetAnnotationId) {
-                    window.navigation.navigateToAnnotation(targetAnnotationId);
-                }
-
-                // Construct and display a navigation bar.
-                const $navbar = document.getElementById('textNavBar');
-                window.navigation.initializeNavigation($navbar);
-            });
+            const annotationsString = document.body.getAttribute('data-field');
+            window.textEditor.initializeTextEditorComponent(linkToResource, annotationsString, window.TL_VARIABLES);
         });
 
 	   

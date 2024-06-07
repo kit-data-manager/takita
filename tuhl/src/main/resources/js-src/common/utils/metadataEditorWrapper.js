@@ -1,5 +1,6 @@
 // external modules
 import $ from 'jquery';
+import './metadataeditor';
 //internal modules
 import { deleteAnnotationData } from '../../texteditor-ng/data/annotations';
 import { encodeAnnoId } from './url';

@@ -1,5 +1,5 @@
 import { encodeAnnoId } from '../../common/utils';
-import { getColorNameFromEnumEntry } from '../../texteditor/annotationEditor/annotationCreation/creationTemplates';
+import { getColorNameFromEnumEntry } from '../utils';
 import {
   getAnnotation,
   getAllAnnotations,
@@ -70,8 +70,7 @@ export async function getAllAnnotationsData() {
 export async function createAnnotationData(annotationData) {
   const url = window.CONTEXTPATH + 'editor_rest/annotations/';
   const response = await createAnnotation(url, annotationData);
-  // TODO: find proper response code
-  if (response.status == 201) {
+  if (response.status == 200) {
     return await response.json();
   } else {
     throw new Error('Annotation creation failed with response: ', response);
@@ -93,8 +92,7 @@ export async function createBodyData(annoId, bodyData) {
   const url = window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + type;
 
   const response = await createBody(url, bodyData);
-  // TODO: find proper response code
-  if (response.status == 201) {
+  if (response.status == 200) {
     return await response.json();
   } else {
     throw new Error('Body creation failed with response: ', response);
@@ -120,6 +118,7 @@ export async function updateBodyData(annoId, newBody) {
   const url = window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + type + body.id;
 
   const response = await updateBody(url, newBody);
+  console.log(response);
   // TODO: find proper response code
   if (response.status == 200) {
     return await response.json();
@@ -146,7 +145,7 @@ export async function updateTargetData(anno, newTarget) {
   const url = window.CONTEXTPATH + 'editor_rest/annotations/' + idOfAnnotationToUpdate;
 
   const response = await updateTarget(url, annotationDataJson);
-
+  console.log(response);
   // TODO: find proper response code
   if (response.status == 200) {
     return await response.json();
@@ -173,10 +172,11 @@ export async function updateTargetAndBodyData(anno, newTarget, newText) {
     // if this fails an exception will be thrown and rethrown, but the body
     // update request will not be send
     targetUpdateResponse = await updateTargetData(anno, newTarget);
-
+    console.log(targetUpdateResponse);
     // update the respective body
     const newBody = createNewDescribingBody(targetUpdateResponse, newText);
     bodyUpdateResponse = await updateBodyData(anno.id, newBody);
+    console.log(bodyUpdateResponse);
 
     // pasre the response into a JSONObject
     targetUpdateResponse = await targetUpdateResponse.json();
@@ -230,9 +230,9 @@ function createNewDescribingBody(targetUpdateResponse, newText) {
 export async function deleteAnnotationData(annoId) {
   const annoIdEncoded = encodeAnnoId(annoId);
   const url = window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded;
-  const response = deleteAnnotation(url);
-  if (response == 204) {
-    return await response.json();
+  const response = await deleteAnnotation(url);
+  if (response.status == 204) {
+    return response;
   } else {
     throw new Error('Annotation deletion failed with response: ', response);
   }
@@ -326,11 +326,11 @@ export async function deleteBodyData(annoId, body) {
   const annoIdEncoded = encodeAnnoId(annoId);
   const type = body.purpose === 'tagging' ? '/tags/' : '/bodies/';
   const url = window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + type + body.id;
-
+  console.log(url);
   const response = await deleteBody(url);
-
+  console.log(response);
   if (response.status == 204) {
-    return await response.json();
+    return response;
   } else {
     throw new Error('Body deletion failed with response: ', response);
   }

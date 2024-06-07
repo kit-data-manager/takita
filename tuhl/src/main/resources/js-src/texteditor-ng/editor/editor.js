@@ -1,78 +1,41 @@
-import { encodeAnnoId, toggleOverview } from '../../common/utils';
-import { selectAnnotation } from '../../common/annotationDisplay';
-import { hideExpandedSidebar } from '../sidebar';
-import { checkIsTargetCompatible, makeTargetsCompatible } from './highlight';
-import { createTargetString } from './targetCreation';
-import { pickTemplate } from './annotationCreation/creationTemplates';
+import { encodeAnnoId, toggleVisibility } from '../../common/utils';
+import { selectAnnotation } from '../../common/annotationCard';
+import { collapseSidebar } from '../sidebar';
+import { createTargetString } from '../targetBuilding';
+import { pickTemplate } from '../../common/annotationCreation';
 import { hooks } from '../../projectspecific';
 
-window.ANNOJSON;
-
-// this is needed for editor.js (l.575ff.) to work atm
-window.PAPER;
-
-// globalSelectedAnnotation stores the annotation, that gets
-// selected by right clicking on a highlighted word
-// it is needed to
-// - edit/update the target of that annotation
-// - cycle through multiple annotations on one target and select them
-// - (CRC1475: to add a mrw-annotation to a metaphor annotation)
-window.SELECTED_ANNOTATION;
-
-// TODO: check if the textEditor actualy needs a "Mode"
-// Philipp can only think that it is necessary for the "onmouseup"-event,
-// which is used for the text selection
-window.MODE_CLASS = class Mode {
-  static View = new Mode('view');
-  static Create = new Mode('create');
-  static Modify = new Mode('modify');
-  static Move = new Mode('move');
-
-  constructor(name) {
-    this.name = name;
-  }
-};
-
-// TODO: check if the textEditor needs a MODE and SELECTING_TEXT
-window.MODE = window.MODE_CLASS.View;
-window.SELECTING_TEXT = false;
-
 /**
- * Initialize the textEditor with given annotations.
- * Parse the annotations into a JSON Object and store it at the window.objetc
+ * Initialize the textEditor with given annotations; currently the annotations
+ * are not used
  * Add eventlisteners for annotation selection, for starting/stopping annotation creation.
  *
- * @param {String} annotations passed from the java-model via the thymeleaf template.
- * Contains all annotations of a page/necesseray for the textEditor to work
+ * @param {Object} annotations annotations of a page, not used currently as they are only necessary
+ * for the eventListeners, which always need the current annotations stored in the window object.
  */
-export function initializeTextEditor(annotations) {
-  // fill the annoJson with the annotations passed by the java backend
-  window.ANNOJSON = JSON.parse(annotations);
-  // check if the annotations are compatible with the code, i.e. have
-  // one xPath for each target and not one long xPath including all targets.
-  // Make them compatible, if they are not
-  window.ANNOJSON = window.ANNOJSON.map((annotation) => {
-    if (!checkIsTargetCompatible(annotation)) {
-      annotation.svg = makeTargetsCompatible(annotation);
-    }
-    return annotation;
-  });
-
+export function initializeTextEditor(_annotations) {
   // bind eventHandlers to clicks and buttons
   // open textcard if rightclicking on a word that is highlighted due to it
   // having a css class, i.e. has an annotation
-  document.getElementById('TEI').oncontextmenu = function (event) {
+  document.getElementById('TEI').oncontextmenu = async function (event) {
     event.preventDefault();
-    const annotationCard = document.getElementById('annotationCard');
-    cycleAnnotations(event, window.ANNOJSON, annotationCard);
+    const $annotationCard = document.getElementById('annotationCard');
+    const currentSelectedAnnotation = window.SELECTED_ANNOTATION;
+    const newSelectedAnnotation = await cycleAnnotations(
+      event,
+      window.ANNOJSON,
+      $annotationCard,
+      currentSelectedAnnotation,
+    );
+    window.SELECTED_ANNOTATION = newSelectedAnnotation;
   };
 
-  document.getElementById('TEI').onmouseup = function (_event) {
+  document.getElementById('TEI').addEventListener('mousedown', (_event) => {
     // only get a selection, if a user actually wants to select text
     if (window.MODE === window.MODE_CLASS.Create && window.SELECTING_TEXT) {
       annotateSelectedText(window.getSelection(), window.ANNOJSON);
     }
-  };
+  });
 
   // adding eventhandler for text selection
   document.getElementById('selectTextListItem').addEventListener('mousedown', (event) => {
@@ -141,7 +104,8 @@ export function annotateSelectedText(selection, annoJson, hooks = {}) {
  * @param {JSONArray} annoJson contains all the annotation of the pages as JSONObjects
  */
 function onclickSelectText(_event, selection, annoJson) {
-  hideExpandedSidebar();
+  const $sidebar = document.querySelector('.anno-side-bar');
+  collapseSidebar($sidebar);
   window.SELECTING_TEXT = true;
   window.MODE = window.MODE_CLASS.Create;
   annotateSelectedText(selection, annoJson, hooks);
@@ -156,8 +120,8 @@ function onclickSelectText(_event, selection, annoJson) {
  * @param {[Object]} annoJson containing all annotations
  * @param {Element} $annotationCard the div-element displaying an annotation on the right side of the screen
  */
-function cycleAnnotations(event, annoJson, $annotationCard) {
-  let annotationOnTarget = [];
+async function cycleAnnotations(event, annoJson, $annotationCard, currentSelectedAnnotation) {
+  let annotationsOnTarget = [];
   let annoIdEncoded;
   // TODO: CUSTOMIZE textCard toggle (display of the annotation on the right side of the screen)
   // TODO: Just add a standard annotation class, which eistence can be checked here
@@ -172,51 +136,53 @@ function cycleAnnotations(event, annoJson, $annotationCard) {
     annoJson.forEach((item) => {
       item.svg.forEach((target) => {
         if (event.target.id == target.split('"')[1]) {
-          annotationOnTarget.push(item);
+          annotationsOnTarget.push(item);
         }
       });
     });
-    console.log('annotationsOntarget ', annotationOnTarget);
+    console.log('annotationsOntarget ', annotationsOnTarget);
     // check if any annotation was selected previuosly or if the target word changed and therefore
     // the id of the previuosly selected annotation is not present in the list of annotations, that
     // target the word on which the onClick event was triggered
-    console.log('selectedAnnotation 1: ', window.SELECTED_ANNOTATION);
+    console.log('Currently selected annotation before reselection: ', currentSelectedAnnotation);
     if (
-      window.SELECTED_ANNOTATION === undefined ||
-      annotationOnTarget.find((annotation) => annotation.id === window.SELECTED_ANNOTATION.id) === undefined
+      currentSelectedAnnotation === undefined ||
+      annotationsOnTarget.find((annotation) => annotation.id === window.SELECTED_ANNOTATION.id) === undefined
     ) {
-      console.log('first annotationsOntarget ', annotationOnTarget[0]);
-      annoIdEncoded = encodeAnnoId(annotationOnTarget[0].id);
+      console.log('first annotationsOntarget ', annotationsOnTarget[0]);
+      annoIdEncoded = encodeAnnoId(annotationsOnTarget[0].id);
     } else {
       // check if the next index would be out off bounds, if yes select the first annotaiton in the list
       // to start at the beginning of the list again and cycle through
       if (
-        annotationOnTarget.findIndex((annotation) => annotation.id === window.SELECTED_ANNOTATION.id) + 1 >
-        annotationOnTarget.length - 1
+        annotationsOnTarget.findIndex((annotation) => annotation.id === window.SELECTED_ANNOTATION.id) + 1 >
+        annotationsOnTarget.length - 1
       ) {
-        annoIdEncoded = encodeAnnoId(annotationOnTarget[0].id);
-        console.log('first annotationsOntarget 2 ', annotationOnTarget[0]);
+        annoIdEncoded = encodeAnnoId(annotationsOnTarget[0].id);
+        //console.log('first annotationsOntarget 2 ', annotationsOnTarget[0]);
       } else {
         annoIdEncoded = encodeAnnoId(
-          annotationOnTarget[
-            annotationOnTarget.findIndex((annotation) => annotation.id === window.SELECTED_ANNOTATION.id) + 1
+          annotationsOnTarget[
+            annotationsOnTarget.findIndex((annotation) => annotation.id === currentSelectedAnnotation.id) + 1
           ].id,
         );
-        console.log(
-          '2-n annotationsOntarget ',
-          annotationOnTarget[
-            annotationOnTarget.findIndex((annotation) => annotation.id === window.SELECTED_ANNOTATION.id) + 1
-          ],
-        );
+        // console.log(
+        //   '2-n annotationsOntarget ',
+        //   annotationsOnTarget[
+        //     annotationsOnTarget.findIndex((annotation) => annotation.id === currentSelectedAnnotation.id) + 1
+        //   ],
+        // );
       }
     }
 
-    console.log('select anno id encoded: ', annoIdEncoded);
-    selectAnnotation(null, annoIdEncoded);
+    const [selectedAnnotation, $filledAnnotationCard] = await selectAnnotation(null, annoIdEncoded);
     //alert("asd");
-    console.log('selectedAnnotation 2: ', window.SELECTED_ANNOTATION);
+    console.log('New selected annotation: ', selectedAnnotation);
     if ($annotationCard.classList.contains('is-hidden')) {
-      toggleOverview('annotationCard');
+      toggleVisibility($annotationCard);
     }
+    return selectedAnnotation;
+  } else {
+    return undefined;
   }
 }
