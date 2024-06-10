@@ -32,7 +32,6 @@ function buildAnnoUrl(annoId) {
 export async function getAnnotationData(annoId) {
   const url = buildAnnoUrl(annoId);
   const response = await getAnnotation(url);
-  // TODO: find proper response code
   if (response.status == 200) {
     return await response.json();
   } else {
@@ -51,7 +50,6 @@ export async function getAllAnnotationsData() {
   // endpoint in the serverside java code needs to be changed
   const url = window.CONTEXTPATH + 'editor/' + window.CURRENTPAGEID + '/displayableAnnotationsJSON';
   const response = await getAllAnnotations(url);
-  // TODO: find proper response code
   if (response.status == 200) {
     return await response.json();
   } else {
@@ -110,16 +108,12 @@ export async function createBodyData(annoId, bodyData) {
  * @returns {Response} of the update request
  */
 export async function updateBodyData(annoId, newBody) {
-  const body = JSON.parse(newBody);
-
   // construct the url/endpoint
   const annoIdEncoded = encodeAnnoId(annoId);
-  const type = body.purpose === 'tagging' ? '/tags/' : '/bodies/';
-  const url = window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + type + body.id;
+  const type = newBody.purpose === 'tagging' ? '/tags/' : '/bodies/';
+  const url = window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + type + newBody.id;
 
   const response = await updateBody(url, newBody);
-  console.log(response);
-  // TODO: find proper response code
   if (response.status == 200) {
     return await response.json();
   } else {
@@ -145,8 +139,6 @@ export async function updateTargetData(anno, newTarget) {
   const url = window.CONTEXTPATH + 'editor_rest/annotations/' + idOfAnnotationToUpdate;
 
   const response = await updateTarget(url, annotationDataJson);
-  console.log(response);
-  // TODO: find proper response code
   if (response.status == 200) {
     return await response.json();
   } else {
@@ -172,18 +164,12 @@ export async function updateTargetAndBodyData(anno, newTarget, newText) {
     // if this fails an exception will be thrown and rethrown, but the body
     // update request will not be send
     targetUpdateResponse = await updateTargetData(anno, newTarget);
-    console.log(targetUpdateResponse);
     // update the respective body
     const newBody = createNewDescribingBody(targetUpdateResponse, newText);
     bodyUpdateResponse = await updateBodyData(anno.id, newBody);
-    console.log(bodyUpdateResponse);
 
-    // pasre the response into a JSONObject
-    targetUpdateResponse = await targetUpdateResponse.json();
-    bodyUpdateResponse = await bodyUpdateResponse.json();
     return [targetUpdateResponse, bodyUpdateResponse];
   } catch (exception) {
-    console.error(exception);
     throw new Error(
       'Failed with target udpate response: ',
       targetUpdateResponse,
@@ -201,19 +187,20 @@ export async function updateTargetAndBodyData(anno, newTarget, newText) {
  * @returns {Object} the new body
  */
 function createNewDescribingBody(targetUpdateResponse, newText) {
-  const targetUpdateResponseData = JSON.parse(targetUpdateResponse);
   // find the describing body
-  const describingBody = targetUpdateResponseData.textCards.filter((textCard) => textCard.purpose === 'describing');
+  const describingBody = targetUpdateResponse.textCards.filter((textCard) => textCard.purpose === 'describing');
   if (describingBody.length > 0) {
     // create the new body
-    return {
-      created: timestampsToISOString(targetUpdateResponseData),
-      creators: targetUpdateResponseData.creators,
+    targetUpdateResponse = timestampsToISOString(targetUpdateResponse);
+    const newBody = {
+      created: targetUpdateResponse.created,
+      creators: targetUpdateResponse.creators,
       id: describingBody[0].id,
-      modified: timestampsToISOString(targetUpdateResponseData),
+      modified: targetUpdateResponse.modified,
       purpose: describingBody[0].purpose,
       value: newText,
     };
+    return newBody;
   } else {
     throw new Error('No describing body available in: ', targetUpdateResponse);
   }
@@ -326,9 +313,7 @@ export async function deleteBodyData(annoId, body) {
   const annoIdEncoded = encodeAnnoId(annoId);
   const type = body.purpose === 'tagging' ? '/tags/' : '/bodies/';
   const url = window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + type + body.id;
-  console.log(url);
   const response = await deleteBody(url);
-  console.log(response);
   if (response.status == 204) {
     return response;
   } else {

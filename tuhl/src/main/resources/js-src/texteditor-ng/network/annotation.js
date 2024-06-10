@@ -86,7 +86,7 @@ export async function deleteBody(url) {
  */
 export async function updateBody(url, annoBodyData) {
   return await fetch(url, {
-    body: annoBodyData,
+    body: JSON.stringify(annoBodyData),
     headers: { 'Content-Type': 'application/json' },
     method: 'PUT',
   });

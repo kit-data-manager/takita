@@ -841,10 +841,12 @@ async function getData(annoId) {
  * @returns {Boolean} true, if the body was succesfully updated, false, if the update failed
  */
 async function updateBody(annoId, value) {
-  console.log(value);
   let bodyUpdated = false;
   try {
-    const response = await updateBodyData(annoId, value);
+    // parsing the formvalue into JSON as the function to update the body requires
+    // a JSONObject
+    const body = JSON.parse(value);
+    const response = await updateBodyData(annoId, body);
     bodyUpdated = true;
     selectAnnotation(null, annoId);
     // updating the display for text annotation
