@@ -5,14 +5,19 @@
 </head>
 
 <body th:fragment="annoDash">
-  <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/js/tabler.min.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/css/tabler.min.css">
   <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css">
   <!-- readding bootstrap to overwrite the tabler styling-->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
   integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous"
   th:href="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css}">
-
+  <!-- fixing the icon of the button to change the language and select filters -->
+  <style>
+    .dropdown-toggle::after {
+      transform: none;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/js/tabler.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
     <div class="form-row align-items-center m-2">
       <div class="col-auto ml-auto">
@@ -148,7 +153,6 @@
         document.getElementById("pseudonymInputModal").classList.toggle("show-modal");
       }
   });
-  
   initializeAnnoDash(window.SPARQLURL, window.USER);
 </script>
 
