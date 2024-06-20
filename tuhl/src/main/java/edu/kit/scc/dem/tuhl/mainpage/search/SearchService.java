@@ -265,17 +265,42 @@ public class SearchService implements ISearchService {
   
   private List<Annotation> performAnnoRequest(NativeSearchQuery query, int pageStart,
           String sortField, boolean sortAsc) {
-	SearchResponse response = elasticsearchRestTemplate.execute(client -> client.search(
-		new SearchRequestBuilder(null, SearchAction.INSTANCE).setIndices(INDEX_NAME)
-			.setQuery(query.getQuery())
-			.setFrom((pageStart - 1) * pageSize)
-			.setSize(pageSize)
-			.addSort(sortField, sortAsc ? SortOrder.ASC : SortOrder.DESC)
-			//.setFetchSource(null, "pages.annotations")
-			.request(),
-		RequestOptions.DEFAULT)
-	);
-	return parseAnnoResults(response.getHits());
+
+	List<SearchHits> hitList = new ArrayList<SearchHits>();
+	try {
+//		More request are 4-5 times slower than one big request; The big request limits the
+//		amount of manuscript returned to 10000 atm
+//		while (this.resultPagesCount >= pageStart) {
+//			int pageStartCopy = pageStart;
+//			SearchResponse response = elasticsearchRestTemplate.execute(client -> client.search(
+//					new SearchRequestBuilder(null, SearchAction.INSTANCE).setIndices(INDEX_NAME)
+//						.setQuery(query.getQuery())
+//						.setFrom((pageStartCopy - 1) * this.pageSize)
+//						.setSize(this.pageSize)
+//						.addSort(sortField, sortAsc ? SortOrder.ASC : SortOrder.DESC)
+//						//.setFetchSource(null, "pages.annotations")
+//						.request(),
+//					RequestOptions.DEFAULT)
+//			);
+//			hitList.add(response.getHits());
+//			pageStart++;
+//		}
+		SearchResponse response = elasticsearchRestTemplate.execute(client -> client.search(
+				new SearchRequestBuilder(null, SearchAction.INSTANCE).setIndices(INDEX_NAME)
+					.setQuery(query.getQuery())
+					.setFrom(0)
+					.setSize(10000)
+					.addSort(sortField, sortAsc ? SortOrder.ASC : SortOrder.DESC)
+					//.setFetchSource(null, "pages.annotations")
+					.request(),
+				RequestOptions.DEFAULT)
+		);
+		hitList.add(response.getHits());
+	} catch (Exception e) {
+		e.printStackTrace();
+	}
+
+	return parseAnnoResults(hitList);
   }
   
   private List<Manuscript> parseResults(SearchHits hits) {
@@ -324,96 +349,107 @@ public class SearchService implements ISearchService {
   
   
   @SuppressWarnings("unchecked")
-private List<Annotation> parseAnnoResults(SearchHits hits) {
-	    List<Annotation> searchAnnoResults = new ArrayList<>();
-	    for (SearchHit hit : hits.getHits()) {
-	      Map<String, Object> manuscriptMap = hit.getSourceAsMap();
-	      String manuscriptTitle = (String) manuscriptMap.get("title");
-	      
-	      @SuppressWarnings("unchecked")
-	      List<Map<String, Object>> pageMaps = (List<Map<String, Object>>) manuscriptMap.get("pages");
-	      List<Page> pages = new ArrayList<>();
-	      for (Map<String, Object> pageMap : pageMaps) {
-	    	  
-	        // getting the annotations
-	        List<Map<String, Object>> annotationMaps = (List<Map<String, Object>>) pageMap.get("annotations");
-	        // as a page might not contain annotations "annotationMaps" might be null,
-	        // so this needs to be checked to prevent an error
-	        if (annotationMaps != null) {
-	        	if (!annotationMaps.isEmpty()) {
-		        	for (Map<String, Object> annotationMap : annotationMaps) {
-			        	Annotation annotation = new Annotation();
-			        	annotation.setId((String) annotationMap.get("id"));
-			        	annotation.setPageId((String) annotationMap.get("pageId"));
-			        	annotation.setManuscriptTitle(manuscriptTitle);
-			    		// TODO: revisit this on 01.01.2038 as the maximum value of an integer
-			    		// is "2147483647", which will turn to "Tuesday, 19. January 2038 03:14:07",
-			        	// but atm annotationMap.get("modified") returns an integer, so no other
-			        	// datatype can be used
-			    		annotation.setModified(Instant.ofEpochSecond((long) ((int) annotationMap.get("modified"))));
-			        	annotation.setCreated(Instant.ofEpochSecond((long) ((int) annotationMap.get("created"))));
-			        	annotation.setCreators((List<String>) annotationMap.get("creators"));
-			        	        	
-			        	// creating the targets
-				        List<Map<String, Object>> targetMaps = (List<Map<String, Object>>) annotationMap.get("targets");
-				        for (Map<String, Object> targetMap : targetMaps) {
-				        	Target target = new Target();
-				        	target.setLinkToResource((String)targetMap.get("linkToResource"));
-				        	target.setType((String)targetMap.get("type"));
-				        	
-				        	// create the selector
-				        	Map<String, Object> selectorMap = (Map<String, Object>) targetMap.get("selector");
-				        	String selectorType = (String) selectorMap.get("_class");
-				        	ISelector selector = null;
-				        	if (selectorType.contains("XPath")) {
-				        		selector = new XPathSelector((String) selectorMap.get("xPath"));
-				        	}
-				        	if (selectorType.contains("SVG")) {
-				        		selector = new SVGSelector((String) selectorMap.get("svgCode"));
-				        	}
-				        	target.setSelector(selector);
-				        	annotation.addTarget(target);
-				        }
+private List<Annotation> parseAnnoResults(List<SearchHits> hitList) {
+	  List<Annotation> searchAnnoResults = new ArrayList<>();
+		  for (SearchHits hits : hitList) {
+			    for (SearchHit hit : hits.getHits()) {
+			      Map<String, Object> manuscriptMap = hit.getSourceAsMap();
+			      String manuscriptTitle = (String) manuscriptMap.get("title");
+			      
+			      List<Map<String, Object>> pageMaps = (List<Map<String, Object>>) manuscriptMap.get("pages");
+			      List<Page> pages = new ArrayList<>();
+			      for (Map<String, Object> pageMap : pageMaps) {
+			    	  
+			        // getting the annotations
+			        List<Map<String, Object>> annotationMaps = (List<Map<String, Object>>) pageMap.get("annotations");
+			        // as a page might not contain annotations "annotationMaps" might be null,
+			        // so this needs to be checked to prevent an error
+			        if (annotationMaps != null) {
+			        	if (!annotationMaps.isEmpty()) {
+				        	for (Map<String, Object> annotationMap : annotationMaps) {
+					        	try {
+									Annotation annotation = new Annotation();
+									annotation.setId((String) annotationMap.get("id"));
+									annotation.setPageId((String) annotationMap.get("pageId"));
+									annotation.setManuscriptTitle(manuscriptTitle);
+									// TODO: revisit this on 01.01.2038 as the maximum value of an integer
+									// is "2147483647", which will turn to "Tuesday, 19. January 2038 03:14:07",
+									// but atm annotationMap.get("modified") returns an integer, so no other
+									// datatype can be used
+									annotation.setModified(Instant.ofEpochSecond((long) ((int) annotationMap.get("modified"))));
+									annotation.setCreated(Instant.ofEpochSecond((long) ((int) annotationMap.get("created"))));
+									annotation.setCreators((List<String>) annotationMap.get("creators"));
+									        	
+									// creating the targets
+									List<Map<String, Object>> targetMaps = (List<Map<String, Object>>) annotationMap.get("targets");
+									for (Map<String, Object> targetMap : targetMaps) {
+										Target target = new Target();
+										target.setLinkToResource((String)targetMap.get("linkToResource"));
+										target.setType((String)targetMap.get("type"));
+										
+										// create the selector
+										Map<String, Object> selectorMap = (Map<String, Object>) targetMap.get("selector");
+										String selectorType = (String) selectorMap.get("_class");
+										ISelector selector = null;
+										if (selectorType.contains("XPath")) {
+											selector = new XPathSelector((String) selectorMap.get("xPath"));
+										}
+										if (selectorType.contains("SVG")) {
+											selector = new SVGSelector((String) selectorMap.get("svgCode"));
+										}
+										target.setSelector(selector);
+										annotation.addTarget(target);
+									}
 
-				        // creating the tags
-				        List<Map<String, Object>> tagMaps = (List<Map<String, Object>>) annotationMap.get("tags");
-				        for (Map<String, Object> tagMap : tagMaps) {
-				        	if(!tagMap.isEmpty()) {
-				        		Tag tag = new Tag(tagMap.get("id").toString());
-				        		tag.setValue(tagMap.get("value").toString());
-					        	annotation.addTag(tag);
-				        	}
-				        	
+									// creating the tags
+									List<Map<String, Object>> tagMaps = (List<Map<String, Object>>) annotationMap.get("tags");
+									for (Map<String, Object> tagMap : tagMaps) {
+										if(!tagMap.isEmpty()) {
+											Tag tag = new Tag(tagMap.get("id").toString());
+											if (tagMap.get("value") != null) {
+												tag.setValue(tagMap.get("value").toString());
+											} else {
+												System.out.println("Could not get tag with: " + tag.getId() + " of annotation: " + annotation.getId());
+											}
+									    	annotation.addTag(tag);
+										}
+										
+									}
+									
+									// creating the textcards
+									List<Map<String, Object>> textCardMaps = (List<Map<String, Object>>) annotationMap.get("textCards");
+									for (Map<String, Object> textCardMap : textCardMaps) {
+										if(!textCardMap.isEmpty()) {
+											TextCard textcard = new TextCard(textCardMap.get("id").toString());
+											if (textCardMap.get("value") != null) {
+												textcard.setValue(textCardMap.get("value").toString());
+											}
+									    	if (textCardMap.get("source") != null) {
+									    		textcard.setSource(textCardMap.get("source").toString());
+									    	}
+									    	if (textCardMap.get("purpose") != null) {
+									    		textcard.setPurpose(textCardMap.get("purpose").toString());
+									    	} else {
+									    		textcard.setPurpose("No purpose given");
+									    	}
+									    	// TODO: fix time creation
+									    	//textcard.setCreated(new Instant((Long) textCardMap.get("created"), pageSize));
+									    	annotation.addTextCard(textcard);
+										}
+									}
+									searchAnnoResults.add(annotation);
+								} catch (Exception e) {
+									System.out.println("Could not get annotations for manuscript: " + manuscriptMap.get("title") + " " + manuscriptMap.get("id"));
+				        			e.printStackTrace();
+								}
+					        }
 				        }
-				        
-				        // creating the textcards
-				        List<Map<String, Object>> textCardMaps = (List<Map<String, Object>>) annotationMap.get("textCards");
-				        for (Map<String, Object> textCardMap : textCardMaps) {
-				        	if(!textCardMap.isEmpty()) {
-				        		TextCard textcard = new TextCard(textCardMap.get("id").toString());
-				        		if (textCardMap.get("value") != null) {
-				        			textcard.setValue(textCardMap.get("value").toString());
-				        		}
-					        	if (textCardMap.get("source") != null) {
-					        		textcard.setSource(textCardMap.get("source").toString());
-					        	}
-					        	if (textCardMap.get("purpose") != null) {
-					        		textcard.setPurpose(textCardMap.get("purpose").toString());
-					        	} else {
-					        		textcard.setPurpose("No purpose given");
-					        	}
-					        	// TODO: fix time creation
-					        	//textcard.setCreated(new Instant((Long) textCardMap.get("created"), pageSize));
-					        	annotation.addTextCard(textcard);
-				        	}
-				        }
-				        searchAnnoResults.add(annotation);
 			        }
-		        }
-	        }
-	        
-	      }
-	    }
+			        
+			      }
+			    }
+		  	}
+
 	    this.annoResults = searchAnnoResults;
 	    return searchAnnoResults;
 	  }
