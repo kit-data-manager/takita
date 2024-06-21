@@ -1,1 +1,0 @@
-export { formObjectCreateAnnotation } from './templates';

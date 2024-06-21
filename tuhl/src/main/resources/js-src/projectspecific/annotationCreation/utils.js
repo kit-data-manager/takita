@@ -1,23 +1,4 @@
 /**
- * preselect all checkboxes for the mrw-annos present in the current selection
- * during metaphor annotation creation via the template
- */
-export function preselectAllMRWAnnos() {
-  // select all input fields, where the name starts with "mrws"
-  // the input fields storing the mrws present in a selection
-  // get their name from the ordering in the mrws-array:
-  // name="mrws[0]" and name="mrws[1]" etc.
-  // to get the changing name I refered to
-  // https://stackoverflow.com/questions/16791527/how-to-use-a-regular-expression-in-queryselectorall
-  const inputs = document.querySelectorAll('input[name^=mrws');
-  // checking if any mrws are present in the selection and allowing the toggle
-  // only if there are. This prevents an error to be thrown, when no mrws are present
-  if (inputs.length > 0) {
-    toggleCheckedInputs(inputs);
-  }
-}
-
-/**
  * replace the button to create an annotation with a message on how to enable it.
  * currently not used as users are allowed to create a metaphorannotation without a mrw-annotation
  */
@@ -160,7 +141,7 @@ export function spreadMRWArray(jsonObject) {
 // wrapper function to hold all functions to be called after the
 // modal to create an annotation is being displayed
 // TODO: CUSTOMISE: add code/functions to be called
-export function projectSpecifics() {
+export function preselectAllMRWAnnos() {
   // if a user wants to create a metaphor-annotation, preselect the checkboxes
   // for the linking of mrw-annotations
   if (
@@ -169,7 +150,23 @@ export function projectSpecifics() {
       '#pickAnnotationTemplateForm > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > select:nth-child(1)',
     ).value === 'METAPHOR'
   ) {
-    preselectAllMRWAnnos();
+    /**
+     * preselect all checkboxes for the mrw-annos present in the current selection
+     * during metaphor annotation creation via the template
+     */
+
+    // select all input fields, where the name starts with "mrws"
+    // the input fields storing the mrws present in a selection
+    // get their name from the ordering in the mrws-array:
+    // name="mrws[0]" and name="mrws[1]" etc.
+    // to get the changing name I refered to
+    // https://stackoverflow.com/questions/16791527/how-to-use-a-regular-expression-in-queryselectorall
+    const inputs = document.querySelectorAll('input[name^=mrws');
+    // checking if any mrws are present in the selection and allowing the toggle
+    // only if there are. This prevents an error to be thrown, when no mrws are present
+    if (inputs.length > 0) {
+      toggleCheckedInputs(inputs);
+    }
   }
 
   // if a user wants to create a metaphor-annotation, but there is no
@@ -179,4 +176,50 @@ export function projectSpecifics() {
   // > div:nth-child(2) > select:nth-child(1)").value === "METAPHOR"){
   //disableAnnotationCreation();
   //}
+}
+
+/**
+ * find all the mrw annotations that are contained in a selection
+ *
+ * @param {JSONArray} annoJson contains all the annotation of the pages as JSONObjects
+ * @param {Array} targetList of ranges from the selection
+ * @returns an array holding all the annotation that are mrw-annotations and
+ * target words present in the current selection (targetList)
+ */
+export function findSelectedMRWAnnos(annoJson, targetList) {
+  // empty the mrwAnno list beforehand
+  let mrwAnnos = [];
+  annoJson.forEach((annotation) => {
+    //annoXmlId = annotation.svg.split("\"")[1];
+    //console.log(annotation);
+    // checking if the annotation is a mrw-annotation by checking its color,
+    // which is based on the classifying body.
+    // See "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java"
+    // for the corresponding hexes/mrw-annotation types
+    if (
+      annotation.color === '#000011' ||
+      annotation.color === '#000012' ||
+      annotation.color === '#000013' ||
+      annotation.color === '#000014'
+    ) {
+      targetList.forEach((target) => {
+        annotation.svg.forEach((svg) => {
+          if (target.id === svg.split('"')[1]) {
+            // this iteration should not be necessary as a Set
+            // should not hold the same annotation twice
+            if (mrwAnnos.length === 0) {
+              mrwAnnos.push(annotation);
+            } else {
+              if (!mrwAnnos.some((entry) => entry.id === annotation.id)) {
+                mrwAnnos.push(annotation);
+              }
+            }
+          }
+        });
+      });
+    }
+  });
+  console.log('MRW annotations present in current selection: ', mrwAnnos);
+
+  return mrwAnnos;
 }

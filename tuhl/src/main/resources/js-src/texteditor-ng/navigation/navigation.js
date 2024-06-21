@@ -4,9 +4,8 @@ import { selectAnnotation } from '../../common/annotationCard';
 import { encodeAnnoId } from '../../common/utils';
 // Texteditor specific utils
 import { getTargetAnnotationId, getTargetFragment } from '../utils';
-
-// TODO: move "subchapter" to the second navigation level
-const POSSIBLE_DIVISION_TYPES = ['chapter', 'section', 'subchapter'];
+// projectspecifics
+import { POSSIBLE_DIVISION_TYPES } from '../../projectspecific';
 
 /**
  * Initialize a navigation bar with a given DOM element.

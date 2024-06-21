@@ -2,8 +2,8 @@ import { enableTooltips, toggleVisibility } from '../../common/utils';
 
 import { getTextLanguage } from '../textloader/textloader';
 import { decreaseFontSize, increaseFontSize, resetFontSize } from '../utils/fontsize';
-import { determineVariant, toggleHebrewView, toggleSanskritView, Variant } from '../utils/projectSpecific';
-
+import { Variant } from '../../projectspecific/textloader';
+import { hooks } from '../../projectspecific';
 /**
  * Set Takita's sidebar up to make it suitable for the texteditor.
  * @module sidebar
@@ -61,15 +61,8 @@ export function initializeSidebar($sidebar, $text, $pagesDialog) {
     toggleVisibility($pagesDialog, $pagesButton);
   });
 
-  /**
-   * Set up project/language specific buttons and their callbacks.
-   */
-  if (variant === Variant.B04) {
-    /* Sanskrit / B04 specific */
-    sanskritSpecificButton($sidebar);
-  } else if (variant === Variant.Hebrew) {
-    /* Hebrew specific */
-    hebrewSpecificButton($sidebar);
+  if (hooks.postSidebarCreation) {
+    hooks.postSidebarCreation.forEach((hook) => hook($sidebar, variant));
   }
 
   /**
@@ -111,51 +104,25 @@ export function toggleSidebar($sidebar) {
 }
 
 /**
- * Enable sanskrit-specific button
+ * Determine whether the current document belongs to a specific subproject
+ * and/or language which has special requirements.
  *
- * Enables the toggleViews button, which shows/hides the sandhied version
- * of the text.
- * @param {Element} $sidebar
+ * @param {Element} $text the text document
+ * @param {String} language the document language
+ * @returns {Variant}
  */
-export function sanskritSpecificButton($sidebar) {
-  // TODO: why do the variants use different HTML elements for their
-  // identical click callbacks? Can't the elements be nested?
-  const $toggleViews = $sidebar.querySelector('#toggleViews');
-  const $button = $toggleViews.querySelector('#toggleViewsButton');
-  const $span = $toggleViews.querySelector('#toggleViewsSpan');
+export function determineVariant($text, language) {
+  let variant = Variant.Default;
 
-  $toggleViews.classList.remove('is-hidden');
-  $button.addEventListener('click', (_ev) => {
-    collapseSidebar($sidebar);
-    toggleSanskritView();
-  });
-  $span.addEventListener('click', (_ev) => {
-    collapseSidebar($sidebar);
-    toggleSanskritView();
-  });
-}
+  // The presence of 'tei-choice' elements and their contents is our main
+  // indicator for a specific document variant.
+  const teiChoice = $text.querySelector('tei-choice');
 
-/**
- * Enable hebrew-specific button
- *
- * Enables the toggleViews button, which shows/hides the unvocalized version
- * of the text.
- * @param {Element} $sidebar
- */
-export function hebrewSpecificButton($sidebar) {
-  const $toggleViews = $sidebar.querySelector('#toggleViews');
-  const $button = $toggleViews.querySelector('#toggleViewsButton');
-  const $span = $toggleViews.querySelector('#toggleViewsSpan');
+  if (teiChoice && (language === 'sa-Latn' || teiChoice.n === 'sandhi')) {
+    variant = Variant.B04;
+  } else if (teiChoice !== undefined && language === 'hbo') {
+    variant = Variant.Hebrew;
+  }
 
-  $toggleViews.classList.remove('is-hidden');
-  $button.addEventListener('click', (_ev) => {
-    collapseSidebar($sidebar);
-    toggleHebrewView();
-  });
-  $span.addEventListener('click', (_ev) => {
-    collapseSidebar($sidebar);
-    toggleHebrewView();
-  });
-  // Trigger the button to hide the unvocalized version initially.
-  $button.click();
+  return variant;
 }

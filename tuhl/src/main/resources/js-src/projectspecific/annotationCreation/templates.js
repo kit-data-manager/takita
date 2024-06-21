@@ -1,7 +1,12 @@
-import { projectSpecifics, spreadMRWArray, getEnumAndTitleMap, getSelectMRWButton } from './utils';
+import {
+  spreadMRWArray,
+  getEnumAndTitleMap,
+  getSelectMRWButton,
+  preselectAllMRWAnnos,
+  findSelectedMRWAnnos,
+} from './utils';
 import { createAnnotation } from '../annotationCreation';
 
-let storeSelectedMRWAnnos;
 // enum for different annotation templates
 // TODO: CUSTOMISE available annotations (will be shown during the annotation process)
 // for adding new: include name here and add dataModel in
@@ -58,7 +63,7 @@ export const formObjectCreateAnnotation = {
           const annotation = await createAnnotation(annotationData);
         });
 
-        projectSpecifics();
+        preselectAllMRWAnnos();
       },
       titleMap: {},
     },
@@ -602,7 +607,7 @@ export function getFormModel(chosenTemplate) {
         elementsTargeted.push(document.getElementById(target.selector.xPath.split('"')[1]));
       });
       // get all mrwAnnos that target the same words as the metaphor annotation
-      let mrwAnnosForBody = storeSelectedMRWAnnos(window.ANNOJSON.elementsTargeted);
+      let mrwAnnosForBody = findSelectedMRWAnnos(window.ANNOJSON, window.ANNOJSON.elementsTargeted);
       // remove all mrw annotations, which are linked to the metaphor annotation already
       // from mrwAnnosForBody to prevent users from linking the same mrwAnno
       // multiple times
@@ -653,3 +658,5 @@ export function getFormModel(chosenTemplate) {
   console.log('uiForm: ', uiForm);
   return [dataModel, uiForm];
 }
+
+export const formObjectCreateBody = {};

@@ -48,6 +48,11 @@ async function initializeTextEditorComponent(linkToResource, annotationsString, 
   // Construct and display a navigation bar.
   const $navbar = document.getElementById('textNavBar');
   initializeNavigation($navbar, $teiContatinerElement);
+
+  // initializes projectspecfic things by executing the hooks
+  if (hooks.initializeProjectspecifics) {
+    hooks.initializeProjectspecifics.forEach((hook) => hook());
+  }
 }
 
 /**

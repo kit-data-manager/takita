@@ -123,3 +123,14 @@ _Note: the purpose of this module is to provide functionality which is useful to
   * highlightAnnotationFunction, getProjectSpecificClasses
 * implement functions
   * for annotation creation procedure the functions makeAnnotationData, makeBodyData and assignPurpose need to be implemented
+  
+### implementation necessary
+
+mandatory stuff is usually a "setting/variable/function" to be changed. optional stuff is a hook
+
+- templates
+- targetUpdateCallback
+- color enum and names
+- navbar division
+- highlighting stuff
+  - getSpecificClasses

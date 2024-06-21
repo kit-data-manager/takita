@@ -3,14 +3,7 @@
 import '../utils/metadataeditor';
 // internal modules
 import { encodeAnnoId, fillMetaDataEditorTable, toggleVisibility, toggleExpand } from '../utils';
-import {
-  getAnnotationData,
-  deleteAnnotationData,
-  deleteBodyData,
-  updateBodyData,
-  updateTargetData,
-  updateTargetAndBodyData,
-} from '../../texteditor-ng/data';
+import { getAnnotationData, deleteAnnotationData, deleteBodyData, updateBodyData } from '../../texteditor-ng/data';
 import {
   modifySelection,
   saveModification,
@@ -19,18 +12,9 @@ import {
 } from '../../texteditor-ng/targetBuilding';
 import { makeTargetsCompatible, checkIsTargetCompatible } from '../../texteditor-ng/utils';
 import { updateDisplay, highlightSelectedAnnotationsTarget, removeStyles } from '../../texteditor-ng/highlighting';
-import { getMRWAnnoSelectedText } from '../../texteditor-ng/utils/projectSpecific';
-
-// dummy functions, which have to be replaced/implemented
-function pickTemplate() {
-  return;
-}
-
-// TODO: CUSTOMIZE to be the correct function for your project case
-// - updateTargetData is the standard function to update a target, it will only update the target
-// - updateTargetAndBodyData is the function used by CRC1475 to update the target and the body, which
-//   stores the selected text (describing body)
-const targetUpdateCallback = updateTargetAndBodyData;
+import { pickTemplate } from '../annotationCreation';
+// projectspecific
+import { targetUpdateCallback } from '../../projectspecific';
 
 /**
  * Main entry point to handle a user interaction to select an annotation
@@ -133,7 +117,7 @@ function createAnnotationDiv(annotationData, $annotationDiv, hooks = {}) {
     const $bodyCard = createBodyCard(annotationData.id, body, index, omitFields, editableFields, formDataModel, hooks);
     $annotationDiv.append($bodyCard);
     // create the JSONForm for the body
-    createAndAppendBodyForms(body, omitFields, editableFields, formDataModel, hooks);
+    createAndAppendBodyForms(body, omitFields, editableFields, formDataModel, hooks, annotationData.id);
   });
 
   // postAppendingBodiesHook
@@ -436,7 +420,7 @@ function appendAnnotationForm($annotationDiv, data, headerFields, omitFields) {
  * @param {Object} formDataModel used while creating the annotation form
  * @param {Object} [hooks] containing an array for the hook to be called at "preHorizontalCreation"
  */
-function createAndAppendBodyForms(body, omitFields, editableFields, formDataModel, hooks = {}) {
+function createAndAppendBodyForms(body, omitFields, editableFields, formDataModel, hooks = {}, annotationId) {
   // create the two JSONForms and append them
   // create the expandable vertical JSONForm
   // using Destructuring assignment here, see:
@@ -455,8 +439,8 @@ function createAndAppendBodyForms(body, omitFields, editableFields, formDataMode
   // replaced with the text of the linked mrw-annotation. The actual bodies[body] should stay
   // intact though, so bodies[body] will be deep copied
   let modifiedBody = JSON.parse(JSON.stringify(body));
-  if (hooks.preHorizontalCreation) {
-    modifiedBody = hooks.preHorizontalCreation.forEach((hook) => hook(body));
+  if (hooks.preHorizontalBodyCardCreation) {
+    modifiedBody = hooks.preHorizontalBodyCardCreation.forEach((hook) => hook(annotationId, body));
   }
 
   createAndAppendBodyFormHorizontal(operationHorizontal, formBodyDataModelHorizontal, uiFormHorizontal, modifiedBody);
@@ -950,22 +934,6 @@ async function deleteAnnotation(annoId) {
     }
   }
   return confirmation;
-}
-
-// HOOKS
-/**
- * Replaces the value of the body, which is an URI of an annotation, with the
- * selected text of that annotation
- *
- * @param {String} annoId single encoded id of the annotation
- * @param {Object} body that will get its value changed, if it is a linked
- * mrw-annotation
- * @returns {Object} body with the new value
- */
-async function preHorizontalCreationGetLinkingAnno(annoId, body) {
-  if (body.purpose === 'linking') {
-    body.value = await getMRWAnnoSelectedText(annoId, body.value);
-  }
 }
 
 /**

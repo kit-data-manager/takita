@@ -5,14 +5,8 @@ import 'jsonform';
 import { fillMetaDataEditorTable, toggleVisibility, encodeAnnoId } from '../utils';
 import { updateDisplay } from '../../texteditor-ng/highlighting';
 import { selectAnnotation } from '../annotationCard';
-import {
-  createBodyData,
-  createAnnotationData,
-  getAnnotationData,
-  getAllAnnotationsData,
-} from '../../texteditor-ng/data/annotations';
-// CUSTOMIZE THIS IMPORT
-import { formObjectCreateAnnotation } from './projectSpecific';
+import { createBodyData, createAnnotationData, getAnnotationData } from '../../texteditor-ng/data/annotations';
+import { formObjectCreateAnnotation, formObjectCreateBody } from '../../projectspecific';
 
 // add a function to be called after the annotation creation, before body creation
 let postAnnotationCreation;
@@ -32,8 +26,6 @@ let postAnnotationCreation;
                         shape.attr({'stroke': color, 'fill': color});
                         toggleShapeSelect(shape);
                     };*/
-// TODO: IMPLEMENT these
-let formObjectCreateBody;
 
 export function pickTemplate(svgCode, encodedId, createFormId, pickFormId, template) {
   // clear out forms and content from former submissions

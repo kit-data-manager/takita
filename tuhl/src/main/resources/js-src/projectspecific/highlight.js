@@ -1,85 +1,14 @@
-import { toggleBoxIcon, toggleOpacity, toggleVisibility } from '../../common/utils';
-import { getAnnotationData } from '../data';
-
-/**
- * Utility functions which are specific to a subproject or which provide
- * specialized functionality which is only needed for certain documents.
- *
- * @module projectSpecific
- */
-
-// TEXTLOADER
-/**
- * Sum Type which specifies if the current text document has special requirements.
- */
-export class Variant {
-  static Default = new Variant('Default');
-  static B04 = new Variant('B04');
-  static Hebrew = new Variant('Hebrew');
-
-  constructor(name) {
-    this.name = name;
-  }
-}
-
-/**
- * Determine whether the current document belongs to a specific subproject
- * and/or language which has special requirements.
- *
- * @param {Element} $text the text document
- * @param {String} language the document language
- * @returns {Variant}
- */
-export function determineVariant($text, language) {
-  let variant = Variant.Default;
-
-  // The presence of 'tei-choice' elements and their contents is our main
-  // indicator for a specific document variant.
-  const teiChoice = $text.querySelector('tei-choice');
-
-  if (teiChoice && (language === 'sa-Latn' || teiChoice.n === 'sandhi')) {
-    variant = Variant.B04;
-  } else if (teiChoice !== undefined && language === 'hbo') {
-    variant = Variant.Hebrew;
-  }
-
-  return variant;
-}
-
-// SIDEBAR
-/**
- * hebrew specific display
- */
-export function toggleHebrewView() {
-  const $textElements = document.querySelectorAll('tei-reg');
-  const $button = document.querySelector('#toggleViewsButton');
-  toggleOpacity($textElements);
-  // slide the toggle button to the other side
-  toggleBoxIcon($button, 'bx-toggle-left', 'bx-toggle-right');
-}
-
-// sanskrit specific display
-export function toggleSanskritView() {
-  // querySelectorAll('tei-orig')
-  // '#toggleViewsButton'
-  const $textElements = document.querySelectorAll('tei-orig');
-  const $button = document.querySelector('#toggleViewsButton');
-  toggleVisibility($textElements);
-  // slide the toggle button to the other side
-  toggleBoxIcon($button, 'bx-toggle-left', 'bx-toggle-right');
-}
-
-// HIGHLIGHT
 /**
  * Called by getPossibleClasses() hook. It returns the classes specific to a project (linked
  * to classes assigned in drawAnnos() function).
  * Note: to have these classes do smth, the css has to written (see editor_text.css). css for
  * 'backgroundOne', 'backgroundTwo', 'underline', 'underlineSecond' and 'defaulthighlight'
  * is available.
+ * TODO: Implement this function for your projetc
  *
  * @returns {[String]} holding all classes that can be assigned/removed
  */
-export function getSfb1475specificClasses() {
+export function getSpecificClasses() {
   // TODO: Customise the following array
   return ['backgroundOne', 'backgroundTwo', 'underline', 'underlineSecond'];
 }
@@ -203,73 +132,4 @@ export function crc1475Highlighting(annotation) {
       targetElement.classList.add('defaulthighlight');
     }
   });
-}
-
-// DATA
-// gets the describing body of an annotation (mrw-annotation)
-// used by src/main/resources/js-src/common/annotationDisplay/selection.js
-export async function getMRWAnnoSelectedText(metaphorAnnoId, mrwAnnoId) {
-  try {
-    const mrwAnnotation = await getAnnotationData(mrwAnnoId);
-    const describingBody = mrwAnnotation.textCards.filter((textCard) => textCard.purpose === 'describing')[0];
-    return describingBody.value;
-  } catch (exception) {
-    // if the mrw-annotation linked to the metaphor-annotation got deleted or something else went
-    // wrong while fetching the annotation, the code will end up here
-    console.log(
-      `ERROR: Something is wrong with the linked mrw-annotation; 
-      most likely it got deleted, please contact the developers`,
-      exception,
-    );
-  }
-}
-
-// TODO: CUSTOMISE the colors based
-// see "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java"
-// and "takita/tuhl/src/main/resources/static/js/creation_templates_text.js"
-export function getColorHexFromEnumEntry(colorEnumEntry) {
-  let colorHex = '#89f099';
-  switch (colorEnumEntry) {
-    case 'MRW_DIRECT':
-      colorHex = '#000011';
-      break;
-    case 'MRW_INDIRECT':
-      colorHex = '#000012';
-      break;
-    case 'MRW_IMPLICIT':
-      colorHex = '#000013';
-      break;
-    case 'MFLAG':
-      colorHex = '#000014';
-      break;
-    case 'METAPHOR':
-      colorHex = '#000021';
-      break;
-  }
-  return colorHex;
-}
-
-// TODO: CUSTOMISE the colors based
-// see "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java"
-// and "takita/tuhl/src/main/resources/static/js/creation_templates_text.js"
-export function getColorNameFromEnumEntry(colorEnumEntry) {
-  let colorName = 'Default';
-  switch (colorEnumEntry) {
-    case 'MRW_DIRECT':
-      colorName = 'mrw (direct)';
-      break;
-    case 'MRW_INDIRECT':
-      colorName = 'mrw (indirect)';
-      break;
-    case 'MRW_IMPLICIT':
-      colorName = 'mrw (implicit)';
-      break;
-    case 'MFLAG':
-      colorName = 'mflag';
-      break;
-    case 'METAPHOR':
-      colorName = 'metaphor';
-      break;
-  }
-  return colorName;
 }

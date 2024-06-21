@@ -1,23 +1,7 @@
 import { fillMetaDataEditorTable } from '../../common/utils';
 import { getAllAnnotationsData } from '../data/annotations';
-// TODO: customize the function name of the following import. Leave the "as getProjectSpecificClasses" untouched
-import { getSfb1475specificClasses as getProjectSpecificClasses } from '../utils';
-import { checkIsTargetCompatible, makeTargetsCompatible, crc1475Highlighting } from '../utils';
-
-/**
- * TODO: CUSTOMIZE to be the correct function for your project case
- * - defaultHighlighting is the standard function to highlight all targets of an annotation. Each
- *   a target, will get the 'defaultHighlight' class assigned, which just adds a background color
- * - crc1475Highlighting is the function used by CRC1475 to highlight all targets of an annotation.
- *   It assigns classes responsible for background colors and underlinings for the different
- *   annotation types.
- */
-const highlightAnnotationFunction = defaultHighlighting;
-
-// add the "defaulthighlighting" class to the project specific classes. The project specific classes
-// get "fetched" by calling the getProjectSpecificClasses function, that can be customized
-// (see the import statements).
-const possibleClasses = ['defaulthighlight'].concat(getProjectSpecificClasses());
+import { checkIsTargetCompatible, makeTargetsCompatible } from '../utils';
+import { highlightAnnotationFunction, possibleHighlightClasses } from '../../projectspecific';
 
 /**
  * remove all styles/css-classes from an element and its descendants
@@ -26,8 +10,8 @@ const possibleClasses = ['defaulthighlight'].concat(getProjectSpecificClasses())
  * @param {[String]} possibleClasses list of all the possible css classes, that have been assigned
  * by the highlightAnnotationFunction().
  */
-export function removeStyles($element, possibleClasses) {
-  possibleClasses.forEach((cssClass) => {
+export function removeStyles($element, possibleHighlightClasses) {
+  possibleHighlightClasses.forEach((cssClass) => {
     const affectedElements = $element.querySelectorAll('.' + cssClass);
     affectedElements.forEach(($element) => $element.classList.remove(cssClass));
   });
@@ -52,7 +36,7 @@ export function drawAnnos(annoJson) {
  *
  * @param {Object} annotation to have its targets highlighted
  */
-function defaultHighlighting(annotation) {
+export function defaultHighlighting(annotation) {
   annotation.svg.forEach((target) => {
     const targetXmlId = target.split('"')[1];
     const targetElement = document.getElementById(targetXmlId);
@@ -82,7 +66,7 @@ export async function updateDisplay(hooks = {}) {
       return annotation;
     });
     // remove all styling/highlighting
-    removeStyles(document.getElementById('TEI'), possibleClasses, hooks);
+    removeStyles(document.getElementById('TEI'), possibleHighlightClasses);
     // highlight all annotated words
     drawAnnos(annoJson);
     console.log('Display and annoJson: ', annoJson, ' updated successfully.');
