@@ -3,7 +3,7 @@ import { selectAnnotation } from '../../common/annotationCard';
 import { collapseSidebar } from '../sidebar';
 import { createTargetString } from '../targetBuilding';
 import { pickTemplate } from '../../common/annotationCreation';
-import { hooks } from '../../projectspecific';
+import { hooks, possibleHighlightClasses } from '../../projectspecific';
 
 /**
  * Initialize the textEditor with given annotations; currently the annotations
@@ -17,7 +17,7 @@ export function initializeTextEditor(_annotations) {
   // bind eventHandlers to clicks and buttons
   // open textcard if rightclicking on a word that is highlighted due to it
   // having a css class, i.e. has an annotation
-  document.getElementById('TEI').oncontextmenu = async function (event) {
+  document.getElementById('TEI').addEventListener('contextmenu', async function (event) {
     event.preventDefault();
     const $annotationCard = document.getElementById('annotationCard');
     const currentSelectedAnnotation = window.SELECTED_ANNOTATION;
@@ -28,7 +28,7 @@ export function initializeTextEditor(_annotations) {
       currentSelectedAnnotation,
     );
     window.SELECTED_ANNOTATION = newSelectedAnnotation;
-  };
+  });
 
   document.getElementById('TEI').addEventListener('mousedown', (_event) => {
     // only get a selection, if a user actually wants to select text
@@ -123,15 +123,10 @@ function onclickSelectText(_event, selection, annoJson) {
 async function cycleAnnotations(event, annoJson, $annotationCard, currentSelectedAnnotation) {
   let annotationsOnTarget = [];
   let annoIdEncoded;
-  // TODO: CUSTOMIZE textCard toggle (display of the annotation on the right side of the screen)
-  // TODO: Just add a standard annotation class, which eistence can be checked here
-  if (
-    event.target.classList.contains('mrw') ||
-    event.target.classList.contains('mflag') ||
-    event.target.classList.contains('metaphor') ||
-    event.target.classList.contains('metaphorSecond') ||
-    event.target.classList.contains('defaulthighlight')
-  ) {
+
+  // check if the targeted element has a class specified in possibleHighlightClasses, which is imported
+  // from the projectspecific module
+  if (possibleHighlightClasses.some((cls) => event.target.classList.contains(cls))) {
     // add all the annotations targeting the selected word to an array
     annoJson.forEach((item) => {
       item.svg.forEach((target) => {
@@ -140,16 +135,16 @@ async function cycleAnnotations(event, annoJson, $annotationCard, currentSelecte
         }
       });
     });
-    console.log('annotationsOntarget ', annotationsOnTarget);
+    //console.log('annotationsOntarget ', annotationsOnTarget);
     // check if any annotation was selected previuosly or if the target word changed and therefore
     // the id of the previuosly selected annotation is not present in the list of annotations, that
     // target the word on which the onClick event was triggered
-    console.log('Currently selected annotation before reselection: ', currentSelectedAnnotation);
+    //console.log('Currently selected annotation before reselection: ', currentSelectedAnnotation);
     if (
       currentSelectedAnnotation === undefined ||
       annotationsOnTarget.find((annotation) => annotation.id === window.SELECTED_ANNOTATION.id) === undefined
     ) {
-      console.log('first annotationsOntarget ', annotationsOnTarget[0]);
+      //console.log('first annotationsOntarget ', annotationsOnTarget[0]);
       annoIdEncoded = encodeAnnoId(annotationsOnTarget[0].id);
     } else {
       // check if the next index would be out off bounds, if yes select the first annotaiton in the list

@@ -126,7 +126,7 @@ export function crc1475Highlighting(annotation) {
 
     // if color is available assign css class
     if (annotation.color) {
-      assignStyle(targetElement, annotation.color, index, alreadyHighlighted);
+      assignStyle(targetElement, annotation, index, alreadyHighlighted);
     } else {
       // if no color is available, assign default
       targetElement.classList.add('defaulthighlight');

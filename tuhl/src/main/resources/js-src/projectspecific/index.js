@@ -11,7 +11,7 @@ import { updateTargetData } from '../texteditor-ng/data';
 import { defaultHighlighting } from '../texteditor-ng/highlighting';
 // imports from inside the module
 import { updateTargetAndBodyData } from './data';
-import { getSpecificClasses } from './highlight';
+import { crc1475Highlighting, getSpecificClasses } from './highlight';
 // EXPORTS
 // mandatory exports
 export { hooks } from './hooks';
@@ -35,7 +35,7 @@ const POSSIBLE_DIVISION_TYPES = ['chapter', 'section', 'subchapter'];
  *   It assigns classes responsible for background colors and underlinings for the different
  *   annotation types.
  */
-const highlightAnnotationFunction = defaultHighlighting;
+const highlightAnnotationFunction = crc1475Highlighting;
 
 // add the "defaulthighlighting" class to the project specific classes. The project specific classes
 // get "fetched" by calling the getProjectSpecificClasses function, that can be customized
