@@ -49,7 +49,7 @@ export async function selectAnnotation(_event, annoId, hooks = {}) {
   }
 
   // creating new annotationCard
-  $annotationDiv = createAnnotationDiv(annotationData, $annotationDiv, hooks);
+  $annotationDiv = await createAnnotationDiv(annotationData, $annotationDiv, hooks);
   if (hooks.postAnnotationCardCreation) {
     hooks.postAnnotationCardCreation.forEach((hook) => {
       hook($annotationDiv);
@@ -77,7 +77,7 @@ export async function selectAnnotation(_event, annoId, hooks = {}) {
  * "preHorizontalCreation" and "postAppendingBodies"
  * @returns {Element} filled div
  */
-function createAnnotationDiv(annotationData, $annotationDiv, hooks = {}) {
+async function createAnnotationDiv(annotationData, $annotationDiv, hooks = {}) {
   // TODO: Cutsomize the following arrays. You can:
   // - remove fields from the form entirely by removing them from "headerFields"
   // (some are necessary though)
@@ -109,20 +109,21 @@ function createAnnotationDiv(annotationData, $annotationDiv, hooks = {}) {
   // The container has to be created first, as JSONForm appends the form
   // to the container. If the container is not present in the DOM, JSONForm
   // can't append the form to it.
-  bodies.forEach((body, index) => {
+  bodies.forEach(async (body, index) => {
     body = timestampsToISOString(body);
 
     // create the bodyCard (container for the JSONForm) and append it to the DOM
     const $bodyCard = createBodyCard(annotationData.id, body, index, omitFields, editableFields, formDataModel, hooks);
     $annotationDiv.append($bodyCard);
     // create the JSONForm for the body
-    createAndAppendBodyForms(body, omitFields, editableFields, formDataModel, hooks, annotationData.id);
+    await createAndAppendBodyForms(body, omitFields, editableFields, formDataModel, hooks, annotationData.id);
   });
 
   // postAppendingBodiesHook
-  // add link to analysisTool here
   if (hooks.postAppendingBodies) {
-    hooks.postAppendingBodies.forEach((hook) => hook($annotationDiv));
+    hooks.postAppendingBodies.forEach((hook) => {
+      $annotationDiv = hook(annotationData, $annotationDiv);
+    });
   }
 
   if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
@@ -420,7 +421,7 @@ function appendAnnotationForm($annotationDiv, data, headerFields, omitFields) {
  * @param {Object} [hooks] containing an array for the hook to be called at "preHorizontalCreation"
  * @param {String} annotationId id of the annotation
  */
-function createAndAppendBodyForms(body, omitFields, editableFields, formDataModel, hooks = {}, annotationId) {
+async function createAndAppendBodyForms(body, omitFields, editableFields, formDataModel, hooks = {}, annotationId) {
   // create the two JSONForms and append them
   // create the expandable vertical JSONForm
   // using Destructuring assignment here, see:
@@ -434,13 +435,15 @@ function createAndAppendBodyForms(body, omitFields, editableFields, formDataMode
     editableFields,
   );
 
-  // as we don't want to display the URI, but the actual text of the linked mrw-annotation
-  // the resource passed to the metadataeditorForm() via the options needs to have the URI
-  // replaced with the text of the linked mrw-annotation. The actual bodies[body] should stay
-  // intact though, so bodies[body] will be deep copied
+  // deep copying the body as it might be useful at some point
   let modifiedBody = JSON.parse(JSON.stringify(body));
   if (hooks.preHorizontalBodyCardCreation) {
-    modifiedBody = hooks.preHorizontalBodyCardCreation.forEach((hook) => hook(annotationId, body));
+    // forEach and async function calls can be messy and not executed in the expected order.
+    // Therefore a "for of" loop is used
+    // see: https://stackoverflow.com/questions/37576685/using-async-await-with-a-foreach-loop
+    for (let hook of hooks.preHorizontalBodyCardCreation) {
+      modifiedBody = await hook(annotationId, body);
+    }
   }
 
   createAndAppendBodyFormHorizontal(operationHorizontal, formBodyDataModelHorizontal, uiFormHorizontal, modifiedBody);

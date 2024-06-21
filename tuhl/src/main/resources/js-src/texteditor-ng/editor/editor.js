@@ -26,6 +26,7 @@ export function initializeTextEditor(_annotations) {
       window.ANNOJSON,
       $annotationCard,
       currentSelectedAnnotation,
+      hooks,
     );
     window.SELECTED_ANNOTATION = newSelectedAnnotation;
   });
@@ -120,7 +121,7 @@ function onclickSelectText(_event, selection, annoJson) {
  * @param {[Object]} annoJson containing all annotations
  * @param {Element} $annotationCard the div-element displaying an annotation on the right side of the screen
  */
-async function cycleAnnotations(event, annoJson, $annotationCard, currentSelectedAnnotation) {
+async function cycleAnnotations(event, annoJson, $annotationCard, currentSelectedAnnotation, hooks = {}) {
   let annotationsOnTarget = [];
   let annoIdEncoded;
 
@@ -170,7 +171,7 @@ async function cycleAnnotations(event, annoJson, $annotationCard, currentSelecte
       }
     }
 
-    const [selectedAnnotation, $filledAnnotationCard] = await selectAnnotation(null, annoIdEncoded);
+    const [selectedAnnotation, $filledAnnotationCard] = await selectAnnotation(null, annoIdEncoded, hooks);
     //alert("asd");
     console.log('New selected annotation: ', selectedAnnotation);
     if ($annotationCard.classList.contains('is-hidden')) {

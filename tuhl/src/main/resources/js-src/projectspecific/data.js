@@ -64,7 +64,7 @@ function createNewDescribingBody(targetUpdateResponse, newText) {
 // DATA
 // gets the describing body of an annotation (mrw-annotation)
 // used by src/main/resources/js-src/common/annotationDisplay/selection.js
-export async function getMRWAnnoSelectedText(metaphorAnnoId, mrwAnnoId) {
+export async function getMRWAnnoSelectedText(mrwAnnoId) {
   try {
     const mrwAnnotation = await getAnnotationData(mrwAnnoId);
     const describingBody = mrwAnnotation.textCards.filter((textCard) => textCard.purpose === 'describing')[0];

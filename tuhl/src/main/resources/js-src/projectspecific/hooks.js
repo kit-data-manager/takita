@@ -4,7 +4,7 @@ import { getMRWAnnoSelectedText } from './data';
 import { sanskritSpecificButton, hebrewSpecificButton } from './sidebar';
 import { Variant } from './textloader';
 import { findSelectedMRWAnnos } from './annotationCreation';
-import { addLinkToAnalysisTool } from '.';
+import { addLinkToAnalysisTool, updateLinkingTextcard } from './annotationCard';
 import { initializeCRC1475Specifics } from '.';
 
 /**
@@ -19,7 +19,7 @@ export const hooks = {
   manipulatingData: [],
   preAppendingBodies: [],
   postAppendingBodies: [addLinkToAnalysisTool],
-  preHorizontalBodyCardCreation: [getLinkingAnno],
+  preHorizontalBodyCardCreation: [updateLinkingTextcard],
   postAnnotationCardCreation: [],
 };
 
@@ -127,11 +127,16 @@ function preAppendingBodies($annotationDiv) {}
  * Can be used to change to influence the look and behavior of the annotationCard AFTER
  * the cards for each body gets appended. You can interact with the finished element/the
  * DOM directly.
- * @Philipp add the link button here
  *
+ * @param {Object} annotationData the annotation as JSON
  * @param {Element} $annotationDiv holding the annotationCard
+ * @returns {Element} $newAnnotationDiv modified div holding the annotationCard
  */
-function postAppendingBodies($annotationDiv) {}
+function postAppendingBodies(annotationData, $annotationDiv) {
+  let $newAnnotationDiv;
+  // do stuff
+  return $newAnnotationDiv;
+}
 
 /**
  * called at common/annotationCard/annotationCard.js (createAndAppendBodyForms())
@@ -142,9 +147,9 @@ function postAppendingBodies($annotationDiv) {}
  * @param {Object} body the body as JSON
  * @returns {Object} modifiedBody manipulated/changed body
  */
-function preHorizontalBodyCardCreation(annotationId, body) {
+async function preHorizontalBodyCardCreation(annotationId, body) {
   let modifiedBody;
-  // do stuff
+  // do stuff. This can be asynchronous as well.
   return modifiedBody;
 }
 // ------ HOOK API DEFINITION END ------
@@ -257,21 +262,6 @@ export function applyStylesB03($processedHTML, language) {
   }
 
   return $processedHTML;
-}
-
-/**
- * Replaces the value of the body, which is an URI of an annotation, with the
- * selected text of that annotation
- *
- * @param {String} annoId single encoded id of the annotation
- * @param {Object} body that will get its value changed, if it is a linked
- * mrw-annotation
- * @returns {Object} body with the new value
- */
-async function getLinkingAnno(annoId, body) {
-  if (body.purpose === 'linking') {
-    body.value = await getMRWAnnoSelectedText(annoId, body.value);
-  }
 }
 
 function enableLanguageViewToggleButton($sidebar, variant) {
