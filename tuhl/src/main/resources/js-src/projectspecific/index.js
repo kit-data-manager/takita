@@ -14,9 +14,10 @@ import { updateTargetAndBodyData } from './data';
 import { crc1475Highlighting, getSpecificClasses } from './highlight';
 // EXPORTS
 // mandatory exports
-export { hooks } from './hooks';
 export { targetUpdateCallback, POSSIBLE_DIVISION_TYPES, highlightAnnotationFunction, possibleHighlightClasses };
+export { hooks } from './hooks';
 export { formObjectCreateAnnotation, formObjectCreateBody } from './annotationCreation';
+export { Variant } from './textloader';
 
 // TODO: CUSTOMIZE to be the correct function for your project case
 // - updateTargetData is the standard function to update a target, it will only update the target
@@ -42,7 +43,7 @@ const highlightAnnotationFunction = crc1475Highlighting;
 // (see the import statements).
 const possibleHighlightClasses = ['defaulthighlight'].concat(getSpecificClasses());
 
-export function initializeProjectspecifics() {
+export function initializeCRC1475Specifics() {
   // selectedText stores the selected test as a string
   // it is needed to add it to the annotations body
   window.SELECTED_TEXT;

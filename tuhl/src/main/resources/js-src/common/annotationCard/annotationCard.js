@@ -27,17 +27,17 @@ import { targetUpdateCallback } from '../../projectspecific';
  * card could not be created
  */
 export async function selectAnnotation(_event, annoId, hooks = {}) {
-  let data = await getData(annoId);
+  let annotationData = await getData(annoId);
 
   // exit if there is a problem with the data
-  if (data == null) {
+  if (annotationData == null) {
     console.error('Could not get data and create the annotation card for ', annoId);
     return {};
   }
 
   if (hooks.manipulatingData) {
     hooks.manipulatingData.forEach((hook) => {
-      data = hook(data);
+      annotationData = hook(annotationData);
     });
   }
 
@@ -49,14 +49,14 @@ export async function selectAnnotation(_event, annoId, hooks = {}) {
   }
 
   // creating new annotationCard
-  $annotationDiv = createAnnotationDiv(data, $annotationDiv, hooks);
+  $annotationDiv = createAnnotationDiv(annotationData, $annotationDiv, hooks);
   if (hooks.postAnnotationCardCreation) {
     hooks.postAnnotationCardCreation.forEach((hook) => {
       hook($annotationDiv);
     });
   }
 
-  const selectedAnnotation = data;
+  const selectedAnnotation = annotationData;
 
   // highlight the selected words
   if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
@@ -99,9 +99,8 @@ function createAnnotationDiv(annotationData, $annotationDiv, hooks = {}) {
   $annotationDiv.prepend($iconRowTop);
 
   // preAppendingBodiesHook
-  // add Lauras copy button
   if (hooks.preAppendingBodies) {
-    hooks.preAppendingBodies.forEach((hook) => hook());
+    hooks.preAppendingBodies.forEach((hook) => hook($annotationDiv));
   }
   // merging the tags and textCards
   const bodies = mergeBodies(annotationData);
@@ -123,7 +122,7 @@ function createAnnotationDiv(annotationData, $annotationDiv, hooks = {}) {
   // postAppendingBodiesHook
   // add link to analysisTool here
   if (hooks.postAppendingBodies) {
-    hooks.postAppendingBodies.forEach((hook) => hook());
+    hooks.postAppendingBodies.forEach((hook) => hook($annotationDiv));
   }
 
   if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
@@ -419,6 +418,7 @@ function appendAnnotationForm($annotationDiv, data, headerFields, omitFields) {
  * @param {Array} editableFields holds fields that should not be editeable
  * @param {Object} formDataModel used while creating the annotation form
  * @param {Object} [hooks] containing an array for the hook to be called at "preHorizontalCreation"
+ * @param {String} annotationId id of the annotation
  */
 function createAndAppendBodyForms(body, omitFields, editableFields, formDataModel, hooks = {}, annotationId) {
   // create the two JSONForms and append them

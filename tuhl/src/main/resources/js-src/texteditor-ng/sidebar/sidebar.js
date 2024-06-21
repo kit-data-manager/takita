@@ -2,8 +2,7 @@ import { enableTooltips, toggleVisibility } from '../../common/utils';
 
 import { getTextLanguage } from '../textloader/textloader';
 import { decreaseFontSize, increaseFontSize, resetFontSize } from '../utils/fontsize';
-import { Variant } from '../../projectspecific/textloader';
-import { hooks } from '../../projectspecific';
+import { hooks, Variant } from '../../projectspecific';
 /**
  * Set Takita's sidebar up to make it suitable for the texteditor.
  * @module sidebar
