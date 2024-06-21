@@ -18,6 +18,7 @@ export { targetUpdateCallback, POSSIBLE_DIVISION_TYPES, highlightAnnotationFunct
 export { hooks } from './hooks';
 export { formObjectCreateAnnotation, formObjectCreateBody } from './annotationCreation';
 export { Variant } from './textloader';
+export { getColorHexFromEnumEntry, getColorNameFromEnumEntry } from './utils';
 
 // TODO: CUSTOMIZE to be the correct function for your project case
 // - updateTargetData is the standard function to update a target, it will only update the target

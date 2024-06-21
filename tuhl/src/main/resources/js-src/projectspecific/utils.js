@@ -1,6 +1,6 @@
 // TODO: CUSTOMISE the colors based
 // see "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java"
-// and "takita/tuhl/src/main/resources/static/js/creation_templates_text.js"
+// and "takita/tuhl/src/main/resources/resources/js-src/projectspecific/annotationCreation/templates.js"
 export function getColorHexFromEnumEntry(colorEnumEntry) {
   let colorHex = '#89f099';
   switch (colorEnumEntry) {
@@ -25,7 +25,7 @@ export function getColorHexFromEnumEntry(colorEnumEntry) {
 
 // TODO: CUSTOMISE the colors based
 // see "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java"
-// and "takita/tuhl/src/main/resources/static/js/creation_templates_text.js"
+// and "takita/tuhl/src/main/resources/resources/js-src/projectspecific/annotationCreation/templates.js"
 export function getColorNameFromEnumEntry(colorEnumEntry) {
   let colorName = 'Default';
   switch (colorEnumEntry) {
