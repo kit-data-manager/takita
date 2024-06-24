@@ -59,7 +59,7 @@ export function pickTemplate(svgCode, encodedId, createFormId, pickFormId, templ
     document.getElementById(createFormId).title = svgCode;
   }
 
-  console.log($('#' + pickFormId));
+  //console.log($('#' + pickFormId));
   // creates dropdown from enum objects defined at the top
   if (template === 'bodyTemplate') {
     $('#' + pickFormId).jsonForm(formObjectCreateBody);
@@ -84,9 +84,9 @@ export async function createAnnotation(annotationData) {
       postAnnotationCreation();
     }
     // trigger the body creation according to the template for each body
-    annotationData.bodies.forEach(async (body) => {
+    for (let body of annotationData.bodies) {
       const newBody = await createBodyData(newAnnotation.id, body);
-    });
+    }
 
     const finishedNewAnnotation = await getAnnotationData(encodeAnnoId(newAnnotation.id));
     resetFormAndUpdateDisplay(finishedNewAnnotation);
