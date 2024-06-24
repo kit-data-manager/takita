@@ -14,13 +14,14 @@ import { makeTargetsCompatible, checkIsTargetCompatible } from '../../texteditor
 import { updateDisplay, highlightSelectedAnnotationsTarget, removeStyles } from '../../texteditor-ng/highlighting';
 import { pickTemplate } from '../annotationCreation';
 // projectspecific
-import { targetUpdateCallback } from '../../projectspecific';
+import { hooks, targetUpdateCallback } from '../../projectspecific';
 
 /**
  * Main entry point to handle a user interaction to select an annotation
  * by clicking on it. It will get the annotations data, create the annotationCard
  * and highlight the selected words (if a text is present).
  *
+ * @param {Event} _event the event trgiggered by a user. It is not used and can be "null" as well
  * @param {String} annoId single encoded ID of the annotation, that was selected
  * @param {Object} [hooks] containing an array for various hooks
  * @returns {Object} selectedAnnotation the selected annotation or an empty object, if the
@@ -95,7 +96,7 @@ async function createAnnotationDiv(annotationData, $annotationDiv, hooks = {}) {
   [$annotationDiv, formDataModel] = appendAnnotationForm($annotationDiv, annotationData, headerFields, omitFields);
 
   // adding the icon row at the top of the annotation div
-  const $iconRowTop = createIconRow(true, annotationData.id);
+  const $iconRowTop = createIconRow(true, annotationData.id, hooks);
   $annotationDiv.prepend($iconRowTop);
 
   // preAppendingBodiesHook
@@ -141,7 +142,7 @@ async function createAnnotationDiv(annotationData, $annotationDiv, hooks = {}) {
  * @param {Array} omitFields holds fields that should not be rendered
  * @param {Array} editableFields holds fields that should not be editeable
  * @param {Object} formDataModel used while creating the annotation form
- * @param {Object} [hooks] containing an array for the hook to be called at "preHorizontalCreation"
+ * @param {Object} [hooks] containing an array for the hooks to be passed to "selectAnnotation()"
  * @returns {Element} the finished body card (div element)
  */
 function createBodyCard(annoId, body, index, omitFields, editableFields, formDataModel, hooks = {}) {
@@ -153,7 +154,7 @@ function createBodyCard(annoId, body, index, omitFields, editableFields, formDat
   $bodyCard.append($bodyRowDiv);
   // create the bodyDiv and append it to the bodyRowDiv
   const $bodyDiv = createBodyDiv(body);
-  const $iconRow = createIconRow(false, annoId, body, index);
+  const $iconRow = createIconRow(false, annoId, body, index, hooks);
   $bodyDiv.append($iconRow);
   const $bodyFormHorizontal = createBodyFormHorizontal(body);
   $bodyDiv.append($bodyFormHorizontal);
@@ -348,9 +349,10 @@ export function createExpandIcon(bodyIndex) {
  * body card row has to be created (if 'isAnnotationRow' is false)
  * @param {String} bodyId id of the body
  * @param {String} bodyIndex the index/number of the body
+ * @param {Object} [hooks] containing an array for the hooks to be passed to "selectAnnotation()"
  * @returns {Element} $iconRow that was created
  */
-export function createIconRow(isAnnotationRow, annoId, body, bodyIndex) {
+export function createIconRow(isAnnotationRow, annoId, body, bodyIndex, hooks) {
   const $iconRow = document.createElement('div');
   if (isAnnotationRow) {
     // create icon row for annotation card
@@ -373,7 +375,7 @@ export function createIconRow(isAnnotationRow, annoId, body, bodyIndex) {
     const $expandIcon = createExpandIcon('expand' + bodyIndex);
     $iconRow.append($expandIcon);
     const $bodyDeleteIcon = createDeleteIcon('delete' + bodyIndex, (_event) => {
-      deleteBody(annoId, body);
+      deleteBody(annoId, body, hooks);
     });
     $iconRow.append($bodyDeleteIcon);
   }
@@ -825,9 +827,10 @@ async function getData(annoId) {
  *
  * @param {String} annoId single encoded Id of the annotation to be updated
  * @param {String} value of the body, containing the body Id and the new value
+ * @param {Object} [hooks] containing an array for the hooks to be passed to "selectAnnotation()"
  * @returns {Boolean} true, if the body was succesfully updated, false, if the update failed
  */
-async function updateBody(annoId, value) {
+async function updateBody(annoId, value, hooks = {}) {
   let bodyUpdated = false;
   try {
     // parsing the formvalue into JSON as the function to update the body requires
@@ -835,7 +838,7 @@ async function updateBody(annoId, value) {
     const body = JSON.parse(value);
     const response = await updateBodyData(annoId, body);
     bodyUpdated = true;
-    selectAnnotation(null, annoId);
+    selectAnnotation(null, annoId, hooks);
     // updating the display for text annotation
     // checking if TEI-element is null. it is defined for text annotation,
     // but not for image annotation
@@ -855,16 +858,17 @@ async function updateBody(annoId, value) {
  *
  * @param {String} annoId single encoded id of the annotation, where to body has to be deleted
  * @param {Object} body to be deleted
+ * @param {Object} [hooks] containing an array for the hook to be called at "preHorizontalCreation"
  * @returns {Boolean} true, if the body was succesfully deleted, false, if the user
  * canceled the process or deletion failed
  */
-async function deleteBody(annoId, body) {
+async function deleteBody(annoId, body, hooks = {}) {
   let confirmation = confirm('Are you sure to delete this body?');
 
   if (confirmation) {
     try {
       const response = await deleteBodyData(annoId, body);
-      selectAnnotation(null, annoId);
+      selectAnnotation(null, annoId, hooks);
       if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
         // redraw
         updateDisplay();
