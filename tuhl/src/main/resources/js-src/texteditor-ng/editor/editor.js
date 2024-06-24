@@ -3,7 +3,7 @@ import { selectAnnotation } from '../../common/annotationCard';
 import { collapseSidebar } from '../sidebar';
 import { createTargetString } from '../targetBuilding';
 import { pickTemplate } from '../../common/annotationCreation';
-import { hooks, possibleHighlightClasses } from '../../projectspecific';
+import { possibleHighlightClasses } from '../../projectspecific';
 
 /**
  * Initialize the textEditor with given annotations; currently the annotations
@@ -12,8 +12,9 @@ import { hooks, possibleHighlightClasses } from '../../projectspecific';
  *
  * @param {Object} annotations annotations of a page, not used currently as they are only necessary
  * for the eventListeners, which always need the current annotations stored in the window object.
+ * @param {Object} [hooks] containing an array for various hooks
  */
-export function initializeTextEditor(_annotations) {
+export function initializeTextEditor(_annotations, hooks = {}) {
   // bind eventHandlers to clicks and buttons
   // open textcard if rightclicking on a word that is highlighted due to it
   // having a css class, i.e. has an annotation
@@ -31,16 +32,19 @@ export function initializeTextEditor(_annotations) {
     window.SELECTED_ANNOTATION = newSelectedAnnotation;
   });
 
+  // adding eventhandler for text selection, if a user presses the button first
+  // and then selects text
   document.getElementById('TEI').addEventListener('mousedown', (_event) => {
     // only get a selection, if a user actually wants to select text
     if (window.MODE === window.MODE_CLASS.Create && window.SELECTING_TEXT) {
-      annotateSelectedText(window.getSelection(), window.ANNOJSON);
+      annotateSelectedText(window.getSelection(), window.ANNOJSON, hooks);
     }
   });
 
-  // adding eventhandler for text selection
+  // adding eventhandler for text selection, if a user selects text first and then
+  // presses the button
   document.getElementById('selectTextListItem').addEventListener('mousedown', (event) => {
-    onclickSelectText(event, window.getSelection(), window.ANNOJSON);
+    onclickSelectText(event, window.getSelection(), window.ANNOJSON, hooks);
   });
 
   // adding the closing functionality to annotation creation modal
@@ -103,8 +107,9 @@ export function annotateSelectedText(selection, annoJson, hooks = {}) {
  * @param {Event} _event
  * @param {Selection} selection the selection cerated by the user
  * @param {JSONArray} annoJson contains all the annotation of the pages as JSONObjects
+ * @param {Object} [hooks] containing an array for the hooks to be passed to "annotateSelectedText()"
  */
-function onclickSelectText(_event, selection, annoJson) {
+function onclickSelectText(_event, selection, annoJson, hooks = {}) {
   const $sidebar = document.querySelector('.anno-side-bar');
   collapseSidebar($sidebar);
   window.SELECTING_TEXT = true;
@@ -120,6 +125,9 @@ function onclickSelectText(_event, selection, annoJson) {
  * @param {Event} event triggered by a user by clicking (right or left click) on a highlighted word
  * @param {[Object]} annoJson containing all annotations
  * @param {Element} $annotationCard the div-element displaying an annotation on the right side of the screen
+ * @param {Object} currentSelectedAnnotation the currently selected annotation, might be none
+ * @param {Object} [hooks] containing an array for the hooks to be passed to "selectAnnotation()"
+ * @returns
  */
 async function cycleAnnotations(event, annoJson, $annotationCard, currentSelectedAnnotation, hooks = {}) {
   let annotationsOnTarget = [];
@@ -171,7 +179,7 @@ async function cycleAnnotations(event, annoJson, $annotationCard, currentSelecte
       }
     }
 
-    const [selectedAnnotation, $filledAnnotationCard] = await selectAnnotation(null, annoIdEncoded, hooks);
+    const selectedAnnotation = await selectAnnotation(null, annoIdEncoded, hooks);
     //alert("asd");
     console.log('New selected annotation: ', selectedAnnotation);
     if ($annotationCard.classList.contains('is-hidden')) {

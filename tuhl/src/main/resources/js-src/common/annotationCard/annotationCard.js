@@ -14,7 +14,7 @@ import { makeTargetsCompatible, checkIsTargetCompatible } from '../../texteditor
 import { updateDisplay, highlightSelectedAnnotationsTarget, removeStyles } from '../../texteditor-ng/highlighting';
 import { pickTemplate } from '../annotationCreation';
 // projectspecific
-import { hooks, targetUpdateCallback } from '../../projectspecific';
+import { targetUpdateCallback } from '../../projectspecific';
 
 /**
  * Main entry point to handle a user interaction to select an annotation
@@ -28,18 +28,12 @@ import { hooks, targetUpdateCallback } from '../../projectspecific';
  * card could not be created
  */
 export async function selectAnnotation(_event, annoId, hooks = {}) {
-  let annotationData = await getData(annoId);
+  const selectedAnnotation = await getData(annoId);
 
   // exit if there is a problem with the data
-  if (annotationData == null) {
+  if (selectedAnnotation == null) {
     console.error('Could not get data and create the annotation card for ', annoId);
     return {};
-  }
-
-  if (hooks.manipulatingData) {
-    hooks.manipulatingData.forEach((hook) => {
-      annotationData = hook(annotationData);
-    });
   }
 
   let $annotationDiv = document.getElementById('annotationCard');
@@ -50,6 +44,15 @@ export async function selectAnnotation(_event, annoId, hooks = {}) {
   }
 
   // creating new annotationCard
+  // deep cloning the the data of the selected annotation, so it can be manipulated
+  // by hooks (manipulatingData, preHorizontalBodyCardCreation etc.). The data manipulation
+  // necessary for the rendering should not affect the data returned by "selectAnnotation()"
+  let annotationData = JSON.parse(JSON.stringify(selectedAnnotation));
+  if (hooks.manipulatingData) {
+    hooks.manipulatingData.forEach((hook) => {
+      annotationData = hook(annotationData);
+    });
+  }
   $annotationDiv = await createAnnotationDiv(annotationData, $annotationDiv, hooks);
   if (hooks.postAnnotationCardCreation) {
     hooks.postAnnotationCardCreation.forEach((hook) => {
@@ -57,14 +60,12 @@ export async function selectAnnotation(_event, annoId, hooks = {}) {
     });
   }
 
-  const selectedAnnotation = annotationData;
-
   // highlight the selected words
   if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
     highlightSelectedAnnotationsTarget(selectedAnnotation);
   }
 
-  return [selectedAnnotation, $annotationDiv];
+  return selectedAnnotation;
 }
 
 // creation of various elements
@@ -128,7 +129,7 @@ async function createAnnotationDiv(annotationData, $annotationDiv, hooks = {}) {
   }
 
   if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
-    appendTextTargetModificationButtons(annotationData, $annotationDiv);
+    appendTextTargetModificationButtons(annotationData, $annotationDiv, hooks);
   }
   return $annotationDiv;
 }
@@ -838,7 +839,7 @@ async function updateBody(annoId, value, hooks = {}) {
     const body = JSON.parse(value);
     const response = await updateBodyData(annoId, body);
     bodyUpdated = true;
-    selectAnnotation(null, annoId, hooks);
+    window.SELECTED_ANNOTATION = await selectAnnotation(null, annoId, hooks);
     // updating the display for text annotation
     // checking if TEI-element is null. it is defined for text annotation,
     // but not for image annotation
@@ -868,7 +869,7 @@ async function deleteBody(annoId, body, hooks = {}) {
   if (confirmation) {
     try {
       const response = await deleteBodyData(annoId, body);
-      selectAnnotation(null, annoId, hooks);
+      window.SELECTED_ANNOTATION = await selectAnnotation(null, annoId, hooks);
       if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
         // redraw
         updateDisplay();
@@ -949,7 +950,7 @@ async function deleteAnnotation(annoId) {
  * @param {Element} $annotationDiv the div holding the annotationCard
  * @returns {Element} $annotationDiv after the buttons got appended
  */
-function appendTextTargetModificationButtons(annotationData, $annotationDiv) {
+function appendTextTargetModificationButtons(annotationData, $annotationDiv, hooks = {}) {
   if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
     const $buttonModifySelection = document.createElement('button');
     $buttonModifySelection.innerHTML = 'Modify Selection';
@@ -993,7 +994,7 @@ function appendTextTargetModificationButtons(annotationData, $annotationDiv) {
       // the selected text without any "|"s
       const newXPath = document.getElementById('updateSelection').dataset.newTargetXmlId;
       const newSelectedText = document.getElementById('newSelectedText').children[0].innerHTML.split('|')[0];
-      updateTarget(event, targetUpdateCallback, annotationData, newXPath, newSelectedText);
+      updateTarget(event, targetUpdateCallback, annotationData, newXPath, newSelectedText, hooks);
     });
   }
 

@@ -27,6 +27,16 @@ let postAnnotationCreation;
                         toggleShapeSelect(shape);
                     };*/
 
+/**
+ * creates the JSONForm and shows the modal to create an annotation based on
+ * the given template
+ *
+ * @param {String} svgCode containing the target string (svgCode or xPath)
+ * @param {String} encodedId of the annotation
+ * @param {String} createFormId
+ * @param {String} pickFormId
+ * @param {String} template for body or annotation creation
+ */
 export function pickTemplate(svgCode, encodedId, createFormId, pickFormId, template) {
   // clear out forms and content from former submissions
   let pickContent = document.getElementById(pickFormId);
@@ -68,7 +78,13 @@ export function pickTemplate(svgCode, encodedId, createFormId, pickFormId, templ
   }
 }
 
-export async function createAnnotation(annotationData) {
+/**
+ *
+ * @param {Object} annotationData the data necessary for annotaiton creation
+ * @param {Object} [hooks] containing an array for the hooks to be passed to "selectAnnotation()"
+ * @returns
+ */
+export async function createAnnotation(annotationData, hooks = {}) {
   try {
     // create the object nededed by the function to create an annotation (createAnnotationData);
     // it does not need the body information
@@ -89,7 +105,7 @@ export async function createAnnotation(annotationData) {
     }
 
     const finishedNewAnnotation = await getAnnotationData(encodeAnnoId(newAnnotation.id));
-    resetFormAndUpdateDisplay(finishedNewAnnotation);
+    resetFormAndUpdateDisplay(finishedNewAnnotation, hooks);
     return finishedNewAnnotation;
   } catch (exception) {
     console.error(exception);
@@ -101,8 +117,9 @@ export async function createAnnotation(annotationData) {
  * annotation card
  *
  * @param {Object} annotation which was created
+ * @param {Object} [hooks] containing an array for the hooks to be passed to "selectAnnotation()"
  */
-async function resetFormAndUpdateDisplay(annotation) {
+async function resetFormAndUpdateDisplay(annotation, hooks = {}) {
   // the following check needs to be done as this storeBody function is used since June 2023
   // for the addition of multiple bodies to an annotation. The function was implemented to
   // be used while creating annotations and not adding bodies, so it previously just toggled
@@ -112,7 +129,7 @@ async function resetFormAndUpdateDisplay(annotation) {
   if ($modal.classList.contains('show-modal')) {
     $modal.classList.toggle('show-modal');
   }
-  selectAnnotation(null, encodeAnnoId(annotation.id));
+  window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(annotation.id), hooks);
   const $annotationCard = document.getElementById('annotationCard');
   if ($annotationCard.classList.contains('is-hidden')) {
     toggleVisibility($annotationCard);

@@ -30,7 +30,7 @@ async function initializeTextEditorComponent(linkToResource, annotationsString, 
   // textEditor.init() could then draw the annotations instead of the code
   // in the html template
   // initiliazing the editor
-  initializeTextEditor(annoJson);
+  initializeTextEditor(annoJson, hooks);
 
   // adding the TEI file to the DOM
   const $teiContatinerElement = document.getElementById('TEI');
@@ -47,7 +47,7 @@ async function initializeTextEditorComponent(linkToResource, annotationsString, 
 
   // Construct and display a navigation bar.
   const $navbar = document.getElementById('textNavBar');
-  initializeNavigation($navbar, $teiContatinerElement);
+  await initializeNavigation($navbar, $teiContatinerElement, hooks);
 
   // initializes projectspecfic things by executing the hooks
   if (hooks.initializeProjectspecifics) {

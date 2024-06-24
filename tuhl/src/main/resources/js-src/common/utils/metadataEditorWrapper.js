@@ -6,6 +6,7 @@ import { deleteAnnotationData } from '../../texteditor-ng/data/annotations';
 import { encodeAnnoId } from './url';
 import { selectAnnotation } from '../annotationCard/annotationCard';
 import { toggleVisibility } from './display';
+import { hooks } from '../../projectspecific';
 
 /**
  * TODO: what does this do @Danah
@@ -44,7 +45,7 @@ export function fillMetaDataEditorTable(annoJson) {
       field: 'id',
       headerSort: false,
       cellClick: function (e, cell) {
-        selectAnnotation(null, encodeAnnoId(cell.getValue()));
+        window.SELECTED_ANNOTATION = selectAnnotation(null, encodeAnnoId(cell.getValue()), hooks);
         if ($annotationCard.classList.contains('is-hidden')) {
           toggleVisibility($annotationCard);
         }
@@ -83,7 +84,7 @@ export function fillMetaDataEditorTable(annoJson) {
     //    });
     //},
     updateOperation: function (rowColumnvalue) {
-      selectAnnotation(null, encodeAnnoId(rowColumnvalue.id));
+      window.SELECTED_ANNOTATION = selectAnnotation(null, encodeAnnoId(rowColumnvalue.id), hooks);
       if ($annotationCard.classList.contains('is-hidden')) {
         toggleVisibility($annotationCard);
       }

@@ -80,9 +80,10 @@ export function saveModification(_event, selection, annotation) {
  * @param {JSONObject} annotation the curretnly selected annotation, which will have its target updated
  * @param {String} targetXPath the new xPath
  * @param {String} newSelectedText the new selected text
+ * @param {Object} [hooks] containing an array for the hooks to be passed to "selectAnnotation()"
  * @returns {Boolean} true, if the body was succesfully updated, false, if the update failed
  */
-export async function updateTarget(_event, targetUpdateCallback, annotation, targetXPath, newSelectedText) {
+export async function updateTarget(_event, targetUpdateCallback, annotation, targetXPath, newSelectedText, hooks = {}) {
   // update the target (and body depending on the callback)
   let targetUpdated = false;
   try {
@@ -97,7 +98,7 @@ export async function updateTarget(_event, targetUpdateCallback, annotation, tar
     window.SELECTING_TEXT = false;
 
     // show the updated annotation
-    selectAnnotation(null, encodeAnnoId(annotation.id));
+    window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(annotation.id), hooks);
 
     // updating the display for text annotation
     // checking if TEI-element is null. it is defined for text annotation,

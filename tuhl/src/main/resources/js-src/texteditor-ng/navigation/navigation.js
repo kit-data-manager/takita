@@ -14,7 +14,7 @@ import { POSSIBLE_DIVISION_TYPES } from '../../projectspecific';
  * callbacks for the existing UI elements which switch between
  * the different document parts.
  */
-export function initializeNavigation($navBar, $text) {
+export async function initializeNavigation($navBar, $text, hooks = {}) {
   // Local state, closed over and modified by the various button callbacks
   let showAllDivisions = false;
   let currentDivisionLabel;
@@ -109,11 +109,11 @@ export function initializeNavigation($navBar, $text) {
 
     if (preselectedAnnoTarget !== null) {
       const preselectedAnnotationId = getTargetAnnotationId();
-      setTimeout(() => {
+      setTimeout(async () => {
         preselectedAnnoTarget.scrollIntoView(true, {
           behavior: 'smooth',
         });
-        navigateToAnnotation(preselectedAnnotationId);
+        await navigateToAnnotation(preselectedAnnotationId, hooks);
       }, 100);
     }
   }
@@ -135,9 +135,9 @@ export function initializeNavigation($navBar, $text) {
  *  responsibilities.
  */
 // // TODO: merge this into the initializeNavbar function
-export function navigateToAnnotation(targetAnnotationId) {
+export async function navigateToAnnotation(targetAnnotationId, hooks = {}) {
   if (targetAnnotationId) {
-    selectAnnotation(null, encodeAnnoId(targetAnnotationId));
+    window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(targetAnnotationId), hooks);
     const annoCard = document.getElementById('annotationCard');
     if (annoCard.classList.contains('is-hidden')) {
       toggleVisibility(annoCard);
