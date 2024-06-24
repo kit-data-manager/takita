@@ -1,11 +1,16 @@
 import {
-  spreadMRWArray,
+  preselectAllMRWAnnos,
+  makeAnnotationData,
   getEnumAndTitleMap,
   getSelectMRWButton,
-  preselectAllMRWAnnos,
   findSelectedMRWAnnos,
+  spreadMRWArray,
+  makeBodiesData,
 } from './utils';
+import { hooks } from '..';
 import { createAnnotation } from '../../common/annotationCreation';
+import { selectAnnotation } from '../../common/annotationCard';
+import { createBodyData } from '../../texteditor-ng/data';
 
 // enum for different annotation templates
 // TODO: CUSTOMISE available annotations (will be shown during the annotation process)
@@ -17,6 +22,14 @@ const annotationTemplate = {
   MRWIMPLICIT: 'mrwimplicit',
   MFLAG: 'mflag',
   METAPHOR: 'metaphor',
+};
+
+// enum for different body templates
+// for adding new: include name here and add dataModel in
+// getFormModel(chosenTemplate)
+const bodyTemplate = {
+  COMMENT: 'comment',
+  MRW: 'mrw',
 };
 
 // jsonForm object to create simple dropdown to choose annotation template
@@ -60,7 +73,7 @@ export const formObjectCreateAnnotation = {
         $('#createAnnotationForm').metadataeditorForm(options, async function onSubmitValid(formvalue) {
           // formvalue contains all the information from the jsonForm as a string
           const annotationData = makeAnnotationData(formvalue);
-          const annotation = await createAnnotation(annotationData);
+          const annotation = await createAnnotation(annotationData, hooks);
         });
 
         preselectAllMRWAnnos();
@@ -70,145 +83,91 @@ export const formObjectCreateAnnotation = {
   ],
 };
 
-/**
- * get content from the form and turn it into the data necessary for annotation creation (incl. target and bodies)
- *
- * @param {String} formvalue value of the JSONForm after a user submitted it/started the annotation creation process
- * @returns {Object} the data for the annotation creation
- */
-function makeAnnotationData(formvalue) {
-  // formvalue contains all the information from the jsonForm as a string
-  console.log('value of the jsonForm/annotation creation modal', formvalue);
-  let formDataJson = JSON.parse(formvalue);
+// jsonForm object to create simple dropdown to choose body template
+// upon choosing the corresponding MetadataEditor CREATE form is built
+// create button sends the information to the REST controller (bodies/tags)
+// depending on the chosen template
+export const formObjectCreateBody = {
+  // adding blank first option, to allow the functionalities on change
+  schema: {
+    template: {
+      type: 'string',
+      enum: [''].concat(Object.keys(bodyTemplate)),
+    },
+  },
+  form: [
+    {
+      key: 'template',
+      title: 'Choose your template',
+      onChange: function (e) {
+        let value = $(e.target).val();
 
-  // CRC 1475 specific
-  // as the uris of the mrw annotations are stored in an array and the wadm does not accept an array as a value
-  // of a textual body, the array will be split into multiple "key:value" pairs, with the same key (mrws)
-  if ('mrws' in formDataJson) {
-    formDataJson = spreadMRWArray(formDataJson);
-  }
+        // clearing the modal
+        let createFormElement = document.getElementById('createForm');
+        while (createFormElement.firstChild) {
+          createFormElement.firstChild.remove();
+        }
 
-  // formDataJson.color?.color will return the value of the color (which is a truthy value), if a
-  // color is available. If no color is available formDataJson.color?.color will return 'undefined (which
-  // is a falsy value) and therefore the ternary operator will return a default color
-  const color = formDataJson?.color ? formDataJson.color : '#89f099';
+        if (!value) {
+          return;
+        }
+        let formModel = getFormModel(value);
+        //console.log(formModel);
+        // if no uiForm is given in getFormModel() for a body template, a wildcard is used.
+        // previously a wildcard was always used, but the change in this commit changed the
+        // following options variable
+        if (formModel[1] === undefined) {
+          formModel[1] = '*';
+        }
 
-  const bodies = makeBodiesData(formDataJson);
-  // window.location.pathname.split('/').pop() returns the last part of the url,
-  // which is the pageId, which is required
-  // to create an annotation
-  let annotationData = {
-    pageId: window.location.pathname.split('/').pop(),
-    color: color,
-    motivation: 'describing',
-    bodies: bodies,
-  };
-  if (document.getElementById('createAnnotationForm').title !== '') {
-    annotationData.svgCode = document.getElementById('createAnnotationForm').title;
-  }
-  console.log('finished annotation data', annotationData);
+        let options = { operation: 'CREATE', dataModel: formModel[0], uiForm: formModel[1] };
 
-  return annotationData;
-}
+        // preventing form submission to allow customized handling
+        createFormElement.addEventListener('submit', function (e) {
+          e.preventDefault();
+        });
 
-/**
- * create 1-n bodies based on the JSONForm and store them in an array, so they can be stored. 
- * 
- * @param {Object} formDataJson the value ofeach of the fields of the JSONForm, eg.
- * {
-      "selectedText": "of the ungodly",
-      "classification": "metaphor",
-      "label": "Book_of_Psalms1715325572436",
-      "color": "#000021",
-      "mrws0": "https://example.org/wap/0da130fd"
-    }
- * @returns {[Object]} holding all the bodies as JSONObjects in the format necessary to store them, eg.:
- * [
-    { purpose: 'describing', value: 'of the ungodly' },
-    { purpose: 'classifying', value: 'metaphor' },
-    { purpose: 'identifying', value: 'Book_of_Psalms1715325572436' },
-    { purpose: 'linking', value: 'https://example.org/wap/0da130fd' },
-   ]
- */
-function makeBodiesData(formDataJson) {
-  let bodiesArray = [];
-  Object.entries(formDataJson).forEach(([key, value]) => {
-    const bodyObject = makeBodyData(key, value);
-    // the bodyObject can be undefined for the "color", if the "color" isn't matching
-    // the CRC980 stuff
-    if (bodyObject) {
-      bodiesArray.push(bodyObject);
-    }
-  });
-  return bodiesArray;
-}
+        $('#createForm').metadataeditorForm(options, async function onSubmitValid(value) {
+          let jsonObject = JSON.parse(value);
+          const annotationId = document.getElementById('createForm').title;
+          //console.log(value);
+          //console.log(jsonObject);
 
-/**
- * create the data for one body based on the JSONForm value.
- * Each body gets a 'purpose'. A body should have at least one of the following properties:
- * - value: value of the body comes from specific input into a field of of the form
- * - subject: similar to "value", but is based on the color
- * - source: see subject
- * An example looks like '"classification": "metaphor"'
- *
- * @param {String} formKey the key of the key value pair, eg. 'classification'
- * @param {String} formValue the value of the key value pair, eg. 'metaphor'
- * @returns {Object} a full body object, eg. {purpose: 'classifying', value: 'metaphor'}
- */
-function makeBodyData(formKey, formValue) {
-  let bodyObject;
-  if (formKey === 'color') {
-    // this is CRC980 specific stuff
-    switch (formKey) {
-      case '#e2b8f7':
-        bodyObject = { purpose: 'classifying', subject: 'PageRegion' };
-        break;
-      case '#00edff':
-        bodyObject = {
-          purpose: 'classifying',
-          subject: 'TextRegion',
-          source: 'http://episteme.org/A04Vokabular#text_block',
-        };
-        break;
-      // no default case given as most annotations will have a color and we don't want
-      // an additional unnecessary body to be created
-    }
-  } else {
-    const purpose = assignPurpose(formKey);
-    bodyObject = { purpose: purpose, value: formValue };
-  }
+          // CRC 1475 specific
+          // as the uris of the mrw annotations are stored in an array and the wadm does not accept an array as a value
+          // of a textual body, the array will be split into multiple "key:value" pairs, with the same key (mrws)
+          if ('mrws' in jsonObject) {
+            jsonObject = spreadMRWArray(jsonObject);
+          }
 
-  return bodyObject;
-}
+          // this if condition necessary for CRC1475, it should always be skipped for NON-CRC1475 body creations
+          console.log(jsonObject);
+          if (jsonObject !== undefined) {
+            try {
+              if (jsonObject.purpose) {
+                await createBodyData(annotationId, jsonObject);
+              } else {
+                const bodies = makeBodiesData(jsonObject);
+                // trigger the body creation according to the template for each body
+                for (let body of bodies) {
+                  const newBody = await createBodyData(annotationId, body);
+                }
+              }
 
-/**
- * convert the type of a body into a wadm-purpose. The type is based on the dataModel.properties.$key of
- * the JSONForm
- *
- * @param {String} bodyType the type of a body. It gets assigned by the JSONForm
- * @returns {String} the purpose matching the type of a body
- */
-function assignPurpose(bodyType) {
-  // CRC980
-  if (bodyType === 'reference' || bodyType === 'anchor' || bodyType === 'tag') {
-    return 'tagging';
-  } else if (bodyType === 'transcription') {
-    return 'tadirah:transcription';
-  } // CRC175
-  else if (bodyType === 'selectedText') {
-    return 'describing';
-  } else if (bodyType.includes('mrws')) {
-    return 'linking';
-  } else if (bodyType === 'label') {
-    return 'identifying';
-  } else if (bodyType === 'comment') {
-    return 'commenting';
-  } else if (bodyType === 'classification') {
-    return 'classifying';
-  } else {
-    return 'classifying';
-  }
-}
+              // hiding the modal.
+              window.SELECTED_ANNOTATION = selectAnnotation(null, document.getElementById('createForm').title, hooks);
+              document.getElementById('createBody').classList.toggle('show-modal');
+            } catch (exception) {
+              console.error('Adding another body failed with: ', exception);
+            }
+          }
+        });
+      },
+      titleMap: {},
+    },
+  ],
+};
+
 // assigns data model needed for MetadataEditor to specific template
 // the actual thing where templating is done
 // TODO: CUSTOMISE available annotations and their structure/content (dataModel)
@@ -611,7 +570,7 @@ export function getFormModel(chosenTemplate) {
         elementsTargeted.push(document.getElementById(target.selector.xPath.split('"')[1]));
       });
       // get all mrwAnnos that target the same words as the metaphor annotation
-      let mrwAnnosForBody = findSelectedMRWAnnos(window.ANNOJSON, window.ANNOJSON.elementsTargeted);
+      let mrwAnnosForBody = findSelectedMRWAnnos(window.ANNOJSON, elementsTargeted);
       // remove all mrw annotations, which are linked to the metaphor annotation already
       // from mrwAnnosForBody to prevent users from linking the same mrwAnno
       // multiple times
@@ -662,5 +621,3 @@ export function getFormModel(chosenTemplate) {
   console.log('uiForm: ', uiForm);
   return [dataModel, uiForm];
 }
-
-export const formObjectCreateBody = {};
