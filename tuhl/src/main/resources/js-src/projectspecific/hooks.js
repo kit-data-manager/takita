@@ -1,5 +1,5 @@
-import { sanskritSpecificButton, hebrewSpecificButton } from './sidebar';
-import { Variant, applyStylesB03, applyStylesB04 } from './textloader';
+import { applyStylesB03, applyStylesB04 } from './textloader';
+import { enableLanguageViewToggleButton } from './sidebar';
 import { setMRWAnnos, setSelectedText } from './editor';
 import { addLinkToAnalysisTool, updateLinkingTextcard } from './annotationCard';
 import { initializeCRC1475Specifics } from '.';
@@ -9,9 +9,9 @@ import { initializeCRC1475Specifics } from '.';
  */
 export const hooks = {
   initializeProjectspecifics: [initializeCRC1475Specifics],
-  postSidebarCreation: [enableLanguageViewToggleButton],
   preMakeHTML: [],
   postApplyStyles: [applyStylesB03, applyStylesB04],
+  postSidebarCreation: [enableLanguageViewToggleButton],
   postTargetCreation: [setMRWAnnos, setSelectedText],
   manipulatingData: [],
   preAppendingBodies: [],
@@ -150,16 +150,3 @@ async function preHorizontalBodyCardCreation(annotationId, body) {
   return modifiedBody;
 }
 // ------ HOOK API DEFINITION END ------
-
-function enableLanguageViewToggleButton($sidebar, variant) {
-  /**
-   * Set up project/language specific buttons and their callbacks.
-   */
-  if (variant === Variant.B04) {
-    /* Sanskrit / B04 specific */
-    sanskritSpecificButton($sidebar);
-  } else if (variant === Variant.Hebrew) {
-    /* Hebrew specific */
-    hebrewSpecificButton($sidebar);
-  }
-}

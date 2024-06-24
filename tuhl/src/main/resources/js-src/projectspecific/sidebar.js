@@ -1,8 +1,9 @@
 import { toggleBoxIcon, toggleOpacity, toggleVisibility } from '../common/utils';
 import { collapseSidebar } from '../texteditor-ng/sidebar/sidebar';
+import { Variant } from './textloader';
 
 /**
- * hebrew specific display
+ * hides/shows the vocalized version of the text
  */
 export function toggleHebrewView() {
   const $textElements = document.querySelectorAll('tei-reg');
@@ -12,7 +13,9 @@ export function toggleHebrewView() {
   toggleBoxIcon($button, 'bx-toggle-left', 'bx-toggle-right');
 }
 
-// sanskrit specific display
+/**
+ * hides/shows the sandhied version of the text
+ */
 export function toggleSanskritView() {
   // querySelectorAll('tei-orig')
   // '#toggleViewsButton'
@@ -24,13 +27,12 @@ export function toggleSanskritView() {
 }
 
 /**
- * Enable sanskrit-specific button
- *
  * Enables the toggleViews button, which shows/hides the sandhied version
  * of the text.
- * @param {Element} $sidebar
+ *
+ * @param {Element} $sidebar the sidebar element
  */
-export function sanskritSpecificButton($sidebar) {
+export function enableSanskritSpecificButton($sidebar) {
   // TODO: why do the variants use different HTML elements for their
   // identical click callbacks? Can't the elements be nested?
   const $toggleViews = $sidebar.querySelector('#toggleViews');
@@ -49,13 +51,12 @@ export function sanskritSpecificButton($sidebar) {
 }
 
 /**
- * Enable hebrew-specific button
- *
  * Enables the toggleViews button, which shows/hides the unvocalized version
  * of the text.
- * @param {Element} $sidebar
+ *
+ * @param {Element} $sidebar the sidebar element
  */
-export function hebrewSpecificButton($sidebar) {
+export function enableHebrewSpecificButton($sidebar) {
   const $toggleViews = $sidebar.querySelector('#toggleViews');
   const $button = $toggleViews.querySelector('#toggleViewsButton');
   const $span = $toggleViews.querySelector('#toggleViewsSpan');
@@ -71,4 +72,23 @@ export function hebrewSpecificButton($sidebar) {
   });
   // Trigger the button to hide the unvocalized version initially.
   $button.click();
+}
+
+/**
+ * enables the toogleViewButton of the sidebar based on the given variant/requirements
+ *
+ * @param {Element} $sidebar the sidebar element
+ * @param {Variant} variant indictaes the requirements of the current text
+ */
+export function enableLanguageViewToggleButton($sidebar, variant) {
+  /**
+   * Set up project/language specific buttons and their callbacks.
+   */
+  if (variant === Variant.B04) {
+    /* Sanskrit / B04 specific */
+    enableSanskritSpecificButton($sidebar);
+  } else if (variant === Variant.Hebrew) {
+    /* Hebrew specific */
+    enableHebrewSpecificButton($sidebar);
+  }
 }
