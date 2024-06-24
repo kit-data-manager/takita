@@ -5,7 +5,7 @@ import {
   preselectAllMRWAnnos,
   findSelectedMRWAnnos,
 } from './utils';
-import { createAnnotation } from '../annotationCreation';
+import { createAnnotation } from '../../common/annotationCreation';
 
 // enum for different annotation templates
 // TODO: CUSTOMISE available annotations (will be shown during the annotation process)
@@ -78,7 +78,7 @@ export const formObjectCreateAnnotation = {
  */
 function makeAnnotationData(formvalue) {
   // formvalue contains all the information from the jsonForm as a string
-  console.log(formvalue);
+  console.log('value of the jsonForm/annotation creation modal', formvalue);
   let formDataJson = JSON.parse(formvalue);
 
   // CRC 1475 specific
@@ -106,7 +106,7 @@ function makeAnnotationData(formvalue) {
   if (document.getElementById('createAnnotationForm').title !== '') {
     annotationData.svgCode = document.getElementById('createAnnotationForm').title;
   }
-  console.log(annotationData);
+  console.log('finished annotation data', annotationData);
 
   return annotationData;
 }
@@ -134,7 +134,11 @@ function makeBodiesData(formDataJson) {
   let bodiesArray = [];
   Object.entries(formDataJson).forEach(([key, value]) => {
     const bodyObject = makeBodyData(key, value);
-    bodiesArray.push(bodyObject);
+    // the bodyObject can be undefined for the "color", if the "color" isn't matching
+    // the CRC980 stuff
+    if (bodyObject) {
+      bodiesArray.push(bodyObject);
+    }
   });
   return bodiesArray;
 }
