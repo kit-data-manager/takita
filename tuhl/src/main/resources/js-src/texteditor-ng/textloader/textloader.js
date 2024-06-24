@@ -14,6 +14,13 @@ export function appendTEIDocument(xmlString, $teiElement, hooks = {}) {
   return $TEIDoc;
 }
 
+/**
+ * converts the given xml string into custom HTML elements using the CETEIcean library
+ *
+ * @param {String} xmlString containing the xml document
+ * @param {[Object]} [hooks] containing an array for the hook to be called at "postApplyStyles"
+ * @returns an element containing the finished TEI-xml after being processed
+ */
 export function prepareTEIDocument(xmlString, hooks = {}) {
   const CETEIcean = new CETEI();
 
@@ -23,7 +30,7 @@ export function prepareTEIDocument(xmlString, hooks = {}) {
       xmlString = hook(xmlString);
     });
   }
-  console.log('texloader ', xmlString);
+  //console.log('texloader ', xmlString);
   const $html = CETEIcean.makeHTML5(xmlString);
   const language = getTextLanguage($html);
   // Apply generic transformations, and optionally custom postApplyStyles hooks.
@@ -32,6 +39,7 @@ export function prepareTEIDocument(xmlString, hooks = {}) {
 
 /**
  * Determine language of the document.
+ *
  * @param {Element} $text the element containing the TEI-xml
  * @returns {String} language of the current text or undefined
  */
@@ -40,10 +48,11 @@ export function getTextLanguage($text) {
 }
 
 /**
- * Main entry point into the textloader module.
+ * styles the given element based on the given language
+ *
  * @param {Element} $html the element containing the TEI-xml
  * @param {String} language the language of the text
- * @param {Object} [hooks] containing an array for the hook to be called at "postApplyStyles"
+ * @param {[Object]} [hooks] containing an array for the hook to be called at "postApplyStyles"
  * @returns {Element} an element containing the TEI-xml after being processed
  */
 export function applyStyles($html, language, hooks = {}) {
@@ -52,7 +61,7 @@ export function applyStyles($html, language, hooks = {}) {
   // Generic stuff
   // displaying right to left languages accordingly
   if (language === 'hbo' || language === 'he' || language === 'arb' || language === 'fa') {
-    $processedHTML.dir = 'rtl';
+    $processedHTML.firstChild.dir = 'rtl';
   }
 
   // Specific stuff
