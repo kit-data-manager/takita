@@ -11,6 +11,7 @@ import { hooks } from '..';
 import { createAnnotation } from '../../common/annotationCreation';
 import { selectAnnotation } from '../../common/annotationCard';
 import { createBodyData } from '../../texteditor-ng/data';
+import { toggleLoadingModal } from '../../common/utils';
 
 // enum for different annotation templates
 // TODO: CUSTOMISE available annotations (will be shown during the annotation process)
@@ -144,6 +145,7 @@ export const formObjectCreateBody = {
           console.log(jsonObject);
           if (jsonObject !== undefined) {
             try {
+              toggleLoadingModal();
               if (jsonObject.purpose) {
                 await createBodyData(annotationId, jsonObject);
               } else {
@@ -159,6 +161,8 @@ export const formObjectCreateBody = {
               document.getElementById('createBody').classList.toggle('show-modal');
             } catch (exception) {
               console.error('Adding another body failed with: ', exception);
+            } finally {
+              toggleLoadingModal();
             }
           }
         });

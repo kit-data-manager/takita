@@ -1,4 +1,4 @@
-import { fillMetaDataEditorTable } from '../../common/utils';
+import { fillMetaDataEditorTable, toggleLoadingModal } from '../../common/utils';
 import { getAllAnnotationsData } from '../data/annotations';
 import { checkIsTargetCompatible, makeTargetsCompatible } from '../utils';
 import { highlightAnnotationFunction, possibleHighlightClasses } from '../../projectspecific';
@@ -53,6 +53,7 @@ export function defaultHighlighting(annotation) {
  */
 export async function updateDisplay(hooks = {}) {
   try {
+    toggleLoadingModal();
     // update annoJson to get the current tagging-body-values
     // as they are the basis for the highlighting
     let annoJson = await getAllAnnotationsData();
@@ -75,6 +76,8 @@ export async function updateDisplay(hooks = {}) {
     return annoJson;
   } catch (error) {
     console.error('Display update failed ', error);
+  } finally {
+    toggleLoadingModal();
   }
 }
 

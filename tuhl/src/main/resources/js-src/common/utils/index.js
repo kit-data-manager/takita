@@ -6,6 +6,7 @@ export {
   toggleVisibility,
   toggleButtonState,
   toggleExpand,
+  toggleLoadingModal,
 } from './display';
 export { enableTooltips } from './tooltips';
 export { encodeAnnoId } from './url';
