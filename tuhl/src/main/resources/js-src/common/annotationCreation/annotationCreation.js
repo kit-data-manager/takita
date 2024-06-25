@@ -8,25 +8,6 @@ import { selectAnnotation } from '../annotationCard';
 import { createBodyData, createAnnotationData, getAnnotationData } from '../../texteditor-ng/data/annotations';
 import { formObjectCreateAnnotation, formObjectCreateBody } from '../../projectspecific';
 
-// add a function to be called after the annotation creation, before body creation
-let postAnnotationCreation;
-// postAnnotationCreation example
-// if needed: store the annotation ID within the
-// corresponding shape
-/*this might be needed later to highlight a selection
-                    let shape;
-                    paper.forEach(function(element) {
-                        if (element.type === "rect" || element.type === "path") {
-                            shape = element;
-                        }
-                    });
-                    if (document.getElementById("createAnnotationForm").title !== "") {
-                        shape.annoId = responseJson.id;
-                        shape.annoIdEncoded = encodeAnnoId(responseJson.id);
-                        shape.attr({'stroke': color, 'fill': color});
-                        toggleShapeSelect(shape);
-                    };*/
-
 /**
  * creates the JSONForm and shows the modal to create an annotation based on
  * the given template
@@ -81,8 +62,9 @@ export function pickTemplate(svgCode, encodedId, createFormId, pickFormId, templ
 /**
  *
  * @param {Object} annotationData the data necessary for annotaiton creation
- * @param {Object} [hooks] containing an array for the hooks to be passed to "selectAnnotation()"
- * @returns
+ * @param {Object} [hooks] containing an array for the hooks to be called and
+ * to be passed to "selectAnnotation()"
+ * @returns {Object} finishedNewAnnotation the newly created annotation
  */
 export async function createAnnotation(annotationData, hooks = {}) {
   try {
@@ -96,15 +78,18 @@ export async function createAnnotation(annotationData, hooks = {}) {
     };
 
     const newAnnotation = await createAnnotationData(annotationCreationData);
-    if (postAnnotationCreation !== undefined) {
-      postAnnotationCreation();
-    }
+
     // trigger the body creation according to the template for each body
     for (let body of annotationData.bodies) {
       const newBody = await createBodyData(newAnnotation.id, body);
     }
 
     const finishedNewAnnotation = await getAnnotationData(encodeAnnoId(newAnnotation.id));
+    if (hooks.postAnnotationCreation) {
+      hooks.postAnnotationCreation.forEach((hook) => {
+        hook(finishedNewAnnotation);
+      });
+    }
     resetFormAndUpdateDisplay(finishedNewAnnotation, hooks);
     return finishedNewAnnotation;
   } catch (exception) {

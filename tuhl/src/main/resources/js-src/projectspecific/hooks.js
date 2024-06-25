@@ -14,6 +14,7 @@ export const hooks = {
   postSidebarCreation: [enableLanguageViewToggleButton],
   postTargetCreation: [setMRWAnnos, setSelectedText],
   manipulatingData: [],
+  postAnnotationCreation: [],
   preAppendingBodies: [],
   postAppendingBodies: [addLinkToAnalysisTool],
   preHorizontalBodyCardCreation: [updateLinkingTextcard],
@@ -83,6 +84,16 @@ function postApplyStyles($processedHTML, language) {
  * @param {JSONArray} annoJson contains all the annotation of the pages as JSONObjects
  */
 function postTargetCreation(selection, annoJson) {}
+
+// ANNOTATIONCREATION
+/**
+ * called at common/annotationCreation/annotationCreation.js (createAnnotation())
+ * Can be used to interact with the DOM after annotation creation. THe image editor
+ * might use this to store the annotation ID within the corresponding shape.
+ *
+ * @param {Object} newAnnotation the newly created annotation fetched from tAkita core
+ */
+function postAnnotationCreation(newAnnotation) {}
 
 // ANNOTATIONCARD
 /**
