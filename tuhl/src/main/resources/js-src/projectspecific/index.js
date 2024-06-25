@@ -17,6 +17,7 @@ import { crc1475Highlighting, getSpecificClasses } from './highlight';
 export { targetUpdateCallback, POSSIBLE_DIVISION_TYPES, highlightAnnotationFunction, possibleHighlightClasses };
 export { hooks } from './hooks';
 export { formObjectCreateAnnotation, formObjectCreateBody } from './annotationCreation';
+export { headerFieldsArray, omitFieldsArray, editableFieldsArray } from './annotationCard';
 export { Variant } from './textloader';
 export { getColorHexFromEnumEntry, getColorNameFromEnumEntry } from './utils';
 

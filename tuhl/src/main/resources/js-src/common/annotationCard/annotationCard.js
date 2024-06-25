@@ -14,7 +14,7 @@ import { makeTargetsCompatible, checkIsTargetCompatible } from '../../texteditor
 import { updateDisplay, highlightSelectedAnnotationsTarget, removeStyles } from '../../texteditor-ng/highlighting';
 import { pickTemplate } from '../annotationCreation';
 // projectspecific
-import { targetUpdateCallback } from '../../projectspecific';
+import { targetUpdateCallback, headerFieldsArray, omitFieldsArray, editableFieldsArray } from '../../projectspecific';
 
 /**
  * Main entry point to handle a user interaction to select an annotation
@@ -53,7 +53,15 @@ export async function selectAnnotation(_event, annoId, hooks = {}) {
       annotationData = hook(annotationData);
     });
   }
-  $annotationDiv = await createAnnotationDiv(annotationData, $annotationDiv, hooks);
+  const [headerFields, omitFields, editableFields] = [headerFieldsArray, omitFieldsArray, editableFieldsArray];
+  $annotationDiv = await createAnnotationDiv(
+    annotationData,
+    $annotationDiv,
+    headerFields,
+    omitFields,
+    editableFields,
+    hooks,
+  );
   if (hooks.postAnnotationCardCreation) {
     hooks.postAnnotationCardCreation.forEach((hook) => {
       hook($annotationDiv);
@@ -75,21 +83,21 @@ export async function selectAnnotation(_event, annoId, hooks = {}) {
  *
  * @param {Object} annotationData the annotation as JSON
  * @param {Element} $annotationDiv the div to be filled
+ * @param {Array} headerFields holds fields that should be present in the form
+ * @param {Array} omitFields holds fields that should not be rendered
+ * @param {Array} editableFields holds fields that should not be editeable
  * @param {Object} [hooks] containing an array for the hook to be called at "preAppendingBodies",
  * "preHorizontalCreation" and "postAppendingBodies"
  * @returns {Element} filled div
  */
-async function createAnnotationDiv(annotationData, $annotationDiv, hooks = {}) {
-  // TODO: Cutsomize the following arrays. You can:
-  // - remove fields from the form entirely by removing them from "headerFields"
-  // (some are necessary though)
-  // - remove them from the display by adding them to "omitFields"
-  // - make certain fields in the horizontal view read-only
-
-  const headerFields = ['created', 'creators', 'modified', 'generator', 'motivation', 'target', 'via'];
-  const omitFields = ['type', 'selector', 'fullJson', 'annotationId', 'motivation', 'created'];
-  // field (bodies with purposes listed here) that can be edited in the horizontal view
-  const editableFields = ['tagging', 'commenting', 'identifying', 'classifying'];
+async function createAnnotationDiv(
+  annotationData,
+  $annotationDiv,
+  headerFields,
+  omitFields,
+  editableFields,
+  hooks = {},
+) {
   // adding the JSONForm for the full annotation
   let formDataModel;
   // using Destructuring assignment here, see:
@@ -115,7 +123,7 @@ async function createAnnotationDiv(annotationData, $annotationDiv, hooks = {}) {
     body = timestampsToISOString(body);
 
     // create the bodyCard (container for the JSONForm) and append it to the DOM
-    const $bodyCard = createBodyCard(annotationData.id, body, index, omitFields, editableFields, formDataModel, hooks);
+    const $bodyCard = createBodyCard(annotationData.id, body, index, hooks);
     $annotationDiv.append($bodyCard);
     // create the JSONForm for the body
     await createAndAppendBodyForms(body, omitFields, editableFields, formDataModel, hooks, annotationData.id);
@@ -140,13 +148,10 @@ async function createAnnotationDiv(annotationData, $annotationDiv, hooks = {}) {
  * @param {String} annoId single encoded the id of the annotaiton
  * @param {Object} body the body as JSON
  * @param {number} index the index of the body in the bodies array
- * @param {Array} omitFields holds fields that should not be rendered
- * @param {Array} editableFields holds fields that should not be editeable
- * @param {Object} formDataModel used while creating the annotation form
  * @param {Object} [hooks] containing an array for the hooks to be passed to "selectAnnotation()"
  * @returns {Element} the finished body card (div element)
  */
-function createBodyCard(annoId, body, index, omitFields, editableFields, formDataModel, hooks = {}) {
+function createBodyCard(annoId, body, index, hooks = {}) {
   const $bodyCard = document.createElement('div');
   $bodyCard.classList.add('card');
 
@@ -634,7 +639,6 @@ function getFormBodyDataModelAndUiFormHorizontal(body, omitFields, editableField
         // "type" : "hidden" doesn't work; for some reason this prevents
         // the form to be submitted. Instead chotas "is-hidden" class is being used
         uiFormHorizontal.items.push({ key: key, htmlClass: 'is-hidden' });
-        // TODO: CUSTOMISE decide which purpose bodies/fields should be editable
         if (key === 'purpose') {
           if (editableFields.includes(body.purpose)) {
             operationHorizontal = 'UPDATE';

@@ -1,6 +1,16 @@
 import { encodeAnnoId } from '../common/utils';
 import { getMRWAnnoSelectedText } from './data';
 
+// TODO: Cutsomize the following arrays. You can:
+// - remove fields from the form entirely by removing them from "headerFields"
+// (some are necessary though)
+// - remove them from the display by adding them to "omitFields"
+// - make certain fields in the horizontal view read-only
+export const headerFieldsArray = ['created', 'creators', 'modified', 'generator', 'motivation', 'target', 'via'];
+export const omitFieldsArray = ['type', 'selector', 'fullJson', 'annotationId', 'motivation', 'created'];
+// fields (bodies with purposes listed here) that can be edited in the horizontal view
+export const editableFieldsArray = ['tagging', 'commenting', 'identifying', 'classifying'];
+
 /**
  *
  * @param {Object} annotationData the annotation as JSON
