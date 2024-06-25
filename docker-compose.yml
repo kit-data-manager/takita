@@ -1,12 +1,13 @@
 version: '2.7'
 services:
   es:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
     container_name: takita_es
     environment:
       - discovery.type=single-node
       - bootstrap.memory_lock=true
       - "ES_JAVA_OPTS=-Xms8g -Xmx8g" # this sets min and max memory usage by elasticsearch (8g=8GB), try e.g 2GB if starting the service fails
+      - xpack.security.enabled=false #disables ssl to work with http connections
     ulimits:
       memlock:
         soft: -1
