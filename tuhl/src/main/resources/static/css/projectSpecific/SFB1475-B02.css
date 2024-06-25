@@ -30,3 +30,9 @@ tei-ab[type="source"]{
     margin-bottom: 0em;
     margin-top: .5em;
 }
+
+/* whitespace between half verses (two are already in the file) */
+tei-caesura::before{
+    content: "\00a0\00a0";
+    white-space: pre;
+}
