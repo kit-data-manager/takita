@@ -2,12 +2,6 @@
 /* ------------------------------------*/
 
 /* displaying linenumbers*/
-tei-text[lang="ae"] tei-div[id]::before {
-	color: #c94c2d;
-    content: attr(id)":";
-    white-space: pre-wrap;
-}
-
 tei-text[lang="ae"] tei-ab[id]::before {
 	color: #c94c2d;
     content: attr(id)":";
