@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+</head>
+
+<body th:fragment="annoDash">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/css/tabler.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css">
+  <!-- readding bootstrap to overwrite the tabler styling-->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+  integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous"
+  th:href="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css}">
+  <!-- fixing the icon of the button to change the language and select filters -->
+  <style>
+    .dropdown-toggle::after {
+      transform: none;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@tabler/core@1.0.0-beta17/dist/js/tabler.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <div class="form-row align-items-center m-2">
+      <div class="col-auto ml-auto">
+          <button type="button"
+                  class="btn-sm btn-info"
+                  onclick="backToDashboard()" th:text="#{buttons.to_dashboard}"></button>
+      </div>
+    </div>
+    <div class="page">
+        <div class="page-wrapper">
+          <div class="page-body">
+            <div class="container-xl">
+              <div class="row row-deck row-cards">
+                <div class="col-4">
+                  <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Metaphor Annotation Prediction</h3>
+                    </div>
+                    <div class="card-body">
+                      <p>You already did </p>
+                      <h1 id="personalNumber"></h1>
+                      <p> metaphor annotations so far. If you continue annotating like this, you will reach</p>
+                      <h1 id="personalPrediction"></h1>
+                      <p> annotations by the end of the funding phase.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Annotation Streak</h3>
+                    </div>
+                    <div class="card-body">
+                      <div id="annoStreakIcon" style="height:30%; width: 100%; text-align: center"></div>
+                      <div id="annoStreak"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="card">
+                    <div class="card-header">
+                      <h3 class="card-title">Top Annotators Within 30 Days</h3>
+                    </div>
+                    <div  class="card-body">
+                    <div class="table-responsive">
+                      <table class="table table-vcenter">
+                        <thead>
+                          <tr>
+                            <th>Name</th>
+                            <th>Annotations</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td id="annotator1">Danah</td>
+                            <td id="annotations1" class="text-secondary">
+                              75
+                            </td>
+                          </tr>
+                          <tr>
+                            <td id="annotator2">Danah</td>
+                            <td id="annotations2" class="text-secondary">
+                              75
+                            </td>
+                          </tr>
+                          <tr>
+                            <td id="annotator3">Danah</td>
+                            <td id="annotations3" class="text-secondary">
+                              75
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12">
+                  <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Annotation Progress</h3>
+                    </div>
+                    <div id="annoProgress" class="card-body"></div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Metaphor Annotations</h3>
+                    </div>
+                    <div id="annoStatus" class="card-body"></div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Annotation Overview</h3>
+                    </div>
+                    <div class="card-body">
+                      <p>Currently </p>
+                      <h1 id="annoNumber"></h1>
+                      <p> annotations are stored within the infrastructure.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Annotation Creators</h3>
+                    </div>
+                    <div id="annoCreators" class="card-body"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script th:src="@{/js/table_view.js}"></script>
+      <script th:src="@{/js/dashboard_anno.js}"></script>
+
+<script th:inline="javascript">
+  // setting contextpath and storing it
+  window.CONTEXTPATH = /*[[@{/}]]*/ "";
+  
+  window.SPARQLURL = "https://metaphors.scc.kit.edu/sparql";
+    /*<![CDATA[*/
+  // adapted from main_page.html - may be exchanged in the future
+  window.USER = /*[[${user.getName()}]]*/ "default";
+  /*]]>*/
+  $(document).ready(function () {
+      if (window.USER === "default") {
+        document.getElementById("pseudonymInputModal").classList.toggle("show-modal");
+      }
+  });
+  
+  showBars(true, false, false);
+  initializeAnnoDash(window.SPARQLURL, window.USER);
+</script>
+
+</body>
+
+</html>
