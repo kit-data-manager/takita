@@ -293,7 +293,7 @@ tei-pb[n]::before {
 /* display the columnnumbers in front of the columnbeginnings */
 tei-cb[n]::before {
 	color: grey;
-    content: "\00000a"attr(n)"\00a0";
+    content: "\00000aCol.\00a0"attr(n)"\00a0";
     white-space: pre-wrap;
 }
 
