@@ -222,10 +222,12 @@ public class  SearchIndexService implements ISearchIndexService {
     logger.info("Limited Index rebuild started. Deleting old index.");
     final LocalDateTime startBuild = LocalDateTime.now();
     deleteIndex(indexOp);
-    
+
+    Document settings = Document.create();
+    settings.put("index.mapping.nested_objects.limit", 1000000); //might be overkill on dev index. maybe limit number of annotations on small index creation instead
     logger.info("Building new small index.");
 
-    indexOp.create();
+    indexOp.create(settings);
     logger.info("Index created.");
 
     createMappings(indexOp);
