@@ -31,6 +31,7 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.IndexOperations;
+import org.springframework.data.elasticsearch.core.document.Document;
 import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -91,10 +92,12 @@ public class  SearchIndexService implements ISearchIndexService {
     final LocalDateTime startBuild = LocalDateTime.now();
     lastUpdatedIndex = Date.from(Instant.now());
     deleteIndex(indexOp);
-    
-    logger.info("Building new index. This may take a while.");
 
-    indexOp.create();;
+    Document settings = Document.create();
+    settings.put("index.mapping.nested_objects.limit", 1000000);
+
+    logger.info("Building new index. This may take a while.");
+    indexOp.create(settings);
     logger.info("Index created.");
     
     createMappings(indexOp);

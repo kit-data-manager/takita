@@ -41,6 +41,7 @@ public class ClientConfig extends ElasticsearchConfiguration{
   public ClientConfiguration clientConfiguration() {
     return ClientConfiguration.builder()
       .connectedTo(elasticsearchIP + ":" + elasticsearchPort)
+            .withConnectTimeout(100000).withSocketTimeout(100000)
      .build();
   }
   
