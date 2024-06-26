@@ -30,6 +30,7 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.IndexOperations;
+import org.springframework.data.elasticsearch.core.document.Document;
 import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -90,10 +91,12 @@ public class  SearchIndexService implements ISearchIndexService {
     final Instant startBuild = Instant.now();
     lastUpdatedIndex = Instant.now();
     deleteIndex(indexOp);
-    
-    logger.info("Building new index. This may take a while.");
 
-    indexOp.create();;
+    Document settings = Document.create();
+    settings.put("index.mapping.nested_objects.limit", 1000000);
+
+    logger.info("Building new index. This may take a while.");
+    indexOp.create(settings);
     logger.info("Index created.");
     
     createMappings(indexOp);
@@ -220,10 +223,12 @@ public class  SearchIndexService implements ISearchIndexService {
     logger.info("Limited Index rebuild started. Deleting old index.");
     final Instant startBuild = Instant.now();
     deleteIndex(indexOp);
-    
+
+    Document settings = Document.create();
+    settings.put("index.mapping.nested_objects.limit", 1000000); //might be overkill on dev index. maybe limit number of annotations on small index creation instead
     logger.info("Building new small index.");
 
-    indexOp.create();
+    indexOp.create(settings);
     logger.info("Index created.");
 
     createMappings(indexOp);
