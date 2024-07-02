@@ -2,7 +2,7 @@ import { enableTooltips, toggleVisibility } from '../../common/utils';
 
 import { getTextLanguage } from '../textloader/textloader';
 import { decreaseFontSize, increaseFontSize, resetFontSize } from '../utils/fontsize';
-import { hooks, Variant } from '../../projectspecific';
+import { Variant } from '../../projectspecific';
 /**
  * Set Takita's sidebar up to make it suitable for the texteditor.
  * @module sidebar
@@ -13,7 +13,7 @@ import { hooks, Variant } from '../../projectspecific';
  * @param {Element} $text HTML element which contains the text. Needed for language and project specific variants
  * @param {Element} $pagesDialog HTML element which contains the dialog for page switching
  */
-export function initializeSidebar($sidebar, $text, $pagesDialog) {
+export function initializeSidebar($sidebar, $text, $pagesDialog, hooks = {}) {
   const $pagesButton = $sidebar.querySelector('#pagesButton');
   const language = getTextLanguage($text);
   const variant = determineVariant($text, language);

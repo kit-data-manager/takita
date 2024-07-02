@@ -43,7 +43,7 @@ async function initializeTextEditorComponent(linkToResource, annotationsString, 
   // initializing the sidebar
   const $sidebar = document.querySelector('.anno-side-bar');
   const $pagesDialog = document.getElementById('pages');
-  initializeSidebar($sidebar, $teiContatinerElement, $pagesDialog);
+  initializeSidebar($sidebar, $teiContatinerElement, $pagesDialog, hooks);
 
   // Construct and display a navigation bar.
   const $navbar = document.getElementById('textNavBar');
