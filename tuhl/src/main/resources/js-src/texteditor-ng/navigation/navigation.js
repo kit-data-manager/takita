@@ -54,6 +54,7 @@ export async function initializeNavigation($navBar, $text, hooks = {}) {
     currentDivisionLabel = initialDivision ? getDivisionLabel(initialDivision) : divisionLabels[0];
     selectDivision(currentDivisionLabel, $divisions);
     updateButtons(
+      divisionType,
       currentDivisionLabel,
       showAllDivisions,
       divisionLabels,
@@ -66,35 +67,72 @@ export async function initializeNavigation($navBar, $text, hooks = {}) {
     // Define button callbacks
     const onClickGoTo = (_ev) => {
       currentDivisionLabel = $chapterSelect.value;
+      showAllDivisions = false;
       selectDivision(currentDivisionLabel, $divisions);
-      updateButtons(currentDivisionLabel, showAllDivisions, divisionLabels, $prevButton, $nextButton, $chapterSelect);
+      updateButtons(
+        divisionType,
+        currentDivisionLabel,
+        showAllDivisions,
+        divisionLabels,
+        $prevButton,
+        $nextButton,
+        $chapterSelect,
+        $showAllButton,
+      );
     };
     const onClickPrev = (_ev) => {
       const currentIdx = divisionLabels.indexOf(currentDivisionLabel);
+      showAllDivisions = false;
       if (currentIdx > 0) {
         currentDivisionLabel = divisionLabels[currentIdx - 1];
         selectDivision(currentDivisionLabel, $divisions);
-        updateButtons(currentDivisionLabel, showAllDivisions, divisionLabels, $prevButton, $nextButton, $chapterSelect);
+        updateButtons(
+          divisionType,
+          currentDivisionLabel,
+          showAllDivisions,
+          divisionLabels,
+          $prevButton,
+          $nextButton,
+          $chapterSelect,
+          $showAllButton,
+        );
       }
     };
     const onClickNext = (_ev) => {
       const currentIdx = divisionLabels.indexOf(currentDivisionLabel);
+      showAllDivisions = false;
       if (currentIdx < divisionLabels.length - 1) {
         currentDivisionLabel = divisionLabels[currentIdx + 1];
         selectDivision(currentDivisionLabel, $divisions);
-        updateButtons(currentDivisionLabel, showAllDivisions, divisionLabels, $prevButton, $nextButton, $chapterSelect);
+        updateButtons(
+          divisionType,
+          currentDivisionLabel,
+          showAllDivisions,
+          divisionLabels,
+          $prevButton,
+          $nextButton,
+          $chapterSelect,
+          $showAllButton,
+        );
       }
     };
     const onClickShowAll = (_ev) => {
       showAllDivisions = !showAllDivisions;
       if (showAllDivisions) {
         setVisibility($divisions, true);
-        $showAllButton.innerHTML = 'Show only ' + divisionType + ' ' + currentDivisionLabel;
       } else {
         selectDivision(currentDivisionLabel, $divisions);
-        $showAllButton.innerHTML = 'Show all ' + divisionType + 's';
       }
-      updateButtons(currentDivisionLabel, showAllDivisions, divisionLabels, $prevButton, $nextButton, $chapterSelect);
+      updateButtons(
+        divisionType,
+        currentDivisionLabel,
+        showAllDivisions,
+        divisionLabels,
+        $prevButton,
+        $nextButton,
+        $chapterSelect,
+        $showAllButton,
+      );
     };
 
     // Set up callbacks for all interactive UI elements
@@ -192,21 +230,35 @@ export function selectDivision(selectedLabel, $allDivisions) {
 
 /**
  * Enable or disable buttons depending on currently selected text part label.
+ * @param {String} divisionType which is present in the text,
  * @param {String} selectedLabel label of the currently selected text part
  * @param {Boolean} showAllDivisions wether to ignore selection temporarily and show all divs instead
  * @param {Array} allTextPartLabels ordered list of all text part labels
  * @param {HTMLElement} $prev button which selects previous text part
  * @param {HTMLElement} $next button which selects next text part
+ * @param {HTMLElement} $chapterSelect button which selects a specific part
+ * @param {HTMLElement} $showAllButton button which hides all parts/shows the current part
  */
-export function updateButtons(selectedLabel, showAllDivisions, allTextPartLabels, $prev, $next, $chapterSelect) {
+export function updateButtons(
+  divisionType,
+  selectedLabel,
+  showAllDivisions,
+  allTextPartLabels,
+  $prev,
+  $next,
+  $chapterSelect,
+  $showAllButton,
+) {
   if (showAllDivisions) {
     // Prev and next buttons are confusing when _everything_ is shown anyway.
     $prev.disabled = true;
     $next.disabled = true;
+    $showAllButton.innerHTML = 'Show only ' + divisionType + ' ' + selectedLabel;
   } else {
     $prev.disabled = allTextPartLabels.indexOf(selectedLabel) === 0;
     $next.disabled = allTextPartLabels.indexOf(selectedLabel) === allTextPartLabels.length - 1;
     $chapterSelect.value = selectedLabel;
+    $showAllButton.innerHTML = 'Show all ' + divisionType + 's';
   }
 }
 
