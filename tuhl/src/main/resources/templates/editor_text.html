@@ -26,8 +26,7 @@
     <!-- loading the stylesheet associated with the project -->
     <link rel="stylesheet" th:href="@{'/css/projectSpecific/'+${currentProject}+'.css'}">
 </head>
-<body class="container-fluid p-0" th:data-field="${currentAnnotationsJson}"
-    onresize="resizeViewbox()">
+<body class="container-fluid p-0" th:data-field="${currentAnnotationsJson}">
 
 <div id="sideBar" class="anno-side-bar annocollapse">
     <div class="logo-name-wrapper">
