@@ -1,5 +1,5 @@
 import { updateBodyData, updateTargetData, getAnnotationData } from '../texteditor-ng/data';
-import { timestampsToISOString } from '../common/annotationCard/annotationCard';
+import { timestampsToISOString } from '../common/annotationCard';
 import { toggleLoadingModal } from '../common/utils';
 
 /**
