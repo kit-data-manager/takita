@@ -1,3 +1,6 @@
+// external imports
+import { isEmpty } from 'underscore';
+// internal imports
 import {
   preselectAllMRWAnnos,
   makeAnnotationData,
@@ -141,13 +144,17 @@ export const formObjectCreateBody = {
             jsonObject = spreadMRWArray(jsonObject);
           }
 
-          // this if condition necessary for CRC1475, it should always be skipped for NON-CRC1475 body creations
           console.log(jsonObject);
-          if (jsonObject !== undefined) {
+          if (jsonObject !== undefined && !isEmpty(jsonObject)) {
             try {
               toggleLoadingModal();
               if (jsonObject.purpose) {
-                await createBodyData(annotationId, jsonObject);
+                // preventing creation of a body without a value
+                if (jsonObject.value) {
+                  await createBodyData(annotationId, jsonObject);
+                } else {
+                  throw new Error('No value given in: ', jsonObject);
+                }
               } else {
                 const bodies = makeBodiesData(jsonObject);
                 // trigger the body creation according to the template for each body
@@ -157,8 +164,8 @@ export const formObjectCreateBody = {
               }
 
               // hiding the modal.
-              window.SELECTED_ANNOTATION = selectAnnotation(null, document.getElementById('createForm').title, hooks);
               document.getElementById('createBody').classList.toggle('show-modal');
+              window.SELECTED_ANNOTATION = selectAnnotation(null, document.getElementById('createForm').title, hooks);
             } catch (exception) {
               console.error('Adding another body failed with: ', exception);
             } finally {
