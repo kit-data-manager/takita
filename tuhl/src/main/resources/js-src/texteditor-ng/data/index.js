@@ -7,5 +7,4 @@ export {
   deleteBodyData,
   updateBodyData,
   updateTargetData,
-  updateTargetAndBodyData,
 } from './annotations';
