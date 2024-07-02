@@ -91,7 +91,7 @@ export async function initializeNavigation($navBar, $text, hooks = {}) {
         setVisibility($divisions, true);
         $showAllButton.innerHTML = 'Show only ' + divisionType + ' ' + currentDivisionLabel;
       } else {
-        selectDivision(currentDivisionLabel);
+        selectDivision(currentDivisionLabel, $divisions);
         $showAllButton.innerHTML = 'Show all ' + divisionType + 's';
       }
       updateButtons(currentDivisionLabel, showAllDivisions, divisionLabels, $prevButton, $nextButton, $chapterSelect);
