@@ -1,3 +1,4 @@
+import { changeLabel } from '../../projectspecific/annotationCard';
 import { updateBody } from './utils';
 
 // JSONForm creation
@@ -338,34 +339,7 @@ export function completeFormDataModel(responseJson, formDataModel, addition, omi
     // if the formDataModel entry for the "value" of the body is created
     // relpace the title with the "purpose" of the body
     if (addition === 'value') {
-      // title = responseJson.purpose;
-      // TODO: CUSTOMISE the text to be displayed on the "quick-view" of the
-      // textCard
-      switch (responseJson.purpose) {
-        case 'tagging':
-          title = 'Tag: ';
-          break;
-        case 'linking':
-          title = 'Linked mrw-annotation: ';
-          break;
-        case 'classifying':
-          title = 'Classification: ';
-          break;
-        case 'describing':
-          title = 'Selected text: ';
-          break;
-        case 'identifying':
-          title = 'Label: ';
-          break;
-        case 'assessing':
-          title = 'Analysis: ';
-          break;
-        case 'commenting':
-          title = 'Comment: ';
-          break;
-        default:
-          title = responseJson.purpose + ': ';
-      }
+      title = changeLabel(responseJson.purpose);
     }
     // console.log(title);
     if (omitFields.indexOf(addition) === -1) {

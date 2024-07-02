@@ -11,6 +11,49 @@ export const omitFieldsArray = ['type', 'selector', 'fullJson', 'annotationId', 
 // fields (bodies with purposes listed here) that can be edited in the horizontal view
 export const editableFieldsArray = ['tagging', 'commenting', 'identifying', 'classifying'];
 
+// mandatory function
+
+/**
+ * TODO: CUSTOMISE the label for the text to be displayed on the "quick-view" of the annotationCard.
+ * By default the purpose of the body will be displayed as a label, but you can change the label based
+ * on the purpose.
+ *
+ * @param {String} purpose of a body
+ * @returns {String} to be displayed instead of the purpose as a label in the horizontal annotationCard
+ */
+export function changeLabel(purpose) {
+  let title;
+
+  switch (purpose) {
+    case 'tagging':
+      title = 'Tag: ';
+      break;
+    case 'linking':
+      title = 'Linked mrw-annotation: ';
+      break;
+    case 'classifying':
+      title = 'Classification: ';
+      break;
+    case 'describing':
+      title = 'Selected text: ';
+      break;
+    case 'identifying':
+      title = 'Label: ';
+      break;
+    case 'assessing':
+      title = 'Analysis: ';
+      break;
+    case 'commenting':
+      title = 'Comment: ';
+      break;
+    default:
+      title = purpose + ': ';
+  }
+
+  return title;
+}
+
+// hooks
 /**
  *
  * @param {Object} annotationData the annotation as JSON
