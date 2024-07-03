@@ -1,13 +1,15 @@
 import { $ } from 'jquery';
+
+import { Mode } from '../common/mode';
+import { initializeTopbar } from '../common/topbar';
 import './../common/utils/metadataeditor';
+import { hooks } from '../projectspecific';
 
 import { initializeTextEditor } from './editor';
-import { initializeTopbar } from '../common/topbar';
 import { initializeSidebar } from './sidebar';
 import { initializeNavigation } from './navigation';
 import { appendTEIDocument } from './textloader/textloader';
 import { fetchText } from './network';
-import { hooks } from '../projectspecific';
 import { drawAnnos } from './highlighting';
 import { checkIsTargetCompatible, makeTargetsCompatible } from './utils';
 
@@ -84,16 +86,7 @@ function initializeState(annotationsString) {
   // TODO: check if the textEditor actualy needs a "Mode"
   // Philipp can only think that it is necessary for the "onmouseup"-event,
   // which is used for the text selection
-  window.MODE_CLASS = class Mode {
-    static View = new Mode('view');
-    static Create = new Mode('create');
-    static Modify = new Mode('modify');
-    static Move = new Mode('move');
-
-    constructor(name) {
-      this.name = name;
-    }
-  };
+  window.MODE_CLASS = Mode;
 
   // TODO: check if the textEditor needs a MODE and SELECTING_TEXT
   window.MODE = window.MODE_CLASS.View;
