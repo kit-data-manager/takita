@@ -1,6 +1,11 @@
 import { makeTargetsCompatible, checkIsTargetCompatible } from '../utils';
 
-// check if the selection happened on the textworkspace/tei element
+/**
+ * check if the selection happened on the textworkspace/tei element
+ *
+ * @param {Node} node to be checked
+ * @returns {Boolean} depending on wether the node is on the workspace/a child of a 'TEI'-root-element
+ */
 export function checkIsNodeOnWorkspace(node) {
   if (node.parentNode.id === 'TEI') {
     return true;
@@ -11,13 +16,18 @@ export function checkIsNodeOnWorkspace(node) {
   }
 }
 
-// merge all ranges of the selection into one DocumentFragment and return the content.
-// This is necessary as firefox can create selections with multiple ranges, hence
-// the rangeCount will be bigger than 1. firefox behavior violates the selection spec
-// (see https://w3c.github.io/selection-api/#dom-selection-rangecount).
-// NOTE: changes to this function should be reflected in textSelection.selenium.test.js,
-// where the function is turned into a String and passed to Selenium. This should work
-// automatically, but checking is recommended.
+/**
+ * merge all ranges of the selection into one DocumentFragment and return the content.
+ * This is necessary as firefox can create selections with multiple ranges, hence
+ * the rangeCount will be bigger than 1. firefox behavior violates the selection spec
+ * (see https://w3c.github.io/selection-api/#dom-selection-rangecount).
+ * NOTE: changes to this function should be reflected in textSelection.selenium.test.js,
+ * where the function is turned into a String and passed to Selenium. This should work
+ * automatically, but checking is recommended.
+ *
+ * @param {Selection} selection created by a user
+ * @returns {DocumentFragment} holding all the contents of a selection
+ */
 export function getContentOfSelection(selection) {
   let selectionRangeContents = selection.getRangeAt(0).cloneContents();
   // if there are multiple selection ranges (eg. in the B04 case)
@@ -30,7 +40,14 @@ export function getContentOfSelection(selection) {
   return selectionRangeContents;
 }
 
-export function removeWhitespaceFromSelectionTextContent(text) {
+/**
+ * reduce the amount of whitespace in a String
+ *
+ * @param {String} text to have whitespace reduced. Tabs, newlines etc. will be fully removed;
+ * double, triple ... blanks will be replaced by a single blank.
+ * @returns {String} with recued amount of whitespace
+ */
+export function reduceWhitespaceInString(text) {
   // console.log('Before cleaning: ', text);
   text = text.replace(/\s{4}|[\t\n\r]|\s/g, ' ');
   while (text.includes('  ')) {
@@ -41,7 +58,14 @@ export function removeWhitespaceFromSelectionTextContent(text) {
   return text;
 }
 
-// get the nextSibling of a node
+/**
+ * get the nextSibling of a node.
+ * Recursively checks if a node has a next sibling and returns it or the sibling of its parent.
+ * This is used by targetCreation.js/createXPath() to get the whitespace/characters following the node.
+ *
+ * @param {Node} node
+ * @returns {Node} the next sibling
+ */
 export function getNextSibling(node) {
   let nextSibling = node.nextSibling;
   // if the node has no nextSibling, get the nextSibling of the parentNode
@@ -51,7 +75,13 @@ export function getNextSibling(node) {
   return nextSibling;
 }
 
-// get the smallest available nodes, that have an xmlId and store them in a list
+/**
+ * get the smallest available nodes, that have an xmlId and store them in a list. Works
+ * recursively to the smallest node.
+ *
+ * @param {Node} node to be checkd, if its the smalles one and has an xmlId
+ * @param {NodeList} nodeList to store the result
+ */
 export function getSmallestNodesWithXmlIds(node, nodeList) {
   if (node.children.length !== 0) {
     Array.from(node.children).forEach((child) => {
@@ -66,7 +96,14 @@ export function getSmallestNodesWithXmlIds(node, nodeList) {
   }
 }
 
-// get the offset/substringPosition for a selected word
+/**
+ * get the offset/substringPosition for a selected word, dependant
+ * on the position of the word in the range/selection
+ *
+ * @param {Node} target part of the range
+ * @param {Object} range holding all the nodes, the start and end offests of a selection range
+ * @returns {Object} holding the keys for the "start"/"end"-offset of the target node
+ */
 export function getSubstringPosition(target, range) {
   let substringPosition = {};
 

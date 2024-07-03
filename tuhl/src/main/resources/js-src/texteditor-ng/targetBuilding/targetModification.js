@@ -3,7 +3,7 @@ import { selectAnnotation } from '../../common/annotationCard';
 import { updateDisplay } from '../highlighting';
 import { createTargetString } from './targetCreation';
 import {
-  removeWhitespaceFromSelectionTextContent,
+  reduceWhitespaceInString,
   getContentOfSelection,
   getSelectedTextOfAnnotation,
   showSaveTargetModal,
@@ -60,7 +60,7 @@ export function saveModification(_event, selection, annotation) {
     // store the selected text
     const oldSelectedText = getSelectedTextOfAnnotation(annotation);
     const selectionRangeContents = getContentOfSelection(selection);
-    const newSelectedText = removeWhitespaceFromSelectionTextContent(selectionRangeContents.textContent);
+    const newSelectedText = reduceWhitespaceInString(selectionRangeContents.textContent);
 
     // ask user if the new selection should be saved in a modal
     // create and show the modal used to save the new target

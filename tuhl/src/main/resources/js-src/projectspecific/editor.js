@@ -1,8 +1,4 @@
-import {
-  createTargetList,
-  getContentOfSelection,
-  removeWhitespaceFromSelectionTextContent,
-} from '../texteditor-ng/targetBuilding';
+import { createTargetList, getContentOfSelection, reduceWhitespaceInString } from '../texteditor-ng/targetBuilding';
 import { findSelectedMRWAnnos } from './annotationCreation';
 
 /**
@@ -44,6 +40,6 @@ export function setMRWAnnos(selection, annoJson) {
 export function setSelectedText(selection) {
   const selectionRangeContents = getContentOfSelection(selection);
   // set globalSelectedText so it can be displayed in the modal and remove all whitespaces
-  window.SELECTED_TEXT = removeWhitespaceFromSelectionTextContent(selectionRangeContents.textContent);
+  window.SELECTED_TEXT = reduceWhitespaceInString(selectionRangeContents.textContent);
   console.log('GlobalSelectedText: ', window.SELECTED_TEXT);
 }
