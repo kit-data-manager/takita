@@ -1,3 +1,5 @@
+import { makeTargetsCompatible, checkIsTargetCompatible } from '../utils';
+
 // check if the selection happened on the textworkspace/tei element
 export function checkIsNodeOnWorkspace(node) {
   if (node.parentNode.id === 'TEI') {
@@ -99,4 +101,81 @@ export function getSubstringPosition(target, range) {
     substringPosition.end = range.endOffset;
   }
   return substringPosition;
+}
+
+/**
+ * get the previously selected text from the respective body (purpose: describing),
+ * or reconstruct it from the target
+ *
+ * @param {Object} annotation
+ * @returns {String} the selected text of an annotation
+ */
+export function getSelectedTextOfAnnotation(annotation) {
+  let oldSelectedText;
+  let describingBody = annotation.textCards.find((textCard) => textCard.purpose === 'describing');
+  if (describingBody != undefined) {
+    oldSelectedText = describingBody.value;
+  } else {
+    // TODO: this ordering seems to be unnecessary as we store only one long xPath,
+    // which should have the proper order. This function
+    // can't deal with substrings. This needs to be checked
+    // make targets compatible, if necessary
+    if (!checkIsTargetCompatible(annotation)) {
+      annotation.targets = makeTargetsCompatible(annotation);
+    }
+
+    // store the ids of the words
+    let idArray = [];
+    annotation.targets.forEach((target) => {
+      idArray.push(target.selector.xPath.split('"')[1]);
+    });
+    // this sorts the xml:ids to retrieve a somehow appropriate reconstruction of the text out of the targets
+    // in cases, where the ids are not in an ascending nummerical order, the reconstruction will be off
+    // especially regarding the punctuation
+    idArray = idArray.sort((a, b) => {
+      return a - b;
+    });
+    idArray = idArray.sort((a, b) => {
+      const na = a.split('.').slice(-1)[0];
+      const nb = b.split('.').slice(-1)[0];
+      return na - nb;
+    });
+    // get the text of each element
+    let stringArray = idArray.map((id) => {
+      return document.getElementById(id).textContent;
+    });
+    // merge the text of each element into one string
+    oldSelectedText = stringArray.join(' ');
+  }
+  return oldSelectedText;
+}
+
+/**
+ * Store all information needed for the target update in a modal and show it
+ *
+ * @param {Element} modal to hold the information and to be shown
+ * @param {String} oldSelectedText
+ * @param {String} newSelectedText
+ * @param {String} targetXPath
+ * @returns {Element} the modal containing the inforamtion from the parameters
+ */
+export function showSaveTargetModal(modal, oldSelectedText, newSelectedText, targetXPath) {
+  // modal stuff should be optimised
+  let $oldSelectedTextDiv = document.createElement('div');
+  $oldSelectedTextDiv.innerHTML = oldSelectedText;
+  // + window.SELECTED_ANNOTATION.targets.toString();
+  //  + " | id: " + window.SELECTED_ANNOTATION.svgCode.split("\"")[1];
+  document.getElementById('oldSelectedText').innerHTML = 'Current Selection:';
+  document.getElementById('oldSelectedText').append($oldSelectedTextDiv);
+
+  let $newSelectedTextDiv = document.createElement('div');
+  $newSelectedTextDiv.innerHTML = newSelectedText; // + " | id: " + newTargetsXmlIds;
+  document.getElementById('newSelectedText').innerHTML = 'New Selection:';
+  document.getElementById('newSelectedText').append($newSelectedTextDiv);
+
+  modal.classList.toggle('show-modal');
+  modal.dataset.newTargetXmlId = targetXPath;
+  //modal.dataset.SelectedAnnotationId = selectedAnnotation.id;
+
+  return modal;
 }

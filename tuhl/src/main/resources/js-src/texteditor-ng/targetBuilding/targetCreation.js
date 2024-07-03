@@ -105,22 +105,14 @@ export function createTargetList(selection) {
     // "cleaning" the targetList, because sometimes an empty w-element will be included
     // in the bgeinning or at the end of the targetList as the user selected some
     // whitespace before/after the first word she wanted to select as well
-    // console.log(targetList.length);
-    // console.log('cond1 ', targetList[targetList.length - 1].innerHTML.trim() == '');
-    // console.log(targetList[targetList.length - 1].innerHTML);
-    // console.log('cond2 ', targetList[0].innerHTML.trim() == '');
-    // console.log(targetList[0].innerHTML);
     if (targetList.length > 1) {
       if (targetList[targetList.length - 1].innerHTML.trim() == '') {
         targetList.pop();
-        // console.log('popped');
       }
       if (targetList[0].innerHTML.trim() == '') {
         targetList.shift();
-        // console.log('shifted');
       }
     }
-    console.log(targetList.length);
     // add the start/end offsets/character positions of the text
     // create the json object containing all information
     let rangeItem = {
@@ -129,7 +121,6 @@ export function createTargetList(selection) {
       endOffset: selectionRangeOffsets.endOffset,
     };
     targetRangeList.push(rangeItem);
-    console.log(targetRangeList[0].targetList.length);
   }
 
   return targetRangeList;
