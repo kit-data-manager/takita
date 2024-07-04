@@ -61,8 +61,9 @@ export async function selectAnnotation(_event, annoId, hooks = {}) {
   }
 
   // highlight the selected words
-  if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
-    highlightSelectedAnnotationsTarget(selectedAnnotation);
+  const $text = document.getElementById('TEI');
+  if (window.EDITORTYPE == 'TEXT' && $text != null) {
+    highlightSelectedAnnotationsTarget(selectedAnnotation, $text);
   }
 
   return selectedAnnotation;
