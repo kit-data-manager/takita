@@ -1,3 +1,6 @@
+// external imports
+import { escapeSelector } from 'jquery';
+// internal imports
 // Common utils
 import { createOption, setVisibility, toggleVisibility } from '../../common/utils';
 import { selectAnnotation } from '../../common/annotationCard';
@@ -194,7 +197,7 @@ export async function navigateToAnnotation(targetAnnotationId, hooks = {}) {
  * @returns {Element}
  */
 export function getTargetElement(fragmentId, $text) {
-  return $text.querySelector('#' + fragmentId);
+  return $text.querySelector('#' + escapeSelector(fragmentId));
 }
 
 /**

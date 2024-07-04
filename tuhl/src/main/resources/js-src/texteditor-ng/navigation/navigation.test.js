@@ -204,7 +204,7 @@ describe('navigation.getTargetElement()', () => {
   it('returns the desired element', () => {
     const $container = document.createElement('div');
     $container.innerHTML = teiWithSections;
-    const result = getTargetElement('w\\.2721', $container);
+    const result = getTargetElement('w.2721', $container);
     expect(result.innerHTML).toStrictEqual('術');
   });
 });
