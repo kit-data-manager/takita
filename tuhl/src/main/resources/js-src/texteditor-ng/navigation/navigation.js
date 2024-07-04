@@ -13,6 +13,10 @@ import { POSSIBLE_DIVISION_TYPES } from '../../projectspecific';
  * Inspect the document to find the used text part type and create
  * callbacks for the existing UI elements which switch between
  * the different document parts.
+ * @param {Element} $navBar the navigation bar to be initialized
+ * @param {Element} $text in which the text is stored
+ * @param {[Object]} [hooks] to be passed to navigateToAnnotation() and then to selectAnnotation(),
+ * where they influence the rendering of the annotationCard
  */
 export async function initializeNavigation($navBar, $text, hooks = {}) {
   // Local state, closed over and modified by the various button callbacks
