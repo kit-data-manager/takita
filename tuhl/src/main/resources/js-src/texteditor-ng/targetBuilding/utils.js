@@ -148,10 +148,10 @@ export function getSubstringPosition(target, range) {
  * @returns {String} the selected text of an annotation
  */
 export function getSelectedTextOfAnnotation(annotation) {
-  let oldSelectedText;
+  let selectedText;
   let describingBody = annotation.textCards.find((textCard) => textCard.purpose === 'describing');
   if (describingBody != undefined) {
-    oldSelectedText = describingBody.value;
+    selectedText = describingBody.value;
   } else {
     // TODO: this ordering seems to be unnecessary as we store only one long xPath,
     // which should have the proper order. This function
@@ -182,9 +182,9 @@ export function getSelectedTextOfAnnotation(annotation) {
       return document.getElementById(id).textContent;
     });
     // merge the text of each element into one string
-    oldSelectedText = stringArray.join(' ');
+    selectedText = stringArray.join(' ');
   }
-  return oldSelectedText;
+  return selectedText;
 }
 
 /**
@@ -197,18 +197,23 @@ export function getSelectedTextOfAnnotation(annotation) {
  * @returns {Element} the modal containing the inforamtion from the parameters
  */
 export function showSaveTargetModal(modal, oldSelectedText, newSelectedText, targetXPath) {
+  const $oldSelectedTextContainer = modal.querySelector('#oldSelectedText');
+  const $newSelectedTextContainer = modal.querySelector('#newSelectedText');
+
   // modal stuff should be optimised
   let $oldSelectedTextDiv = document.createElement('div');
   $oldSelectedTextDiv.innerHTML = oldSelectedText;
   // + window.SELECTED_ANNOTATION.targets.toString();
   //  + " | id: " + window.SELECTED_ANNOTATION.svgCode.split("\"")[1];
-  document.getElementById('oldSelectedText').innerHTML = 'Current Selection:';
-  document.getElementById('oldSelectedText').append($oldSelectedTextDiv);
+  // setting the innerHTML to empty the div (remove the innerHTML from a previous call)
+  $oldSelectedTextContainer.innerHTML = 'Current Selection:';
+  $oldSelectedTextContainer.append($oldSelectedTextDiv);
 
   let $newSelectedTextDiv = document.createElement('div');
   $newSelectedTextDiv.innerHTML = newSelectedText; // + " | id: " + newTargetsXmlIds;
-  document.getElementById('newSelectedText').innerHTML = 'New Selection:';
-  document.getElementById('newSelectedText').append($newSelectedTextDiv);
+  // setting the innerHTML to empty the div (remove the innerHTML from a previous call)
+  $newSelectedTextContainer.innerHTML = 'New Selection:';
+  $newSelectedTextContainer.append($newSelectedTextDiv);
 
   modal.classList.toggle('show-modal');
   modal.dataset.newTargetXmlId = targetXPath;
