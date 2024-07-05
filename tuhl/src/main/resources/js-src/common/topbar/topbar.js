@@ -1,4 +1,4 @@
-import { fetchWithSpinner } from '../utils/modals';
+import { toggleLoadingModal } from '../utils';
 
 /**
  * Initialize topbar inputs and make sure that users input their pseudonym if
@@ -52,6 +52,7 @@ function setPseudonym(event, pseudonymForm) {
   // prevent the default reload of the page on submit-events
   event.preventDefault();
   let input = $('#' + pseudonymForm).val();
+  toggleLoadingModal();
   // $('#pseudonymInput').val();
   $.ajax({
     type: 'GET',
@@ -65,6 +66,11 @@ function setPseudonym(event, pseudonymForm) {
     },
     error: function (responseData) {
       console.error(responseData);
+    },
+    complete: function () {
+      // strictly speaking this would only be necessary for the error setting as the success setting
+      // reloads the page anyways and thereby hides the modal
+      toggleLoadingModal();
     },
   });
 }
