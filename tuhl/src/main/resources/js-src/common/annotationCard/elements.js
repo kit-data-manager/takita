@@ -198,7 +198,7 @@ function createBodyFormHorizontal(body) {
  * Note: This should match 'deleteAnnotation' or 'deleteBody' depending on what
  * you want to delete and match the corresponding callback
  * @param {Function} callback to be added to the delete icon for the onClick event.
- * Note: This callback should be deleteAnnotation/deleteBody depending on what you
+ * Note: This callback should be async and deleteAnnotation/deleteBody depending on what you
  * want to delete and match the corresponding elementId
  */
 export function createDeleteIcon(elementId, callback) {
@@ -300,8 +300,8 @@ export function createIconRow(isAnnotationRow, annoId, body, bodyIndex, hooks) {
     // create and append child elements
     const $addBodyIcon = createAddBodyIcon(annoId);
     $iconRow.append($addBodyIcon);
-    const $annoDeleteIcon = createDeleteIcon('deleteAnnotation', (_event) => {
-      deleteAnnotation(annoId);
+    const $annoDeleteIcon = createDeleteIcon('deleteAnnotation', async (_event) => {
+      await deleteAnnotation(annoId);
     });
     $iconRow.append($annoDeleteIcon);
     // add stlying
@@ -313,8 +313,8 @@ export function createIconRow(isAnnotationRow, annoId, body, bodyIndex, hooks) {
     // create and append child elements
     const $expandIcon = createExpandIcon('expand' + bodyIndex);
     $iconRow.append($expandIcon);
-    const $bodyDeleteIcon = createDeleteIcon('delete' + bodyIndex, (_event) => {
-      deleteBody(annoId, body, hooks);
+    const $bodyDeleteIcon = createDeleteIcon('delete' + bodyIndex, async (_event) => {
+      await deleteBody(annoId, body, hooks);
     });
     $iconRow.append($bodyDeleteIcon);
   }
@@ -364,7 +364,22 @@ function appendTextTargetModificationButtons(annotationData, $annotationDiv, hoo
     // are getting attached here
     // updateTargetButton, which is present in the modal
     const $updateTargetButton = document.getElementById('updateTargetButton');
-    $updateTargetButton.addEventListener('click', (event) => {
+    // cloning the elemnt, attaching the eventListner to the clone and then replacing the element
+    // with the clone to prevent the eventListener to get attached multiple times
+    // see https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/issues/60 for more information
+    // TODO: improve this procedure
+    // const $updateTargetButtonClone = $updateTargetButton.cloneNode(true);
+    // $updateTargetButtonClone.addEventListener('click', async (event) => {
+    //   // pass the current selected annotation, the new Xpath stored in the 'updateSelection' element
+    //   // and the newly selected text stored in the 'newSelectedText' element
+    //   // TODO: fix, when it goes into production, bc then the innerHTML will only be
+    //   // the selected text without any "|"s
+    //   const newXPath = document.getElementById('updateSelection').dataset.newTargetXmlId;
+    //   const newSelectedText = document.getElementById('newSelectedText').children[0].innerHTML.split('|')[0];
+    //   await updateTarget(event, targetUpdateCallback, annotationData, newXPath, newSelectedText, hooks);
+    // });
+    // $updateTargetButton.replaceWith($updateTargetButtonClone);
+    $updateTargetButton.onclick = (event) => {
       // pass the current selected annotation, the new Xpath stored in the 'updateSelection' element
       // and the newly selected text stored in the 'newSelectedText' element
       // TODO: fix, when it goes into production, bc then the innerHTML will only be
@@ -372,14 +387,28 @@ function appendTextTargetModificationButtons(annotationData, $annotationDiv, hoo
       const newXPath = document.getElementById('updateSelection').dataset.newTargetXmlId;
       const newSelectedText = document.getElementById('newSelectedText').children[0].innerHTML.split('|')[0];
       updateTarget(event, targetUpdateCallback, annotationData, newXPath, newSelectedText, hooks);
-    });
+    };
   }
 
   // strictly speaking this is not part of the annotation card, but it cancels
   // the target update for texts and all the other buttons/eventListeners
   // are getting attached here
   // adding the closing functionality to text selection update modal
-  document.getElementById('closeButtonUpdate').addEventListener('click', function (_e) {
+  // TODO: this attaching of the eventListener has the same problem as the above attechment of
+  // the eventListener to "#updateTargetButton", but doesn't have big consequences.
+  // const $closeButtonUpdate = document.getElementById('closeButtonUpdate');
+  // const $closeButtonUpdateClone = $closeButtonUpdate.cloneNode(true);
+  // $closeButtonUpdateClone.addEventListener('click', function (_e) {
+  //   document.getElementById('updateSelection').classList.toggle('show-modal');
+  //   // document.getElementById('modifyButton').parentElement.classList.remove('active');
+  //   cancelModification();
+  //   // disabling the option to create an annotation. needed, because selecting text
+  //   // can be done before the mode was set to create by clicking the button after the text selection process
+  //   window.MODE = window.MODE_CLASS.View;
+  //   window.SELECTING_TEXT = false;
+  // });
+  // $closeButtonUpdate.replaceWith($closeButtonUpdateClone);
+  document.getElementById('closeButtonUpdate').onclick = (_event) => {
     document.getElementById('updateSelection').classList.toggle('show-modal');
     // document.getElementById('modifyButton').parentElement.classList.remove('active');
     cancelModification();
@@ -387,6 +416,7 @@ function appendTextTargetModificationButtons(annotationData, $annotationDiv, hoo
     // can be done before the mode was set to create by clicking the button after the text selection process
     window.MODE = window.MODE_CLASS.View;
     window.SELECTING_TEXT = false;
-  });
+  };
+
   return $annotationDiv;
 }
