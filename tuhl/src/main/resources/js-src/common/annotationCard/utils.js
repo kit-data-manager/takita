@@ -1,7 +1,7 @@
 import { getAnnotationData, deleteAnnotationData, deleteBodyData, updateBodyData } from '../../texteditor-ng/data';
 import { makeTargetsCompatible, checkIsTargetCompatible } from '../../texteditor-ng/utils';
 import { updateDisplay, removeStyles } from '../../texteditor-ng/highlighting';
-import { fillMetaDataEditorTable, toggleVisibility, toggleLoadingModal } from '../utils';
+import { fillMetaDataEditorTable, toggleVisibility } from '../utils';
 import { selectAnnotation } from './annotationCard';
 // data manipulation
 /**
@@ -54,7 +54,6 @@ export async function getData(annoId) {
   let data = null;
 
   try {
-    toggleLoadingModal();
     data = await getAnnotationData(annoId);
     // converting timestamps to ISOStrings
     data = timestampsToISOString(data);
@@ -67,8 +66,6 @@ export async function getData(annoId) {
     }
   } catch (exception) {
     console.error(exception);
-  } finally {
-    toggleLoadingModal();
   }
   return data;
 }
@@ -85,7 +82,6 @@ export async function getData(annoId) {
 export async function updateBody(annoId, value, hooks = {}) {
   let bodyUpdated = false;
   try {
-    toggleLoadingModal();
     // parsing the formvalue into JSON as the function to update the body requires
     // a JSONObject
     const body = JSON.parse(value);
@@ -101,8 +97,6 @@ export async function updateBody(annoId, value, hooks = {}) {
     }
   } catch (exception) {
     console.error(exception);
-  } finally {
-    toggleLoadingModal();
   }
   return bodyUpdated;
 }
@@ -122,7 +116,6 @@ export async function deleteBody(annoId, body, hooks = {}) {
 
   if (confirmation) {
     try {
-      toggleLoadingModal();
       const response = await deleteBodyData(annoId, body);
       window.SELECTED_ANNOTATION = await selectAnnotation(null, annoId, hooks);
       if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
@@ -132,8 +125,6 @@ export async function deleteBody(annoId, body, hooks = {}) {
     } catch (exception) {
       console.error(exception);
       confirmation = false;
-    } finally {
-      toggleLoadingModal();
     }
   }
   return confirmation;
@@ -151,7 +142,6 @@ export async function deleteAnnotation(annoId) {
 
   if (confirmation) {
     try {
-      toggleLoadingModal();
       const response = await deleteAnnotationData(annoId);
       const $annotationDiv = document.getElementById('annotationCard');
       if (!$annotationDiv.classList.contains('is-hidden')) {
@@ -197,8 +187,6 @@ export async function deleteAnnotation(annoId) {
     } catch (exception) {
       console.error(exception);
       confirmation = false;
-    } finally {
-      toggleLoadingModal();
     }
   }
   return confirmation;

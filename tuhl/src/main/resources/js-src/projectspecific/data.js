@@ -1,6 +1,5 @@
 import { updateBodyData, updateTargetData, getAnnotationData } from '../texteditor-ng/data';
 import { timestampsToISOString } from '../common/annotationCard';
-import { toggleLoadingModal } from '../common/utils';
 
 /**
  * Helper/facade for network/annotation.js for the fetch call to update a target and body
@@ -16,7 +15,6 @@ export async function updateTargetAndBodyData(anno, newTarget, newText) {
   let targetUpdateResponse;
   let bodyUpdateResponse;
   try {
-    toggleLoadingModal();
     // update the target first
     // if this fails an exception will be thrown and rethrown, but the body
     // update request will not be send
@@ -33,8 +31,6 @@ export async function updateTargetAndBodyData(anno, newTarget, newText) {
       ' or with body update response: ',
       bodyUpdateResponse,
     );
-  } finally {
-    toggleLoadingModal();
   }
 }
 
@@ -70,7 +66,6 @@ function createNewDescribingBody(targetUpdateResponse, newText) {
 // used by src/main/resources/js-src/common/annotationDisplay/selection.js
 export async function getMRWAnnoSelectedText(mrwAnnoId) {
   try {
-    toggleLoadingModal();
     const mrwAnnotation = await getAnnotationData(mrwAnnoId);
     const describingBody = mrwAnnotation.textCards.filter((textCard) => textCard.purpose === 'describing')[0];
     return describingBody.value;
@@ -82,7 +77,5 @@ export async function getMRWAnnoSelectedText(mrwAnnoId) {
         most likely it got deleted, please contact the developers`,
       exception,
     );
-  } finally {
-    toggleLoadingModal();
   }
 }

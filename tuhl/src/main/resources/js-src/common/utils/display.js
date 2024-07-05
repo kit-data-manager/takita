@@ -99,12 +99,3 @@ export function toggleExpand($element, $boxIcon) {
   toggleVisibility($element);
   toggleBoxIcon($boxIcon, 'bx-chevron-down', 'bx-chevron-right');
 }
-
-/**
- * Toggle (show/hide) the loading modal (it acts like a spinner during async calls;
- * by default it is a book turning pages)
- */
-export function toggleLoadingModal() {
-  const modal = document.getElementById('loading');
-  modal.classList.toggle('show-modal');
-}

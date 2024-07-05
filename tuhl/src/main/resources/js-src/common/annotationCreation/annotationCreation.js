@@ -2,7 +2,7 @@
 import $ from 'jquery';
 import 'jsonform';
 //internal modules
-import { fillMetaDataEditorTable, toggleVisibility, encodeAnnoId, toggleLoadingModal } from '../utils';
+import { fillMetaDataEditorTable, toggleVisibility, encodeAnnoId } from '../utils';
 import { updateDisplay } from '../../texteditor-ng/highlighting';
 import { selectAnnotation } from '../annotationCard';
 import { createBodyData, createAnnotationData, getAnnotationData } from '../../texteditor-ng/data/annotations';
@@ -68,7 +68,6 @@ export function pickTemplate(svgCode, encodedId, createFormId, pickFormId, templ
  */
 export async function createAnnotation(annotationData, hooks = {}) {
   try {
-    toggleLoadingModal();
     // create the object nededed by the function to create an annotation (createAnnotationData);
     // it does not need the body information
     let annotationCreationData = {
@@ -95,8 +94,6 @@ export async function createAnnotation(annotationData, hooks = {}) {
     return finishedNewAnnotation;
   } catch (exception) {
     console.error(exception);
-  } finally {
-    toggleLoadingModal();
   }
 }
 

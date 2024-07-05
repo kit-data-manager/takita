@@ -1,3 +1,4 @@
+import { fetchWithSpinner } from '../../common/utils';
 /**
  * fetch (XML) document from takita
  *
@@ -6,5 +7,5 @@
  * @returns {String} containing a full XML document
  */
 export async function fetchText(linkToResource) {
-  return await fetch(linkToResource).then((response) => response.text());
+  return await fetchWithSpinner(linkToResource).then((response) => response.text());
 }

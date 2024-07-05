@@ -1,3 +1,5 @@
+import { fetchWithSpinner } from '../../common/utils';
+
 /**
  * get an annotation
  *
@@ -6,7 +8,7 @@
  * @returns {Response} containing takita's response
  */
 export async function getAnnotation(url) {
-  return await fetch(url);
+  return await fetchWithSpinner(url);
 }
 
 /**
@@ -17,7 +19,7 @@ export async function getAnnotation(url) {
  * @returns {Response} containing takita's response
  */
 export async function getAllAnnotations(url) {
-  return await fetch(url);
+  return await fetchWithSpinner(url);
 }
 /**
  * create a new annotation
@@ -28,7 +30,7 @@ export async function getAllAnnotations(url) {
  * @returns {Response} containing takita's response
  */
 export async function createAnnotation(url, annotationDataJson) {
-  return await fetch(url, {
+  return await fetchWithSpinner(url, {
     body: JSON.stringify(annotationDataJson),
     headers: { 'Content-Type': 'application/json' },
     method: 'POST',
@@ -43,7 +45,7 @@ export async function createAnnotation(url, annotationDataJson) {
  * @returns {Response} containing takita's response
  */
 export async function deleteAnnotation(url) {
-  return await fetch(url, { method: 'DELETE' });
+  return await fetchWithSpinner(url, { method: 'DELETE' });
 }
 
 /**
@@ -56,7 +58,7 @@ export async function deleteAnnotation(url) {
  * @returns {Response} containing takita's response
  */
 export async function createBody(url, bodyDataJson) {
-  return await fetch(url, {
+  return await fetchWithSpinner(url, {
     body: JSON.stringify(bodyDataJson),
     headers: { 'Content-Type': 'application/json' },
     method: 'POST',
@@ -72,7 +74,7 @@ export async function createBody(url, bodyDataJson) {
  * @returns {Response} containing takita's response
  */
 export async function deleteBody(url) {
-  return await fetch(url, { method: 'DELETE' });
+  return await fetchWithSpinner(url, { method: 'DELETE' });
 }
 
 /**
@@ -85,7 +87,8 @@ export async function deleteBody(url) {
  * @returns {Response} containing takita's response
  */
 export async function updateBody(url, annoBodyData) {
-  return await fetch(url, {
+  console.log('updateBody');
+  return await fetchWithSpinner(url, {
     body: JSON.stringify(annoBodyData),
     headers: { 'Content-Type': 'application/json' },
     method: 'PUT',
@@ -102,7 +105,8 @@ export async function updateBody(url, annoBodyData) {
  * @returns {Response} containing takita's response
  */
 export async function updateTarget(url, modifiedAnnotation) {
-  return await fetch(url, {
+  console.log('updateTarget');
+  return await fetchWithSpinner(url, {
     body: JSON.stringify(modifiedAnnotation),
     headers: { 'Content-Type': 'application/json' },
     method: 'PUT',
