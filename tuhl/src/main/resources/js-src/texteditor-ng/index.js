@@ -1,5 +1,3 @@
-import { $ } from 'jquery';
-
 import { Mode } from '../common/mode';
 import { initializeTopbar } from '../common/topbar';
 import './../common/utils/metadataeditor';

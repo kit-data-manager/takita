@@ -63,13 +63,7 @@ module.exports = {
       }),
     ],
   },
-  plugins: [
-    new ESLintPlugin(),
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery',
-    }),
-  ],
+  plugins: [new ESLintPlugin()],
   resolve: {
     extensions: ['.js', '.jsx'],
   },

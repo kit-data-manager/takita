@@ -1,5 +1,6 @@
 // external imports
 import { isEmpty } from 'underscore';
+import $ from 'jquery';
 // internal imports
 import {
   preselectAllMRWAnnos,

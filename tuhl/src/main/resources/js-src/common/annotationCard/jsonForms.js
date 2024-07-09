@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 import { changeLabel } from '../../projectspecific/annotationCard';
 import { updateBody } from './utils';
 
