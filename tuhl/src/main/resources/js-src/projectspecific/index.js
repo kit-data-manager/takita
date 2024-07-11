@@ -6,10 +6,12 @@
  */
 
 // IMPORTS
-// imports from outside the module
+// imports from outside the module. Don't touch these.
+// eslint-disable-next-line no-unused-vars
 import { updateTargetData } from '../texteditor-ng/data';
+// eslint-disable-next-line no-unused-vars
 import { defaultHighlighting } from '../texteditor-ng/highlighting';
-// imports from inside the module
+// imports from inside the module. Change these accordingly
 import { updateTargetAndBodyData } from './data';
 import { crc1475Highlighting, getSpecificClasses } from './highlight';
 // EXPORTS

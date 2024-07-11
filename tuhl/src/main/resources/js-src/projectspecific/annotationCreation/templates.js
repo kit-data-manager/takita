@@ -78,6 +78,7 @@ export const formObjectCreateAnnotation = {
         $('#createAnnotationForm').metadataeditorForm(options, async function onSubmitValid(formvalue) {
           // formvalue contains all the information from the jsonForm as a string
           const annotationData = makeAnnotationData(formvalue);
+          // eslint-disable-next-line no-unused-vars
           const annotation = await createAnnotation(annotationData, hooks);
         });
 
@@ -159,6 +160,7 @@ export const formObjectCreateBody = {
                 const bodies = makeBodiesData(jsonObject);
                 // trigger the body creation according to the template for each body
                 for (let body of bodies) {
+                  // eslint-disable-next-line no-unused-vars
                   const newBody = await createBodyData(annotationId, body);
                 }
               }

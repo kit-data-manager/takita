@@ -85,6 +85,7 @@ export async function updateBody(annoId, value, hooks = {}) {
     // parsing the formvalue into JSON as the function to update the body requires
     // a JSONObject
     const body = JSON.parse(value);
+    // eslint-disable-next-line no-unused-vars
     const response = await updateBodyData(annoId, body);
     bodyUpdated = true;
     window.SELECTED_ANNOTATION = await selectAnnotation(null, annoId, hooks);
@@ -116,6 +117,7 @@ export async function deleteBody(annoId, body, hooks = {}) {
 
   if (confirmation) {
     try {
+      // eslint-disable-next-line no-unused-vars
       const response = await deleteBodyData(annoId, body);
       window.SELECTED_ANNOTATION = await selectAnnotation(null, annoId, hooks);
       if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
@@ -142,6 +144,7 @@ export async function deleteAnnotation(annoId) {
 
   if (confirmation) {
     try {
+      // eslint-disable-next-line no-unused-vars
       const response = await deleteAnnotationData(annoId);
       const $annotationDiv = document.getElementById('annotationCard');
       if (!$annotationDiv.classList.contains('is-hidden')) {

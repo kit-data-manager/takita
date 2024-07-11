@@ -35,7 +35,9 @@ function goHome() {
 function clickButton() {
   let button = document.getElementById('pseudonymEditButton');
   let input = document.getElementById('pseudonymInput');
+  // eslint-disable-next-line no-unused-vars
   let edit = window.TL_VARIABLES.buttons.edit;
+  // eslint-disable-next-line no-unused-vars
   let ok = window.TL_VARIABLES.buttons.ok;
   if (button.classList.contains('bx-edit')) {
     button.classList.remove('bx-edit');

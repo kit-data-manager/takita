@@ -191,6 +191,7 @@ export function modifyBodyFormHorizontal($horizontalForm, modifiedBody) {
  * @returns {[Object, Object]} formBodyDataModel, uiForm an array holding the dataModel
  * and uiForm used by JSONForm
  */
+// eslint-disable-next-line no-unused-vars
 export function getFormBodyDataModelAndUiForm(body, omitFields, formDataModel) {
   let formBodyDataModel = {
     type: 'object',

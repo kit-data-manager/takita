@@ -1,5 +1,5 @@
 export {
-  setZeroOpacity,
+  // setZeroOpacity,
   toggleOpacity,
   toggleBoxIcon,
   setVisibility,

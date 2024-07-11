@@ -81,6 +81,7 @@ export async function createAnnotation(annotationData, hooks = {}) {
 
     // trigger the body creation according to the template for each body
     for (let body of annotationData.bodies) {
+      // eslint-disable-next-line no-unused-vars
       const newBody = await createBodyData(newAnnotation.id, body);
     }
 

@@ -90,6 +90,7 @@ export async function updateTarget(_event, targetUpdateCallback, annotation, tar
   let targetUpdated = false;
   try {
     // update the target (and body depending on the callback)
+    // eslint-disable-next-line no-unused-vars
     const response = await targetUpdateCallback(annotation, targetXPath, newSelectedText);
     targetUpdated = true;
 

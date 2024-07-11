@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 import { applyStylesB03, applyStylesB04 } from './textloader';
 import { enableLanguageViewToggleButton } from './sidebar';
 import { setMRWAnnos, setSelectedText } from './editor';

@@ -10,7 +10,6 @@ import {
   deleteAnnotation,
   updateTarget,
 } from '../network';
-import { timestampsToISOString } from '../../common/annotationCard/annotationCard';
 /**
  * Build the URL under which we can access annotation data.
  * @param {String} annoId single encoded Id of the annotation
