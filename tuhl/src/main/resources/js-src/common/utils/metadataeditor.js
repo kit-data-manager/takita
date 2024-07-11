@@ -15,9 +15,9 @@ import Tabulator from 'tabulator-tables';
 // was completely and unchanged copied into this file
 // underscore is used by the metadataeditor as well, but for some reason it doesn't need to be imported
 // the code from the jsonform library needs it however (node_modules/jsonform/lib/jsonform.js)
-import _ from 'underscore';
-// assigning the jquery object to the "jQuery" variable as jsonform accesses it like that
-let jQuery = $;
+// import _ from 'underscore';
+// // assigning the jquery object to the "jQuery" variable as jsonform accesses it like that
+// let jQuery = $;
 // following eslint rules need to be ignored for this file as jsonform violates them
 /* eslint-disable no-self-assign */
 /* eslint-disable no-redeclare */
@@ -646,3 +646,13 @@ editorDefinitionForm.prototype.generateDeleteForm = function (callback) {
     },
   });
 };
+
+/**
+ * test to see if $ and metadataeditor are imported correctly
+ *
+ * @param {Element} node to be wrapped in a jQuery selection
+ * @returns the jQuery selection
+ */
+export function useJQueryPlugin(node) {
+  return $(node);
+}

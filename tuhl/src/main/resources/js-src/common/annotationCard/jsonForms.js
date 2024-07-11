@@ -1,5 +1,5 @@
 import $ from 'jquery';
-
+import '../utils/metadataeditor';
 import { changeLabel } from '../../projectspecific/annotationCard';
 import { updateBody } from './utils';
 
@@ -355,4 +355,14 @@ export function completeFormDataModel(responseJson, formDataModel, addition, omi
     }
   }
   return formDataModel;
+}
+
+/**
+ * test to see if $ and metadataeditor are imported correctly
+ *
+ * @param {Element} node to be wrapped in a jQuery selection
+ * @returns the jQuery selection
+ */
+export function useJQueryPlugin(node) {
+  return $(node);
 }

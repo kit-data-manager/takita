@@ -4,6 +4,7 @@
     "test": "jest '^((?!selenium).)*.test.js$'",
     "test-all": "jest --runInBand",
     "test-selenium": "jest --runInBand '.*selenium\\.test\\.js'",
+    "test-jqp": "jest '.*jqp\\.test\\.js'",
     "coverage": "jest --coverage --runInBand"
   },
   "dependencies": {
