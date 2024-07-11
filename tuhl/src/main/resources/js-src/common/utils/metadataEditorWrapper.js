@@ -117,3 +117,13 @@ export function fillMetaDataEditorTable(annoJson) {
 
   $('#table').metadataeditorTable(inputs);
 }
+
+/**
+ * test to see if $ and metadataeditor are imported correctly
+ *
+ * @param {Element} node to be wrapped in a jQuery selection
+ * @returns the jQuery selection
+ */
+export function useJQueryPlugin(node) {
+  return $(node);
+}

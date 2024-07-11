@@ -1,5 +1,6 @@
 // external imports
 import { isEmpty } from 'underscore';
+import $ from 'jquery';
 // internal imports
 import {
   preselectAllMRWAnnos,
@@ -13,6 +14,7 @@ import {
 import { hooks } from '..';
 import { createAnnotation } from '../../common/annotationCreation';
 import { selectAnnotation } from '../../common/annotationCard';
+import '../../common/utils/metadataeditor';
 import { createBodyData } from '../../texteditor-ng/data';
 
 // enum for different annotation templates
@@ -627,4 +629,14 @@ export function getFormModel(chosenTemplate) {
   console.log('dataModel: ', dataModel);
   console.log('uiForm: ', uiForm);
   return [dataModel, uiForm];
+}
+
+/**
+ * test to see if $ and metadataeditor are imported correctly
+ *
+ * @param {Element} node to be wrapped in a jQuery selection
+ * @returns the jQuery selection
+ */
+export function useJQueryPlugin(node) {
+  return $(node);
 }

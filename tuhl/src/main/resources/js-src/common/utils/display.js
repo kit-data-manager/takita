@@ -21,19 +21,21 @@ export function toggleOpacity($selection) {
 }
 
 /**
+ * Not used.
+ *
  * Set opacity of one or more HTML element(s) to make them (in-)visible without
  * affecting the page flow.
  * @param {Element | NodeList} $selection
  * @param {Boolean} isHidden
  */
-export function setZeroOpacity($selection, isHidden) {
-  const $elements = $selection instanceof HTMLElement ? [$selection] : $selection;
-  if (isHidden) {
-    $elements.forEach((element) => element.classList.add('zeroOpacity'));
-  } else {
-    $elements.forEach((element) => element.classList.remove('zeroOpacity'));
-  }
-}
+// export function setZeroOpacity($selection, isHidden) {
+//   const $elements = $selection instanceof HTMLElement ? [$selection] : $selection;
+//   if (isHidden) {
+//     $elements.forEach((element) => element.classList.add('zeroOpacity'));
+//   } else {
+//     $elements.forEach((element) => element.classList.remove('zeroOpacity'));
+//   }
+// }
 
 /**
  * Toggle visibility of an HTML element, and optionally

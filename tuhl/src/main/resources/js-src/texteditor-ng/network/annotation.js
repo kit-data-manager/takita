@@ -87,7 +87,6 @@ export async function deleteBody(url) {
  * @returns {Response} containing takita's response
  */
 export async function updateBody(url, annoBodyData) {
-  console.log('updateBody');
   return await fetchWithSpinner(url, {
     body: JSON.stringify(annoBodyData),
     headers: { 'Content-Type': 'application/json' },
@@ -105,7 +104,6 @@ export async function updateBody(url, annoBodyData) {
  * @returns {Response} containing takita's response
  */
 export async function updateTarget(url, modifiedAnnotation) {
-  console.log('updateTarget');
   return await fetchWithSpinner(url, {
     body: JSON.stringify(modifiedAnnotation),
     headers: { 'Content-Type': 'application/json' },

@@ -20,6 +20,7 @@ module.exports = {
     'js/analysis.js': path.resolve(srcPath, './analysis/index.js'),
     //'css/analysis.css': path.resolve(srcPath, './analysis/index.css'),
     //'js/texteditor.js': path.resolve(srcPath, './texteditor/index.js'),
+    // jquery/jsonForm test module:'js/jQueryPluginTest.js': path.resolve(srcPath, './jQueryPluginTest/index.js'),
     'js/texteditor-ng.js': path.resolve(srcPath, './texteditor-ng/index.js'),
   },
   output: {
@@ -35,6 +36,13 @@ module.exports = {
   devtool: 'source-map',
   module: {
     rules: [
+      {
+        test: require.resolve('jquery'),
+        loader: 'expose-loader',
+        options: {
+          exposes: ['$', 'jQuery'],
+        },
+      },
       {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
@@ -63,13 +71,7 @@ module.exports = {
       }),
     ],
   },
-  plugins: [
-    new ESLintPlugin(),
-    new webpack.ProvidePlugin({
-      $: 'jquery',
-      jQuery: 'jquery',
-    }),
-  ],
+  plugins: [new ESLintPlugin()],
   resolve: {
     extensions: ['.js', '.jsx'],
   },

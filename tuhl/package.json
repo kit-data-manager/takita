@@ -4,6 +4,7 @@
     "test": "jest '^((?!selenium).)*.test.js$'",
     "test-all": "jest --runInBand",
     "test-selenium": "jest --runInBand '.*selenium\\.test\\.js'",
+    "test-jqp": "jest '.*jqp\\.test\\.js'",
     "coverage": "jest --coverage --runInBand"
   },
   "dependencies": {
@@ -43,6 +44,7 @@
     "eslint-plugin-prettier": "^5.0.1",
     "eslint-plugin-react": "^7.33.2",
     "eslint-webpack-plugin": "^4.0.1",
+    "expose-loader": "^5.0.0",
     "file-loader": "^6.2.0",
     "html-webpack-plugin": "^5.5.1",
     "identity-obj-proxy": "^3.0.0",

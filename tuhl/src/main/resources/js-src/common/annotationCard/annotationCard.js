@@ -1,6 +1,3 @@
-// external modules
-//import { $ } from 'jquery';
-import '../utils/metadataeditor';
 // internal modules
 import { highlightSelectedAnnotationsTarget } from '../../texteditor-ng/highlighting';
 import { createAnnotationDiv } from './elements';

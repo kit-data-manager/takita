@@ -1,3 +1,5 @@
+import $ from 'jquery';
+import '../utils/metadataeditor';
 import { changeLabel } from '../../projectspecific/annotationCard';
 import { updateBody } from './utils';
 
@@ -146,24 +148,6 @@ export function modifyBodyFormHorizontal($horizontalForm, modifiedBody) {
   fieldsetHorizontal.replaceWith(...fieldsetHorizontal.childNodes);
 
   const inputButtonHorizontal = $horizontalForm.querySelectorAll('input[type="submit"]')[0];
-  // TODO: check if this really needs to be a loop. As this modifies only one form,
-  // the loop might be unnecessary
-  // improve readibility of the value of the "disabled" input fields
-  $horizontalForm.querySelectorAll('input[type="text"]').forEach((input) => {
-    if (input.name === 'value') {
-      input.style.color = 'black';
-      input.style.opacity = 1;
-    }
-    // enable the input submit button if the value of the input field changes
-    // from the original body value
-    input.addEventListener('input', (_event) => {
-      if (input.value !== modifiedBody.value) {
-        inputButtonHorizontal.disabled = false;
-      } else {
-        inputButtonHorizontal.disabled = true;
-      }
-    });
-  });
   // TODO: maybe use an icon instead of the "save" text to save some space
   // change the value/text of the submit "button" and if one is available (as the field can be edited)
   // disable the button by default
@@ -172,6 +156,27 @@ export function modifyBodyFormHorizontal($horizontalForm, modifiedBody) {
     inputButtonHorizontal.disabled = true;
     inputButtonHorizontal.classList.add('horizontalFormInput');
   }
+
+  // the form contains multiple inputs elements. Apart from the one with "name === 'value'" all are hidden.
+  $horizontalForm.querySelectorAll('input[type="text"]').forEach((input) => {
+    if (input.name === 'value') {
+      // The following lines have become unncessary after the modularisation process as
+      // the input fields are not getting "disabled" anymore.
+      // improve readibility of the value of the "disabled" input fields
+      // input.style.color = 'black';
+      // input.style.opacity = 1;
+
+      // enable the input submit button if the value of the input field changes
+      // from the original body value
+      input.addEventListener('input', (_event) => {
+        if (input.value !== modifiedBody.value) {
+          inputButtonHorizontal.disabled = false;
+        } else {
+          inputButtonHorizontal.disabled = true;
+        }
+      });
+    }
+  });
 
   return $horizontalForm;
 }
@@ -350,4 +355,14 @@ export function completeFormDataModel(responseJson, formDataModel, addition, omi
     }
   }
   return formDataModel;
+}
+
+/**
+ * test to see if $ and metadataeditor are imported correctly
+ *
+ * @param {Element} node to be wrapped in a jQuery selection
+ * @returns the jQuery selection
+ */
+export function useJQueryPlugin(node) {
+  return $(node);
 }

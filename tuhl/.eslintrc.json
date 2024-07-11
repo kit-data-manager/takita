@@ -9,7 +9,6 @@
 		"commonjs": true,
 		"es2021": true,
 		"jest": true,
-		"jquery": true,
 		"node": true
 	},
 	"extends": [

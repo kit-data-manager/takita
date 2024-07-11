@@ -1,12 +1,29 @@
 // linted version of https://github.com/kit-data-manager/metadata-editor
 // includes minor fixes to undeclared variables (_throw, showmodal, emptyElt)
-// and import of tabulator-tables
+// and import of tabulator-tables and the whole code of the jsonform library (node_modules/jsonform/lib/jsonform.js), for an
+// explenation seee the next comments
 
 // external modules
+import $ from 'jquery';
+import 'jsonform';
+
 // the import needs to be in this format as we are using tabulator-tables@4.8.1
 // see: https://github.com/olifolkerd/tabulator/issues/2977,
 // https://tabulator.info/docs/4.8/upgrade
 import Tabulator from 'tabulator-tables';
+// following imports are needed for the jsonform library (node_modules/jsonform/lib/jsonform.js), which code
+// was completely and unchanged copied into this file
+// underscore is used by the metadataeditor as well, but for some reason it doesn't need to be imported
+// the code from the jsonform library needs it however (node_modules/jsonform/lib/jsonform.js)
+// import _ from 'underscore';
+// // assigning the jquery object to the "jQuery" variable as jsonform accesses it like that
+// let jQuery = $;
+// following eslint rules need to be ignored for this file as jsonform violates them
+/* eslint-disable no-self-assign */
+/* eslint-disable no-redeclare */
+/* eslint-disable no-constant-condition */
+/* eslint-disable no-useless-escape */
+/* eslint-disable no-prototype-builtins */
 
 /**
  * operation type enumeration
@@ -629,3 +646,13 @@ editorDefinitionForm.prototype.generateDeleteForm = function (callback) {
     },
   });
 };
+
+/**
+ * test to see if $ and metadataeditor are imported correctly
+ *
+ * @param {Element} node to be wrapped in a jQuery selection
+ * @returns the jQuery selection
+ */
+export function useJQueryPlugin(node) {
+  return $(node);
+}
