@@ -7,7 +7,7 @@ import {
 import { pickTemplate } from '../annotationCreation';
 import { encodeAnnoId, toggleExpand } from '../utils';
 import { mergeBodies, timestampsToISOString, deleteAnnotation, deleteBody } from './utils';
-import { appendAnnotationForm, createAndAppendBodyForms } from './jsonForms';
+import { appendAnnotationForm, createAndAppendBodyForms } from './formManipulation';
 // projectspecific
 import { targetUpdateCallback } from '../../projectspecific';
 

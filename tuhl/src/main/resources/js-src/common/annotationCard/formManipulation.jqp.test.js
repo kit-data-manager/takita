@@ -1,4 +1,4 @@
-import { useJQueryPlugin } from './jsonForms';
+import { useJQueryPlugin } from './formManipulation';
 
 describe('dummy test suite for import and usage of jsonform', () => {
   it('can use $ without access to the global document and/or window in the function', () => {
