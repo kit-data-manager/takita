@@ -31,7 +31,6 @@ export function appendAnnotationForm($annotationDiv, data, headerFields, omitFie
   $('#annotationCard').metadataeditorForm(options, function onSubmitValid(_value) {
     //console.log(value);
   });
-
   return [$annotationDiv, formDataModel];
 }
 
@@ -344,7 +343,10 @@ export function completeFormDataModel(responseJson, formDataModel, addition, omi
     let title = addition;
     // if the formDataModel entry for the "value" of the body is created
     // relpace the title with the "purpose" of the body
-    if (addition === 'value') {
+    // Only bodies can have a value and a purpose. An annotation can have a
+    // motivation, but never a value. This is relevant as the completeFormDataModel()
+    // is called for the creation of the form for annotations AND bodies
+    if (addition === 'value' && responseJson.purpose) {
       title = changeLabel(responseJson.purpose);
     }
     // console.log(title);
