@@ -1,1 +1,0 @@
-export { loadText } from './textloader';
