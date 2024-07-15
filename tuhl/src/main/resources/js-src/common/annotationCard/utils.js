@@ -58,6 +58,11 @@ export async function getData(annoId) {
     // converting timestamps to ISOStrings
     data = timestampsToISOString(data);
 
+    // creating one list for both textCards ands tags
+    data.bodies = mergeBodies(data);
+
+    data.bodies.map((body) => timestampsToISOString(body));
+
     // make targets compatible for the new textEditor, if necessary
     if (document.getElementById('TEI') != null) {
       if (!checkIsTargetCompatible(data)) {

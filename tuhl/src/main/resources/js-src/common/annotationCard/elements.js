@@ -6,8 +6,7 @@ import {
 } from '../../texteditor-ng/targetBuilding';
 import { pickTemplate } from '../annotationCreation';
 import { encodeAnnoId, toggleExpand } from '../utils';
-import { mergeBodies, timestampsToISOString, deleteAnnotation, deleteBody } from './utils';
-import { appendAnnotationForm, createAndAppendBodyForms } from './formManipulation';
+import { deleteAnnotation, deleteBody } from './utils';
 // projectspecific
 import { targetUpdateCallback } from '../../projectspecific';
 
@@ -16,27 +15,11 @@ import { targetUpdateCallback } from '../../projectspecific';
  *
  * @param {Object} annotationData the annotation as JSON
  * @param {Element} $annotationDiv the div to be filled
- * @param {Array} headerFields holds fields that should be present in the form
- * @param {Array} omitFields holds fields that should not be rendered
- * @param {Array} editableFields holds fields that should not be editeable
  * @param {Object} [hooks] containing an array for the hook to be called at "preAppendingBodies",
  * "preHorizontalCreation" and "postAppendingBodies"
  * @returns {Element} filled div
  */
-export async function createAnnotationDiv(
-  annotationData,
-  $annotationDiv,
-  headerFields,
-  omitFields,
-  editableFields,
-  hooks = {},
-) {
-  // adding the JSONForm for the full annotation
-  let formDataModel;
-  // using Destructuring assignment here, see:
-  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
-  [$annotationDiv, formDataModel] = appendAnnotationForm($annotationDiv, annotationData, headerFields, omitFields);
-
+export async function createAnnotationDiv(annotationData, $annotationDiv, hooks = {}) {
   // adding the icon row at the top of the annotation div
   const $iconRowTop = createIconRow(true, annotationData.id, hooks);
   $annotationDiv.prepend($iconRowTop);
@@ -45,21 +28,15 @@ export async function createAnnotationDiv(
   if (hooks.preAppendingBodies) {
     hooks.preAppendingBodies.forEach((hook) => hook($annotationDiv));
   }
-  // merging the tags and textCards
-  const bodies = mergeBodies(annotationData);
 
   // creating the container for and adding the JSONForms for each body.
   // The container has to be created first, as JSONForm appends the form
   // to the container. If the container is not present in the DOM, JSONForm
   // can't append the form to it.
-  bodies.forEach(async (body, index) => {
-    body = timestampsToISOString(body);
-
+  annotationData.bodies.forEach(async (body, index) => {
     // create the bodyCard (container for the JSONForm) and append it to the DOM
     const $bodyCard = createBodyCard(annotationData.id, body, index, hooks);
     $annotationDiv.append($bodyCard);
-    // create the JSONForm for the body
-    await createAndAppendBodyForms(body, omitFields, editableFields, formDataModel, hooks, annotationData.id);
   });
 
   // postAppendingBodiesHook
@@ -84,7 +61,7 @@ export async function createAnnotationDiv(
  * @param {Object} [hooks] containing an array for the hooks to be passed to "selectAnnotation()"
  * @returns {Element} the finished body card (div element)
  */
-function createBodyCard(annoId, body, index, hooks = {}) {
+export function createBodyCard(annoId, body, index, hooks = {}) {
   const $bodyCard = document.createElement('div');
   $bodyCard.classList.add('card');
 
@@ -104,7 +81,6 @@ function createBodyCard(annoId, body, index, hooks = {}) {
   const $bodyForm = createBodyForm(body);
   $formRowDiv.append($bodyForm);
   $bodyCard.append($formRowDiv);
-
   return $bodyCard;
 }
 

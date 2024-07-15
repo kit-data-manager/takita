@@ -1,5 +1,4 @@
 import { selectAnnotation } from './annotationCard';
-//import { getData } from './utils';
 import * as utils from './utils';
 
 const annoData = {
@@ -9,14 +8,8 @@ const annoData = {
       annotationId: 'http://localhost/wap/sfb1475/philipp/takita/43fad442-ee74-4eac-adae-db4e2fef4b6d',
       id: '2741aaf0-0fac-4690-81b4-8d0301f40a97',
       creators: ['Tester'],
-      created: {
-        seconds: 1720508617,
-        nanos: 0,
-      },
-      modified: {
-        seconds: 1720508617,
-        nanos: 0,
-      },
+      created: '2024-07-09T07:03:37.000Z',
+      modified: '2024-07-09T07:03:37.000Z',
       value: 'judgment',
       purpose: 'describing',
       fullJson:
@@ -26,14 +19,32 @@ const annoData = {
       annotationId: 'http://localhost/wap/sfb1475/philipp/takita/43fad442-ee74-4eac-adae-db4e2fef4b6d',
       id: 'a1e9750a-e0ce-4e38-8372-406e5c8d0d94',
       creators: ['Tester'],
-      created: {
-        seconds: 1720508618,
-        nanos: 0,
-      },
-      modified: {
-        seconds: 1720508618,
-        nanos: 0,
-      },
+      created: '2024-07-09T07:03:38.000Z',
+      modified: '2024-07-09T07:03:38.000Z',
+      value: 'mrw (direct)',
+      purpose: 'classifying',
+      fullJson:
+        '{"creator":{"type":"Person","name":"Tester"},"created":"2024-07-09T07:03:38.058500Z","modified":"2024-07-09T07:03:38.058501Z","purpose":"classifying","value":"mrw (direct)","type":"TextualBody"}',
+    },
+  ],
+  bodies: [
+    {
+      annotationId: 'http://localhost/wap/sfb1475/philipp/takita/43fad442-ee74-4eac-adae-db4e2fef4b6d',
+      id: '2741aaf0-0fac-4690-81b4-8d0301f40a97',
+      creators: ['Tester'],
+      created: '2024-07-09T07:03:37.000Z',
+      modified: '2024-07-09T07:03:37.000Z',
+      value: 'judgment',
+      purpose: 'describing',
+      fullJson:
+        '{"creator":{"type":"Person","name":"Tester"},"created":"2024-07-09T07:03:37Z","modified":"2024-07-09T07:03:37Z","purpose":"describing","value":"judgment","type":"TextualBody"}',
+    },
+    {
+      annotationId: 'http://localhost/wap/sfb1475/philipp/takita/43fad442-ee74-4eac-adae-db4e2fef4b6d',
+      id: 'a1e9750a-e0ce-4e38-8372-406e5c8d0d94',
+      creators: ['Tester'],
+      created: '2024-07-09T07:03:38.000Z',
+      modified: '2024-07-09T07:03:38.000Z',
       value: 'mrw (direct)',
       purpose: 'classifying',
       fullJson:
@@ -95,29 +106,26 @@ describe('selecting an annotation', () => {
         data.manipulated = true;
         return data;
       });
-      const postAnnotationCardCreation = jest.fn((div) => div);
       const preAppendingBodies = jest.fn((div) => div);
       const postAppendingBodies = jest.fn((data, div) => div);
-      const preHorizontalBodyCardCreation = jest.fn((id, body) => body);
+      const postAnnotationCardCreation = jest.fn((div) => div);
 
       let hooks = {
         manipulatingData: [manipulatingData],
         preAppendingBodies: [preAppendingBodies],
         postAppendingBodies: [postAppendingBodies],
-        preHorizontalBodyCardCreation: [preHorizontalBodyCardCreation],
         postAnnotationCardCreation: [postAnnotationCardCreation],
       };
       await selectAnnotation('event', 'annoId', hooks);
       expect(manipulatingData).toHaveBeenCalled();
-      expect(postAnnotationCardCreation).toHaveBeenCalled();
       expect(preAppendingBodies).toHaveBeenCalled();
       expect(postAppendingBodies).toHaveBeenCalled();
-      expect(preHorizontalBodyCardCreation).toHaveBeenCalled();
+      expect(postAnnotationCardCreation).toHaveBeenCalled();
     });
   });
 
   describe('unsuccessfully and aborting', () => {
-    it('fails on loading the data/can\t find the annotation', async () => {
+    it("fails on loading the data/can't find the annotation", async () => {
       jest.spyOn(utils, 'getData').mockReturnValue(null);
       const selectedAnnotation = await selectAnnotation('event', 'annoId', {});
       expect(selectedAnnotation).toEqual({});

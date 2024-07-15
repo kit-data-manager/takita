@@ -1,32 +1,60 @@
 import $ from 'jquery';
 import '../utils/metadataeditor';
 import { changeLabel } from '../../projectspecific/annotationCard';
-import { updateBody } from './utils';
+import { updateBody, timestampsToISOString } from './utils';
 
 // JSONForm creation
+/**
+ *
+ * @param {Element} annotationDiv the div holding the annotationCard
+ * @param {Object} annotationData the annotation as JSON
+ * @param {Array} headerFields holds fields that should be present in the form
+ * @param {Array} omitFields holds fields that should not be rendered
+ * @param {Array} editableFields holds fields that should not be editeable
+ * @param {Object} [hooks] containing an array for the hook to be called at "preHorizontalCreation"
+ * @returns
+ */
+export function appendForms($annotationDiv, annotationData, headerFields, omitFields, editableFields, hooks) {
+  // adding the JSONForm for the full annotation
+  let formDataModel;
+  // using Destructuring assignment here, see:
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
+  [$annotationDiv, formDataModel] = createAndAppendAnnotationForm(
+    $annotationDiv,
+    annotationData,
+    headerFields,
+    omitFields,
+  );
+  // create the JSONForms for the bodies
+  annotationData.bodies.forEach(async (body) => {
+    await createAndAppendBodyForms(body, omitFields, editableFields, formDataModel, annotationData.id, hooks);
+  });
+  return $annotationDiv;
+}
+
 /**
  * Append the annotation form created by the metadataEditor.js (uses JSONForm) to the
  * annotation div
  *
  * @param {Element} annotationDiv the div holding the annotationCard
- * @param {Object} data the annotation as JSON
+ * @param {Object} annotationData the annotation as JSON
  * @param {Array} headerFields holds the fields to be added to the form
  * @param {Array} omitFields holds the fields to NOT be added to the form
  * @returns {Element} $annotationDiv after the form got appended
  */
-export function appendAnnotationForm($annotationDiv, data, headerFields, omitFields) {
+export function createAndAppendAnnotationForm($annotationDiv, annotationData, headerFields, omitFields) {
   let formDataModel = {
     type: 'object',
     properties: {},
   };
 
   headerFields.forEach((headerField) => {
-    if (data[headerField]) {
-      formDataModel = completeFormDataModel(data, formDataModel, headerField, omitFields);
+    if (annotationData[headerField]) {
+      formDataModel = completeFormDataModel(annotationData, formDataModel, headerField, omitFields);
     }
   });
 
-  const options = { operation: 'READ', dataModel: formDataModel, uiForm: '*', resource: data };
+  const options = { operation: 'READ', dataModel: formDataModel, uiForm: '*', resource: annotationData };
 
   $('#annotationCard').metadataeditorForm(options, function onSubmitValid(_value) {
     //console.log(value);
@@ -40,8 +68,8 @@ export function appendAnnotationForm($annotationDiv, data, headerFields, omitFie
  * @param {Array} omitFields holds fields that should not be rendered
  * @param {Array} editableFields holds fields that should not be editeable
  * @param {Object} formDataModel used while creating the annotation form
- * @param {Object} [hooks] containing an array for the hook to be called at "preHorizontalCreation"
  * @param {String} annotationId id of the annotation
+ * @param {Object} [hooks] containing an array for the hook to be called at "preHorizontalCreation"
  */
 export async function createAndAppendBodyForms(
   body,
@@ -67,7 +95,7 @@ export async function createAndAppendBodyForms(
   // deep copying the body as it might be useful at some point
   let modifiedBody = JSON.parse(JSON.stringify(body));
   if (hooks.preHorizontalBodyCardCreation) {
-    // forEach and export  async function calls can be messy and not executed in the expected order.
+    // forEach and export async function calls can be messy and not executed in the expected order.
     // Therefore a "for of" loop is used
     // see: https://stackoverflow.com/questions/37576685/using-async-await-with-a-foreach-loop
     for (let hook of hooks.preHorizontalBodyCardCreation) {

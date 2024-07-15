@@ -4,6 +4,7 @@ import { createAnnotationDiv } from './elements';
 import { getData } from './utils';
 // projectspecific
 import { headerFieldsArray, omitFieldsArray, editableFieldsArray } from '../../projectspecific';
+import { appendForms } from './formManipulation';
 
 /**
  * Main entry point to handle a user interaction to select an annotation
@@ -25,14 +26,6 @@ export async function selectAnnotation(_event, annoId, hooks = {}) {
     return {};
   }
 
-  let $annotationDiv = document.getElementById('annotationCard');
-
-  // removing old annotationCard
-  while ($annotationDiv.lastElementChild) {
-    $annotationDiv.removeChild($annotationDiv.lastElementChild);
-  }
-
-  // creating new annotationCard
   // deep cloning the the data of the selected annotation, so it can be manipulated
   // by hooks (manipulatingData, preHorizontalBodyCardCreation etc.). The data manipulation
   // necessary for the rendering should not affect the data returned by "selectAnnotation()"
@@ -42,15 +35,9 @@ export async function selectAnnotation(_event, annoId, hooks = {}) {
       annotationData = hook(annotationData);
     });
   }
-  const [headerFields, omitFields, editableFields] = [headerFieldsArray, omitFieldsArray, editableFieldsArray];
-  $annotationDiv = await createAnnotationDiv(
-    annotationData,
-    $annotationDiv,
-    headerFields,
-    omitFields,
-    editableFields,
-    hooks,
-  );
+
+  // creating new annotationCard
+  const $annotationDiv = await fillAnnotationDiv(annotationData, hooks);
   if (hooks.postAnnotationCardCreation) {
     hooks.postAnnotationCardCreation.forEach((hook) => {
       hook($annotationDiv);
@@ -64,4 +51,37 @@ export async function selectAnnotation(_event, annoId, hooks = {}) {
   }
 
   return selectedAnnotation;
+}
+
+/**
+ * wrapper to take care about displaying the selected annotation on the right side
+ * of the screen. Removes the old displayed information, creates new elements
+ * and appends the jsonForms to it.
+ *
+ * @param {Object} annotationData the annotation as JSON
+ * @param {*} hooks
+ * @returns {Element} filled div
+ */
+async function fillAnnotationDiv(annotationData, hooks) {
+  // storing the imported arrays
+  const [headerFields, omitFields, editableFields] = [headerFieldsArray, omitFieldsArray, editableFieldsArray];
+
+  let $annotationDiv = document.getElementById('annotationCard');
+
+  // removing old annotationCard
+  while ($annotationDiv.lastElementChild) {
+    $annotationDiv.removeChild($annotationDiv.lastElementChild);
+  }
+
+  // create the container for the jsonForms and then append the jsonForms
+  $annotationDiv = await createAnnotationDiv(annotationData, $annotationDiv, hooks);
+  $annotationDiv = appendForms($annotationDiv, annotationData, headerFields, omitFields, editableFields, hooks);
+  // as the jsonForm of the annotation gets "appended" after the icon row, the
+  // row is displayed below the form. However the row should be displayed at the
+  // top of the container, so it has to be moved there
+  const $iconRowTop = $annotationDiv.querySelector('#iconRowTop');
+  $iconRowTop.remove();
+  $annotationDiv.prepend($iconRowTop);
+
+  return $annotationDiv;
 }
