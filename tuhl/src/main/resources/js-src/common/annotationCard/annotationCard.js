@@ -37,7 +37,9 @@ export async function selectAnnotation(_event, annoId, hooks = {}) {
   }
 
   // creating new annotationCard
-  const $annotationDiv = await fillAnnotationDiv(annotationData, hooks);
+  let $annotationDiv = document.getElementById('annotationCard');
+  await fillAnnotationDiv($annotationDiv, annotationData, hooks);
+
   if (hooks.postAnnotationCardCreation) {
     hooks.postAnnotationCardCreation.forEach((hook) => {
       hook($annotationDiv);
@@ -58,15 +60,14 @@ export async function selectAnnotation(_event, annoId, hooks = {}) {
  * of the screen. Removes the old displayed information, creates new elements
  * and appends the jsonForms to it.
  *
+ * @param {Element} $annotationDiv the element holding the elements and jsonForms
  * @param {Object} annotationData the annotation as JSON
- * @param {*} hooks
+ * @param {[Object]} hooks
  * @returns {Element} filled div
  */
-async function fillAnnotationDiv(annotationData, hooks) {
+async function fillAnnotationDiv($annotationDiv, annotationData, hooks) {
   // storing the imported arrays
   const [headerFields, omitFields, editableFields] = [headerFieldsArray, omitFieldsArray, editableFieldsArray];
-
-  let $annotationDiv = document.getElementById('annotationCard');
 
   // removing old annotationCard
   while ($annotationDiv.lastElementChild) {

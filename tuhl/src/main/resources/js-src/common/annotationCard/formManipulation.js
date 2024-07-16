@@ -1,7 +1,7 @@
 import $ from 'jquery';
 import '../utils/metadataeditor';
 import { changeLabel } from '../../projectspecific/annotationCard';
-import { updateBody, timestampsToISOString } from './utils';
+import { updateBody } from './utils';
 
 // JSONForm creation
 /**
@@ -76,8 +76,8 @@ export async function createAndAppendBodyForms(
   omitFields,
   editableFields,
   formDataModel,
-  hooks = {},
   annotationId,
+  hooks = {},
 ) {
   // create the two JSONForms and append them
   // create the expandable vertical JSONForm
