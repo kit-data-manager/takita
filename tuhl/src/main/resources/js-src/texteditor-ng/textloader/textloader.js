@@ -11,7 +11,6 @@ export function appendTEIDocument(xmlString, $teiElement, hooks = {}) {
   // emptying the element
   $teiElement.innerHTML = '';
   $teiElement.appendChild($TEIDoc);
-  return $TEIDoc;
 }
 
 /**
@@ -61,7 +60,7 @@ export function applyStyles($html, language, hooks = {}) {
   // Generic stuff
   // displaying right to left languages accordingly
   if (language === 'hbo' || language === 'he' || language === 'arb' || language === 'fa') {
-    $processedHTML.firstChild.dir = 'rtl';
+    $processedHTML.firstElementChild.dir = 'rtl';
   }
 
   // Specific stuff

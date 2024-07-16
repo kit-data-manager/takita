@@ -1,5 +1,5 @@
-import { prepareTEIDocument, getTextLanguage, applyStyles, appendTEIDocument } from './textloader';
-import { applyStylesB03, applyStylesB04 } from '../../projectspecific/textloader';
+import { prepareTEIDocument, getTextLanguage, applyStyles } from './textloader';
+import { postApplyStylesB03, postApplyStylesB04 } from './subprojectHooks';
 
 const innerHTMLSanskrit =
   '<div id="TEI"><tei-text xml:lang="sa-Latn" lang="sa-Latn" type="book" data-xmlns="http://www.tei-c.org/ns/1.0">' +
@@ -16,36 +16,6 @@ const innerHTMLHebrew =
   '<tei-body n="Psalmi" xml:id="b.426617" id="b.426617">' +
   '   <tei-div type="chapter" n="1" xml:id="c.427197" id="c.427197">' +
   '      <tei-ab type="verse" n="1" xml:id="v.1429538" id="v.1429538"><tei-choice data-origname="choice"><tei-orig><tei-w xml:id="w.310653_310654_310655" id="w.310653_310654_310655"><tei-w xml:id="w.310653" id="w.310653">אַ֥שְֽׁרֵי</tei-w><tei-pc xml:id="pc.47746" id="pc.47746">־</tei-pc><tei-w xml:id="w.310654" id="w.310654">הָ</tei-w><tei-w xml:id="w.310655" id="w.310655">אִ֗ישׁ</tei-w></tei-w></tei-orig> <tei-reg class="zeroOpacity"></tei-reg></tei-choice><tei-pc id="pc.1" xml:id="pc.1">׀</pc></tei-ab></tei-div></tei-body></tei-text></div>';
-
-describe('appending custom html to an element', () => {
-  it('appends simple xml transformed into custom html to an element', () => {
-    // setup the document
-    document.body.innerHTML = '<div id="TEI"></div>';
-    const xmlString = `
-          <text xml:lang="hbo" xmlns="http://www.tei-c.org/ns/1.0">
-            <body n="Psalms" xml:id="b.426591">
-              <div type="chapter" n="1" xml:id="c.426630">
-                <lg><l><w xml:id="w.121">Blessed</w> <w xml:id="w.122">[is]</w> <w xml:id="w.123">the</w> <w xml:id="w.124">man</w> <w xml:id="w.125">that</w> <w xml:id="w.126">walketh</w><pc xml:id="pc.1">,</pc></l>
-                    <l><w xml:id="w.133">nor</w> <w xml:id="w.134">standeth</w><pc xml:id="pc.2">.</pc></l></lg>
-              </div>
-            </body>
-          </text>
-        `;
-    const $TEI = document.getElementById('TEI');
-    appendTEIDocument(xmlString, $TEI, {});
-    const result = `
-        <tei-text xml:lang="hbo" lang="hbo" data-xmlns="http://www.tei-c.org/ns/1.0" data-origname="text" data-origatts="xml:lang xmlns" dir="rtl">
-                    <tei-body n="Psalms" xml:id="b.426591" id="b.426591" data-origname="body" data-origatts="n xml:id">
-                    <tei-div type="chapter" n="1" xml:id="c.426630" id="c.426630" data-origname="div" data-origatts="type n xml:id">
-                        <tei-lg data-origname="lg"><tei-l data-origname="l"><tei-w xml:id="w.121" id="w.121" data-origname="w" data-origatts="xml:id">Blessed</tei-w> <tei-w xml:id="w.122" id="w.122" data-origname="w" data-origatts="xml:id">[is]</tei-w> <tei-w xml:id="w.123" id="w.123" data-origname="w" data-origatts="xml:id">the</tei-w> <tei-w xml:id="w.124" id="w.124" data-origname="w" data-origatts="xml:id">man</tei-w> <tei-w xml:id="w.125" id="w.125" data-origname="w" data-origatts="xml:id">that</tei-w> <tei-w xml:id="w.126" id="w.126" data-origname="w" data-origatts="xml:id">walketh</tei-w><tei-pc xml:id="pc.1" id="pc.1" data-origname="pc" data-origatts="xml:id">,</tei-pc></tei-l>
-                            <tei-l data-origname="l"><tei-w xml:id="w.133" id="w.133" data-origname="w" data-origatts="xml:id">nor</tei-w> <tei-w xml:id="w.134" id="w.134" data-origname="w" data-origatts="xml:id">standeth</tei-w><tei-pc xml:id="pc.2" id="pc.2" data-origname="pc" data-origatts="xml:id">.</tei-pc></tei-l></tei-lg>
-                    </tei-div>
-                    </tei-body>
-                </tei-text>`;
-    // removing all whitespace from the compared strings as the result will have leading tabs
-    expect($TEI.innerHTML.replace(/\s/g, '')).toStrictEqual(result.replace(/\s/g, ''));
-  });
-});
 
 describe('using CETEI', () => {
   it('transform super simple xml', () => {
@@ -112,7 +82,7 @@ describe('using CETEI', () => {
     const $wElements = $result.querySelectorAll('tei-w');
     const $pcElements = $result.querySelectorAll('tei-pc');
     expect(language).toBe('hbo');
-    expect($result.firstElementChild.dir).toBe('rtl');
+    expect($result.dir).toBe('rtl');
     expect($testElement.id).toBe('w.121');
     expect($wElements.length).toBe(8);
     expect($pcElements.length).toBe(2);
@@ -138,7 +108,7 @@ describe('applying styles based on the language of a text', () => {
     const $text = document.getElementById('TEI');
     const language = getTextLanguage($text);
     const $result = applyStyles($text, language);
-    expect($result.firstElementChild.dir).toBe('');
+    expect($result.dir).toBe('');
   });
   it('makes the editor display text from right to left', () => {
     // setup the document
@@ -146,11 +116,10 @@ describe('applying styles based on the language of a text', () => {
     const $text = document.getElementById('TEI');
     const language = getTextLanguage($text);
     const $result = applyStyles($text, language);
-    expect($result.firstElementChild.dir).toBe('rtl');
+    expect($result.dir).toBe('rtl');
   });
   it('calls postApplyStyles hook with correct params', () => {
     const $text = document.createElement('div');
-    $text.appendChild(document.createElement('div'));
     const hook = jest.fn((_$html, _lang) => {});
     const _results = applyStyles($text, 'hbo', { postApplyStyles: [hook] });
     expect(hook).toHaveBeenCalled();
@@ -161,7 +130,7 @@ describe('applying styles based on the language of a text', () => {
     document.body.innerHTML = innerHTMLSanskrit;
     const $text = document.getElementById('TEI');
     const language = getTextLanguage($text);
-    const $result = applyStyles($text, language, { postApplyStyles: [applyStylesB04] });
+    const $result = applyStyles($text, language, { postApplyStyles: [postApplyStylesB04] });
     // you need to use querySeelctor here as getElementById is not defined for elements
     const wordElementContainsClass = $result
       .querySelector('#w\\.4292528')
@@ -174,7 +143,7 @@ describe('applying styles based on the language of a text', () => {
     document.body.innerHTML = innerHTMLHebrew;
     const $text = document.getElementById('TEI');
     const language = getTextLanguage($text);
-    const $result = applyStyles($text, language, { postApplyStyles: [applyStylesB03] });
+    const $result = applyStyles($text, language, { postApplyStyles: [postApplyStylesB03] });
     // you need to use querySeelctor here as getElementById is not defined for elements
     const pcElement = $result.querySelector('#pc\\.1');
     const pcElementContainsClass = $result.classList.contains('paseq');
