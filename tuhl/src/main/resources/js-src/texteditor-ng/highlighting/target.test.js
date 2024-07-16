@@ -1,4 +1,5 @@
-import { defaultHighlighting, removeStyles, highlightSelectedAnnotationsTarget } from '.';
+import { defaultHighlighting, removeStyles, highlightSelectedAnnotationsTarget, updateDisplay } from '.';
+import * as data from '../data/annotations';
 
 describe('removing all css classes relevant for highlighting a target', () => {
   it('removes relevant classes from an element with only one child', () => {
@@ -75,5 +76,38 @@ describe('highlighting elements targeted by an annotation, which got selected by
     expect($element1.classList.contains('selected')).toBe(true);
     expect($element2.classList.contains('selected')).toBe(true);
     expect($element3.classList.contains('selected')).toBe(false);
+  });
+});
+
+describe('updating the display by rendering the current annotations', () => {
+  beforeEach(() => {
+    window.ANNOJSON = undefined;
+    jest.clearAllMocks();
+  });
+  it('successfully updates the display and store the current annotations in a variable', async () => {
+    document.body.innerHTML = `<div id="table"></div><div id="TEI"><div id="w.1"></div><div id="w.2"></div><div id="w.3"></div>
+      <div id="w.4"></div><div id="w.5" class="defaulthighlight"></div></div>`;
+    const mockAnnoJson = [
+      { id: '1', svg: ['id("w.1")', 'id("w.2")'], color: 'none' },
+      { id: '2', svg: ['id("w.3")', 'id("w.4")'], color: 'none' },
+    ];
+    // mocking an inner funciton call, which does a network request, to be called successfully
+    // and return the data
+    jest.spyOn(data, 'getAllAnnotationsData').mockReturnValue(mockAnnoJson);
+
+    await updateDisplay({});
+    expect(window.ANNOJSON).toStrictEqual(mockAnnoJson);
+    expect(document.getElementById('w.1').classList.contains('defaulthighlight')).toBe(true);
+    expect(document.getElementById('w.2').classList.contains('defaulthighlight')).toBe(true);
+    expect(document.getElementById('w.3').classList.contains('defaulthighlight')).toBe(true);
+    expect(document.getElementById('w.4').classList.contains('defaulthighlight')).toBe(true);
+    expect(document.getElementById('w.5').classList.contains('defaulthighlight')).toBe(false);
+  });
+  it('fails on updating the display', () => {
+    // mocking an inner funciton call, which does a network request, to be called unsuccessfully
+    // and to throw an error, which gets handled
+    jest.spyOn(data, 'getAllAnnotationsData').mockReturnValue(new Error());
+    updateDisplay({});
+    expect(window.ANNOJSON).toStrictEqual(undefined);
   });
 });
