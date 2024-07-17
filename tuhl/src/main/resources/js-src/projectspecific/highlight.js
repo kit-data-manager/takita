@@ -73,9 +73,9 @@ function assignStyle($element, annotation, index, alreadyHighlighted) {
         if ($element.nextSibling.textContent.trim() === '' && !(index === annotation.svg.length - 1)) {
           $element.classList.add('whitespaceAfter');
         }
-      } else {
-        $element.classList.add('whitespaceAfter');
-      }
+      } // else {
+      //    $element.classList.add('whitespaceAfter');
+      // }
       break;
     case '#000011':
       $element.classList.add('backgroundOne');
