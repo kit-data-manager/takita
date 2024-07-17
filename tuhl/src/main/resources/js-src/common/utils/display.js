@@ -38,27 +38,29 @@ export function toggleOpacity($selection) {
 // }
 
 /**
- * Toggle visibility of an HTML element, and optionally
+ * Toggle visibility of an HTML element or NodeList, and optionally
  * designate the responsible button as active.
  *
- * @param {Element} $element the HTML element (probably some div) which should get toggled
+ * @param {Element | NodeList} $selection affected HTML element(s), (probably some div) which should get toggled
  * @param {Element} [$button] the button element which should appear "active" state if element was made visible
  */
-export function toggleVisibility($element, $button) {
-  // let buttonElement = document.getElementById(divId + 'Button');
-  const elementWasHidden = $element.classList.contains('is-hidden');
-  $element.classList.toggle('is-hidden');
-  if (elementWasHidden) {
-    if ($button) {
-      $button.parentElement.classList.add('active');
-      // TODO: Maybe make this more robust, in cases where scrolling is not available (like during testing)?
-      $element.scrollIntoView();
+export function toggleVisibility($selection, $button) {
+  const $elements = $selection instanceof HTMLElement ? [$selection] : $selection;
+  $elements.forEach(($element) => {
+    const elementWasHidden = $element.classList.contains('is-hidden');
+    $element.classList.toggle('is-hidden');
+    if (elementWasHidden) {
+      if ($button) {
+        $button.parentElement.classList.add('active');
+        // TODO: Maybe make this more robust, in cases where scrolling is not available (like during testing)?
+        $element.scrollIntoView();
+      }
+    } else {
+      if ($button) {
+        $button.parentElement.classList.remove('active');
+      }
     }
-  } else {
-    if ($button) {
-      $button.parentElement.classList.remove('active');
-    }
-  }
+  });
 }
 
 /**
