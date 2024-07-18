@@ -22,11 +22,9 @@ export function makeAnnotationData(formvalue) {
   const color = formDataJson?.color ? formDataJson.color : '#89f099';
 
   const bodies = makeBodiesData(formDataJson);
-  // window.location.pathname.split('/').pop() returns the last part of the url,
-  // which is the pageId, which is required
   // to create an annotation
   let annotationData = {
-    pageId: window.location.pathname.split('/').pop(),
+    pageId: window.CURRENTPAGEID,
     color: color,
     motivation: 'describing',
     bodies: bodies,
@@ -73,11 +71,11 @@ export function makeBodiesData(formDataJson) {
 
 /**
  * create the data for one body based on the JSONForm value.
- * Each body gets a 'purpose'. A body should have at least one of the following properties:
+ * Each body gets a 'purpose'. A finished body should have at least one of the following properties:
  * - value: value of the body comes from specific input into a field of of the form
  * - subject: similar to "value", but is based on the color
  * - source: see subject
- * An example looks like '"classification": "metaphor"'
+ * Turns '"classification": "metaphor"' into { purpose: 'classifying', value: 'metaphor' }
  *
  * @param {String} formKey the key of the key value pair, eg. 'classification'
  * @param {String} formValue the value of the key value pair, eg. 'metaphor'
@@ -174,12 +172,13 @@ export function toggleCheckedInputs(inputs) {
 }
 
 /**
- * returns a button to select/unselect all mrws; is used by
+ * returns an object to create a button to select/unselect all mrws; is used by
  * - the METAPHOR annotation template
  * - the MRW body template
  *
  * @param {Enumerator} mrwEnum holding all mrws present in the form
- * @returns {Element} button to select/unselect all mrws present in the form
+ * @returns {Object} to be used by jsonForm to create a button to select/unselect
+ * all mrws present in the form
  */
 export function getSelectMRWButton(mrwEnum) {
   const selectMRWButton = {
@@ -278,45 +277,39 @@ export function spreadMRWArray(jsonObject) {
   return jsonObject;
 }
 
-// wrapper function to hold all functions to be called after the
-// modal to create an annotation is being displayed
-// TODO: CUSTOMISE: add code/functions to be called
-export function preselectAllMRWAnnos() {
+/**
+ * preselect all checkboxes for the mrw-annos present in the current selection
+ * during metaphor annotation creation via the template
+ *
+ * @param {[Object]} mrwAnnos holding the mrw annotations
+ * @param {String} annotationType type of the annotation to be created (usually derived
+ * from value of the select element used to chose the template during annotation creation)
+ * @param {[Element]} $inputs all input elements available during the creation of a
+ * metaphor annotation (one for each mrw annotation present in the selection of the user)
+ */
+export function preselectAllMRWAnnos(mrwAnnos, annotationType, $inputs) {
   // if a user wants to create a metaphor-annotation, preselect the checkboxes
   // for the linking of mrw-annotations
-  if (
-    window.MRW_ANNOS.length > 0 &&
-    document.querySelector(
-      '#pickAnnotationTemplateForm > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > select:nth-child(1)',
-    ).value === 'METAPHOR'
-  ) {
-    /**
-     * preselect all checkboxes for the mrw-annos present in the current selection
-     * during metaphor annotation creation via the template
-     */
-
-    // select all input fields, where the name starts with "mrws"
-    // the input fields storing the mrws present in a selection
-    // get their name from the ordering in the mrws-array:
-    // name="mrws[0]" and name="mrws[1]" etc.
-    // to get the changing name I refered to
-    // https://stackoverflow.com/questions/16791527/how-to-use-a-regular-expression-in-queryselectorall
-    const inputs = document.querySelectorAll('input[name^=mrws');
+  if (mrwAnnos.length > 0 && annotationType === 'METAPHOR') {
     // checking if any mrws are present in the selection and allowing the toggle
     // only if there are. This prevents an error to be thrown, when no mrws are present
-    if (inputs.length > 0) {
-      toggleCheckedInputs(inputs);
+    if ($inputs.length > 0) {
+      toggleCheckedInputs($inputs);
     }
   }
-
-  // if a user wants to create a metaphor-annotation, but there is no
-  // mrw-annotation present in the selection, disable annotation creation
-  //if (window.MRW_ANNOS.length === 0 &&
-  //document.querySelector("#pickAnnotationTemplateForm > div:nth-child(1) > div:nth-child(1)
-  // > div:nth-child(2) > select:nth-child(1)").value === "METAPHOR"){
-  //disableAnnotationCreation();
-  //}
 }
+
+// previously a wrapper function, to hold all functions to be called after the
+// modal to create an annotation is being displayed, was available. This is no
+// longer necessary after the modularisation as the templates are in the
+// projectspecifi module, which has to be configured by each project-
+// if a user wants to create a metaphor-annotation, but there is no
+// mrw-annotation present in the selection, disable annotation creation
+//if (window.MRW_ANNOS.length === 0 &&
+//document.querySelector("#pickAnnotationTemplateForm > div:nth-child(1) > div:nth-child(1)
+// > div:nth-child(2) > select:nth-child(1)").value === "METAPHOR"){
+//disableAnnotationCreation();
+//}
 
 /**
  * find all the mrw annotations that are contained in a selection
