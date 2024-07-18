@@ -41,7 +41,7 @@ export async function updateTargetAndBodyData(anno, newTarget, newText) {
  * @param {String} newText containing the new selected text
  * @returns {Object} the new body
  */
-function createNewDescribingBody(targetUpdateResponse, newText) {
+export function createNewDescribingBody(targetUpdateResponse, newText) {
   // find the describing body
   const describingBody = targetUpdateResponse.textCards.filter((textCard) => textCard.purpose === 'describing');
   if (describingBody.length > 0) {
@@ -72,7 +72,7 @@ export async function getMRWAnnoSelectedText(mrwAnnoId) {
   } catch (exception) {
     // if the mrw-annotation linked to the metaphor-annotation got deleted or something else went
     // wrong while fetching the annotation, the code will end up here
-    console.log(
+    console.error(
       `ERROR: Something is wrong with the linked mrw-annotation; 
         most likely it got deleted, please contact the developers`,
       exception,
