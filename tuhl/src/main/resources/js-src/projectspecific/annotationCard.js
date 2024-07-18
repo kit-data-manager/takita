@@ -64,26 +64,26 @@ export function addLinkToAnalysisTool(annotationData, $annotationDiv) {
   // adding link to the analysis tool, if
   // the annotation is a metaphor annotation
   if (annotationData.color === 'METAPHOR') {
-    var buttonToAnalysisTool = document.createElement('input');
-    buttonToAnalysisTool.classList.add('btn');
-    buttonToAnalysisTool.classList.add('btn-primary');
-    buttonToAnalysisTool.type = 'submit';
-    buttonToAnalysisTool.value = 'Analyze';
-    buttonToAnalysisTool.id = 'buttonToAnalysisTool';
-    buttonToAnalysisTool.disabled = true;
+    const $buttonToAnalysisTool = document.createElement('input');
+    $buttonToAnalysisTool.classList.add('btn');
+    $buttonToAnalysisTool.classList.add('btn-primary');
+    $buttonToAnalysisTool.type = 'submit';
+    $buttonToAnalysisTool.value = 'Analyze';
+    $buttonToAnalysisTool.id = 'buttonToAnalysisTool';
+    $buttonToAnalysisTool.disabled = true;
 
-    var linkToAnalysisTool = document.createElement('a');
-    linkToAnalysisTool.href = window.CONTEXTPATH + 'analysis/' + encodeAnnoId(annotationData.id);
-    linkToAnalysisTool.target = '_blank';
-    linkToAnalysisTool.rel = 'noreferrer noopener';
-    linkToAnalysisTool.append(buttonToAnalysisTool);
+    const $linkToAnalysisTool = document.createElement('a');
+    $linkToAnalysisTool.href = window.CONTEXTPATH + 'analysis/' + encodeAnnoId(annotationData.id);
+    $linkToAnalysisTool.target = '_blank';
+    $linkToAnalysisTool.rel = 'noreferrer noopener';
+    $linkToAnalysisTool.append($buttonToAnalysisTool);
 
-    $annotationDiv.append(linkToAnalysisTool);
+    $annotationDiv.append($linkToAnalysisTool);
 
     // enable the link, if no mrw-annotation is linked
     // to the metaphor annotation
     if (annotationData.textCards.some((textCard) => textCard.purpose === 'linking')) {
-      document.getElementById('buttonToAnalysisTool').disabled = false;
+      $buttonToAnalysisTool.disabled = false;
     }
   }
   return $annotationDiv;
