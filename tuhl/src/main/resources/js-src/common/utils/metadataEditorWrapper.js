@@ -44,8 +44,8 @@ export function fillMetaDataEditorTable(annoJson) {
       title: 'Identifier',
       field: 'id',
       headerSort: false,
-      cellClick: function (e, cell) {
-        window.SELECTED_ANNOTATION = selectAnnotation(null, encodeAnnoId(cell.getValue()), hooks);
+      cellClick: async function (e, cell) {
+        window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(cell.getValue()), hooks);
         if ($annotationCard.classList.contains('is-hidden')) {
           toggleVisibility($annotationCard);
         }
@@ -83,8 +83,8 @@ export function fillMetaDataEditorTable(annoJson) {
     //        };
     //    });
     //},
-    updateOperation: function (rowColumnvalue) {
-      window.SELECTED_ANNOTATION = selectAnnotation(null, encodeAnnoId(rowColumnvalue.id), hooks);
+    updateOperation: async function (rowColumnvalue) {
+      window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(rowColumnvalue.id), hooks);
       if ($annotationCard.classList.contains('is-hidden')) {
         toggleVisibility($annotationCard);
       }
@@ -97,8 +97,8 @@ export function fillMetaDataEditorTable(annoJson) {
       //    };
       //});
     },
-    deleteOperation: function (rowColumnvalue) {
-      deleteAnnotationData(rowColumnvalue.id);
+    deleteOperation: async function (rowColumnvalue) {
+      await deleteAnnotationData(rowColumnvalue.id);
     },
     //creation of page annotations is moved to the sidebar
     //
