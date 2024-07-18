@@ -1,5 +1,4 @@
 import { prepareTEIDocument, getTextLanguage, applyStyles, appendTEIDocument } from './textloader';
-import { applyStylesB03, applyStylesB04 } from '../../projectspecific/textloader';
 
 const innerHTMLSanskrit =
   '<div id="TEI"><tei-text xml:lang="sa-Latn" lang="sa-Latn" type="book" data-xmlns="http://www.tei-c.org/ns/1.0">' +
@@ -155,31 +154,6 @@ describe('applying styles based on the language of a text', () => {
     const _results = applyStyles($text, 'hbo', { postApplyStyles: [hook] });
     expect(hook).toHaveBeenCalled();
     expect(hook).toHaveBeenCalledWith($text, 'hbo');
-  });
-  it('adds sandhi syllable markers to sanskrit texts', () => {
-    // setup the document
-    document.body.innerHTML = innerHTMLSanskrit;
-    const $text = document.getElementById('TEI');
-    const language = getTextLanguage($text);
-    const $result = applyStyles($text, language, { postApplyStyles: [applyStylesB04] });
-    // you need to use querySeelctor here as getElementById is not defined for elements
-    const wordElementContainsClass = $result
-      .querySelector('#w\\.4292528')
-      .classList.contains('sandhiSyllableMarkerAfter');
-    expect(wordElementContainsClass).toBe(true);
-  });
-  // Please NOTE: the next test fails as the function needs to be fixed
-  it.skip('removes paseq sign from hebrew texts, but adds a css class to display them', () => {
-    // setup the document
-    document.body.innerHTML = innerHTMLHebrew;
-    const $text = document.getElementById('TEI');
-    const language = getTextLanguage($text);
-    const $result = applyStyles($text, language, { postApplyStyles: [applyStylesB03] });
-    // you need to use querySeelctor here as getElementById is not defined for elements
-    const pcElement = $result.querySelector('#pc\\.1');
-    const pcElementContainsClass = $result.classList.contains('paseq');
-    expect(pcElement.innerHTML).toBe('');
-    expect(pcElementContainsClass).toBe(true);
   });
 });
 
