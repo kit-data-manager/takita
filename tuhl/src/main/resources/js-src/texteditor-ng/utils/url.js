@@ -4,18 +4,24 @@
 
 /**
  * Retrieve the "fragment" URL parameter, or null if none is present.
+ *
+ * @param {Location} location the current location
+ * (eg. http://localhost:8181/editor/pageId?annotationId=someAnnoId&fragment=w.147 )
  * @returns {String | null}
  */
-export function getTargetFragment() {
-  const searchParams = new URL(window.location).searchParams;
+export function getTargetFragment(location) {
+  const searchParams = new URL(location).searchParams;
   return searchParams.get('fragment');
 }
 
 /**
  * Get the ID of a pre-selected annotation, or null if none is present.
+ *
+ * @param {Location} location the current location
+ * (eg. http://localhost:8181/editor/pageId?annotationId=someAnnoId&fragment=w.147 )
  * @returns {String | null}
  */
-export function getTargetAnnotationId() {
-  const searchParams = new URL(window.location).searchParams;
+export function getTargetAnnotationId(location) {
+  const searchParams = new URL(location).searchParams;
   return searchParams.get('annotationId');
 }

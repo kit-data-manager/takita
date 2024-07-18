@@ -55,7 +55,7 @@ export async function initializeNavigation($navBar, $text, hooks = {}) {
     // Keep track of the label of the currently displayed text part. If an annotation has been
     // pre-selected as part of the URL, find the text part it belongs to and use this as default.
     // If none is selected use the first part as default and display it.
-    const fragmentId = getTargetFragment();
+    const fragmentId = getTargetFragment(window.location);
     const preselectedAnnoTarget = getTargetElement(fragmentId, $text);
     const initialDivision = getTargetDivision(preselectedAnnoTarget, divisionType);
     currentDivisionLabel = initialDivision ? getDivisionLabel(initialDivision) : divisionLabels[0];
@@ -153,7 +153,7 @@ export async function initializeNavigation($navBar, $text, hooks = {}) {
     $navBar.classList.remove('is-hidden');
 
     if (preselectedAnnoTarget !== null) {
-      const preselectedAnnotationId = getTargetAnnotationId();
+      const preselectedAnnotationId = getTargetAnnotationId(window.location);
       setTimeout(async () => {
         preselectedAnnoTarget.scrollIntoView(true, {
           behavior: 'smooth',
