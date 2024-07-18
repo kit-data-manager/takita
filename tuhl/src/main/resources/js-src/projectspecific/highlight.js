@@ -21,7 +21,7 @@ export function getSpecificClasses() {
  * annotation targets the same word
  * false, if none of the targets/words of the annotation is highlighted
  */
-function checkIsATargetAlreadyHighlighted(targets) {
+export function checkIsATargetAlreadyHighlighted(targets) {
   const alreadyHighlighted = targets.some((target) => {
     let targetXmlId = target.split('"')[1];
     if (document.getElementById(targetXmlId).classList.contains('underline')) {
@@ -50,7 +50,7 @@ function checkIsATargetAlreadyHighlighted(targets) {
  * annotation targets the same word
  * false, if none of the targets/words of the annotation is highlighted
  */
-function assignStyle($element, annotation, index, alreadyHighlighted) {
+export function assignStyle($element, annotation, index, alreadyHighlighted) {
   // different highlights for different annotation types
   switch (annotation.color) {
     case '#000021':
