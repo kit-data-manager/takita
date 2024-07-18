@@ -5,9 +5,8 @@ import { Variant } from './textloader';
 /**
  * hides/shows the vocalized version of the text
  */
-export function toggleHebrewView() {
+export function toggleHebrewView($button) {
   const $textElements = document.querySelectorAll('tei-reg');
-  const $button = document.querySelector('#toggleViewsButton');
   toggleOpacity($textElements);
   // slide the toggle button to the other side
   toggleBoxIcon($button, 'bx-toggle-left', 'bx-toggle-right');
@@ -16,11 +15,10 @@ export function toggleHebrewView() {
 /**
  * hides/shows the sandhied version of the text
  */
-export function toggleSanskritView() {
+export function toggleSanskritView($button) {
   // querySelectorAll('tei-orig')
   // '#toggleViewsButton'
   const $textElements = document.querySelectorAll('tei-orig');
-  const $button = document.querySelector('#toggleViewsButton');
   toggleVisibility($textElements);
   // slide the toggle button to the other side
   toggleBoxIcon($button, 'bx-toggle-left', 'bx-toggle-right');
@@ -41,12 +39,13 @@ export function enableSanskritSpecificButton($sidebar) {
 
   $toggleViews.classList.remove('is-hidden');
   $button.addEventListener('click', (_ev) => {
+    console.log('listener');
     collapseSidebar($sidebar);
-    toggleSanskritView();
+    toggleSanskritView($button);
   });
   $span.addEventListener('click', (_ev) => {
     collapseSidebar($sidebar);
-    toggleSanskritView();
+    toggleSanskritView($button);
   });
 }
 
@@ -64,11 +63,11 @@ export function enableHebrewSpecificButton($sidebar) {
   $toggleViews.classList.remove('is-hidden');
   $button.addEventListener('click', (_ev) => {
     collapseSidebar($sidebar);
-    toggleHebrewView();
+    toggleHebrewView($button);
   });
   $span.addEventListener('click', (_ev) => {
     collapseSidebar($sidebar);
-    toggleHebrewView();
+    toggleHebrewView($button);
   });
   // Trigger the button to hide the unvocalized version initially.
   $button.click();
