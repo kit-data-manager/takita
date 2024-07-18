@@ -82,7 +82,13 @@ export const formObjectCreateAnnotation = {
           const annotation = await createAnnotation(annotationData, hooks);
         });
 
-        preselectAllMRWAnnos();
+        preselectAllMRWAnnos(
+          window.MRW_ANNOS,
+          document.querySelector(
+            '#pickAnnotationTemplateForm > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > select:nth-child(1)',
+          ).value,
+          document.querySelectorAll('input[name^=mrws'),
+        );
       },
       titleMap: {},
     },
@@ -167,7 +173,11 @@ export const formObjectCreateBody = {
 
               // hiding the modal.
               document.getElementById('createBody').classList.toggle('show-modal');
-              window.SELECTED_ANNOTATION = selectAnnotation(null, document.getElementById('createForm').title, hooks);
+              window.SELECTED_ANNOTATION = await selectAnnotation(
+                null,
+                document.getElementById('createForm').title,
+                hooks,
+              );
             } catch (exception) {
               console.error('Adding another body failed with: ', exception);
             }
@@ -430,12 +440,10 @@ export function getFormModel(chosenTemplate) {
         // get all the mrws that are present in his selection (window.MRW_ANNOS)
         // and store them in the enum to hold all the mrwAnnoIds, so the user can
         // choose a mrw to link it to a metaphor
-
-        let enumAndTitleMap = getEnumAndTitleMap(window.MRW_ANNOS);
-        let mrwEnum = enumAndTitleMap[0];
         // metaphorTitleMap is necessary to have the actual words displayed,
         // but to have the annoId as a value on the submission of the form
-        let mrwTitleMap = enumAndTitleMap[1];
+        const [mrwEnum, mrwTitleMap] = getEnumAndTitleMap(window.MRW_ANNOS);
+
         let selectMRWButton = getSelectMRWButton(mrwEnum);
 
         dataModelProperties = {
@@ -576,9 +584,8 @@ export function getFormModel(chosenTemplate) {
       // choose a mrw to link it to a metaphor
 
       // store all elements targeted by the metaphor annotation and mrw annotations
-      let elementsTargeted = [];
-      window.SELECTED_ANNOTATION.targets.forEach((target) => {
-        elementsTargeted.push(document.getElementById(target.selector.xPath.split('"')[1]));
+      let elementsTargeted = window.SELECTED_ANNOTATION.targets.map((target) => {
+        return document.getElementById(target.selector.xPath.split('"')[1]);
       });
       // get all mrwAnnos that target the same words as the metaphor annotation
       let mrwAnnosForBody = findSelectedMRWAnnos(window.ANNOJSON, elementsTargeted);
@@ -591,11 +598,10 @@ export function getFormModel(chosenTemplate) {
         }
       });
 
-      let enumAndTitleMapForBody = getEnumAndTitleMap(mrwAnnosForBody);
-      let mrwEnumForBody = enumAndTitleMapForBody[0];
       // mrwTitleMapForBody is necessary to have the actual words displayed,
       // but the have the annoId as a value on the submission of the form
-      let mrwTitleMapForBody = enumAndTitleMapForBody[1];
+      const [mrwEnumForBody, mrwTitleMapForBody] = getEnumAndTitleMap(mrwAnnosForBody);
+
       let selectMRWButtonForBody = getSelectMRWButton(mrwEnumForBody);
 
       dataModel = {
