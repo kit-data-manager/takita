@@ -109,7 +109,7 @@ export async function createAnnotation(annotationData, hooks = {}) {
  * @param {Object} annotation which was created
  * @param {Object} [hooks] containing an array for the hooks to be passed to "selectAnnotation()"
  */
-async function resetFormAndUpdateDisplay(annotation, hooks = {}) {
+export async function resetFormAndUpdateDisplay(annotation, hooks = {}) {
   // the following check needs to be done as this storeBody function is used since June 2023
   // for the addition of multiple bodies to an annotation. The function was implemented to
   // be used while creating annotations and not adding bodies, so it previously just toggled
