@@ -29,14 +29,18 @@ export function pickTemplate(svgCode, encodedId, createFormId, pickFormId, templ
     formContent.firstChild.remove();
   }
 
+  // Philipp doesn't understand why this is necessary. Everything works without it.
+  // The titleMap only contains the words (annotationTemplate or bodyTemplate)
+  // split into a titleMap (index: letter -> 0:a, 1:n ...). The actual values used in
+  // the dropdown selection are taken from formObjectCreateAnnotation.schema.template.enum.
   // creates title map needed for the dropdown selection
-  for (const tName in Object.keys(template)) {
-    if (template === 'bodyTemplate') {
-      formObjectCreateBody.form[0].titleMap[Object.keys(template)[tName]] = Object.values(template)[tName];
-    } else {
-      formObjectCreateAnnotation.form[0].titleMap[Object.keys(template)[tName]] = Object.values(template)[tName];
-    }
-  }
+  // for (const tName in Object.keys(template)) {
+  //   if (template === 'bodyTemplate') {
+  //     formObjectCreateBody.form[0].titleMap[Object.keys(template)[tName]] = Object.values(template)[tName];
+  //   } else {
+  //     formObjectCreateAnnotation.form[0].titleMap[Object.keys(template)[tName]] = Object.values(template)[tName];
+  //   }
+  // }
 
   // stores annotation id in title in case of body creation
   // TODO: find better solution for this
