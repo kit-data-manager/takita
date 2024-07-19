@@ -1,3 +1,4 @@
+import * as annotationCard from '../../common/annotationCard/annotationCard';
 import { createOption } from '../../common/utils';
 import {
   getTargetDivision,
@@ -7,6 +8,7 @@ import {
   getTargetElement,
   updateButtons,
   initializeNavigation,
+  navigateToAnnotation,
 } from './navigation';
 
 const defaultNavBar = `
@@ -136,6 +138,17 @@ describe('naviation.initializeNavigation()', () => {
     expect($gotoButton.innerHTML).toStrictEqual('Go to section');
     expect($showAllButton.innerHTML).toStrictEqual('Show all sections');
     expect($chapterSelect.children.length).toBe(2);
+  });
+});
+
+describe('navigation.navigateToAnnotation()', () => {
+  it('shows the annotationCard for the preselected annotation', async () => {
+    document.body.innerHTML = `<div id="annotationCard" class="is-hidden"></div>`;
+    jest.spyOn(annotationCard, 'selectAnnotation').mockReturnValue(true);
+    const $annotationCard = document.getElementById('annotationCard');
+    await navigateToAnnotation('annoId', null);
+    expect(window.SELECTED_ANNOTATION).toBe(true);
+    expect($annotationCard.classList.contains('is-hidden')).toBe(false);
   });
 });
 
