@@ -39,7 +39,6 @@ export function enableSanskritSpecificButton($sidebar) {
 
   $toggleViews.classList.remove('is-hidden');
   $button.addEventListener('click', (_ev) => {
-    console.log('listener');
     collapseSidebar($sidebar);
     toggleSanskritView($button);
   });
