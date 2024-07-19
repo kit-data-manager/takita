@@ -157,7 +157,7 @@ describe('enabling buttons in the sidebar based on a given Variant', () => {
     const $toggleViews = $sidebar.querySelector('#toggleViews');
     const $ele = document.querySelectorAll('tei-reg')[0];
 
-    enableLanguageViewToggleButton($sidebar, new Variant('Hebrew'));
+    enableLanguageViewToggleButton($sidebar, Variant.Hebrew);
     // execute the callback of the button to check if the callback is the
     // correct one, which works on Hebrew texts (the tei-reg element)
     const $button = $toggleViews.querySelector('#toggleViewsButton');
