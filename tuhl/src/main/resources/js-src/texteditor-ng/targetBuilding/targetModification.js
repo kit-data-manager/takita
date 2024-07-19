@@ -67,7 +67,7 @@ export function saveModification(_event, selection, annotation) {
     const modal = document.getElementById('updateSelection');
     showSaveTargetModal(modal, oldSelectedText, newSelectedText, newXPath);
   } else {
-    return;
+    return false;
   }
 }
 
