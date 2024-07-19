@@ -234,10 +234,20 @@ export function createXPath(targetRangeList) {
       // add the trailing characters (most likely whitespace, maybe punctuation)
       // to each xPath, so that when they will be resolved, they are trailed by the
       // correct characters
-      xPaths = xPaths.map((xPath) => {
-        let nextSibling = getNextSibling(document.getElementById(xPath.split('"')[1]));
-        if (nextSibling.nodeType === 3) {
-          return xPath + ', "' + nextSibling.nodeValue + '"';
+      xPaths = xPaths.map((xPath, idx) => {
+        // if the xPath of an element is not the last in the list, add whitespace or
+        // other characters trailing the element in the dom if necessary.
+        // This is necessary to reconstruct the original selected text as whitespace/characters are not
+        // included in the targetList (we want to get "selected text" and not "selectedtext" when resolving
+        // the target).
+        // This function was changed during the modularisation on 19.07.2024.
+        if (idx < xPaths.length - 1) {
+          let nextSibling = getNextSibling(document.getElementById(xPath.split('"')[1]));
+          if (nextSibling.nodeType === 3) {
+            return xPath + ', "' + nextSibling.nodeValue + '"';
+          } else {
+            return xPath;
+          }
         } else {
           return xPath;
         }
@@ -247,6 +257,10 @@ export function createXPath(targetRangeList) {
       // as it was not selected by the user.
       // To do that, use a regex matching the substring function without its parameters
       // as they are different for each xPath
+      // This should be unnecessary after the changes from 19.07.2024 mentioned above as
+      // the map function now doesn't add a trailing string to the last xPath. This regex
+      // also didn't match xPaths, that target the full word (eg. "id('w.1')"), but only
+      // substrings ("substring(id('w.1'), 1, 5)")
       let regex = /(substring\().*\)/;
       if (regex.test(xPaths[xPaths.length - 1])) {
         xPaths[xPaths.length - 1] = regex.exec(xPaths[xPaths.length - 1])[0];

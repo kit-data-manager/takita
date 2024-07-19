@@ -1,5 +1,5 @@
 import { JSDOM } from 'jsdom';
-import { createTargetList, createXPath, createTargetString } from './targetCreation';
+import { createTargetList, createXPath } from './targetCreation';
 // copied from the browser, don't touch this innerHtml
 const innerHtmlCreationTest =
   '<div class="col-7"><div id="notOnWorkspace"></div>' +
@@ -36,7 +36,7 @@ const innerHtmlCreationTestWithChildren =
 // copied from the browser, don't touch this innerHtml
 const innerHtml =
   // eslint-disable-next-line @stylistic/js/max-len
-  '<tei-l><tei-w xml:id="w.166" id="w.166">And</tei-w> <tei-w xml:id="w.167" id="w.167">he</tei-w> <tei-w xml:id="w.168" id="w.168">shall</tei-w> <tei-w xml:id="w.169" id="w.169">be</tei-w> <tei-w xml:id="w.170" id="w.170">like</tei-w> <tei-w xml:id="w.171" id="w.171">a</tei-w> <tei-w xml:id="w.172" id="w.172">tree</tei-w> <tei-w xml:id="w.173" id="w.173">planted</tei-w> <tei-w xml:id="w.174" id="w.174">by</tei-w> <tei-w xml:id="w.175" id="w.175">the</tei-w> <tei-w xml:id="w.176" id="w.176">rivers</tei-w> <tei-w xml:id="w.177" id="w.177">of</tei-w> <tei-w xml:id="w.178" id="w.178">water</tei-w><tei-pc xml:id="pc.5" id="pc.5">,</tei-pc></tei-l>';
+  '<tei-l><tei-w xml:id="w.166" id="w.166">And</tei-w> <tei-w xml:id="w.167" id="w.167">he</tei-w> <tei-w xml:id="w.168" id="w.168">shall</tei-w> <tei-w xml:id="w.169" id="w.169">be</tei-w> <tei-w xml:id="w.170" id="w.170">like</tei-w> <tei-w xml:id="w.171" id="w.171">a</tei-w> <tei-w xml:id="w.172" id="w.172">tree</tei-w> <tei-w xml:id="w.173" id="w.173">planted</tei-w> <tei-w xml:id="w.174" id="w.174">by</tei-w> <tei-w xml:id="w.175" id="w.175">the</tei-w><tei-w xml:id="w.176" id="w.176">rivers</tei-w> <tei-w xml:id="w.177" id="w.177">of</tei-w> <tei-w xml:id="w.178" id="w.178">water</tei-w><tei-pc xml:id="pc.5" id="pc.5">,</tei-pc></tei-l>';
 
 describe('creating a list of targets', () => {
   describe('for standard html', () => {
@@ -312,7 +312,7 @@ describe('creating long xpaths', () => {
     document.getElementById('w.176').innerText = 'rivers';
 
     const result = createXPath(mockTargetRangeList);
-    expect(result).toBe('concat(substring(id("w.174"), 2, 1), " ", id("w.175"), " ", substring(id("w.176"), 1, 5))');
+    expect(result).toBe('concat(substring(id("w.174"), 2, 1), " ", id("w.175"), substring(id("w.176"), 1, 5))');
   });
 
   it('creates an xPath including only fully selected words (no substrings); n ranges', () => {
@@ -392,7 +392,7 @@ describe('creating long xpaths', () => {
     const result = createXPath(mockTargetRangeList);
     expect(result).toBe(
       // eslint-disable-next-line @stylistic/js/max-len
-      'concat(substring(id("w.170"), 3, 2), " ", id("w.171"), " ", id("w.172"), " ", id("w.174"), " ", id("w.175"), " ", id("w.176"), " ")',
+      'concat(substring(id("w.170"), 3, 2), " ", id("w.171"), " ", id("w.172"), " ", id("w.174"), " ", id("w.175"), id("w.176"))',
     );
   });
 });
