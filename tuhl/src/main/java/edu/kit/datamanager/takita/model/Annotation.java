@@ -6,6 +6,7 @@ import edu.kit.datamanager.takita.model.target.Target;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -173,7 +174,8 @@ public class Annotation {
    * @param textCardIds to be set
    */
   public void setTextCards(List<TextCard> textCardIds) {
-    this.textCards = textCardIds;
+    //we ensure that textCards is always a list so that adding a new element and updating is always possible
+    textCards = Objects.requireNonNullElseGet(textCardIds, ArrayList::new);
   }
 
   /**
@@ -382,7 +384,8 @@ public class Annotation {
    * @param tags to be set
    */
   public void setTags(List<Tag> tags) {
-    this.tags = tags;
+    //we ensure that tags is always a list so that adding a new element and updating is always possible.
+    this.tags = Objects.requireNonNullElseGet(tags, ArrayList::new);
   }
 
   /**
