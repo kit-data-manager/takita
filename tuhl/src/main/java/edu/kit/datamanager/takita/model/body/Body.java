@@ -20,7 +20,7 @@ public abstract class Body {
   @Id
   private final String id;
 
-  private List<String> creators;
+  private List<String> creators = new ArrayList<>();
 
   // format = DateFormat.custom, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSSZ"
   @Field(type = FieldType.Date)
@@ -48,7 +48,6 @@ public abstract class Body {
   @PersistenceCreator
   public Body(String id) {
     this.id = id;
-    creators = new ArrayList<>();
   }
 
     /**
