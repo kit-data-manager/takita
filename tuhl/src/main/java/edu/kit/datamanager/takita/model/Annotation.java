@@ -20,16 +20,16 @@ public class Annotation {
 
   private String pageId;
   private String manuscriptTitle;
-  
+
   @Field(type = FieldType.Nested, includeInParent = true)
-  private List<TextCard> textCards;
+  private List<TextCard> textCards = new ArrayList<>();
 
   //Annotation ID is whole link to annotationStore - format = DateFormat.custom, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSSZ"
   @Id
   private String id;
   @Field(type = FieldType.Date)
   private Instant modified;
-  private List<String> creators;
+  private List<String> creators = new ArrayList<>();
   @Field(type = FieldType.Date)
   private Instant created;
   //contains old Annotation url, for validated annotations only
@@ -37,25 +37,15 @@ public class Annotation {
   //same as via
   private String canonical;
 
-  private List<Target> targets;
+  private List<Target> targets = new ArrayList<>();
 
   private String motivation;
   
   @Field(type = FieldType.Nested, includeInParent = true)
-  private List<Tag> tags;
+  private List<Tag> tags = new ArrayList<>();
 
   private boolean isAlgorithmAnnotation;
   private String etag;
-
-  /**
-   * Constructor, initializes lists.
-   */
-  public Annotation() {
-    textCards = new ArrayList<>();
-    tags = new ArrayList<>();
-    creators = new ArrayList<>();
-    targets = new ArrayList<>();
-  }
 
   /**
    * Constructor to initialize properties
@@ -69,7 +59,7 @@ public class Annotation {
    * @throws JSONException
    */
   public Annotation(String pageId, List<String> creators, Instant created, Instant modified,
-                    String linkToResource, JSONArray selectors, String motivation ) throws JSONException {
+                    String linkToResource, JSONArray selectors, String motivation) throws JSONException {
       this.textCards = new ArrayList<>();
       this.tags = new ArrayList<>();
       this.pageId = pageId;
@@ -149,7 +139,7 @@ public class Annotation {
   public void setPageId(String id) {
     pageId = id;
   }
-  
+
   /**
    * Gets name of the manuscripts that the Annotation belongs to.
    *
@@ -158,7 +148,7 @@ public class Annotation {
   public String getManuscriptTitle() {
     return manuscriptTitle;
   }
-  
+
   /**
    * Sets name of the manuscripts that the Annotation belongs to.
    * @param manuscriptTitle title to set
@@ -352,7 +342,7 @@ public class Annotation {
   public void setTargets(List<Target> targets) {
     this.targets = targets;
   }
-  
+
   /**
    * Adds one target to the annotation.
    *
