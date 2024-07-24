@@ -182,11 +182,7 @@ public class Annotation {
    * @param textCard to be added to text card list
    */
   public void addTextCard(TextCard textCard) {
-    if (textCards == null) {
-      textCards = new ArrayList<>();
-    }
     this.textCards.add(textCard);
-    
   }
   
     /**
@@ -198,10 +194,8 @@ public class Annotation {
     for (TextCard existingTextCard : this.textCards) {
         if (existingTextCard.getId().equals(textCard.getId())) {
             this.textCards.set(this.textCards.indexOf(existingTextCard), textCard);
-            
         }
     }
-    
   }
 
   /**
@@ -397,9 +391,6 @@ public class Annotation {
    * @param tag to be added
    */
   public void addTag(Tag tag) {
-    if (tags == null) {
-      tags = new ArrayList<>();
-    }
     this.tags.add(tag);
   }
   
@@ -412,10 +403,8 @@ public class Annotation {
     for (Tag existingTag : this.tags) {
         if (existingTag.getId().equals(tag.getId())) {
             this.tags.set(this.tags.indexOf(existingTag), tag);
-            
         }
     }
-    
   }
   
 
