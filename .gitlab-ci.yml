@@ -33,4 +33,4 @@ coverage:
   artifacts:
     paths:
       - ./tuhl/build/reports/jacoco/test/*
-  coverage: "/TOTAL.+ ([0-9]{1,3}%)/"
+  coverage: "/Total.*?([0-9]{1,3})%/"
