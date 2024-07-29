@@ -153,7 +153,7 @@ public class AnnotationConverterTest {
         
         System.out.println();
         assertEquals("8d8f2094-e85e-4947-8dca-e0b53b5b520f", testAnno.getPageId(), "Error on extracting target resource id");
-        assertEquals(null, testAnno.getSvgCode(), "Error on parsing SVG");
+        assertNull(testAnno.getSvgCode(), "Error on parsing SVG");
 
         //Two targets
         //TODO: uncomment/complete once implemented
@@ -362,4 +362,27 @@ public class AnnotationConverterTest {
         JSONObject jsonOutput = annoConverter.buildJsonFromAnnotation(testAnno, "1234");
         JSONAssert.assertEquals(testAnnoJson.toString(), jsonOutput.toString(), JSONCompareMode.STRICT);
     }
+
+    /**
+     * This test is informative only at the moment and does not count towards coverage nor does it provide indepth checking of content
+     * It iterates over all WAMD examples and checks if the application is able to read them in via annotation converter.
+     * On fail, the source of error is printed.
+     * @throws IOException ...
+     */
+    @Test
+    void testWADMExamples() throws IOException {
+
+        int numExamples = 43;
+        for (int i = 1; i <= numExamples; i++) {
+            String currAnnoString = TestUtils.readStringFromRelativePath("wadm_examples/correct/anno" + i + ".json");
+            try {
+                Annotation testAnno = annoConverter.buildAnnotationFromJson(new JSONObject(currAnnoString));
+
+            } catch (JSONException e) {
+                System.out.println("Error on parsing annotation" + i);
+                e.printStackTrace();
+            }
+        }
+    }
+
 }
