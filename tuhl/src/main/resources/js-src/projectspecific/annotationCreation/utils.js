@@ -1,4 +1,5 @@
 /**
+ * TODO: CUSTOMISE
  * get content from the form and turn it into the data necessary for annotation creation (incl. target and bodies)
  *
  * @param {String} formvalue value of the JSONForm after a user submitted it/started the annotation creation process
@@ -38,6 +39,7 @@ export function makeAnnotationData(formvalue) {
 }
 
 /**
+ * TODO: CUSTOMISE
  * create 1-n bodies based on the JSONForm and store them in an array, so they can be stored. 
  * 
  * @param {Object} formDataJson the value ofeach of the fields of the JSONForm, eg.
@@ -70,6 +72,7 @@ export function makeBodiesData(formDataJson) {
 }
 
 /**
+ * TODO: CUSTOMISE
  * create the data for one body based on the JSONForm value.
  * Each body gets a 'purpose'. A finished body should have at least one of the following properties:
  * - value: value of the body comes from specific input into a field of of the form
@@ -108,6 +111,7 @@ export function makeBodyData(formKey, formValue) {
 }
 
 /**
+ * TODO: CUSTOMISE
  * convert the type of a body into a wadm-purpose. The type is based on the dataModel.properties.$key of
  * the JSONForm
  *

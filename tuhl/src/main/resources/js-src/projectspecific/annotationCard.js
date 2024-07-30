@@ -11,8 +11,6 @@ export const omitFieldsArray = ['type', 'selector', 'fullJson', 'annotationId', 
 // fields (bodies with purposes listed here) that can be edited in the horizontal view
 export const editableFieldsArray = ['tagging', 'commenting', 'identifying', 'classifying'];
 
-// mandatory function
-
 /**
  * TODO: CUSTOMISE the label for the text to be displayed on the "quick-view" of the annotationCard.
  * By default the purpose of the body will be displayed as a label, but you can change the label based

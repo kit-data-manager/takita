@@ -17,8 +17,10 @@ import { selectAnnotation } from '../../common/annotationCard';
 import '../../common/utils/metadataeditor';
 import { createBodyData } from '../../texteditor-ng/data';
 
-// enum for different annotation templates
-// TODO: CUSTOMISE available annotations (will be shown during the annotation process)
+// TODO: CUSTOMISE the four objects in here, which are necessary for annotation/body creation
+
+// enum for different annotation templates (the values are shown in the dropdown after
+// starting the process of creating a new annotation)
 // for adding new: include name here and add dataModel in
 // getFormModel(chosenTemplate)
 const annotationTemplate = {
@@ -29,7 +31,9 @@ const annotationTemplate = {
   METAPHOR: 'metaphor',
 };
 
-// enum for different body templates
+// enum for different body templates to create simple dropdown to choose body template
+// (the values are shown in the dropdown after starting the process of creating a new body
+// by clicking on the "+" icon in the top right corner of the annotation card)
 // for adding new: include name here and add dataModel in
 // getFormModel(chosenTemplate)
 const bodyTemplate = {
@@ -37,7 +41,7 @@ const bodyTemplate = {
   MRW: 'mrw',
 };
 
-// jsonForm object to create simple dropdown to choose annotation template
+// template for jsonForm object to create new annotation
 // upon choosing the corresponding MetadataEditor CREATE form is built
 // create button sends the information to the REST controller
 export const formObjectCreateAnnotation = {
@@ -95,7 +99,7 @@ export const formObjectCreateAnnotation = {
   ],
 };
 
-// jsonForm object to create simple dropdown to choose body template
+// template for jsonForm object to create new body
 // upon choosing the corresponding MetadataEditor CREATE form is built
 // create button sends the information to the REST controller (bodies/tags)
 // depending on the chosen template

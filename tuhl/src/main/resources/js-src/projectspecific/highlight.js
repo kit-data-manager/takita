@@ -14,26 +14,6 @@ export function getSpecificClasses() {
 }
 
 /**
- * check if any target of an annotation is already highlighted
- *
- * @param {[String]}} targets holds all targets of an annotation
- * @returns {Boolean} true, if any target/word is already highlighted as another
- * annotation targets the same word
- * false, if none of the targets/words of the annotation is highlighted
- */
-export function checkIsATargetAlreadyHighlighted(targets) {
-  const alreadyHighlighted = targets.some((target) => {
-    let targetXmlId = target.split('"')[1];
-    if (document.getElementById(targetXmlId).classList.contains('underline')) {
-      return true;
-    } else {
-      return false;
-    }
-  });
-  return alreadyHighlighted;
-}
-
-/**
  * assigns css-classes to an element.
  * TODO: Customize the cases to achieve custom highlighting of different annotations,
  * based on the color. See the java code in:
@@ -106,6 +86,26 @@ export function assignStyle($element, annotation, index, alreadyHighlighted) {
         // class added for:", annotation);
       }
   }
+}
+
+/**
+ * check if any target of an annotation is already highlighted
+ *
+ * @param {[String]}} targets holds all targets of an annotation
+ * @returns {Boolean} true, if any target/word is already highlighted as another
+ * annotation targets the same word
+ * false, if none of the targets/words of the annotation is highlighted
+ */
+export function checkIsATargetAlreadyHighlighted(targets) {
+  const alreadyHighlighted = targets.some((target) => {
+    let targetXmlId = target.split('"')[1];
+    if (document.getElementById(targetXmlId).classList.contains('underline')) {
+      return true;
+    } else {
+      return false;
+    }
+  });
+  return alreadyHighlighted;
 }
 
 /**

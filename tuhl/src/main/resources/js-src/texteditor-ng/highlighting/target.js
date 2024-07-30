@@ -69,7 +69,25 @@ export function drawAnnos(annoJson) {
 /**
  * default function to highlight targets of annotations by assigning css-classes
  *
- * @param {Object} annotation to have its targets highlighted
+ * @param {Object} annotation to have its targets highlighted, eg.:
+ * {
+    "id": "5ffb6dce-18ee-4932-b489-d2505865f730",
+    "idEncoded": "5ffb6dce-18ee-4932-b489-d2505865f730",
+    "svg": [
+      "id(\"w.2_1_6_6-99\")",
+      "id(\"w.2_1_6_6-100\")",
+      "id(\"w.2_1_6_6-101\")",
+      "id(\"w.2_1_6_6-102\")"
+    ],
+    "color": "#000012",
+    "visible": true,
+    "created": "2024-06-07T08:50:42Z",
+    "creator": "[]",
+    "modified": "2024-06-07T08:50:42Z",
+    "motivation": "describing",
+    "tags": []
+  }
+ * 
  */
 export function defaultHighlighting(annotation) {
   annotation.svg.forEach((target) => {
