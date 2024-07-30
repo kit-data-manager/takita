@@ -58,7 +58,8 @@ class BackendITTest {
 
     @Container
     static ElasticsearchContainer elastic= new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:8.13.4")
-            .withEnv("discovery.type", "single-node").withEnv("xpack.security.enabled", "false").withExposedPorts(9200);
+            .withEnv("discovery.type", "single-node").withEnv("xpack.security.enabled", "false")
+            .withEnv("ES_JAVA_OPTS", "-Xms256m -Xmx512m -XX:MaxDirectMemorySize=536870912").withExposedPorts(9200);
 
     //replaces es port in application.properties with randomly chosen port of es testcontainer
     @DynamicPropertySource
