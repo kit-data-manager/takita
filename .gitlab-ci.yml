@@ -40,7 +40,7 @@ coverage:
   artifacts:
     paths:
       - ./tuhl/build/reports/jacoco/test/*
-  coverage: "/TOTAL.+ ([0-9]{1,3}%)/"
+  coverage: "/Total.*?([0-9]{1,3})%/"
 
 integrationtest:
   image: eclipse-temurin:17.0.9_9-jdk
