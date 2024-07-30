@@ -1,0 +1,32 @@
+{
+  "@context" : [ "http://www.w3.org/ns/ldp.jsonld", "http://www.w3.org/ns/anno.jsonld" ],
+  "id" : "http://annoserver.edu/wap/publ/?iris=0",
+  "type" : [ "AnnotationCollection", "BasicContainer", "Container" ],
+  "modified" : "2024-07-25T08:55:09Z",
+  "first" : {
+    "id" : "http://annoserver.edu/wap/publ/?iris=0&page=0",
+    "type" : "AnnotationPage",
+    "items" : [ {
+      "id" : "http://annoserver.edu/wap/publ/anno01",
+      "type" : "Annotation",
+      "created" : "2024-07-25T08:55:08Z",
+      "creator" : {
+        "type" : "Person",
+        "name" : "gg"
+      },
+      "modified" : "2024-07-25T08:55:09Z",
+      "target" : {
+        "type" : "SpecificResource",
+        "selector" : {
+          "type" : "SvgSelector",
+          "value" : "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"3072\" y=\"1353\" width=\"97\" height=\"140\"/></svg>"
+        },
+        "source" : "http://baserepo/api/v1/dataresources/1337/data/123.master.jpg"
+      },
+      "motivation" : "describing"
+    } ],
+    "startIndex" : "0"
+  },
+  "last" : "http://annoserver.edu/wap/publ/?iris=0&page=0",
+  "total" : "1"
+}

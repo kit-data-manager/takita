@@ -11,12 +11,41 @@ version = '0.0.3-SNAPSHOT'
 
 repositories {
 	mavenCentral()
+	maven {
+		url 'https://oss.sonatype.org/content/repositories/snapshots'
+	}
 }
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
-    }
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+sourceSets {
+	intTest {
+		compileClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.main.output
+		java {
+			srcDir 'src/intTest/java'
+		}
+		resources {
+			srcDir 'src/intTest/resources'
+		}
+	}
+}
+
+configurations {
+	intTestImplementation.extendsFrom implementation
+	intTestRuntimeOnly.extendsFrom runtimeOnly
+}
+ext {
+	set('testcontainersVersion', "1.20.0")
+}
+dependencyManagement {
+	imports {
+		mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
+	}
 }
 
 dependencies {
@@ -37,7 +66,18 @@ dependencies {
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+	intTestImplementation "org.testcontainers:testcontainers"
+	intTestImplementation "org.testcontainers:junit-jupiter"
+	intTestImplementation "org.testcontainers:elasticsearch"
+	intTestImplementation "io.specto:hoverfly-java-junit5:0.19.1-SNAPSHOT"
+	intTestImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	intTestImplementation 'org.junit.jupiter:junit-jupiter'
+	intTestRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
+
+
 
 test {
 	useJUnitPlatform()
@@ -62,10 +102,33 @@ jacocoTestReport {
 	}
 }
 
+tasks.register('integrationTest', Test) {
+	description = 'Runs integration tests.'
+	group = 'verification'
+
+	testClassesDirs = sourceSets.intTest.output.classesDirs
+	classpath = sourceSets.intTest.runtimeClasspath
+	shouldRunAfter test
+
+	useJUnitPlatform()
+
+	testLogging {
+		events "passed"
+	}
+}
+
+check.dependsOn integrationTest
+
+
+
 jar {
 	manifest {
 		attributes(
 				'Main-Class': 'edu.kit.scc.dem.tuhl.TuhlApplication'
 		)
 	}
+}
+
+tasks.withType(Copy).all {
+	duplicatesStrategy 'exclude'
 }
