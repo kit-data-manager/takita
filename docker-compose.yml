@@ -17,24 +17,23 @@ services:
       # for windows systems absolute path might be needed: "E:/work/takita/esdata:/var/lib/elasticsearch/data"
       # make sure the folder esdata does not exist before very first start
     ports:
-      - 9200:9200
+      - ${TAKITADB_PORT}:9200
     healthcheck:
       test: curl -u elastic:elastic -s -f es:9200/_cat/health >/dev/null || exit 1
       interval: 30s
       timeout: 10s
       retries: 5
-    restart: unless-stopped
+    networks:
+    - compose-network 
   takita:
     build:
         context: .
         dockerfile: Dockerfile
     ports:
-      - "9100:8080"
+      - "${TAKITA_PORT:-9100}:8080"
     depends_on:
       es:
         condition: service_healthy
-    links:
-    - es
     restart: unless-stopped
     environment:
       SPRING_APPLICATION_JSON: '{
@@ -46,3 +45,8 @@ services:
         "thesaurus.searchPath": "rest/v1/ct/search"
       }'
       # default ports are for crc980 playground 
+    networks:
+    - compose-network
+networks:
+  compose-network:
+    name: takitanet
