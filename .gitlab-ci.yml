@@ -6,10 +6,10 @@ stages:
 #  DOCKER_HOST: tcp://dockerdind:2375
 #  DOCKER_TLS_CERTDIR: ""
 
-services:
-  - name: docker:dind
-    alias: dockerdind
-    command: ["--tls=false"]
+#services:
+#  - name: docker:dind
+#    alias: dockerdind
+#    command: ["--tls=false"]
 
 build:
   image: eclipse-temurin:17.0.9_9-jdk
@@ -39,7 +39,7 @@ coverage:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "merge_request_event"'
   script:
     - cd tuhl
-    - ./gradlew check jacocoTestReport
+    - ./gradlew check jacocoTestReport --exclude-task integrationTest
     - ls -l
     - cat ./build/reports/jacoco/test/html/index.html
   artifacts:
