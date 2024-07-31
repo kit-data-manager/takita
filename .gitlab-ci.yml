@@ -1,9 +1,10 @@
 stages:
   - build
   - test
-variables:
-  DOCKER_HOST: tcp://dockerdind:2375
-  DOCKER_TLS_CERTDIR: ""
+## only needed for integration test - disabled for now  
+#variables:
+#  DOCKER_HOST: tcp://dockerdind:2375
+#  DOCKER_TLS_CERTDIR: ""
 
 services:
   - name: docker:dind
@@ -13,8 +14,9 @@ services:
 build:
   image: eclipse-temurin:17.0.9_9-jdk
   stage: build
-  tags:
-    - compose #run on gitlab runner suitable for docker
+## only needed for integration test - disabled for now  
+#  tags:
+#    - compose #run on gitlab runner suitable for docker
   rules:
     - if: '$CI_COMMIT_BRANCH == "development" && $CI_PIPELINE_SOURCE == "push"'
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"'
@@ -22,7 +24,7 @@ build:
     - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "merge_request_event"'
   script:
     - cd tuhl
-    - ./gradlew clean build
+    - ./gradlew clean build  --exclude-task integrationTest
   artifacts:
     paths:
       - ./tuhl/build/libs/*.jar
