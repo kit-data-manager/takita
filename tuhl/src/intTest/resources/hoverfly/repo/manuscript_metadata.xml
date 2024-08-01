@@ -9,20 +9,20 @@
         <fileDesc>
             <titleStmt>
                 <title>
-                    Hs. or. fol. 3827, Staatsbibliothek zu Berlin – Preußischer Kulturbesitz
+                    ManuscriptID
                 </title>
-                <editor>Annett Martini</editor>
+                <editor>ed1</editor>
             </titleStmt>
             <publicationStmt>
-                <p>toRoll</p>
+                <p>project</p>
             </publicationStmt>
             <sourceDesc>
                 <msDesc>
                     <msIdentifier>
-                        <settlement>Berlin</settlement>
+                        <settlement>Library location</settlement>
                         <repository>
-                            Staatsbibliothek zu Berlin – Preußischer Kulturbesitz
-                            <idno type="shelfmark">Hs. or. fol. 3827</idno>
+                            library
+                            <idno type="shelfmark">library shelfmark</idno>
                         </repository>
                     </msIdentifier>
                     <msContents>
@@ -32,47 +32,20 @@
                         <objectDesc form="scroll">
                             <supportDesc material="parch">
                                 <support>Parchment</support>
-                                <extent>
-                                    ? sheets
-                                    <dimensions scope="all" unit="cm">
-                                        <height>?</height>
-                                        <width>?</width>
-                                    </dimensions>
-                                    <dimensions scope="sheet" unit="cm">
-                                        <height>?</height>
-                                        <width>?</width>
-                                    </dimensions>
-                                </extent>
-                                <foliation/>
-                                <condition>?</condition>
                             </supportDesc>
                             <layoutDesc>
                                 <layout columns="1" writtenLines="1">
-                                    Apart from the songs, there are ? columns on each sheet with ? lines.
                                 </layout>
                             </layoutDesc>
                         </objectDesc>
-                        <handDesc>
-                            <summary>how many and who?.</summary>
-                            <handNote scribe="hand1" script="aschkenasic_square_script">
-                                <origDate>Jahreszahlen?</origDate>
-                            </handNote>
-                        </handDesc>
-                        <additions>tagin?</additions>
                     </physDesc>
-                    <history>
-                        <provenance>
-                            <p> ?</p>
-                            <p> ?</p>
-                        </provenance>
-                    </history>
                     <additional>
                         <adminInfo/>
                     </additional>
                 </msDesc>
                 <bibl>
-                    Staatsbibliothek zu Berlin – Preußischer Kulturbesitz
-                    <ref target="http://resolver.staatsbibliothek-berlin.de/SBB00026E7A00000000">digitalized</ref>
+                    Library
+                    <ref target="http://example.com/digitization">digitalized</ref>
                 </bibl>
             </sourceDesc>
         </fileDesc>
