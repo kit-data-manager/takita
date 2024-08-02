@@ -52,7 +52,7 @@ e2e:
   trigger:
     project: kit/sfb980/legacy/component-showcase/compose-stack
     branch: e2etesting
-    strategy: depend
+    #strategy: depend (build seems to be pending until integration test is finished if this strategy is set - undesirable)
   variables:
     SOURCEBRANCH: ${CI_COMMIT_REF_NAME}
   allow_failure: true
