@@ -53,6 +53,8 @@ e2e:
     project: kit/sfb980/legacy/component-showcase/compose-stack
     branch: e2etesting
     strategy: depend
+  variables:
+    SOURCEBRANCH: ${CI_COMMIT_REF_NAME}
   allow_failure: true
 #integration test is included in build anyway
 #integrationtest:
