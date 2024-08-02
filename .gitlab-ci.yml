@@ -14,8 +14,9 @@ stages:
 build:
   image: eclipse-temurin:17.0.9_9-jdk
   stage: build
+  tags:
+    - kgr1-instance-mini 
 ## only needed for integration test - disabled for now  
-#  tags:
 #    - compose #run on gitlab runner suitable for docker
   rules:
     - if: '$CI_COMMIT_BRANCH == "development" && $CI_PIPELINE_SOURCE == "push"'
@@ -52,7 +53,7 @@ e2e:
   trigger:
     project: kit/sfb980/legacy/component-showcase/compose-stack
     branch: e2etesting
-    #strategy: depend (build seems to be pending until integration test is finished if this strategy is set - undesirable)
+    strategy: depend
   variables:
     SOURCEBRANCH: ${CI_COMMIT_REF_NAME}
   allow_failure: true
