@@ -1,4 +1,4 @@
-FROM openjdk:17-bullseye
+FROM eclipse-temurin:17.0.12_7-jdk
 
 EXPOSE 8080
 RUN apt-get update && apt-get upgrade --assume-yes
