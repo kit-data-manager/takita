@@ -10,7 +10,6 @@ import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
-import edu.kit.scc.dem.tuhl.model.body.Body;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import edu.kit.scc.dem.tuhl.model.page.Page;
@@ -23,10 +22,11 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -42,24 +42,31 @@ public class EditorService implements IEditorService {
   private Manuscript currentManuscript;
   private Page currentPage;
   private Annotation currentAnnotation;
-  private Body currentBody;
 
   private final IAssistanceService assistanceService;
   private final ISearchIndexService searchIndexService;
-  
+  private final IAnnotationStoreAccessService accessService;
+  private final IRepositoryAccessService repositoryAccessService;
+  private final AnnotationConverter annotationConverter;
+
+  private static final Logger logger = LoggerFactory.getLogger(EditorService.class);
+
   /**
    * Constructor, initializes instances of used interfaces.
    *
    * @param assistanceService instance of IAssistanceService
    * @param searchIndexService instance of ISearchIndexService
-   * @param annotationStoreAccessService
-   * @param repositoryAccessService
    */
   @Autowired
   public EditorService(IAssistanceService assistanceService,
-                           ISearchIndexService searchIndexService) {
+                           ISearchIndexService searchIndexService,
+                           IAnnotationStoreAccessService accessService,
+                           IRepositoryAccessService repositoryAccessService) {
     this.assistanceService = assistanceService;
     this.searchIndexService = searchIndexService;
+    this.accessService = accessService;
+    this.repositoryAccessService = repositoryAccessService;
+    this.annotationConverter = new AnnotationConverter(accessService, repositoryAccessService);
   }
 
   /**
@@ -123,6 +130,7 @@ public class EditorService implements IEditorService {
     }
 
     try {
+      logger.info("EditorService: " + newAnnotation.toString());
       newAnnotation = searchIndexService.addAnnotation(newAnnotation);
     } catch (JSONException e) {
       e.printStackTrace();
@@ -139,7 +147,7 @@ public class EditorService implements IEditorService {
    */
   @Override
   public Annotation getAnnotation(String annotationId) throws NoSuchIndexEntryException {
-    return searchIndexService.getAnnotationById(annotationId);
+    return searchIndexService.getAnnotationById(annotationId);       
   }
 
   /**
@@ -267,8 +275,8 @@ public class EditorService implements IEditorService {
    * @throws IOException when the http request to database was faulty
    */
   @Override
-  public TextCard addTextCard(String annotationId, String title, String value, String purpose)
-      throws InterruptedException, NoSuchIndexEntryException, IOException {
+  public TextCard addTextCard(String annotationId, String title, String subject, String value, String source, String purpose)
+      throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException {
     TextCard newTextCard = new TextCard(UUID.randomUUID().toString());
     newTextCard.setAnnotationId(annotationId);
     newTextCard.setCreators(Collections.singletonList(
@@ -279,14 +287,24 @@ public class EditorService implements IEditorService {
     if (title != null && !title.trim().equals("")) {
       newTextCard.setTitle(title);
     }
+    
+    if (subject != null && !subject.trim().equals("")) {
+      newTextCard.setSubject(subject);
+    }
 
     if (value != null && !value.trim().equals("")) {
       newTextCard.setValue(value);
+    }
+    
+    if (source != null && !source.trim().equals("")) {
+      newTextCard.setSource(source);
     }
 
     if (purpose != null) {
       newTextCard.setPurpose(purpose);
     }
+    
+    newTextCard.setFullJson(annotationConverter.bodyToJson(newTextCard));
     try {
       newTextCard = (TextCard) searchIndexService.addBody(newTextCard);
     } catch (JSONException e) {
@@ -308,9 +326,10 @@ public class EditorService implements IEditorService {
    * @throws IOException when the http request to database was faulty
    */
   @Override
-  public Tag addTag(String annotationId, String title, String value)
-      throws InterruptedException, NoSuchIndexEntryException, IOException {
+  public Tag addTag(String annotationId, String title, String subject, String value, String source)
+      throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException {
     Tag newTag = new Tag(UUID.randomUUID().toString());
+    logger.info("newTag: " + newTag.toString());
     newTag.setAnnotationId(annotationId);
     newTag.setCreators(Collections.singletonList(assistanceService.getCurrentUser().getName()));
     newTag.setCreated(Instant.now());
@@ -319,11 +338,21 @@ public class EditorService implements IEditorService {
     if (title != null && !title.trim().equals("")) {
       newTag.setTitle(title);
     }
+    
+    if (subject != null && !subject.trim().equals("")) {
+      newTag.setSubject(subject);
+    }
 
     if (value != null && !value.trim().equals("")) {
       newTag.setValue(value);
     }
     
+    if (source != null && !source.trim().equals("")) {
+      newTag.setSource(source);
+    }
+    
+    newTag.setFullJson(annotationConverter.bodyToJson(newTag));
+    logger.info("addedInfo: " + newTag.toString());
     try {
       newTag = (Tag) searchIndexService.addBody(newTag);
     } catch (JSONException e) {
@@ -367,8 +396,8 @@ public class EditorService implements IEditorService {
    * @throws IOException when the http request to database was faulty
    */
   @Override
-  public TextCard updateTextCard(String textCardId, String title, String value, String purpose)
-      throws InterruptedException, NoSuchIndexEntryException, IOException {
+  public TextCard updateTextCard(String textCardId, String title, String subject, String value, String source, String purpose)
+      throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException {
     TextCard updatedTextCard = searchIndexService.getTextCardById(textCardId);
     if (!updatedTextCard.getCreators().contains(assistanceService.getCurrentUser().getName())) {
       updatedTextCard.addCreator(assistanceService.getCurrentUser().getName());
@@ -378,19 +407,30 @@ public class EditorService implements IEditorService {
     if (title != null && !title.trim().equals("")) {
       updatedTextCard.setTitle(title);
     }
+    
+    if (subject != null && !subject.trim().equals("")) {
+      updatedTextCard.setSubject(subject);
+    }
 
     if (value != null && !value.trim().equals("")) {
       updatedTextCard.setValue(value);
+    }
+    
+    if (source != null && !source.trim().equals("")) {
+      updatedTextCard.setSource(source);
     }
 
     if (purpose != null && !purpose.trim().equals("")) {
       updatedTextCard.setPurpose(purpose);
     }
+    
+    updatedTextCard.setFullJson(annotationConverter.bodyToJson(updatedTextCard));
 
-    TextCard newTextCard = new TextCard(UUID.randomUUID().toString());
+    TextCard newTextCard;
     try {
       newTextCard = (TextCard) searchIndexService.updateBody(updatedTextCard);
     } catch (JSONException e) {
+      newTextCard  = new TextCard("No TextCard");
       e.printStackTrace();
     }
 
@@ -409,8 +449,8 @@ public class EditorService implements IEditorService {
    * @throws IOException when the http request to database was faulty
    */
   @Override
-  public Tag updateTag(String tagId, String title, String value)
-      throws NoSuchIndexEntryException, InterruptedException, IOException {
+  public Tag updateTag(String tagId, String title, String subject, String value, String source)
+      throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException {
     Tag updatedTag = searchIndexService.getTagById(tagId);
     if (!updatedTag.getCreators().contains(assistanceService.getCurrentUser().getName())) {
       updatedTag.addCreator(assistanceService.getCurrentUser().getName());
@@ -420,10 +460,20 @@ public class EditorService implements IEditorService {
     if (title != null && !title.trim().equals("")) {
       updatedTag.setTitle(title);
     }
+    
+    if (subject != null && !subject.trim().equals("")) {
+      updatedTag.setSubject(subject);
+    }
 
     if (value != null && !value.trim().equals("")) {
       updatedTag.setValue(value);
     }
+    
+    if (source != null && !source.trim().equals("")) {
+      updatedTag.setSource(source);
+    }
+    
+    updatedTag.setFullJson(annotationConverter.bodyToJson(updatedTag));
 
     try {
       updatedTag = (Tag) searchIndexService.updateBody(updatedTag);
@@ -545,24 +595,25 @@ public class EditorService implements IEditorService {
     }
     return null;
   }
+  
+  @Override
+  public List<JSONObject> getAnnotationsForPage(String pageId, String pageNumber)
+    throws InterruptedException, IOException, JSONException {
+    return accessService.getAnnotationsByPageId(pageId, pageNumber);
+  }
+  
+  @Override
+  public List<Annotation> getAnnotationsForId(String id)
+    throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException {
+    //return accessService.getAnnotationsByTarget(target);
+    return searchIndexService.getAnnotationsForPageById(id);
+  }
 
   @Override
   public void selectPage(String pageId) throws NoSuchIndexEntryException {
     currentPage = searchIndexService.getPageById(pageId);
     if (currentManuscript == null || currentManuscript.getId() != currentPage.getManuscriptId()) {
       currentManuscript = searchIndexService.getManuscriptById(currentPage.getManuscriptId());
-    }
-  }
-
-  @Override
-  public void selectAnnotation(String annoId) throws NoSuchIndexEntryException {
-    currentAnnotation = searchIndexService.getAnnotationById(annoId);
-  }
-
-  @Override
-  public void selectBody(String bodyId) throws NoSuchIndexEntryException {
-    if (currentAnnotation != null) {
-      currentBody = searchIndexService.getBodyFromAnnotationAndId(currentAnnotation, bodyId);
     }
   }
 
@@ -576,13 +627,4 @@ public class EditorService implements IEditorService {
     return currentPage;
   }
 
-  @Override
-  public Annotation getCurrentAnnotation() {
-    return currentAnnotation;
-  }
-
-  @Override
-  public Body getCurrentBody() {
-    return currentBody;
-  }
 }

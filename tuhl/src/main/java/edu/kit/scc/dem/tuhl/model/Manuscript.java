@@ -3,13 +3,15 @@ package edu.kit.scc.dem.tuhl.model;
 import edu.kit.scc.dem.tuhl.mainpage.search.SearchIndexService;
 import edu.kit.scc.dem.tuhl.model.page.Page;
 import edu.kit.scc.dem.tuhl.model.page.ResourceType;
+
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -26,7 +28,8 @@ public class Manuscript {
   @Field(type = FieldType.Keyword)
   private final String id;
   
-  private final Date created;
+  @Field(type = FieldType.Date)
+  private final Instant created;
   
   @Field(type = FieldType.Keyword)
   private final String title;
@@ -41,7 +44,8 @@ public class Manuscript {
   
   private int noPages;
   
-  private Date lastModified;
+  @Field(type = FieldType.Date)
+  private Instant lastModified;
   
   private boolean hasAlgorithmAnnotations;
   
@@ -57,13 +61,25 @@ public class Manuscript {
    * @param publisher the publisher
    * @param publicationYear the publication year
    */
-  public Manuscript(String id, Date created, String title, String publisher, int publicationYear) {
+  public Manuscript(String id, Instant created, String title, String publisher, int publicationYear) {
     this.id = id;
     this.created = created;
     this.title = title;
     this.publisher = publisher;
     this.publicationYear = publicationYear;
     pages = new ArrayList<>();
+  }
+
+  @PersistenceCreator
+  public Manuscript(String id, Instant created, String title, String publisher, int publicationYear, Instant lastModified, int noPages, List<Page> pages) {
+    this.id = id;
+    this.created = created;
+    this.title = title;
+    this.publisher = publisher;
+    this.publicationYear = publicationYear;
+    this.lastModified = lastModified;
+    this.noPages = noPages;
+    this.pages = pages;
   }
 
   /**
@@ -118,7 +134,7 @@ public class Manuscript {
    *
    * @return last modification date
    */
-  public Date getLastModified() {
+  public Instant getLastModified() {
     return lastModified;
   }
 
@@ -127,7 +143,7 @@ public class Manuscript {
    *
    * @param lastModified date to be set
    */
-  public void setLastModified(Date lastModified) {
+  public void setLastModified(Instant lastModified) {
     this.lastModified = lastModified;
   }
 
@@ -180,7 +196,7 @@ public class Manuscript {
    *
    * @return the date
    */
-  public Date getCreated() {
+  public Instant getCreated() {
     return created;
   }
 

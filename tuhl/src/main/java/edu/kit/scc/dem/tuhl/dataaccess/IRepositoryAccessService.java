@@ -2,7 +2,7 @@ package edu.kit.scc.dem.tuhl.dataaccess;
 
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 
 import org.springframework.boot.configurationprocessor.json.JSONArray;
@@ -72,7 +72,7 @@ public interface IRepositoryAccessService {
    * @throws InterruptedException if the get request is interrupted
    * @throws ParseException if there is a problem while parsing the data to a JSONObject
    */
-  List<JSONObject> getManuscriptsModifiedAfter(Date timestamp)
+  List<JSONObject> getManuscriptsModifiedAfter(Instant timestamp)
       throws InterruptedException, JSONException, IOException, ParseException;
 
   /**

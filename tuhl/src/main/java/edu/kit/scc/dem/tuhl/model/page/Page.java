@@ -1,7 +1,8 @@
 package edu.kit.scc.dem.tuhl.model.page;
 
 import edu.kit.scc.dem.tuhl.model.Annotation;
-import java.util.Date;
+
+import java.time.Instant;
 import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -15,9 +16,13 @@ public abstract class Page {
   private final String id;
   private final ResourceType resourceType;
   private final String pageNumber;
-  private final Date created;
+  
+  @Field(type = FieldType.Date)
+  private final Instant created;
   private String manuscriptId;
-  private Date lastModified;
+  
+  @Field(type = FieldType.Date)
+  private Instant lastModified;
   
   @Field(type = FieldType.Nested, includeInParent = true)
   protected List<Annotation> annotations;
@@ -35,7 +40,7 @@ public abstract class Page {
    * @param resourceUrl the url that points at the resource
    */
   public Page(String id, ResourceType resourceType, String pageNumber,
-              Date created, String resourceUrl) {
+              Instant created, String resourceUrl) {
     this.id = id;
     this.resourceType = resourceType;
     this.pageNumber = pageNumber;
@@ -84,7 +89,7 @@ public abstract class Page {
    *
    * @return the date
    */
-  public Date getLastModified() {
+  public Instant getLastModified() {
     return lastModified;
   }
 
@@ -93,7 +98,7 @@ public abstract class Page {
    *
    * @param lastModified the date to set
    */
-  public void setLastModified(Date lastModified) {
+  public void setLastModified(Instant lastModified) {
     this.lastModified = lastModified;
   }
 
@@ -111,7 +116,7 @@ public abstract class Page {
    *
    * @return the Date
    */
-  public Date getCreated() {
+  public Instant getCreated() {
     return created;
   }
   

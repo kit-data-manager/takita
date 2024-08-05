@@ -1,7 +1,7 @@
 package edu.kit.scc.dem.tuhl.model.page;
 
 import java.util.ArrayList;
-import java.util.Date;
+import java.time.Instant;
 
 /**
  * The TextPage class represents the model of a page with a txt document as content.
@@ -18,7 +18,7 @@ public class TextPage extends Page {
    * @param created the date the page was created
    * @param resourceUrl URL of the resource of the page
    */
-  public TextPage(String id, String pageNumber, Date created, String resourceUrl) {
+  public TextPage(String id, String pageNumber, Instant created, String resourceUrl) {
     super(id, ResourceType.TEXT, pageNumber, created, resourceUrl);
     annotations = new ArrayList<>();
   }

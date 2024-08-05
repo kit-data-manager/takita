@@ -13,7 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.ui.Model;
 
 
-@SpringBootTest
+@SpringBootTest(classes = MainPageService.class)
 class MainPageServiceTest {
 
   @Autowired

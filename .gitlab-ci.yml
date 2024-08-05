@@ -1,0 +1,36 @@
+stages:
+  - build
+  - test
+
+build:
+  image: eclipse-temurin:17.0.9_9-jdk
+  stage: build
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "development" && $CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "development" && $CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "merge_request_event"'
+  script:
+    - cd tuhl
+    - ./gradlew clean build
+  artifacts:
+    paths:
+      - ./tuhl/build/libs/*.jar
+
+coverage:
+  image: eclipse-temurin:17.0.9_9-jdk
+  stage: test
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "development" && $CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "development" && $CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "merge_request_event"'
+  script:
+    - cd tuhl
+    - ./gradlew check jacocoTestReport
+    - ls -l
+    - cat ./build/reports/jacoco/test/html/index.html
+  artifacts:
+    paths:
+      - ./tuhl/build/reports/jacoco/test/*
+  coverage: "/Total.*?([0-9]{1,3})%/"

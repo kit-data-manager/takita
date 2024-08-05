@@ -2,8 +2,7 @@
   "@context" : "http://www.w3.org/ns/anno.jsonld",
   "id" : "http://sampleannoserver.edu/wap/a04/deinterpretatione/?iris=1&page=0",
   "type" : "AnnotationPage",
-  "items" : [ "http://sampleannoserver.edu/wap/a04/deinterpretatione/1749ce9c-a79a-4929-8299-edc9c0388fcc",
-    "http://sampleannoserver.edu/wap/a04/deinterpretatione/05c281d1-5184-4b74-a9dd-5fbac538f75c"],
+  "items" : ["http://sampleannoserver.edu/wap/a04/deinterpretatione/05c281d1-5184-4b74-a9dd-5fbac538f75c"],
   "partOf" : {
     "id" : "http://sampleannoserver.edu/wap/a04/deinterpretatione/?iris=1",
     "modified" : "2020-04-30T09:11:35Z",

@@ -604,9 +604,9 @@ function storeBody(responseJson, jsonObject, index) {
             toggleOverview('annotationCard');
         };
         
-        let newAnnotation = {"created" : new Date(responseJson.created.seconds * 1000 + responseJson.created.nanos / 1000000).toISOString(), 
+        let newAnnotation = {"created" : new Date(responseJson.created * 1000).toISOString(), 
             "creator" : responseJson.creators, "id" : responseJson.id, "idEncoded" : encodeAnnoId(responseJson.id), 
-            "modified" : new Date(responseJson.modified.seconds * 1000 + responseJson.modified.nanos / 1000000).toISOString(), 
+            "modified" : new Date(responseJson.modified * 1000).toISOString(), 
             "motivation" : responseJson.motivation, "visible" : true};
         
         if (document.getElementById("createAnnotationForm").title !== "") {
