@@ -43,7 +43,9 @@ configurations {
 }
 ext {
 	set('testcontainersVersion', "1.20.0")
+	set('springDocVersion', "2.6.0")
 }
+
 dependencyManagement {
 	imports {
 		mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
@@ -57,6 +59,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	// springdoc
+	//implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}"
+	implementation "org.springdoc:springdoc-openapi-starter-common:${springDocVersion}"
+	implementation "org.springdoc:springdoc-openapi-starter-webmvc-api:${springDocVersion}"
+
 	implementation 'com.google.code.gson:gson:2.10.1'
 	implementation 'jakarta.json:jakarta.json-api:2.1.0'
 	implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
