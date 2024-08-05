@@ -23,14 +23,11 @@ public interface ISearchService {
   List<Manuscript> search(int pageNumber, String sortField, boolean sortAsc);
 
   /**
-   * Searches the index and returns a certain number of annotation results specified in pageSize.
+   * Searches the index and returns all annotation results
    *
-   * @param pageNumber page of search results
-   * @param sortField  field to sort the results
-   * @param sortAsc    specifies if the sorting direction is ascending
-   * @return limited number of search results in list of manuscripts
+   * @return number of search results in list of annotations
    */
-  List<Annotation> searchAnno(int pageNumber, String sortField, boolean sortAsc);
+  List<Annotation> searchAnno();
   
   /**
    * Gets list of search results.

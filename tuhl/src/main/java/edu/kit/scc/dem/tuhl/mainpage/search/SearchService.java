@@ -7,6 +7,8 @@ import edu.kit.scc.dem.tuhl.model.Manuscript;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
 import edu.kit.scc.dem.tuhl.model.filter.Filter;
+import edu.kit.scc.dem.tuhl.model.page.Page;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -144,6 +146,39 @@ public class SearchService implements ISearchService {
 
     this.results = searchResults;
     return searchResults;
+  }
+  
+  /**
+   * Searches the index and returns all annotation results
+   *
+   * @return number of search results in list of annotations
+   */
+  @Override
+  public List<Annotation> searchAnno() {
+	//Generic criteria constructor to obtain all search results
+	Criteria criteria = new Criteria();
+	CriteriaQuery query = new CriteriaQuery(criteria);
+    
+    //Perform the search
+    SearchHits<Manuscript> searchHits = elasticsearchOperations.search(query, Manuscript.class);
+	
+    // Extract the annotations from the search results, which only return the full manuscripts
+    List<Annotation> searchAnnoResults = new ArrayList<>();
+    for (SearchHit<Manuscript> manuscript : searchHits.getSearchHits()) {
+    	try {
+    		List<Page> pages = manuscript.getContent().getPages();
+    		for (Page page: pages) {
+    			List<Annotation> annotations = page.getAnnotations();
+    			searchAnnoResults.addAll(annotations);
+    		}
+    	} catch (Exception e) {
+    		System.out.println("Could not get annotations for manuscript: " + manuscript.getContent().getTitle() + " " + manuscript.getContent().getId());
+    		e.printStackTrace();
+    	}	    
+	}
+    
+	this.annoResults = searchAnnoResults;
+	return searchAnnoResults;
   }
   
   private long calculatePageCount(Query query) {
