@@ -223,6 +223,17 @@ public interface IEditorService {
    */
   JSONObject getPageJson(String pageId)
       throws InterruptedException, IOException;
+  
+  /**
+   * Gets the raw XML of a page.
+   *
+   * @param pageId of the manuscript to which the raw XML should be gotten
+   * @param fileName identifies the file associated to a page
+   * @return page as XML as String
+   * @throws IOException when the http request to database was faulty
+   * @throws InterruptedException when the http request to database is interrupted
+   */
+  String getPageContentXml(String pageId, String fileName) throws IOException, InterruptedException;
 
   /**
    * Gets the raw JSON of an annotation.
