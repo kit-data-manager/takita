@@ -4,6 +4,7 @@ plugins {
 	id 'org.springframework.boot' version '3.2.2'
 	id 'io.spring.dependency-management' version '1.1.4'
 	id 'com.github.jk1.dependency-license-report' version '1.17'
+	id 'net.researchgate.release' version '3.0.2'
 	id 'java'
 	id 'jacoco'
 	id 'com.bmuschko.docker-spring-boot-application' version '9.4.0'
