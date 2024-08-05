@@ -26,7 +26,7 @@ public abstract class Page {
   private Instant lastModified;
   
   @Field(type = FieldType.Nested, includeInParent = true)
-  protected List<Annotation> annotations;
+  protected List<Annotation> annotations = new ArrayList<>();
 
   protected String resourceUrl;
   protected String thumbResourceUrl;
