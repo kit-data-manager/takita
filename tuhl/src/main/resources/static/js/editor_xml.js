@@ -1720,9 +1720,9 @@ function updateTarget(){
                     newSelectedText.slice(0, (newSelectedText.length - 1));
                     // TODO: should there not be a field to store, who modified the body in addition to the timestamp of the modification?                    
                     // console.log(responseDataJson.creators);
-                    let updatedBody = {"created" : new Date(responseDataJson.created.seconds * 1000 + responseDataJson.created.nanos / 1000000).toISOString(), 
+                    let updatedBody = {"created" : new Date(responseDataJson.created * 1000).toISOString(), 
                     "creators" : responseDataJson.creators, "id" : result[0].id,
-                    "modified" : new Date(responseDataJson.modified.seconds * 1000 + responseDataJson.modified.nanos / 1000000).toISOString(), 
+                    "modified" : new Date(responseDataJson.modified * 1000).toISOString(), 
                     "purpose" : result[0].purpose, "value" : newSelectedText};
                     console.log("Updated body: ", updatedBody);
 

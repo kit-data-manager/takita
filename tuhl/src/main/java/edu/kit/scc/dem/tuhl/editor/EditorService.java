@@ -101,17 +101,14 @@ public class EditorService implements IEditorService {
     // TODO: the frontend should send JSONObject instead of a String
     // this change needs to be done here as well
     if (svgCode != null && !svgCode.trim().equals("")) {
-    	
         if (svgCode.contains("§")) {
+        	// building multiple targets, if multiple svgCodes or xPaths are given
 	        String[] xPaths = svgCode.split("§");
-	        String linkToResource = "http://localhost:8090/"
-	  	            + "api/v1/dataresources/"
-	  	            + pageId + RepositoryAccessService.DATA_PATH + "Example3"
-	  	            + RepositoryAccessService.FILE_EXTENSION_XML;
 	        for (String xPath : xPaths) {
-		    	Target newTarget = new Target(linkToResource);
-		    	// for each svgCode create new target
-		    	if (xPath.contains("xml:id")) {
+		    	// using constructor w/o parameters here as the link to the resource is not present here
+		    	Target newTarget = new Target();
+		    	// building targets for texts or images
+		    	if (xPath.contains("xml:id") || xPath.contains("id(")) {
 		        	XPathSelector newSelector = new XPathSelector(xPath);
 		        	newTarget.setType("TEXT");
 		        	newTarget.setSelector(newSelector);
@@ -122,6 +119,20 @@ public class EditorService implements IEditorService {
 		    	}
 		    	newAnnotation.addTarget(newTarget);
 	        }
+        } else {
+        	// building single target, if only one svgCode or xPath is given
+		    Target newTarget = new Target();
+		    // building target for texts or images
+		    if (svgCode.contains("xml:id") || svgCode.contains("id(")) {
+	        	XPathSelector newSelector = new XPathSelector(svgCode);
+	        	newTarget.setType("TEXT");
+	        	newTarget.setSelector(newSelector);
+	    	} else {
+	    		SVGSelector newSelector = new SVGSelector(svgCode);
+	    		newTarget.setType("IMAGE");
+	        	newTarget.setSelector(newSelector);
+	    	}
+		    newAnnotation.addTarget(newTarget);
         }
     }
 
@@ -183,14 +194,16 @@ public class EditorService implements IEditorService {
     // TODO: the frontend should send JSONObject instead of a String
     // this change needs to be done here as well
     if (svgCode != null && !svgCode.trim().equals("")) {
+    	// storing the link to the resource, which is present in the annotation, that will be updated
+    	String linkToResource = updatedAnnotation.getTargets().get(0).getLinkToResource();
+    	List<Target> newTargets = new ArrayList<>();
     	if (svgCode.contains("§")) {
-    		List<Target> newTargets = new ArrayList<>();
-	        String[] xPaths = svgCode.split("§");
-	        String linkToResource = updatedAnnotation.getTargets().get(0).getLinkToResource();
+    		// building multiple targets, if multiple svgCodes or xPaths are given
+   	        String[] xPaths = svgCode.split("§");
 	        for (String xPath : xPaths) {
 		    	Target newTarget = new Target(linkToResource);
 		    	// for each svgCode create new target
-		    	if (xPath.contains("xml:id")) {
+		    	if (xPath.contains("xml:id") || xPath.contains("id(")) {
 		        	XPathSelector newSelector = new XPathSelector(xPath);
 		        	newTarget.setType("TEXT");
 		        	newTarget.setSelector(newSelector);
@@ -202,6 +215,21 @@ public class EditorService implements IEditorService {
 		    	newTargets.add(newTarget);
 	        }
 	        updatedAnnotation.setTargets(newTargets);
+        } else {
+        	// building single target, if only one svgCode or xPath is given
+        	Target newTarget = new Target(linkToResource);
+        	// building target for texts or images
+	    	if (svgCode.contains("xml:id") || svgCode.contains("id(")) {
+	        	XPathSelector newSelector = new XPathSelector(svgCode);
+	        	newTarget.setType("TEXT");
+	        	newTarget.setSelector(newSelector);
+	    	} else {
+	    		SVGSelector newSelector = new SVGSelector(svgCode);
+	    		newTarget.setType("IMAGE");
+	        	newTarget.setSelector(newSelector);
+	    	}
+	    	newTargets.add(newTarget);
+	    	updatedAnnotation.setTargets(newTargets);
         }
     }
 
