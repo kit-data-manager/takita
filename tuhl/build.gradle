@@ -23,6 +23,10 @@ java {
 	}
 }
 
+javadoc {
+	source = sourceSets.main.allJava
+}
+
 sourceSets {
 	intTest {
 		compileClasspath += sourceSets.main.output
