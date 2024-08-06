@@ -11,9 +11,6 @@ version = '0.0.3-SNAPSHOT'
 
 repositories {
 	mavenCentral()
-	maven {
-		url 'https://oss.sonatype.org/content/repositories/snapshots'
-	}
 }
 
 java {
@@ -69,7 +66,7 @@ dependencies {
 	intTestImplementation "org.testcontainers:testcontainers"
 	intTestImplementation "org.testcontainers:junit-jupiter"
 	intTestImplementation "org.testcontainers:elasticsearch"
-	intTestImplementation "io.specto:hoverfly-java-junit5:0.19.1-SNAPSHOT"
+	intTestImplementation "io.specto:hoverfly-java-junit5:0.19.0"
 	intTestImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
