@@ -180,7 +180,7 @@ class ManuscriptConverter {
       String resourceUrl = repositoryAccessService.getBaseUrl() + repositoryAccessService.getStaticPath() + id
               + RepositoryAccessService.DATA_PATH + pageNumber + RepositoryAccessService.FILE_EXTENSION_XML;
 
-      TextPage textPage = new TextPage(id, pageNumber, created, resourceUrl);
+      TextPage textPage = new TextPage(id, ResourceType.TEXT, pageNumber, created, resourceUrl);
       if (sortedAnnotations == null) {
           textPage.setAnnotations(getAnnotationsByPage(textPage));
         } else {
