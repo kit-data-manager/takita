@@ -64,8 +64,10 @@ class ManuscriptConverter {
 
     String description = null;
     if (manuscriptJson.has(RepositoryStrings.DESCRIPTIONS.getName())) {
-      description = manuscriptJson.getJSONArray(RepositoryStrings.DESCRIPTIONS.getName()).getJSONObject(0)
-          .getString(RepositoryStrings.DESCRIPTION.getName());
+    	JSONArray descriptionsJson = manuscriptJson.getJSONArray(RepositoryStrings.DESCRIPTIONS.getName());
+    	if (descriptionsJson.length() > 0) {
+    		description = descriptionsJson.getJSONObject(0).getString(RepositoryStrings.DESCRIPTION.getName());
+    	}
     }
     
     Instant created = extractInstantFromJsonManuscript(manuscriptJson,
