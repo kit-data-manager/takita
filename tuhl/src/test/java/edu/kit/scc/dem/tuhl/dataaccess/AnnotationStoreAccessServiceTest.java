@@ -161,6 +161,7 @@ class AnnotationStoreAccessServiceTest {
 
   @Test
   void getAnnotationsByPageId() throws IOException, JSONException, InterruptedException, org.json.JSONException {
+	  String pageId = "f2e20635-8898-4983-9a86-c6e3d8006016";
     JSONObject annotation1 = new JSONObject(readStringFromRelativePath("getAnnotationsByPageId/annotation1.json"));
         JSONObject annotation2 = new JSONObject(readStringFromRelativePath("getAnnotationsByPageId/annotation2.json"));
   //Builds bodies for mock response
@@ -170,6 +171,7 @@ class AnnotationStoreAccessServiceTest {
 
     Mockito.when(mockedRepositoryAccessService.getBaseUrl()).thenReturn("http://samplerepo.edu/");
     Mockito.when(mockedRepositoryAccessService.getStaticPath()).thenReturn("api/v1/dataresources/");
+    Mockito.when(mockedRepositoryAccessService.getTypeGeneralByPageId(pageId)).thenReturn(RepositoryStrings.IMAGE.getName());
 
     Mockito.when(mockedRequestHelper
         .get("http://sampleannoserver-sparql.edu/wap/sparql?query=PREFIX+oa%3A+%3Chttp%3A%2F%2Fwww.w3.org%2Fns%" +
@@ -201,7 +203,7 @@ class AnnotationStoreAccessServiceTest {
     expectedAnnotations.add(annotation1);
     expectedAnnotations.add(annotation2);
 
-    List<JSONObject> actualAnnotations = annotationStoreAccessService.getAnnotationsByPageId("f2e20635-8898-4983-9a86-c6e3d8006016", "033r");
+    List<JSONObject> actualAnnotations = annotationStoreAccessService.getAnnotationsByPageId(pageId, "033r");
 
     assertEquals(expectedAnnotations.size(), actualAnnotations.size());
     for (JSONObject expAnnotation : expectedAnnotations) {
