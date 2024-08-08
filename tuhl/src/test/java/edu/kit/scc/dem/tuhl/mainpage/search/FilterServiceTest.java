@@ -39,10 +39,16 @@ class FilterServiceTest {
       return model;
     });
 
-    Mockito.when(model.addAttribute(Mockito.anyString(), Mockito.anyMap())).thenAnswer(invocation -> {
+    Mockito.when(model.addAttribute(Mockito.eq("possibleFilters"), Mockito.anyMap())).thenAnswer(invocation -> {
       assertEquals("possibleFilters", invocation.getArgument(0));
       assertEquals(filterService.getPossibleFilters(), invocation.getArgument(1));
       return model;
+    });
+    
+    Mockito.when(model.addAttribute(Mockito.eq("possibleAnnotationFilters"), Mockito.anyMap())).thenAnswer(invocation -> {
+        assertEquals("possibleAnnotationFilters", invocation.getArgument(0));
+        assertEquals(filterService.getPossibleAnnotationFilters(), invocation.getArgument(1));
+        return model;
     });
     Mockito.when(model.addAttribute(Mockito.anyString(), Mockito.any(FilterSelection.class))).thenAnswer(invocation -> {
       assertEquals("filterSelection", invocation.getArgument(0));
