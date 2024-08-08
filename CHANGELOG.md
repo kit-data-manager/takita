@@ -8,10 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 While status above is 'unreleased', you may and should add all major changes of your feature branch if merge-ready for development. Final list may be tweaked on release branch. Checking changelog is mandatory on merge review.
 
-Added
+### Added
 
-Changed
+### Changed
 
-Fixed
-
-Security
+### Fixed
+- Fix repeated prompt for user name on editor window
+### Security

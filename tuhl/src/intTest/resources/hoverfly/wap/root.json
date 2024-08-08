@@ -1,0 +1,9 @@
+{
+  "@context" : [ "http://www.w3.org/ns/ldp.jsonld", "http://www.w3.org/ns/anno.jsonld" ],
+  "id" : "http://annoserver.edu/wap/?iris=0",
+  "type" : [ "AnnotationCollection", "BasicContainer" ],
+  "modified" : "2024-07-25T08:53:54Z",
+  "label" : "The Root Container",
+  "total" : "0",
+  "contains" : "http://annoserver.edu/wap/publ/"
+}

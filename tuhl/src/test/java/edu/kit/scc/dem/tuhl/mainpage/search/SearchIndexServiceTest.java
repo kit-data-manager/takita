@@ -53,7 +53,7 @@ class SearchIndexServiceTest {
   private List<Manuscript> manuscriptList;
 
   @BeforeEach
-  void init() throws JSONException, ParseException {
+  void init() throws JSONException {
     manuscriptList = initManuscriptList();
   }
 
@@ -102,6 +102,18 @@ class SearchIndexServiceTest {
   }
 
   @Test
+  void getAnnotationForPageById() throws NoSuchIndexEntryException {
+    List<Annotation> expectedAnnos = manuscriptList.get(0).getPages().get(0).getAnnotations();
+
+    mockSearchHits(manuscriptList.get(0));
+
+    List<Annotation> resultingAnnos = searchIndexService.getAnnotationsForPageById(manuscriptList.get(0).getPages().get(0).getId());
+
+    assertEquals(expectedAnnos.size(), resultingAnnos.size());
+    assertEqualsAnnotations(expectedAnnos.get(0), resultingAnnos.get(0));
+  }
+
+  @Test
   void updateAnnotation() throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException {
     Annotation annotation = manuscriptList.get(0).getPages().get(0).getAnnotations().get(0);
 
@@ -119,7 +131,7 @@ class SearchIndexServiceTest {
   }
 
   @Test
-  void validateAnnotation() throws ParseException, InterruptedException, IOException, JSONException, NoSuchIndexEntryException {
+  void validateAnnotation() throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException {
     Annotation annotation = manuscriptList.get(0).getPages().get(0).getAnnotations().get(0);
 
     Mockito.when(mockedAccessService.validateAnnotation(annotation, manuscriptList.get(0).getPages().get(0).getPageNumber(), "a04/"))
@@ -296,7 +308,7 @@ class SearchIndexServiceTest {
   }
 
   @Test
-  void deleteTextCardById() throws ParseException, InterruptedException, IOException, JSONException, NoSuchIndexEntryException {
+  void deleteTextCardById() throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException {
     Annotation annotation = manuscriptList.get(0).getPages().get(0).getAnnotations().get(0);
     Body body = annotation.getTextCards().get(0);
 
@@ -397,7 +409,7 @@ class SearchIndexServiceTest {
     assertEquals(manuscript, searchIndexService.getRawManuscriptXml(manuscriptList.get(0).getId()));
   }
 
-  private List<Manuscript> initManuscriptList() throws JSONException, ParseException {
+  private List<Manuscript> initManuscriptList() throws JSONException {
     //DateFormat dateFormatMillis = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat();
     List<Manuscript> manuscripts = new ArrayList<>();
 
@@ -421,7 +433,7 @@ class SearchIndexServiceTest {
     textCards1.add(t1);
     anno1.setTextCards(textCards1);
     anno1.setPageId(manuscript1.getPages().get(0).getId());
-    ((ImagePage) manuscript1.getPages().get(0)).addAnnotation(anno1);
+    manuscript1.getPages().get(0).addAnnotation(anno1);
     manuscript1.getPages().get(0).setManuscriptId(manuscript1.getId());
     manuscript1.getPages().add(new ImagePage("b2f8e261-a6ca-4ae5-ab91-5fb18d64d5b7",
         ResourceType.IMAGE, "2", Instant.parse("2019-03-11T14:13:40.000Z"), "", ""));
@@ -445,7 +457,7 @@ class SearchIndexServiceTest {
     anno2.setTags(tags1);
     anno2.setPageId(manuscript2.getPages().get(0).getId());
     manuscript2.getPages().get(0).setManuscriptId(manuscript2.getId());
-    ((ImagePage) manuscript2.getPages().get(0)).addAnnotation(anno2);
+    manuscript2.getPages().get(0).addAnnotation(anno2);
     Annotation anno3 = new Annotation();
     anno3.setId("33");
     List<Tag> tags3 = new ArrayList<>();
@@ -459,7 +471,7 @@ class SearchIndexServiceTest {
     textCards3.add(t3);
     anno3.setTextCards(textCards3);
     anno3.setPageId(manuscript2.getPages().get(0).getId());
-    ((ImagePage) manuscript2.getPages().get(0)).addAnnotation(anno3);
+    manuscript2.getPages().get(0).addAnnotation(anno3);
 
     manuscripts.add(manuscript1);
     manuscripts.add(manuscript2);
