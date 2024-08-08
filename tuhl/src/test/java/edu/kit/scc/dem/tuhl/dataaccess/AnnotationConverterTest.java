@@ -278,7 +278,7 @@ public class AnnotationConverterTest {
         wadmAnnoJson.remove("body"); //application cannot handle body with string value
         Annotation testAnno = annoConverter.buildAnnotationFromJson(wadmAnnoJson);
 
-        assertEquals("...", testAnno.getSvgCode().strip(), "Unexpected svg value after conversion");
+        assertEquals("...", testAnno.getTargets().get(0).getSelector().toString().strip(), "Unexpected svg value after conversion");
     }
 
     /**
