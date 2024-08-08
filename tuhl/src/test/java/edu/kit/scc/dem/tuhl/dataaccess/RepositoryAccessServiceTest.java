@@ -193,7 +193,7 @@ class RepositoryAccessServiceTest {
 
     JSONObject resourceType = new JSONObject();
     JSONObject typeGeneral = new JSONObject();
-    typeGeneral.put(RepositoryStrings.TYPE_GENERAL.getName(), RepositoryStrings.TEXT.getName());
+    typeGeneral.put(RepositoryStrings.VALUE.getName(), RepositoryStrings.MANUSCRIPT_METADATA.getName());
     resourceType.put(RepositoryStrings.RESOURCE_TYPE.getName(), typeGeneral);
 
     //Define mock response to get requests
