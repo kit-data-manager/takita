@@ -11,6 +11,9 @@ import edu.kit.scc.dem.tuhl.model.Color;
 import edu.kit.scc.dem.tuhl.model.body.Body;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
+import edu.kit.scc.dem.tuhl.model.target.SVGSelector;
+import edu.kit.scc.dem.tuhl.model.target.Target;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -59,14 +62,14 @@ class EditorServiceTest {
         .thenAnswer(invocation -> {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
-          assertEquals(annotation.getSvgCode(), thisAnnotation.getSvgCode());
+          assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
          });
 
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getSvgCode(), annotation.getMotivation().toString());
+        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -82,14 +85,14 @@ class EditorServiceTest {
         .thenAnswer(invocation -> {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
-          assertEquals(annotation.getSvgCode(), thisAnnotation.getSvgCode());
+          assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
 
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getSvgCode(), annotation.getMotivation().toString());
+        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -105,14 +108,14 @@ class EditorServiceTest {
         .thenAnswer(invocation -> {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
-          assertEquals(annotation.getSvgCode(), thisAnnotation.getSvgCode());
+          assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
 
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getSvgCode(), annotation.getMotivation().toString());
+        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -128,14 +131,14 @@ class EditorServiceTest {
         .thenAnswer(invocation -> {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
-          assertEquals(annotation.getSvgCode(), thisAnnotation.getSvgCode());
+          assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
 
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getSvgCode(), annotation.getMotivation().toString());
+        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -151,14 +154,14 @@ class EditorServiceTest {
         .thenAnswer(invocation -> {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
-          assertEquals(annotation.getSvgCode(), thisAnnotation.getSvgCode());
+          assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
 
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getSvgCode(), annotation.getMotivation().toString());
+        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -174,14 +177,14 @@ class EditorServiceTest {
         .thenAnswer(invocation -> {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
-          assertEquals(annotation.getSvgCode(), thisAnnotation.getSvgCode());
+          assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
 
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getSvgCode(), annotation.getMotivation().toString());
+        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -196,14 +199,14 @@ class EditorServiceTest {
         .thenAnswer(invocation -> {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
-          assertEquals(annotation.getSvgCode(), thisAnnotation.getSvgCode());
+          assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
 
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getSvgCode(), annotation.getMotivation().toString());
+        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -219,14 +222,14 @@ class EditorServiceTest {
         .thenAnswer(invocation -> {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
-          assertEquals(annotation.getSvgCode(), thisAnnotation.getSvgCode());
+          assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
 
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getSvgCode(), annotation.getMotivation().toString());
+        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -242,14 +245,14 @@ class EditorServiceTest {
         .thenAnswer(invocation -> {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
-          assertEquals(annotation.getSvgCode(), thisAnnotation.getSvgCode());
+          assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
 
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getSvgCode(), annotation.getMotivation().toString());
+        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -264,14 +267,14 @@ class EditorServiceTest {
         .thenAnswer(invocation -> {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
-          assertEquals(annotation.getSvgCode(), thisAnnotation.getSvgCode());
+          assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
 
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getSvgCode(), annotation.getMotivation().toString());
+        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -287,14 +290,14 @@ class EditorServiceTest {
         .thenAnswer(invocation -> {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
-          assertEquals(annotation.getSvgCode(), thisAnnotation.getSvgCode());
+          assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
 
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getSvgCode(), annotation.getMotivation().toString());
+        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -324,7 +327,7 @@ class EditorServiceTest {
     Mockito.when(mockedSearchIndexService.updateAnnotation(Mockito.any(Annotation.class))).thenAnswer(invocation -> {
       Annotation thisAnnotation = invocation.getArgument(0);
       assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
-      assertEquals(annotation.getSvgCode(), thisAnnotation.getSvgCode());
+      assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
       assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
       assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
       return updatedAnnotation;
@@ -355,7 +358,7 @@ class EditorServiceTest {
     });
 
     Annotation actualAnnotation = EditorService.updateAnnotation(annotation.getId(),
-        Color.UNKNOWN_REGION.toString(), updatedAnnotation.getSvgCode(), updatedAnnotation.getMotivation().toString());
+        Color.UNKNOWN_REGION.toString(), updatedAnnotation.getTargets().get(0).getSelector().toString(), updatedAnnotation.getMotivation().toString());
 
     assertEqualsAnnotations(updatedAnnotation, actualAnnotation);
   }
@@ -375,7 +378,7 @@ class EditorServiceTest {
     Mockito.when(mockedSearchIndexService.validateAnnotation(Mockito.any(Annotation.class))).thenAnswer(invocation -> {
       Annotation thisAnnotation = invocation.getArgument(0);
       assertEquals(validatedAnnotation.getPageId(), thisAnnotation.getPageId());
-      assertEquals(validatedAnnotation.getSvgCode(), thisAnnotation.getSvgCode());
+      assertEquals(validatedAnnotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
       assertEquals(validatedAnnotation.getColor().getName(), thisAnnotation.getColor().getName());
       assertEquals(validatedAnnotation.getMotivation(), thisAnnotation.getMotivation());
       return validatedAnnotation;
@@ -565,7 +568,12 @@ class EditorServiceTest {
     mockAnnotation.setPageId("758735a2-8e0d-4ac7-815e-bba2060217c3");
     mockAnnotation.setCreated(Instant.now());
     mockAnnotation.setModified(Instant.now());
-    mockAnnotation.setSvgCode("<svg><rect x=\"279\" y=\"48\" width=\"2951\" height=\"4500\"/></svg>");
+    List<Target> mockTargets = new ArrayList<>();
+    Target mockTarget = new Target();
+    SVGSelector mockSvgSelector = new SVGSelector("<svg><rect x=\"279\" y=\"48\" width=\"2951\" height=\"4500\"/></svg>");
+    mockTarget.setSelector(mockSvgSelector);
+    mockTargets.add(mockTarget);
+    mockAnnotation.setTargets(mockTargets);
     mockAnnotation.setColor(color);
     mockAnnotation.setCreators(creators);
     mockAnnotation.setIsAlgorithmAnnotation(false);
@@ -613,7 +621,7 @@ class EditorServiceTest {
     assertEquals(expectedAnno.getPageId(), actualAnno.getPageId());
     assertEquals(expectedAnno.getMotivation(), actualAnno.getMotivation());
     assertEquals(expectedAnno.getColor().getName(), actualAnno.getColor().getName());
-    assertEquals(expectedAnno.getSvgCode(), actualAnno.getSvgCode());
+    assertEquals(expectedAnno.getTargets().get(0).getSelector().toString(), actualAnno.getTargets().get(0).getSelector().toString());
     assertEquals(expectedAnno.getCanonical(), actualAnno.getCanonical());
     assertEquals(expectedAnno.getCreated(), actualAnno.getCreated());
     assertEquals(expectedAnno.getModified(), actualAnno.getModified());

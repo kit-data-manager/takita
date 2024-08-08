@@ -7,6 +7,8 @@ import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Color;
 import edu.kit.scc.dem.tuhl.model.body.Tag;
 import edu.kit.scc.dem.tuhl.model.body.TextCard;
+import edu.kit.scc.dem.tuhl.model.target.SVGSelector;
+import edu.kit.scc.dem.tuhl.model.target.Target;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -37,6 +39,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -69,7 +72,12 @@ class RestControllerTest {
     mockAnno = new Annotation();
     mockAnno.setId(annoId);
     mockAnno.setColor(Color.TEXT_REGION);
-    mockAnno.setSvgCode("");
+    List<Target> mockTargets = new ArrayList<>();
+    Target mockTarget = new Target();
+    SVGSelector mockSvgSelector = new SVGSelector("");
+    mockTarget.setSelector(mockSvgSelector);
+    mockTargets.add(mockTarget);
+    mockAnno.setTargets(mockTargets);
     mockAnno.setMotivation("editing");
     mockAnno.setCreated(Instant.now().truncatedTo(ChronoUnit.DAYS));
     mockAnno.setModified(Instant.now().truncatedTo(ChronoUnit.DAYS));
@@ -231,7 +239,12 @@ class RestControllerTest {
     Annotation mockAnnoUpdated = new Annotation();
     mockAnnoUpdated.setId(annoId);
     mockAnnoUpdated.setColor(Color.TEXT_REGION);
-    mockAnnoUpdated.setSvgCode("");
+    List<Target> mockTargets = new ArrayList<>();
+    Target mockTarget = new Target();
+    SVGSelector mockSvgSelector = new SVGSelector("");
+    mockTarget.setSelector(mockSvgSelector);
+    mockTargets.add(mockTarget);
+    mockAnnoUpdated.setTargets(mockTargets);
     mockAnnoUpdated.setMotivation("bookmarking");
     mockAnnoUpdated.setCreated(Instant.now().truncatedTo(ChronoUnit.DAYS));
     mockAnnoUpdated.setModified(Instant.now().truncatedTo(ChronoUnit.DAYS));

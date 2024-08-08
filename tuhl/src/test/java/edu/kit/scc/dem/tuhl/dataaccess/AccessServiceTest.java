@@ -11,6 +11,9 @@ import edu.kit.scc.dem.tuhl.model.page.ImagePage;
 import edu.kit.scc.dem.tuhl.model.page.Page;
 import edu.kit.scc.dem.tuhl.model.page.ResourceType;
 import edu.kit.scc.dem.tuhl.model.page.TextPage;
+import edu.kit.scc.dem.tuhl.model.target.SVGSelector;
+import edu.kit.scc.dem.tuhl.model.target.Target;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -311,7 +314,7 @@ class AccessServiceTest {
 
     List<String> creatorAlgorithm = new ArrayList<>();
     creatorAlgorithm.add("urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac");
-
+    
     Annotation annotation1 = new Annotation();
     annotation1.setId("http://sampleannoserver.edu/wap/a04/deinterpretatione/51e65450-1059-462f-91aa-cea2bb5de298");
     annotation1.setCreated(Instant.parse("2018-02-06T11:06:01Z"));
@@ -320,7 +323,12 @@ class AccessServiceTest {
     annotation1.setColor(Color.CUSTOM_REGION);
     annotation1.setIsAlgorithmAnnotation(true);
     annotation1.setPageId(page1.getId());
-    annotation1.setSvgCode("<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"0\" y=\"3307\" width=\"587\" height=\"1047\"/></svg>");
+    List<Target> targets1 = new ArrayList<>();
+    Target target1 = new Target();
+    SVGSelector svgSelector1 = new SVGSelector("<svg xmlns=\\\"http://www.w3.org/2000/svg\\\"><rect x=\\\"0\\\" y=\\\"3307\\\" width=\\\"587\\\" height=\\\"1047\\\"/></svg>");
+	target1.setSelector(svgSelector1);
+	targets1.add(target1);
+    annotation1.setTargets(targets1);
     annotation1.setMotivation("tagging");
     annotation1.setVia("http://sampleannoserver.edu/wap/w3c/aea27124-b3be-417a-a3f3-ce9803f9afb4/0073d61a-5d3a-49c7-bffd-2cc0ae0d8443");
 
@@ -332,7 +340,12 @@ class AccessServiceTest {
     annotation2.setColor(Color.NOISE_REGION);
     annotation2.setIsAlgorithmAnnotation(true);
     annotation2.setPageId(page2.getId());
-    annotation2.setSvgCode("<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"2140\" y=\"3170\" width=\"200\" height=\"205\"/></svg>");
+    List<Target> targets2 = new ArrayList<>();
+    Target target2 = new Target();
+    SVGSelector svgSelector2 = new SVGSelector("<svg xmlns=\\\"http://www.w3.org/2000/svg\\\"><rect x=\\\"2140\\\" y=\\\"3170\\\" width=\\\"200\\\" height=\\\"205\\\"/></svg>");
+	target2.setSelector(svgSelector2);
+	targets2.add(target2);
+	annotation2.setTargets(targets2);
     annotation2.setMotivation("replying");
     annotation2.setVia("http://sampleannoserver.edu/wap/w3c/aea27124-b3be-417a-a3f3-ce9803f9afb4/00053422-d1b4-417d-b659-a294facb6485");
 
@@ -345,7 +358,12 @@ class AccessServiceTest {
     annotation3.setColor(Color.DEFAULT);
     annotation3.setIsAlgorithmAnnotation(false);
     annotation3.setPageId(page3.getId());
-    annotation3.setSvgCode("<svg><rect x=\"245\" y=\"-2\" width=\"3070\" height=\"4690\"/></svg>");
+    List<Target> targets3 = new ArrayList<>();
+    Target target3 = new Target();
+    SVGSelector svgSelector3 = new SVGSelector("<svg><rect x=\\\"245\\\" y=\\\"-2\\\" width=\\\"3070\\\" height=\\\"4690\\\"/></svg>");
+	target3.setSelector(svgSelector3);
+	targets3.add(target3);
+	annotation3.setTargets(targets3);
     annotation3.setMotivation("moderating");
     annotation3.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/471a5c9c-25a5-4485-a213-7b51221dba9b");
 
@@ -358,7 +376,12 @@ class AccessServiceTest {
     annotation4.setColor(Color.TEXT_REGION);
     annotation4.setIsAlgorithmAnnotation(false);
     annotation4.setPageId(page3.getId());
-    annotation4.setSvgCode("<svg><rect x=\"214\" y=\"73\" width=\"3008\" height=\"4467\"/></svg>");
+    List<Target> targets4 = new ArrayList<>();
+    Target target4 = new Target();
+    SVGSelector svgSelector4 = new SVGSelector("<svg><rect x=\\\"214\\\" y=\\\"73\\\" width=\\\"3008\\\" height=\\\"4467\\\"/></svg>");
+	target4.setSelector(svgSelector4);
+	targets4.add(target4);
+	annotation4.setTargets(targets4);
     annotation4.setMotivation("identifying");
     annotation4.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/c6c83ff9-3b68-4965-9e7a-359abad3eb9d");
 
@@ -586,7 +609,12 @@ class AccessServiceTest {
     annotation1.setColor(Color.CUSTOM_REGION);
     annotation1.setIsAlgorithmAnnotation(true);
     annotation1.setPageId("5172f6cb-78c6-403d-b6eb-64d7738c76aa");
-    annotation1.setSvgCode("<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"0\" y=\"3307\" width=\"587\" height=\"1047\"/></svg>");
+    List<Target> targets1 = new ArrayList<>();
+    Target target1 = new Target();
+    SVGSelector svgSelector1 = new SVGSelector("<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"0\" y=\"3307\" width=\"587\" height=\"1047\"/></svg>");
+	target1.setSelector(svgSelector1);
+	targets1.add(target1);
+    annotation1.setTargets(targets1);
     annotation1.setMotivation("tagging");
     annotation1.setVia("http://sampleannoserver.edu/wap/w3c/aea27124-b3be-417a-a3f3-ce9803f9afb4/0073d61a-5d3a-49c7-bffd-2cc0ae0d8443");
 
@@ -598,7 +626,12 @@ class AccessServiceTest {
     annotation2.setColor(Color.NOISE_REGION);
     annotation2.setIsAlgorithmAnnotation(true);
     annotation2.setPageId("3f3bf25b-e0b9-48a9-b344-20630f733f8b");
-    annotation2.setSvgCode("<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"2140\" y=\"3170\" width=\"200\" height=\"205\"/></svg>");
+    List<Target> targets2 = new ArrayList<>();
+    Target target2 = new Target();
+    SVGSelector svgSelector2 = new SVGSelector("<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"2140\" y=\"3170\" width=\"200\" height=\"205\"/></svg>");
+	target2.setSelector(svgSelector2);
+	targets2.add(target2);
+	annotation2.setTargets(targets2);
     annotation2.setMotivation("replying");
     annotation2.setVia("http://sampleannoserver.edu/wap/w3c/aea27124-b3be-417a-a3f3-ce9803f9afb4/00053422-d1b4-417d-b659-a294facb6485");
 
@@ -611,7 +644,12 @@ class AccessServiceTest {
     annotation3.setColor(Color.DEFAULT);
     annotation3.setIsAlgorithmAnnotation(false);
     annotation3.setPageId("f68e307b-c41b-412a-a2e2-60418fbbef27");
-    annotation3.setSvgCode("<svg><rect x=\"245\" y=\"-2\" width=\"3070\" height=\"4690\"/></svg>");
+    List<Target> targets3 = new ArrayList<>();
+    Target target3 = new Target();
+    SVGSelector svgSelector3 = new SVGSelector("<svg><rect x=\"245\" y=\"-2\" width=\"3070\" height=\"4690\"/></svg>");
+	target3.setSelector(svgSelector3);
+	targets3.add(target3);
+	annotation3.setTargets(targets3);
     annotation3.setMotivation("moderating");
     annotation3.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/471a5c9c-25a5-4485-a213-7b51221dba9b");
 
@@ -624,7 +662,12 @@ class AccessServiceTest {
     annotation4.setColor(Color.TEXT_REGION);
     annotation4.setIsAlgorithmAnnotation(false);
     annotation4.setPageId("f68e307b-c41b-412a-a2e2-60418fbbef27");
-    annotation4.setSvgCode("<svg><rect x=\"214\" y=\"73\" width=\"3008\" height=\"4467\"/></svg>");
+    List<Target> targets4 = new ArrayList<>();
+    Target target4 = new Target();
+    SVGSelector svgSelector4 = new SVGSelector("<svg><rect x=\"214\" y=\"73\" width=\"3008\" height=\"4467\"/></svg>");
+	target4.setSelector(svgSelector4);
+	targets4.add(target4);
+	annotation4.setTargets(targets4);
     annotation4.setMotivation("identifying");
     annotation4.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/c6c83ff9-3b68-4965-9e7a-359abad3eb9d");
 
@@ -903,7 +946,12 @@ class AccessServiceTest {
     annotations.get(0).setColor(Color.PAGE_REGION);
     annotations.get(0).setIsAlgorithmAnnotation(false);
     annotations.get(0).setPageId("758735a2-8e0d-4ac7-815e-bba2060217c3");
-    annotations.get(0).setSvgCode("<svg><rect x=\"279\" y=\"48\" width=\"2951\" height=\"4500\"/></svg>");
+    List<Target> targets1 = new ArrayList<>();
+    Target target1 = new Target();
+    SVGSelector svgSelector1 = new SVGSelector("<svg><rect x=\"279\" y=\"48\" width=\"2951\" height=\"4500\"/></svg>");
+	target1.setSelector(svgSelector1);
+	targets1.add(target1);
+    annotations.get(0).setTargets(targets1);
     annotations.get(0).setMotivation("describing");
     annotations.get(0).setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/c3aeb1ef-af1e-41fe-823c-76ea3761ee89");
     annotations.get(0).setEtag("def");
@@ -946,7 +994,12 @@ class AccessServiceTest {
     annotations.get(1).setColor(Color.PAGE_REGION);
     annotations.get(1).setIsAlgorithmAnnotation(false);
     annotations.get(1).setPageId("758735a2-8e0d-4ac7-815e-bba2060217c3");
-    annotations.get(1).setSvgCode("<svg><rect x=\"279\" y=\"48\" width=\"2951\" height=\"4500\"/></svg>");
+    List<Target> targets2 = new ArrayList<>();
+    Target target2 = new Target();
+    SVGSelector svgSelector2 = new SVGSelector("<svg><rect x=\"279\" y=\"48\" width=\"2951\" height=\"4500\"/></svg>");
+	target2.setSelector(svgSelector2);
+	targets2.add(target2);
+    annotations.get(1).setTargets(targets2);
     annotations.get(1).setMotivation("describing");
     annotations.get(1).setEtag("abc");
     annotations.get(1).addTextCard(expectedTextCard1);
@@ -977,7 +1030,12 @@ class AccessServiceTest {
     expectedAnnotation1.setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/1749ce9c-a79a-4929-8299-edc9c0388fcc");
     expectedAnnotation1.setIsAlgorithmAnnotation(false);
     expectedAnnotation1.setPageId("cb679599-7191-422c-923b-89c31c045f1d");
-    expectedAnnotation1.setSvgCode("<svg><rect x=\"214\" y=\"73\" width=\"3008\" height=\"4467\"/></svg>");
+    List<Target> targets3 = new ArrayList<>();
+    Target target3 = new Target();
+    SVGSelector svgSelector3 = new SVGSelector("<svg><rect x=\"214\" y=\"73\" width=\"3008\" height=\"4467\"/></svg>");
+	target3.setSelector(svgSelector3);
+	targets3.add(target3);
+    expectedAnnotation1.setTargets(targets3);
     expectedAnnotation1.setMotivation("describing");
     expectedAnnotation1.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/1749ce9c-a79a-4929-8299-edc9c0388fcc");
     expectedAnnotation1.setEtag("abc");

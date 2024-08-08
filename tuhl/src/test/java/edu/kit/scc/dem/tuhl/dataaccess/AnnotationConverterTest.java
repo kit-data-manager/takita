@@ -80,7 +80,7 @@ public class AnnotationConverterTest {
         
         System.out.println();
         assertEquals("8d8f2094-e85e-4947-8dca-e0b53b5b520f", testAnno.getPageId(), "Error on extracting target resource id");
-        assertEquals(null, testAnno.getSvgCode(), "Error on parsing SVG");
+        assertEquals(null, testAnno.getTargets().get(0).getSelector(), "Error on parsing SVG");
     }
 
 }
