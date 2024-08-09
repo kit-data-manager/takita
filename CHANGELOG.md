@@ -11,6 +11,7 @@ While status above is 'unreleased', you may and should add all major changes of 
 ### Added
 
 ### Changed
+- Rest API call to create annotation now returns HTTP 500 on more errors (annotationserver non success codes, i.e. container not existing).
 
 ### Fixed
 - Fix repeated prompt for user name on editor window
