@@ -96,7 +96,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
       JSONObject annoserverAnnotation = new JSONObject(response.body());
       logger.info("Annotation store response: " + annoserverAnnotation);
 
-      if (response.statusCode() < 200 || response.statusCode() > 300) { //anything but success codes
+      if (HttpStatus.valueOf(response.statusCode()).isError()) {
         throw new JSONException("Unexpected response code " + response.statusCode() + " on annotation store access");
       }
 
@@ -139,7 +139,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
     HttpResponse<String> response = httpRequestHelper.get(annotationId);
     JSONObject result = new JSONObject(response.body());
 
-    if(response.statusCode() < 200 || response.statusCode() > 300) { //anything but success codes
+    if(HttpStatus.valueOf(response.statusCode()).isError()) {
       logger.info("Annotation store  for annotation: " + result);
       throw new JSONException("Unexpected response code " + response.statusCode() + " on annotation store access");
     }
