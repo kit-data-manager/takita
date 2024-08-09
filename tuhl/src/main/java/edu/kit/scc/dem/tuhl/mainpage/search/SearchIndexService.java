@@ -12,6 +12,7 @@ import edu.kit.scc.dem.tuhl.model.page.Page;
 import edu.kit.scc.dem.tuhl.model.page.ResourceType;
 import edu.kit.scc.dem.tuhl.model.page.TextPage;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.text.ParseException;
 import java.time.Duration;
 import java.time.Instant;
@@ -79,15 +80,19 @@ public class  SearchIndexService implements ISearchIndexService {
   /**
    * Builds a new search index from scratch.
    *
+   * @param indexSize number of manuscripts for index build, -1 for all
    * @throws IOException if an error occurs while sending/receiving http request to annotation store
    * @throws InterruptedException if http request is interrupted
    * @throws JSONException if an error occurs while parsing the JSON
    */
   @Override
-  public void buildIndex() throws InterruptedException, IOException, JSONException {
+  public void buildIndex(int indexSize) throws InterruptedException, IOException, JSONException {
     IndexOperations indexOp = elasticsearchOperations.indexOps(Manuscript.class);
 
     logger.info("Index rebuild started. Deleting old index.");
+    if (indexSize > 0) {
+      logger.info("Index will be limited to " + indexSize + " manuscripts.");
+    }
     final Instant startBuild = Instant.now();
     lastUpdatedIndex = Instant.now();
     deleteIndex(indexOp);
@@ -101,19 +106,30 @@ public class  SearchIndexService implements ISearchIndexService {
     
     createMappings(indexOp);
     logger.info("Mappings created.");
-    
-    List<Manuscript> allManuscripts = accessService.getAllManuscripts();
-    for (Manuscript m : allManuscripts) {
-      logger.info("Finished. Indexing manuscript {}", m.getId());
-      manuscriptRepository.save(m);
+
+    List<Manuscript> allManuscripts;
+    try {
+      allManuscripts = accessService.getManuscripts(indexSize);
+
+      for (Manuscript m : allManuscripts) {
+        logger.info("Finished. Indexing manuscript {}", m.getId());
+        manuscriptRepository.save(m);
+      }
+
+      indexOp.refresh();
+
+      Duration duration = Duration.between(startBuild, Instant.now());
+      logger.info("Finished index build in {} minutes and {} seconds",
+              duration.toMinutes(),
+              duration.getSeconds() % 60);
+
+    } catch (ConnectException ce) {
+      logger.error("Aborting index build due to connection error.");
+      Duration duration = Duration.between(startBuild, Instant.now());
+      logger.error("Failed index build in {} minutes and {} seconds",
+              duration.toMinutes(),
+              duration.getSeconds() % 60);
     }
-    
-    indexOp.refresh();
-    
-    Duration duration = Duration.between(startBuild, Instant.now());
-    logger.info("Finished index build in {} minutes and {} seconds",
-        duration.toMinutes(),
-        duration.getSeconds() % 60);
   }
   
   private void deleteIndex(IndexOperations indexOp) {
@@ -143,7 +159,7 @@ public class  SearchIndexService implements ISearchIndexService {
 
     if (!indexOp.exists()) {
       logger.info("Index does not exist yet. Starting build.");
-      buildIndex();
+      buildIndex(-1);
     } else {
       logger.info("Index update started. This may take a while.");
       Instant timestamp = lastUpdatedIndex;
@@ -209,44 +225,6 @@ public class  SearchIndexService implements ISearchIndexService {
 
 }
   
-  /**
-   * Builds a new search index from scratch. This search index is limited to 5 manuscripts.
-   *
-   * @throws IOException if an error occurs while sending/receiving http request to annotation store
-   * @throws InterruptedException if http request is interrupted
-   * @throws JSONException if an error occurs while parsing the JSON
-   */
-  @Override
-  public void buildSmallIndex() throws InterruptedException, IOException, JSONException {
-    IndexOperations indexOp = elasticsearchOperations.indexOps(Manuscript.class);
-
-    logger.info("Limited Index rebuild started. Deleting old index.");
-    final Instant startBuild = Instant.now();
-    deleteIndex(indexOp);
-
-    Document settings = Document.create();
-    settings.put("index.mapping.nested_objects.limit", 1000000); //might be overkill on dev index. maybe limit number of annotations on small index creation instead
-    logger.info("Building new small index.");
-
-    indexOp.create(settings);
-    logger.info("Index created.");
-
-    createMappings(indexOp);
-    logger.info("Mappings created.");
-    
-    List<Manuscript> allManuscripts = accessService.getFewManuscripts();
-    logger.info("Indexing Manuscripts.");
-    
-    for (Manuscript manuscript : allManuscripts) {
-      manuscriptRepository.save(manuscript);
-    }
-    indexOp.refresh();
-    
-    Duration duration = Duration.between(startBuild, Instant.now());
-    logger.info("Finished limited index build in {} minutes and {} seconds", duration.toMinutes(),
-        duration.getSeconds() % 60);
-  }
-  
   private void createMappings(IndexOperations indexOp) {
     indexOp.putMapping(indexOp.createMapping(Manuscript.class));
     indexOp.putMapping(indexOp.createMapping(ImagePage.class));
@@ -271,9 +249,22 @@ public class  SearchIndexService implements ISearchIndexService {
   @Override
   public Annotation addAnnotation(Annotation annotation) throws InterruptedException, IOException,
       JSONException, NoSuchIndexEntryException {
-   
-    Page page = getPageById(annotation.getPageId());
-    String manuscriptPublisher = getManuscriptById(page.getManuscriptId()).getPublisher();
+
+    Page page;
+    try {
+      page = getPageById(annotation.getPageId());
+    } catch (NoSuchIndexEntryException e) { //log reason and rethrow
+      logger.error("Page " + annotation.getPageId() + " not found in index");
+      throw e;
+    }
+
+    String manuscriptPublisher;
+    try {
+      manuscriptPublisher = getManuscriptById(page.getManuscriptId()).getPublisher();
+    } catch (NoSuchIndexEntryException e) { //log reason and rethrow
+      logger.error("Manuscript " + page.getManuscriptId() + " not found in index");
+      throw e;
+    }
         
     // bad string magic, take everything after the last occurence of "-", 
     // omit the space and convert it to lower case to use this as a subfolder 
