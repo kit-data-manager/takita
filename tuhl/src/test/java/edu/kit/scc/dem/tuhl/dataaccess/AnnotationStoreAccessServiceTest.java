@@ -77,7 +77,7 @@ class AnnotationStoreAccessServiceTest {
   public HttpClient mockedHttpClient;
 
   @BeforeEach
-  void init() throws NoSuchFieldException {
+  void init() {
     //Insert mock HttpRequestHelper into private field of the AnnotationStoreAccessService instance
     ReflectionTestUtils.setField(annotationStoreAccessService, "httpRequestHelper", mockedRequestHelper);
   }
@@ -90,6 +90,10 @@ class AnnotationStoreAccessServiceTest {
     //Builds body for mock response
     Mockito.when(mockedAnnotation1.body()).thenReturn(newAnnotation1.toString());
     Mockito.when(mockedAnnotation2.body()).thenReturn(newAnnotation2.toString());
+
+    //Response Codes
+    Mockito.when(mockedAnnotation1.statusCode()).thenReturn(200);
+    Mockito.when(mockedAnnotation2.statusCode()).thenReturn(200);
 
     //Define mock headers
     List<String> etags = new ArrayList<>();
@@ -127,6 +131,10 @@ class AnnotationStoreAccessServiceTest {
     //Builds body for mock response
     Mockito.when(mockedAnnotation1.body()).thenReturn(readStringFromRelativePath("getAnnotationById/annotation1.json"));
     Mockito.when(mockedAnnotation2.body()).thenReturn(readStringFromRelativePath("getAnnotationById/annotation2.json"));
+
+    //Response Codes
+    Mockito.when(mockedAnnotation1.statusCode()).thenReturn(200);
+    Mockito.when(mockedAnnotation2.statusCode()).thenReturn(200);
 
     //Mock headers
     List<String> etags = new ArrayList<>();
@@ -167,6 +175,10 @@ class AnnotationStoreAccessServiceTest {
     Mockito.when(mockedResponsePage1.body()).thenReturn(readStringFromRelativePath("getAnnotationsByPageId/responsePage.xml"));
     Mockito.when(mockedAnnotation1.body()).thenReturn(annotation1.toString());
     Mockito.when(mockedAnnotation2.body()).thenReturn(annotation2.toString());
+
+    //Response Codes
+    Mockito.when(mockedAnnotation1.statusCode()).thenReturn(200);
+    Mockito.when(mockedAnnotation2.statusCode()).thenReturn(200);
 
     Mockito.when(mockedRepositoryAccessService.getBaseUrl()).thenReturn("http://samplerepo.edu/");
     Mockito.when(mockedRepositoryAccessService.getStaticPath()).thenReturn("api/v1/dataresources/");
@@ -229,6 +241,11 @@ class AnnotationStoreAccessServiceTest {
         "getAllAnnotations/expectedObject1.json")).getJSONObject(1).toString());
     Mockito.when(mockedAnnotation3.body()).thenReturn(new JSONArray(readStringFromRelativePath(
         "getAllAnnotations/expectedObject2.json")).getJSONObject(0).toString());
+
+    //Response Codes
+    Mockito.when(mockedAnnotation1.statusCode()).thenReturn(200);
+    Mockito.when(mockedAnnotation2.statusCode()).thenReturn(200);
+    Mockito.when(mockedAnnotation3.statusCode()).thenReturn(200);
 
     //Define mock responses to get requests
     Mockito.when(mockedRequestHelper
@@ -300,6 +317,10 @@ class AnnotationStoreAccessServiceTest {
     Mockito.when(mockedResponsePage3.body()).thenReturn(readStringFromRelativePath("getAllAnnotationsModifiedAfter/responsePage3.xml"));
     Mockito.when(mockedAnnotation1.body()).thenReturn(readStringFromRelativePath("getAllAnnotationsModifiedAfter/annotation1.json"));
     Mockito.when(mockedAnnotation2.body()).thenReturn(readStringFromRelativePath("getAllAnnotationsModifiedAfter/annotation2.json"));
+
+    Mockito.when(mockedResponsePage3.statusCode()).thenReturn(200);
+    Mockito.when(mockedAnnotation1.statusCode()).thenReturn(200);
+    Mockito.when(mockedAnnotation2.statusCode()).thenReturn(200);
 
     //Mock headers
     List<String> etags = new ArrayList<>();

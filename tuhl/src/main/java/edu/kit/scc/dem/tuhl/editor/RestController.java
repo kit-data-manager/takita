@@ -111,6 +111,7 @@ public class RestController {
             mapper.registerModule(new JavaTimeModule());
             annotationJson = mapper.writeValueAsString(annotation);
         } catch (IOException | JSONException e) {
+            e.printStackTrace();
             return ResponseEntity.status(500).body(e.getMessage());
         } catch (NoSuchIndexEntryException e) {
             return ResponseEntity.status(404).body(e.getMessage());

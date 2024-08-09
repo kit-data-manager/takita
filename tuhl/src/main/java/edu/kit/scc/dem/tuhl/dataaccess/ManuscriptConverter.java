@@ -157,6 +157,7 @@ class ManuscriptConverter {
       ImagePage imagePage = new ImagePage(id, ResourceType.IMAGE, pageNumber, created, resourceUrl, thumbResourceUrl);
  
       if (sortedAnnotations == null) {
+        logger.info("Retrieving annotations for page " + imagePage.getId());
         imagePage.setAnnotations(getAnnotationsByPage(imagePage));
       } else {
         imagePage.setAnnotations(sortedAnnotations.get(imagePage.getId()));

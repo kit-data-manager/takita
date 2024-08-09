@@ -1,17 +1,12 @@
 package edu.kit.scc.dem.tuhl.dataaccess;
 
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.URLEncoder;
 import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,29 +89,39 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   @Override
   public JSONObject addAnnotation(JSONObject jsonAnnotation, String projectId)
       throws IOException, InterruptedException, JSONException {
-    HttpResponse<String> response = httpRequestHelper
-        .postAnnotations(urlPrefix + projectId + TAKITA_URL, jsonAnnotation);
-    JSONObject deinterpretationeAnnotation = new JSONObject(response.body());
-    logger.info("Antwort Annostore: " + deinterpretationeAnnotation.toString());
+    try {
+      HttpResponse<String> response = httpRequestHelper
+              .postAnnotations(urlPrefix + projectId + TAKITA_URL, jsonAnnotation);
 
-    String deinterpretationeId;
-    if (deinterpretationeAnnotation.has(AnnotationStoreStrings.ID.getName())) {
-      deinterpretationeId = deinterpretationeAnnotation
-        .getString(AnnotationStoreStrings.ID.getName());
-    } else {
-      throw new JSONException("There was a problem with the annotation");
+      JSONObject annoserverAnnotation = new JSONObject(response.body());
+      logger.info("Annotation store response: " + annoserverAnnotation);
+
+      if (response.statusCode() < 200 || response.statusCode() > 300) { //anything but success codes
+        throw new JSONException("Unexpected response code " + response.statusCode() + " on annotation store access");
+      }
+
+      String annoID;
+      if (annoserverAnnotation.has(AnnotationStoreStrings.ID.getName())) {
+        annoID = annoserverAnnotation.getString(AnnotationStoreStrings.ID.getName());
+      } else {
+        throw new JSONException("There was a problem with the annotation");
+      }
+
+      //jsonAnnotation.put(AnnotationStoreStrings.VIA.getName(), annoID);
+      //jsonAnnotation.put(AnnotationStoreStrings.CANONICAL.getName(), annoID);
+      //jsonAnnotation.remove(AnnotationStoreStrings.ID.getName());
+      //HttpResponse<String> response = httpRequestHelper.postAnnotations(urlPrefix
+      //    + VALIDATED_URL, jsonAnnotation);
+      //JSONObject validatedAnnotation = new JSONObject(response.body());
+      putEtag(response, jsonAnnotation);
+
+      jsonAnnotation.put(AnnotationStoreStrings.ID.getName(), annoID);
+      return jsonAnnotation;
+    } catch(ConnectException e) {
+      //catch for specific error message
+      logger.error("Unable to connect to annotation server");
+      throw new ConnectException("Unable to connect to annotation server"); //rethrow to allow for failure on application level
     }
-
-    //jsonAnnotation.put(AnnotationStoreStrings.VIA.getName(), deinterpretationeId);
-    //jsonAnnotation.put(AnnotationStoreStrings.CANONICAL.getName(), deinterpretationeId);
-    //jsonAnnotation.remove(AnnotationStoreStrings.ID.getName());
-    //HttpResponse<String> response = httpRequestHelper.postAnnotations(urlPrefix
-    //    + VALIDATED_URL, jsonAnnotation);
-    //JSONObject validatedAnnotation = new JSONObject(response.body());
-    putEtag(response, jsonAnnotation);
-    
-    jsonAnnotation.put(AnnotationStoreStrings.ID.getName(),deinterpretationeId);
-    return jsonAnnotation;
   }
 
   /**
@@ -134,11 +139,16 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
     HttpResponse<String> response = httpRequestHelper.get(annotationId);
     JSONObject result = new JSONObject(response.body());
 
-    if (!response.headers().allValues(AnnotationStoreStrings.ETAG.getName()).isEmpty()) {
-      String etag = response.headers().allValues(AnnotationStoreStrings.ETAG.getName())
-          .get(response.headers()
-              .allValues(AnnotationStoreStrings.ETAG.getName()).size() - 1);
-      result.put(AnnotationStoreStrings.ETAG.getName(), etag);
+    if(response.statusCode() < 200 || response.statusCode() > 300) { //anything but success codes
+      logger.info("Annotation store  for annotation: " + result);
+      throw new JSONException("Unexpected response code " + response.statusCode() + " on annotation store access");
+    }
+
+    Optional<String> etag = response.headers().firstValue(AnnotationStoreStrings.ETAG.getName());
+    if (etag.isPresent()) {
+      result.put(AnnotationStoreStrings.ETAG.getName(), etag.get());
+    } else {
+      logger.warn("Unable to retrieve etag for " + annotationId);
     }
 
     return result;
@@ -199,24 +209,26 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
     
 
     //Go through all nested containers and queue annotation containers for retrieval
-    HttpResponse<String> currentResponse;
-    JSONObject containerJson;
-    while(wapContainerQ.size() > 0) {
+    try {
+      logger.info("Creating queue for annotation containers");
+      HttpResponse<String> currentResponse;
+      JSONObject containerJson;
+      while (wapContainerQ.size() > 0) {
         String currentUri = wapContainerQ.poll();
 
-        currentResponse = httpRequestHelper.get(currentUri.toString());
+        logger.info("Requesting " + currentUri);
+        currentResponse = httpRequestHelper.get(currentUri);
         containerJson = new JSONObject(currentResponse.body());
-        if(containerJson.has("first")) {
+        if (containerJson.has("first")) {
           annoContainerQ.add(currentUri);
         }
-        if(containerJson.has("contains")) {
+        if (containerJson.has("contains")) {
           Object containerContains = containerJson.get("contains");
-          if (containerContains instanceof JSONArray) {
-            JSONArray containerUriArray = (JSONArray)containerContains;
-            for (int i = 0; i < containerUriArray.length(); i++) {  
+          if (containerContains instanceof JSONArray containerUriArray) {
+            for (int i = 0; i < containerUriArray.length(); i++) {
               String nextContainerURI = containerUriArray.getString(i);
               //TODO: only for testing purposes!
-              if (!nextContainerURI.contains("/repo/")){
+              if (!nextContainerURI.contains("/repo/")) {
                 wapContainerQ.add(nextContainerURI);
               }
             }
@@ -225,12 +237,24 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
             wapContainerQ.add(containerContains.toString());
           }
         }
+      }
+    } catch(ConnectException e) {
+      //catch for specific error message
+      logger.error("Unable to connect to annotation server");
+      throw new ConnectException("Unable to connect to annotation server"); //rethrow to allow for failure on application level
+    } catch (JSONException e) {
+      //catch for specific error message
+      logger.error("Response for annotation container could not be parsed");
+      throw e; //rethrow to allow for failure on application level
+    }
+    if (annoContainerQ.isEmpty()) {
+      logger.warn("Could not retrieve any annotation containers. Annotation server state might not be suitable for annotation storage");
     }
 
     List<JSONObject> annoJsonList = new ArrayList<>();
     for(String containerUri : annoContainerQ) {
       logger.info("Getting annos from {}", containerUri);
-      annoJsonList.addAll(getAnnotationsFromContainer(containerUri.toString()));
+      annoJsonList.addAll(getAnnotationsFromContainer(containerUri));
     }
 
 
