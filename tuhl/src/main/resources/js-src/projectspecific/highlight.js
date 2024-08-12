@@ -33,7 +33,7 @@ export function getSpecificClasses() {
 export function assignStyle($element, annotation, index, alreadyHighlighted) {
   // different highlights for different annotation types
   switch (annotation.color) {
-    case '#000021':
+    case '#000011':
       // if a word is not highlighted add the "metaphor" class, if it is
       // already highlighted add "metaphorSecond"
       if (!alreadyHighlighted) {
@@ -57,28 +57,10 @@ export function assignStyle($element, annotation, index, alreadyHighlighted) {
       //    $element.classList.add('whitespaceAfter');
       // }
       break;
-    case '#000011':
-      $element.classList.add('backgroundOne');
-      break;
-    case '#000012':
-      $element.classList.add('backgroundOne');
-      break;
-    case '#000013':
-      $element.classList.add('backgroundOne');
-      break;
-    case '#000014':
-      $element.classList.add('backgroundTwo');
-      break;
     default:
       // this is not ideal, but without the if clause, most of words
       // will get the defaulthighlighting class
-      if (
-        annotation.color === '#000021' ||
-        annotation.color === '#000011' ||
-        annotation.color === '#000012' ||
-        annotation.color === '#000013' ||
-        annotation.color === '#000014'
-      ) {
+      if (annotation.color === '#000011') {
         // nothing will happen
       } else {
         $element.classList.add('defaulthighlight');

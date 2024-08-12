@@ -1,24 +1,20 @@
 /* eslint-disable no-unused-vars */
-import { applyStylesB03, applyStylesB04 } from './textloader';
 import { enableLanguageViewToggleButton } from './sidebar';
-import { setMRWAnnos, setSelectedText } from './editor';
-import { addLinkToAnalysisTool, updateLinkingTextcard } from './annotationCard';
-import { initializeCRC1475Specifics } from '.';
 
 /**
  * add functions to the hook. The API definition can be found below
  */
 export const hooks = {
-  initializeProjectspecifics: [initializeCRC1475Specifics],
+  initializeProjectspecifics: [],
   preMakeHTML: [],
-  postApplyStyles: [applyStylesB03, applyStylesB04],
+  postApplyStyles: [],
   postSidebarCreation: [enableLanguageViewToggleButton],
-  postTargetCreation: [setMRWAnnos, setSelectedText],
+  postTargetCreation: [],
   manipulatingData: [],
   postAnnotationCreation: [],
   preAppendingBodies: [],
-  postAppendingBodies: [addLinkToAnalysisTool],
-  preHorizontalBodyCardCreation: [updateLinkingTextcard],
+  postAppendingBodies: [],
+  preHorizontalBodyCardCreation: [],
   postAnnotationCardCreation: [],
 };
 

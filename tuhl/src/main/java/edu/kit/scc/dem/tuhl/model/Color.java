@@ -5,13 +5,15 @@ package edu.kit.scc.dem.tuhl.model;
  */
 public enum Color {
 	// TODO: CUSTOMISE which colors are used in 
-	// "takita/tuhl/src/main/resources/static/js/creation_templates(_text).js",
-	// "takita/tuhl/src/main/resources/static/js/editor_xml.js"
+	// - "src/main/resources/js-src/projectspecific/annotationCreation/templates.js",
+	// - "src/main/resources/js-src/projectspecific/highlight.js" at assignStyle() and
+	// - "src/main/resources/js-src/projectspecific/utils.js" at getColorNameFromEnumEntry(colorEnumEntry)/
+	//    getColorHexFromEnumEntry(colorEnumEntry)
 	// and adjust the stringToColor()/colorToString()-functions
 	
 	// the string-VALUE in "INDEX("#COLHEX", "VALUE")" might need to be equal
 	// to the string (case insensitive) of the tagging/classifying-body assigned by
-	// creation_templates(_text).js
+	// js-src/projectspecific/annotationCreation/templates.js
 	// CRC980 colors
   TEXT_REGION("#00edff", "TextRegion"),
   IMAGE_REGION("#3d3a2e", "ImageRegion"),
@@ -29,14 +31,8 @@ public enum Color {
   CUSTOM_REGION("#23035e", "CustomRegion"),
   PAGE_REGION("#e2b8f7", "PageRegion"),
   // CRC1475 colors
-  MRW_DIRECT("#000011", "mrw (direct)"),
-  MRW_INDIRECT("#000012", "mrw (indirect)"),
-  MRW_IMPLICIT("#000013", "mrw (implicit)"),
-  MFLAG("#000014", "mflag"),
-  MRW("#000015", "mrw"),
-  MRW_CANDIDATE("#000016", "mrw candidate"),
-  METAPHOR("#000021", "metaphor"),
   // toRoll colors
+  EXAMPLE("#000011", "example"),
   // default
   DEFAULT("#ff8d00", "Default");
   
@@ -107,20 +103,8 @@ public enum Color {
     	return Color.NOISE_REGION;
     } else if (Color.UNKNOWN_REGION.getName().equalsIgnoreCase(stringColor)) {
     	return Color.UNKNOWN_REGION;
-    } else if (Color.MRW_DIRECT.getName().equalsIgnoreCase(stringColor)) {
-        return Color.MRW_DIRECT;
-    } else if (Color.MRW_INDIRECT.getName().equalsIgnoreCase(stringColor)) {
-        return Color.MRW_INDIRECT;
-    } else if (Color.MRW_IMPLICIT.getName().equalsIgnoreCase(stringColor)) {
-        return Color.MRW_IMPLICIT;
-    } else if (Color.MRW.getName().equalsIgnoreCase(stringColor)) {
-        return Color.MRW;
-    } else if (Color.MRW_CANDIDATE.getName().equalsIgnoreCase(stringColor)) {
-        return Color.MRW_CANDIDATE;
-    } else if (Color.MFLAG.getName().equalsIgnoreCase(stringColor)) {
-        return Color.MFLAG;
-    } else if (Color.METAPHOR.getName().equalsIgnoreCase(stringColor)) {
-        return Color.METAPHOR;
+    } else if (Color.EXAMPLE.getName().equalsIgnoreCase(stringColor)) {
+        return Color.EXAMPLE;
     } else {
       return Color.DEFAULT;
     }
@@ -158,20 +142,8 @@ public enum Color {
         return Color.UNKNOWN_REGION.getName();
       case CUSTOM_REGION:
         return Color.CUSTOM_REGION.getName();
-      case MRW_DIRECT:
-          return Color.MRW_DIRECT.getName();
-      case MRW_INDIRECT:
-          return Color.MRW_INDIRECT.getName();
-      case MRW_IMPLICIT:
-          return Color.MRW_IMPLICIT.getName();
-      case MRW:
-          return Color.MRW.getName();
-      case MRW_CANDIDATE:
-          return Color.MRW_CANDIDATE.getName();
-      case MFLAG:
-          return Color.MFLAG.getName();
-      case METAPHOR:
-          return Color.METAPHOR.getName();
+      case EXAMPLE:
+          return Color.EXAMPLE.getName();
       default:
         return Color.DEFAULT.getName();
     }

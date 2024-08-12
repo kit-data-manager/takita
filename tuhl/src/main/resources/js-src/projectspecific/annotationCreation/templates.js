@@ -2,15 +2,7 @@
 import { isEmpty } from 'underscore';
 import $ from 'jquery';
 // internal imports
-import {
-  preselectAllMRWAnnos,
-  makeAnnotationData,
-  getEnumAndTitleMap,
-  getSelectMRWButton,
-  findSelectedMRWAnnos,
-  spreadMRWArray,
-  makeBodiesData,
-} from './utils';
+import { makeAnnotationData, makeBodiesData } from './utils';
 import { hooks } from '..';
 import { createAnnotation } from '../../common/annotationCreation';
 import { selectAnnotation } from '../../common/annotationCard';
@@ -24,11 +16,8 @@ import { createBodyData } from '../../texteditor-ng/data';
 // for adding new: include name here and add dataModel in
 // getFormModel(chosenTemplate)
 const annotationTemplate = {
-  MRWDIRECT: 'mrwdirect',
-  MRWINDIRECT: 'mrwindirect',
-  MRWIMPLICIT: 'mrwimplicit',
-  MFLAG: 'mflag',
-  METAPHOR: 'metaphor',
+  EXAMPLE: 'example',
+  NOTEMPLATE: 'notemplate',
 };
 
 // enum for different body templates to create simple dropdown to choose body template
@@ -37,8 +26,8 @@ const annotationTemplate = {
 // for adding new: include name here and add dataModel in
 // getFormModel(chosenTemplate)
 const bodyTemplate = {
-  COMMENT: 'comment',
-  MRW: 'mrw',
+  TAG: 'tag',
+  TEXTBODY: 'textbody',
 };
 
 // template for jsonForm object to create new annotation
@@ -85,14 +74,6 @@ export const formObjectCreateAnnotation = {
           // eslint-disable-next-line no-unused-vars
           const annotation = await createAnnotation(annotationData, hooks);
         });
-
-        preselectAllMRWAnnos(
-          window.MRW_ANNOS,
-          document.querySelector(
-            '#pickAnnotationTemplateForm > div:nth-child(1) > div:nth-child(1) > div:nth-child(2) > select:nth-child(1)',
-          ).value,
-          document.querySelectorAll('input[name^=mrws'),
-        );
       },
       titleMap: {},
     },
@@ -149,13 +130,6 @@ export const formObjectCreateBody = {
           //console.log(value);
           //console.log(jsonObject);
 
-          // CRC 1475 specific
-          // as the uris of the mrw annotations are stored in an array and the wadm does not accept an array as a value
-          // of a textual body, the array will be split into multiple "key:value" pairs, with the same key (mrws)
-          if ('mrws' in jsonObject) {
-            jsonObject = spreadMRWArray(jsonObject);
-          }
-
           console.log(jsonObject);
           if (jsonObject !== undefined && !isEmpty(jsonObject)) {
             try {
@@ -197,10 +171,10 @@ export const formObjectCreateBody = {
 // the actual thing where templating is done
 // TODO: CUSTOMISE available annotations and their structure/content (dataModel)
 //      (when adjusting the "color.default.value", make sure to add those to the enum in
-//      "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java" and the code in
-//      "takita/tuhl/src/main/resources/static/js/editor_xml.js" at
-//          - drawAnnos(annoJson)
-//          - getColorNameFromEnumEntry(colorEnumEntry)/getColorHexFromEnumEntry(colorEnumEntry)
+//      - "src/main/java/edu/kit/scc/dem/tuhl/model/Color.java" and the code in
+//      - "src/main/resources/js-src/projectspecific/highlight.js" at assignStyle() and
+//      - "src/main/resources/js-src/projectspecific/utils.js" at getColorNameFromEnumEntry(colorEnumEntry)/
+//         getColorHexFromEnumEntry(colorEnumEntry)
 //      and that the color hexcodes match)
 // and how they are displayed in the modal (uiForm)
 /**
@@ -214,21 +188,22 @@ export function getFormModel(chosenTemplate) {
   let uiForm;
 
   switch (chosenTemplate) {
-    case 'MRWDIRECT': {
+    case 'EXAMPLE':
       dataModel = {
         type: 'object',
         properties: {
-          selectedText: {
+          freetext: {
             type: 'string',
-            title: 'Selected text',
-            default: window.SELECTED_TEXT,
-            readOnly: true,
+            title: 'free text input',
           },
-          classification: {
+          enum: {
             type: 'string',
-            title: 'Classification',
-            default: 'mrw (direct)',
-            readOnly: true,
+            title: 'enum input',
+            enum: ['', 'Term1', 'Term2', 'Term3'],
+          },
+          tag: {
+            type: 'string',
+            title: 'tag input',
           },
           color: {
             type: 'string',
@@ -241,10 +216,14 @@ export function getFormModel(chosenTemplate) {
       uiForm = {
         type: 'fieldset',
         items: [
-          'selectedText',
           {
-            key: 'classification',
-            readOnly: true,
+            key: 'freetext',
+          },
+          {
+            key: 'enum',
+          },
+          {
+            key: 'tag',
           },
           {
             key: 'color',
@@ -254,388 +233,52 @@ export function getFormModel(chosenTemplate) {
         ],
       };
       break;
-    }
-    case 'MRWINDIRECT': {
+
+    case 'NOTEMPLATE':
       dataModel = {
         type: 'object',
         properties: {
-          selectedText: {
+          hidden: {
             type: 'string',
-            title: 'Selected text',
-            default: window.SELECTED_TEXT,
-            readOnly: true,
-          },
-          classification: {
-            type: 'string',
-            title: 'Classification',
-            default: 'mrw (indirect)',
-            readOnly: true,
-          },
-          color: {
-            type: 'string',
-            title: 'color',
-            default: '#000012',
-            readOnly: true,
+            title: 'hiddenObject',
           },
         },
       };
       uiForm = {
         type: 'fieldset',
-        items: [
-          'selectedText',
-          {
-            key: 'classification',
-            readOnly: true,
-          },
-          {
-            key: 'color',
-            readOnly: true,
-            htmlClass: 'is-hidden',
-          },
-        ],
+        items: [],
       };
       break;
-    }
-    case 'MRWIMPLICIT': {
+
+    case 'TAG':
       dataModel = {
         type: 'object',
         properties: {
-          selectedText: {
+          value: {
             type: 'string',
-            title: 'Selected text',
-            default: window.SELECTED_TEXT,
-            readOnly: true,
-          },
-          classification: {
-            type: 'string',
-            title: 'Classification',
-            default: 'mrw (implicit)',
-            readOnly: true,
-          },
-          color: {
-            type: 'string',
-            title: 'color',
-            default: '#000013',
-            readOnly: true,
+            title: 'value',
           },
         },
-      };
-      uiForm = {
-        type: 'fieldset',
-        items: [
-          'selectedText',
-          {
-            key: 'classification',
-            readOnly: true,
-          },
-          {
-            key: 'color',
-            readOnly: true,
-            htmlClass: 'is-hidden',
-          },
-        ],
+        required: ['value'],
       };
       break;
-    }
-    case 'MFLAG': {
-      dataModel = {
-        type: 'object',
-        properties: {
-          selectedText: {
-            type: 'string',
-            title: 'Selected text',
-            default: window.SELECTED_TEXT,
-            readOnly: true,
-          },
-          classification: {
-            type: 'string',
-            title: 'Classification',
-            default: 'mflag',
-            readOnly: true,
-          },
-          color: {
-            type: 'string',
-            title: 'color',
-            default: '#000014',
-            readOnly: true,
-          },
-        },
-      };
-      uiForm = {
-        type: 'fieldset',
-        items: [
-          'selectedText',
-          {
-            key: 'classification',
-            readOnly: true,
-          },
-          {
-            key: 'color',
-            readOnly: true,
-            htmlClass: 'is-hidden',
-          },
-        ],
-      };
-      break;
-    }
-    case 'METAPHOR': {
-      // a user can either use the default label or create a humanreadable
-      // label for the metaphor annotation
-      let defaultLabel = window.CURRENTPAGENUMBER + Date.now();
 
-      let dataModelProperties = {
-        selectedText: {
-          type: 'string',
-          title: 'Selected text',
-          default: window.SELECTED_TEXT,
-          readOnly: true,
-        },
-        classification: {
-          type: 'string',
-          title: 'Classification',
-          default: 'metaphor',
-          readOnly: true,
-        },
-        label: {
-          type: 'string',
-          title: 'Label',
-          default: defaultLabel,
-        },
-        comment: {
-          type: 'string',
-          title: 'Comment',
-        },
-        color: {
-          type: 'string',
-          title: 'color',
-          default: '#000021',
-          readOnly: true,
-        },
-      };
-
-      let uiFormItems = [
-        {
-          key: 'selectedText',
-          type: 'textarea',
-        },
-        {
-          key: 'classification',
-          readOnly: true,
-        },
-        {
-          key: 'label',
-        },
-        {
-          key: 'comment',
-          type: 'textarea',
-        },
-        {
-          key: 'color',
-          readOnly: true,
-          htmlClass: 'is-hidden',
-        },
-      ];
-
-      // if there are mrw-annotations present in the current selection
-      // modify the dataModel and uiForm in a way to show a checkbox
-      // for each mrw-annotation present
-      if (window.MRW_ANNOS.length > 0) {
-        // if a user wants to create a metaphor annotation,
-        // get all the mrws that are present in his selection (window.MRW_ANNOS)
-        // and store them in the enum to hold all the mrwAnnoIds, so the user can
-        // choose a mrw to link it to a metaphor
-        // metaphorTitleMap is necessary to have the actual words displayed,
-        // but to have the annoId as a value on the submission of the form
-        const [mrwEnum, mrwTitleMap] = getEnumAndTitleMap(window.MRW_ANNOS);
-
-        let selectMRWButton = getSelectMRWButton(mrwEnum);
-
-        dataModelProperties = {
-          selectedText: {
-            type: 'string',
-            title: 'Selected text',
-            default: window.SELECTED_TEXT,
-            readOnly: true,
-          },
-          classification: {
-            type: 'string',
-            title: 'Classification',
-            default: 'metaphor',
-            readOnly: true,
-          },
-          mrws: {
-            type: 'array',
-            title: 'Metaphor related words (direct, indirect, implicit and mflags)',
-            items: {
-              type: 'string',
-              title: 'Option',
-              enum: mrwEnum,
-            },
-          },
-          label: {
-            type: 'string',
-            title: 'Label',
-            default: defaultLabel,
-          },
-          comment: {
-            type: 'string',
-            title: 'Comment',
-          },
-          color: {
-            type: 'string',
-            title: 'color',
-            default: '#000021',
-            readOnly: true,
-          },
-        };
-        uiFormItems = [
-          {
-            key: 'selectedText',
-            type: 'textarea',
-          },
-          {
-            key: 'classification',
-            readOnly: true,
-          },
-          {
-            type: 'checkboxes',
-            key: 'mrws',
-            titleMap: mrwTitleMap,
-          },
-          selectMRWButton,
-          {
-            key: 'label',
-          },
-          {
-            key: 'comment',
-            type: 'textarea',
-          },
-          {
-            key: 'color',
-            readOnly: true,
-            htmlClass: 'is-hidden',
-          },
-        ];
-      }
-
-      dataModel = {
-        type: 'object',
-        properties: dataModelProperties,
-      };
-      uiForm = {
-        type: 'fieldset',
-        items: uiFormItems,
-      };
-      break;
-    }
-    case 'CONTEXT': {
-      dataModel = {
-        type: 'object',
-        properties: {
-          classification: {
-            type: 'string',
-            title: 'Classification',
-            default: 'context',
-            readOnly: true,
-          },
-        },
-      };
-      uiForm = {
-        type: 'fieldset',
-        items: [
-          {
-            key: 'classification',
-            readOnly: true,
-          },
-        ],
-      };
-      break;
-    }
-    case 'COMMENT': {
+    case 'TEXTBODY':
       dataModel = {
         type: 'object',
         properties: {
           purpose: {
             type: 'string',
             title: 'purpose',
-            default: 'commenting',
-            readonly: true,
           },
           value: {
             type: 'string',
-            title: 'Comment',
+            title: 'value',
           },
         },
         required: ['purpose', 'value'],
       };
-      uiForm = {
-        type: 'fieldset',
-        items: [
-          'purpose',
-          {
-            key: 'value',
-            type: 'textarea',
-            label: 'Comment',
-          },
-        ],
-      };
       break;
-    }
-    case 'MRW': {
-      // if a user wants to link another mrw annotation to a metaphor annotation,
-      // get all the mrws that share their target with the metaphor annotation
-      // and store them in the enum to hold all the mrwAnnoIds, so the user can
-      // choose a mrw to link it to a metaphor
-
-      // store all elements targeted by the metaphor annotation and mrw annotations
-      let elementsTargeted = window.SELECTED_ANNOTATION.targets.map((target) => {
-        return document.getElementById(target.selector.xPath.split('"')[1]);
-      });
-      // get all mrwAnnos that target the same words as the metaphor annotation
-      let mrwAnnosForBody = findSelectedMRWAnnos(window.ANNOJSON, elementsTargeted);
-      // remove all mrw annotations, which are linked to the metaphor annotation already
-      // from mrwAnnosForBody to prevent users from linking the same mrwAnno
-      // multiple times
-      window.SELECTED_ANNOTATION.textCards.forEach((textCard) => {
-        if (textCard.purpose === 'linking') {
-          mrwAnnosForBody = mrwAnnosForBody.filter((anno) => textCard.value !== anno.id);
-        }
-      });
-
-      // mrwTitleMapForBody is necessary to have the actual words displayed,
-      // but the have the annoId as a value on the submission of the form
-      const [mrwEnumForBody, mrwTitleMapForBody] = getEnumAndTitleMap(mrwAnnosForBody);
-
-      let selectMRWButtonForBody = getSelectMRWButton(mrwEnumForBody);
-
-      dataModel = {
-        type: 'object',
-        properties: {
-          mrws: {
-            type: 'array',
-            title: 'Metaphor related words (direct, indirect, implicit and mflags)',
-            items: {
-              type: 'string',
-              title: 'Option',
-              enum: mrwEnumForBody,
-            },
-          },
-        },
-        required: ['mrws'],
-      };
-      uiForm = {
-        type: 'fieldset',
-        items: [
-          {
-            type: 'checkboxes',
-            key: 'mrws',
-            titleMap: mrwTitleMapForBody,
-          },
-          selectMRWButtonForBody,
-        ],
-      };
-      break;
-    }
   }
 
   console.log('dataModel: ', dataModel);
