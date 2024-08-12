@@ -347,6 +347,8 @@ public class AnnotationConverterTest {
 
     @Test
     void buildJsonFromSimpleAnnotation() throws JSONException, IOException, InterruptedException, org.json.JSONException {
+    	// tAkita currently can't handle "simple" targets, which just contain the URI of a resource.
+    	// Therefore, this test will fail.
         String uriString = "http://example.com";
         String targetString = "http://example.com/dataresources/1234/data/";
         JSONObject body = new JSONObject();
