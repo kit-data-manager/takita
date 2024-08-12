@@ -344,13 +344,19 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
     //String date = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat().format(timestamp);
     String date = timestamp.toString();
 
-    //Sparql query to get only the annotations modified after date
-    HttpResponse<String> response = httpRequestHelper.get(sparqlQueryUrlPrefix
-        + SPARQL_QUERY_LAST_MODIFIED_1 + date + SPARQL_QUERY_LAST_MODIFIED_2
-        + date + SPARQL_QUERY_LAST_MODIFIED_3);
+    HttpResponse<String> sparqlResponse;
+    try {
+      //Sparql query to get only the annotations modified after date
+      sparqlResponse = httpRequestHelper.get(sparqlQueryUrlPrefix
+              + SPARQL_QUERY_LAST_MODIFIED_1 + date + SPARQL_QUERY_LAST_MODIFIED_2
+              + date + SPARQL_QUERY_LAST_MODIFIED_3);
+    } catch (ConnectException e) {
+      logger.error("Error connecting to SPARQL endpoint of annotation server");
+      throw new ConnectException("Error connecting to SPARQL endpoint of annotation server");
+    }
 
     //Extracts annotations from response and adds them to the list
-    List<JSONObject> modifiedAnnotations = getAnnotationsFromXml(response.body());
+    List<JSONObject> modifiedAnnotations = getAnnotationsFromXml(sparqlResponse.body());
     List<String> canonicalIds = new ArrayList<>();
     logger.info("Detected {} new or modified annotations", modifiedAnnotations.size());
     for (JSONObject annotation : modifiedAnnotations) {
@@ -436,6 +442,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
     
     // making errors or redirects of the HTTP communication with the annotation 
     // store visible otherwise they would silently fail
+    //TODO: improve error handling (ConnectionError). This is the only place a responseStatusException is thrown - is it properly handled?
     if (HttpStatus.valueOf(response.statusCode()).is3xxRedirection() || HttpStatus.valueOf(response.statusCode()).isError()) {
         throw new ResponseStatusException(HttpStatus.resolve(response.statusCode()));
     }
@@ -482,6 +489,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
           AnnotationStoreStrings.CANONICAL.getName()).toString(),
           deInterpretationeEtag);
     }
+    //TODO: improve error handling
   }
 
   private List<JSONObject> getAnnotationsFromXml(String xmlResponse)
