@@ -65,7 +65,7 @@ export async function getAllAnnotationsData() {
  * @returns {Object} annotation data
  */
 export async function createAnnotationData(annotationData) {
-  const url = window.CONTEXTPATH + 'editor_rest/annotations/';
+  const url = window.CONTEXTPATH + 'editor_rest/annotations';
   const response = await createAnnotation(url, annotationData);
   if (response.status == 200) {
     return await response.json();

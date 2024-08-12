@@ -1,13 +1,9 @@
 package edu.kit.scc.dem.tuhl.model.filter;
 
-import static org.elasticsearch.index.query.QueryBuilders.matchAllQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
-
 import com.google.gson.annotations.Expose;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.Criteria;
 
 public class MatchFilter implements Filter {
 
@@ -17,7 +13,7 @@ public class MatchFilter implements Filter {
   public static final FilterType TYPE = FilterType.MATCH;
   private final String field;
   @Expose(serialize = false, deserialize = false)
-  private transient NativeSearchQuery query;
+  private transient Criteria criteria;
   private List<String> values;
 
 
@@ -50,15 +46,19 @@ public class MatchFilter implements Filter {
    */
   @Override
   public void setValues(List<String> values) {
+    Criteria criteria = null;
     this.values = values;
     if (!values.isEmpty() && !values.get(0).trim().equals("")) {
-      NativeSearchQueryBuilder queryBuilder = new NativeSearchQueryBuilder();
       for (String v: values) {
-        queryBuilder.withQuery(matchQuery(field, v));
+        if (criteria == null) {
+          criteria = new Criteria(field).is(v);
+        } else {
+          criteria = criteria.or(field).is(v);
+        }
       }
-      this.query = queryBuilder.build();
+      this.criteria = criteria;
     }  else {
-      this.query = new NativeSearchQueryBuilder().withQuery(matchAllQuery()).build();
+      this.criteria = new Criteria();
     }
   }
 
@@ -67,8 +67,8 @@ public class MatchFilter implements Filter {
    * @return query as NativeSearchQuery
    */
   @Override
-  public NativeSearchQuery getQuery() {
-    return query;
+  public Criteria getCriteria() {
+    return criteria;
   }
 
   /**

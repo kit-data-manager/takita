@@ -206,72 +206,77 @@ function drawAnnos(annoJson) {
       targetXmlId = target.split('"')[1];
       const targetElement = document.getElementById(targetXmlId);
 
-      // if color is available assign css class
-      if (annotation.color) {
-        // different highlights for different annotation types
-        switch (annotation.color) {
-          // TODO: CUSTOMISE highlighting of different annotations, based on the color
-          // see "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java"
-          // and "takita/tuhl/src/main/resources/static/js/creation_templates_text.js"
-          // (linked to classes to be removed in removeStyles() funtcion)
-          case '#000021':
-            // if a word is not highlighted add the "metaphor" class, if it is
-            // already highlighted add "metaphorSecond"
-            if (!alreadyAnnotated) {
-              targetElement.classList.add('metaphor');
-            } else {
-              targetElement.classList.add('metaphorSecond');
+            // if color is available assign css class
+            if (annotation.color) {
+                // different highlights for different annotation types
+                switch (annotation.color){
+                    // TODO: CUSTOMISE highlighting of different annotations, based on the color
+                    // see "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java"
+                    // and "takita/tuhl/src/main/resources/static/js/creation_templates_text.js"
+                    // (linked to classes to be removed in removeStyles() funtcion)
+                    case "#000021":
+                        // if a word is not highlighted add the "metaphor" class, if it is
+                        // already highlighted add "metaphorSecond"
+                        if (!alreadyAnnotated){
+                            targetElement.classList.add("metaphor");
+                        } else {
+                            targetElement.classList.add("metaphorSecond");
+                        }
+                        
+                        // if a word is followed only by whitespace add the "whitespaceAfter" class
+                        // unless its the last word of the target.
+                        // TODO: this doesn't work for overlapping annotations. The "whitespaceAfter" class will
+                        // be assigned even if the word is the last target for one annotation as the word is part of multiple
+                        // annotations and it might be the last target of one annotation but not the other one
+                        // This is needed to create overlapping boxshadows.
+                        // check if nextSibling is null first
+                        if (targetElement.nextSibling !== null) {
+                            if (targetElement.nextSibling.textContent.trim() === "" && !(index === (annotation.svg.length - 1))){
+                                targetElement.classList.add("whitespaceAfter");
+                            }
+                        } else {
+                            targetElement.classList.add("whitespaceAfter");
+                        }
+                        break;
+                    case "#000011":
+                        targetElement.classList.add("mrw");
+                        break;
+                    case "#000012":
+                        targetElement.classList.add("mrw");
+                        break;
+                    case "#000013":
+                        targetElement.classList.add("mrw");
+                        break;
+                    case "#000014":
+                        targetElement.classList.add("mflag");
+                        break;
+                    case "#000015":
+                        targetElement.classList.add("mrw");
+                        break;
+                    case "#000016":
+                        targetElement.classList.add("mrw");
+                        break;
+                    default:
+                        // this is not ideal, but without the if clause, most of words
+                        // will get the defaulthighlighting class
+                        if (annotation.color === "#000021" ||
+                            annotation.color === "#000011" ||
+                            annotation.color === "#000012" ||
+                            annotation.color === "#000013" ||
+                            annotation.color === "#000014" ||
+                            annotation.color === "#000015" ||
+                            annotation.color === "#000016"){
+                                // nothing will happen
+                        } else {
+                            targetElement.classList.add("defaulthighlight");
+                            //console.log("Tag value not matching the possible cases, 'defaulthighlight' class added for:", annotation);
+                        }
+                }
+            } else { // if no tags are given (might be due to the tagging body being delted), assign default
+                targetElement.classList.add("defaulthighlight");
             }
-
-            // if a word is followed only by whitespace add the "whitespaceAfter" class
-            // unless its the last word of the target.
-            // TODO: this doesn't work for overlapping annotations. The "whitespaceAfter" class will
-            // be assigned even if the word is the last target for one annotation as the word is part of multiple
-            // annotations and it might be the last target of one annotation but not the other one
-            // This is needed to create overlapping boxshadows.
-            // check if nextSibling is null first
-            if (targetElement.nextSibling !== null) {
-              if (targetElement.nextSibling.textContent.trim() === '' && !(index === annotation.svg.length - 1)) {
-                targetElement.classList.add('whitespaceAfter');
-              }
-            } else {
-              targetElement.classList.add('whitespaceAfter');
-            }
-            break;
-          case '#000011':
-            targetElement.classList.add('mrw');
-            break;
-          case '#000012':
-            targetElement.classList.add('mrw');
-            break;
-          case '#000013':
-            targetElement.classList.add('mrw');
-            break;
-          case '#000014':
-            targetElement.classList.add('mflag');
-            break;
-          default:
-            // this is not ideal, but without the if clause, most of words
-            // will get the defaulthighlighting class
-            if (
-              annotation.color === '#000021' ||
-              annotation.color === '#000011' ||
-              annotation.color === '#000012' ||
-              annotation.color === '#000013' ||
-              annotation.color === '#000014'
-            ) {
-              // nothing will happen
-            } else {
-              targetElement.classList.add('defaulthighlight');
-              //console.log("Tag value not matching the possible cases, 'defaulthighlight' class added for:", annotation);
-            }
-        }
-      } else {
-        // if no tags are given (might be due to the tagging body being delted), assign default
-        targetElement.classList.add('defaulthighlight');
-      }
-    });
-  });
+		});
+	});
 
   fillMetaDataEditorTable(annoJson);
 }
@@ -742,40 +747,41 @@ function createXPath(targetRangeList) {
 }
 
 // store all the mrw annotations that are contained in a selection
-function storeSelectedMRWAnnos(targetList) {
-  // empty the mrwAnno list beforehand
-  let mrwAnnos = [];
-  annoJson.forEach((annotation) => {
-    //annoXmlId = annotation.svg.split("\"")[1];
-    //console.log(annotation);
-    // checking if the annotation is a mrw-annotation by checking its color,
-    // which is based on the classifying body.
-    // See "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java"
-    // for the corresponding hexes/mrw-annotation types
-    if (
-      annotation.color === '#000011' ||
-      annotation.color === '#000012' ||
-      annotation.color === '#000013' ||
-      annotation.color === '#000014'
-    ) {
-      targetList.forEach((target) => {
-        annotation.svg.forEach((svg) => {
-          if (target.id === svg.split('"')[1]) {
-            // this iteration should not be necessary as a Set
-            // should not hold the same annotation twice
-            if (mrwAnnos.length === 0) {
-              mrwAnnos.push(annotation);
-            } else {
-              if (!mrwAnnos.some((entry) => entry.id === annotation.id)) {
-                mrwAnnos.push(annotation);
-              }
-            }
-          }
-        });
-      });
-    }
-  });
-  console.log('MRW annotations present in current selection: ', mrwAnnos);
+function storeSelectedMRWAnnos(targetList){
+	// empty the mrwAnno list beforehand
+	let mrwAnnos = [];
+	annoJson.forEach(annotation => {
+		//annoXmlId = annotation.svg.split("\"")[1];
+		//console.log(annotation);
+        // checking if the annotation is a mrw-annotation by checking its color,
+        // which is based on the classifying body.
+        // See "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java"
+        // for the corresponding hexes/mrw-annotation types
+        if (annotation.color === "#000011" || 
+            annotation.color === "#000012" || 
+            annotation.color === "#000013" || 
+            annotation.color === "#000014" ||
+            annotation.color === "#000015" ||
+            annotation.color === "#000016"){
+				targetList.forEach( target => {
+					annotation.svg.forEach( svg => {
+						if (target.id === svg.split("\"")[1]){
+							// this iteration should not be necessary as a Set
+							// should not hold the same annotation twice
+							if (mrwAnnos.length === 0) {
+								mrwAnnos.push(annotation);
+							} else {
+								if (!mrwAnnos.some(entry => entry.id === annotation.id)){
+									mrwAnnos.push(annotation);
+								}
+							}
+							
+						}
+					});
+				});
+		}
+	});
+	console.log("MRW annotations present in current selection: ", mrwAnnos);
 
   return mrwAnnos;
 }
@@ -973,51 +979,51 @@ function saveModification() {
 // TODO: CUSTOMISE the colors based
 // see "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java"
 // and "takita/tuhl/src/main/resources/static/js/creation_templates_text.js"
-function getColorHexFromEnumEntry(colorEnumEntry) {
-  let colorHex = '#89f099';
-  switch (colorEnumEntry) {
-    case 'MRW_DIRECT':
-      colorHex = '#000011';
-      break;
-    case 'MRW_INDIRECT':
-      colorHex = '#000012';
-      break;
-    case 'MRW_IMPLICIT':
-      colorHex = '#000013';
-      break;
-    case 'MFLAG':
-      colorHex = '#000014';
-      break;
-    case 'METAPHOR':
-      colorHex = '#000021';
-      break;
-  }
-  return colorHex;
+function getColorHexFromEnumEntry(colorEnumEntry){
+    let colorHex = "#89f099"
+    switch (colorEnumEntry) {
+        case "MRW_DIRECT":
+            colorHex = "#000011";
+            break;
+        case "MRW_INDIRECT":
+            colorHex = "#000012";
+            break;
+        case "MRW_IMPLICIT":
+            colorHex = "#000013";
+            break;
+        case "MFLAG":
+            colorHex = "#000014";
+            break;
+        case "METAPHOR":
+            colorHex = "#000021";
+            break;
+    }
+    return colorHex;
 }
 
 // TODO: CUSTOMISE the colors based
 // see "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java"
 // and "takita/tuhl/src/main/resources/static/js/creation_templates_text.js"
-function getColorNameFromEnumEntry(colorEnumEntry) {
-  let colorName = 'Default';
-  switch (colorEnumEntry) {
-    case 'MRW_DIRECT':
-      colorName = 'mrw (direct)';
-      break;
-    case 'MRW_INDIRECT':
-      colorName = 'mrw (indirect)';
-      break;
-    case 'MRW_IMPLICIT':
-      colorName = 'mrw (implicit)';
-      break;
-    case 'MFLAG':
-      colorName = 'mflag';
-      break;
-    case 'METAPHOR':
-      colorName = 'metaphor';
-      break;
-  }
-  return colorName;
+function getColorNameFromEnumEntry(colorEnumEntry){
+    let colorName = "Default"
+    switch (colorEnumEntry) {
+        case "MRW_DIRECT":
+            colorName = "mrw (direct)";
+            break;
+        case "MRW_INDIRECT":
+            colorName = "mrw (indirect)";
+            break;
+        case "MRW_IMPLICIT":
+            colorName = "mrw (implicit)";
+            break;
+        case "MFLAG":
+            colorName = "mflag";
+            break;
+        case "METAPHOR":
+            colorName = "metaphor";   
+            break;
+    }
+    return colorName;
 }
 
 function updateTarget() {
@@ -1040,31 +1046,23 @@ function updateTarget() {
     success: function (responseData) {
       console.log('Response data from succesfull target update: ', responseData);
 
-      let responseDataJson = JSON.parse(responseData);
-
-      // TODO: only temporary solution to update the body containing the selected text
-      // if the purpose changes, the following needs to be changed
-      let result = null;
-      result = responseDataJson.textCards.filter((textCard) => textCard.purpose === 'describing');
-      if (result != null && result.length > 0) {
-        // TODO: fix, when it goes into production, bc then the innerHTML will only be the selected text without any "|"s
-        let newSelectedText = document.getElementById('newSelectedText').children[0].innerHTML.split('|')[0];
-        newSelectedText.slice(0, newSelectedText.length - 1);
-        // TODO: should there not be a field to store, who modified the body in addition to the timestamp of the modification?
-        // console.log(responseDataJson.creators);
-        let updatedBody = {
-          created: new Date(
-            responseDataJson.created.seconds * 1000 + responseDataJson.created.nanos / 1000000,
-          ).toISOString(),
-          creators: responseDataJson.creators,
-          id: result[0].id,
-          modified: new Date(
-            responseDataJson.modified.seconds * 1000 + responseDataJson.modified.nanos / 1000000,
-          ).toISOString(),
-          purpose: result[0].purpose,
-          value: newSelectedText,
-        };
-        console.log('Updated body: ', updatedBody);
+                let responseDataJson = JSON.parse(responseData);
+ 
+                // TODO: only temporary solution to update the body containing the selected text
+                // if the purpose changes, the following needs to be changed
+                let result = null;
+                result = responseDataJson.textCards.filter(textCard => textCard.purpose === "describing");
+                if (result != null && result.length > 0) {
+                    // TODO: fix, when it goes into production, bc then the innerHTML will only be the selected text without any "|"s
+                    let newSelectedText = document.getElementById("newSelectedText").children[0].innerHTML.split("|")[0];
+                    newSelectedText.slice(0, (newSelectedText.length - 1));
+                    // TODO: should there not be a field to store, who modified the body in addition to the timestamp of the modification?                    
+                    // console.log(responseDataJson.creators);
+                    let updatedBody = {"created" : new Date(responseDataJson.created * 1000).toISOString(), 
+                    "creators" : responseDataJson.creators, "id" : result[0].id,
+                    "modified" : new Date(responseDataJson.modified * 1000).toISOString(), 
+                    "purpose" : result[0].purpose, "value" : newSelectedText};
+                    console.log("Updated body: ", updatedBody);
 
         let annoIdEncoded = encodeAnnoId(responseDataJson.id);
         let endpoint = window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + '/bodies/' + result[0].id;

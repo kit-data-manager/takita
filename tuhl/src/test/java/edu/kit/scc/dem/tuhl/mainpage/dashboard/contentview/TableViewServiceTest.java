@@ -9,6 +9,8 @@ import edu.kit.scc.dem.tuhl.mainpage.search.ISearchService;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
 import edu.kit.scc.dem.tuhl.model.page.ImagePage;
 import edu.kit.scc.dem.tuhl.model.page.Page;
+import edu.kit.scc.dem.tuhl.model.page.ResourceType;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -24,12 +26,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.ParseException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@SpringBootTest(classes = TableViewService.class)
 class TableViewServiceTest {
   
   @Autowired
@@ -51,6 +54,8 @@ class TableViewServiceTest {
     JSONArray actualJson = tableViewService.getData();
     JSONArray expectedJson = new JSONArray(Files.readString(
             Path.of("src/test/resources/tableViewService/tableData.json")));
+    System.out.println(expectedJson.toString());
+    System.out.println(actualJson.toString());
     JSONAssert.assertEquals(expectedJson.toString(), actualJson.toString(), false);
   }
   
@@ -142,23 +147,26 @@ class TableViewServiceTest {
   List<Manuscript> prepareMockResults() throws ParseException {
     DateFormat dateFormat = TimeStampFormats.TIMESTAMP_FORMAT_REPO.getDateFormat();
     ImagePage page1 = new ImagePage(
-        "5172f6cb-78c6-403d-b6eb-64d7738c76aa",
+        "5172f6cb-78c6-403d-b6eb-64d7738c76aa", 
+        ResourceType.IMAGE,
         "076v",
-        dateFormat.parse("2019-03-11T14:13:38Z"), "", "");
+        Instant.parse("2019-03-11T14:13:38Z"), "", "");
   
     ImagePage page2 = new ImagePage(
-        "3f3bf25b-e0b9-48a9-b344-20630f733f8b",
+        "3f3bf25b-e0b9-48a9-b344-20630f733f8b", 
+        ResourceType.IMAGE,
         "076r",
-        dateFormat.parse("2019-03-11T14:13:37Z"), "", "");
+        Instant.parse("2019-03-11T14:13:37Z"), "", "");
   
     ImagePage page3 = new ImagePage(
-        "f68e307b-c41b-412a-a2e2-60418fbbef27",
+        "f68e307b-c41b-412a-a2e2-60418fbbef27", 
+        ResourceType.IMAGE,
         "63r",
-        dateFormat.parse("2019-03-11T14:10:39Z"), "", "");
+        Instant.parse("2019-03-11T14:10:39Z"), "", "");
   
     Manuscript manuscript1 = new Manuscript(
         "000073cd-c425-4214-9648-b380ff20c61a",
-        dateFormat.parse("2019-03-11T14:13:45Z"),
+        Instant.parse("2019-03-11T14:13:45Z"),
         "Vatikan Vat Gr 247",
         "SFB 980 - A04",
         2019);
@@ -170,11 +178,11 @@ class TableViewServiceTest {
   
     Manuscript manuscript2 = new Manuscript(
         "0d5aa650-2f1e-4dd3-8eed-66a94771ca7c",
-        dateFormat.parse("2019-03-11T14:10:42Z"),
+        Instant.parse("2019-03-11T14:10:42Z"),
         "Florenz Laur 72.5",
         "SFB 980 - A04",
         2019);
-    manuscript2.setLastModified(dateFormat.parse("2019-03-11T14:10:42Z"));
+    manuscript2.setLastModified(Instant.parse("2019-03-11T14:10:42Z"));
   
     List<Manuscript> results = new ArrayList<>();
     results.add(manuscript1);

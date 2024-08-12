@@ -1,42 +1,52 @@
 version: '2.7'
 services:
   es:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.8.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
     container_name: takita_es
     environment:
       - discovery.type=single-node
       - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms8g -Xmx8g"
+      - "ES_JAVA_OPTS=-Xms8g -Xmx8g" # this sets min and max memory usage by elasticsearch (8g=8GB), try e.g 2GB if starting the service fails
+      - xpack.security.enabled=false #disables ssl to work with http connections
     ulimits:
       memlock:
         soft: -1
         hard: -1
     volumes:
-      - "E:/work/takita/esdata:/usr/share/elasticsearch/data"
+      - ./esdata:/var/lib/elasticsearch/data #should also work for windows systems, if not see comment below
+      # for windows systems absolute path might be needed: "E:/work/takita/esdata:/var/lib/elasticsearch/data"
+      # make sure the folder esdata does not exist before very first start
     ports:
-      - 9200:9200
+      - ${TAKITADB_PORT}:9200
     healthcheck:
       test: curl -u elastic:elastic -s -f es:9200/_cat/health >/dev/null || exit 1
       interval: 30s
       timeout: 10s
       retries: 5
-    restart: unless-stopped
+    networks:
+    - compose-network 
   takita:
     build:
         context: .
         dockerfile: Dockerfile
     ports:
-      - "9100:8080"
+      - "${TAKITA_PORT:-9100}:8080"
     depends_on:
       es:
         condition: service_healthy
-    links:
-    - es
     restart: unless-stopped
     environment:
       SPRING_APPLICATION_JSON: '{
         "elasticsearch.ip": "es",
         "repository.baseUrl": "http://samplerepo.edu/",
         "annotationStore.url": "http://sampleannoserver.edu/wap/",
-        "sparqlQuery.urlPrefix": "http://sampleannoserver-sparql.edu/wap/sparql?query="
+        "sparqlQuery.urlPrefix": "http://sampleannoserver-sparql.edu/wap/sparql?query=",
+        "thesaurus.baseUrl": "SKOSMOS LINK",
+        "thesaurus.searchPath": "rest/v1/ct/search"
       }'
+      # default ports are for crc980 playground 
+    networks:
+    - compose-network
+networks:
+  compose-network:
+    name: takitanet

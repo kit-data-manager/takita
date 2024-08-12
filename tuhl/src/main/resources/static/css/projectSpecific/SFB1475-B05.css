@@ -1,17 +1,10 @@
 /* B05 specifics */
 /* ------------------------------------*/
 
-/* remove quotation marks around direct speech 
-	as they are present in the xml file*/
-tei-body[n="Gilgameš"] tei-said::before, 
-tei-body[n="Gilgameš"] tei-said::after {
-    content: "";
-}
-
-/* display the linenumbers in front of the linebeginnings */
-tei-body[n="Gilgameš"] tei-lb[n]::before {
+/* displaying "Fragment"-heading */
+tei-div[type="Fragment"][n]::before{
+    content: "\00000aFragment\00a0"attr(n);
     color: grey;
-    content: "\00000a"attr(n)". ";
     white-space: pre-wrap;
 }
 
@@ -25,4 +18,26 @@ tei-reg::before {
 	content: "/";
 	color: gray;
 }
-    
+
+/* single quotation marks for direct speech
+    inside direct speech */
+tei-said tei-said::before, 
+tei-said tei-said::after {
+    color: grey;
+    content: "\'";
+}
+
+/* Gilgamesh */
+/* remove quotation marks around direct speech 
+	as they are present in the xml file*/
+tei-body[n="Gilgameš"] tei-said::before, 
+tei-body[n="Gilgameš"] tei-said::after {
+    content: "";
+}
+
+/* display the linenumbers in front of the linebeginnings */
+tei-body[n="Gilgameš"] tei-lb[n]::before {
+    color: grey;
+    content: "\00000a"attr(n)". ";
+    white-space: pre-wrap;
+}

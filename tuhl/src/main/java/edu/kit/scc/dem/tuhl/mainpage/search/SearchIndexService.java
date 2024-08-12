@@ -1,9 +1,5 @@
 package edu.kit.scc.dem.tuhl.mainpage.search;
 
-import static org.elasticsearch.index.query.QueryBuilders.boolQuery;
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
-import static org.elasticsearch.index.query.QueryBuilders.nestedQuery;
-
 import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
 import edu.kit.scc.dem.tuhl.dataaccess.IAccessService;
 import edu.kit.scc.dem.tuhl.model.Annotation;
@@ -16,11 +12,9 @@ import edu.kit.scc.dem.tuhl.model.page.Page;
 import edu.kit.scc.dem.tuhl.model.page.ResourceType;
 import edu.kit.scc.dem.tuhl.model.page.TextPage;
 import java.io.IOException;
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -29,25 +23,18 @@ import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
-import org.apache.lucene.search.join.ScoreMode;
-import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
-import org.elasticsearch.action.support.master.AcknowledgedResponse;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.indices.CreateIndexRequest;
-import org.elasticsearch.client.indices.GetIndexRequest;
-import org.elasticsearch.common.settings.Settings;
-import org.elasticsearch.index.query.InnerHitBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.core.IndexOperations;
+import org.springframework.data.elasticsearch.core.document.Document;
+import org.springframework.data.elasticsearch.core.query.Criteria;
+import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
 
@@ -62,9 +49,9 @@ public class  SearchIndexService implements ISearchIndexService {
   public static final String INDEX_NAME = "search_index";
   private final IAccessService accessService;
   private final ManuscriptRepository manuscriptRepository;
-  private final ElasticsearchRestTemplate elasticsearchRestTemplate;
+  private final ElasticsearchOperations elasticsearchOperations;
   
-  private Date lastUpdatedIndex;
+  private Instant lastUpdatedIndex;
   
   
   /**
@@ -74,18 +61,18 @@ public class  SearchIndexService implements ISearchIndexService {
    *                      Springs dependency injection system indicated by @autowired annotation.
    * @param manuscriptRepository instance of the manuscript repository. Injected with Springs
    *                             dependency injection system indicated by @autowired annotation.
-   * @param elasticsearchRestTemplate instance of the elasticsearch rest template. Injected with
+   * @param elasticsearchOperations instance of the elasticsearch operations. Injected with
    *                                  Springs dependency injection system indicated by @autowired
    *                                  annotation.
    */
   @Autowired
   public SearchIndexService(IAccessService accessService,
                             ManuscriptRepository manuscriptRepository,
-                            ElasticsearchRestTemplate elasticsearchRestTemplate) {
+                            ElasticsearchOperations elasticsearchOperations) {
     this.accessService = accessService;
     this.manuscriptRepository = manuscriptRepository;
-    this.elasticsearchRestTemplate = elasticsearchRestTemplate;
-    lastUpdatedIndex = Date.from(Instant.EPOCH);
+    this.elasticsearchOperations = elasticsearchOperations;
+    lastUpdatedIndex = Instant.EPOCH;
     accessService.setSearchIndexService(this);
   }
   
@@ -98,22 +85,22 @@ public class  SearchIndexService implements ISearchIndexService {
    */
   @Override
   public void buildIndex() throws InterruptedException, IOException, JSONException {
+    IndexOperations indexOp = elasticsearchOperations.indexOps(Manuscript.class);
+
     logger.info("Index rebuild started. Deleting old index.");
-    final LocalDateTime startBuild = LocalDateTime.now();
-    lastUpdatedIndex = Date.from(Instant.now());
-    deleteIndex();
-    
-    //Creating the index
-    elasticsearchRestTemplate.execute(client ->
-        client.indices().create(new CreateIndexRequest(INDEX_NAME)
-                .settings(Settings.builder()
-                    .put("index.mapping.nested_objects.limit", 1000000)),
-            RequestOptions.DEFAULT));
-    
+    final Instant startBuild = Instant.now();
+    lastUpdatedIndex = Instant.now();
+    deleteIndex(indexOp);
+
+    Document settings = Document.create();
+    settings.put("index.mapping.nested_objects.limit", 1000000);
+
     logger.info("Building new index. This may take a while.");
+    indexOp.create(settings);
+    logger.info("Index created.");
     
-    IndexOperations indexOp = elasticsearchRestTemplate.indexOps(Manuscript.class);
     createMappings(indexOp);
+    logger.info("Mappings created.");
     
     List<Manuscript> allManuscripts = accessService.getAllManuscripts();
     for (Manuscript m : allManuscripts) {
@@ -123,21 +110,21 @@ public class  SearchIndexService implements ISearchIndexService {
     
     indexOp.refresh();
     
-    Duration duration = Duration.between(startBuild, LocalDateTime.now());
+    Duration duration = Duration.between(startBuild, Instant.now());
     logger.info("Finished index build in {} minutes and {} seconds",
         duration.toMinutes(),
         duration.getSeconds() % 60);
   }
   
-  private void deleteIndex() {
-    if (indexExists()) {
-      AcknowledgedResponse response = elasticsearchRestTemplate.execute(client ->
-          client.indices().delete(new DeleteIndexRequest(INDEX_NAME), RequestOptions.DEFAULT));
-      if (response.isAcknowledged()) {
-        logger.info("Index successfully deleted.");
+  private void deleteIndex(IndexOperations indexOp) {
+    if (indexOp.exists()) {
+      boolean successful = indexOp.delete();
+
+      if (successful) {
+        logger.info("Index successfully deleted.");  
       } else {
         logger.info("Index could not be deleted.");
-      }
+      };
     } else {
       logger.info("Index does not exist. Proceeding.");
     }
@@ -152,34 +139,38 @@ public class  SearchIndexService implements ISearchIndexService {
    */
   @Override
   public void updateIndex() throws InterruptedException, JSONException, IOException {
-    if (!indexExists()) {
+    IndexOperations indexOp = elasticsearchOperations.indexOps(Manuscript.class);
+
+    if (!indexOp.exists()) {
       logger.info("Index does not exist yet. Starting build.");
       buildIndex();
     } else {
       logger.info("Index update started. This may take a while.");
-      Date timestamp = lastUpdatedIndex;
+      Instant timestamp = lastUpdatedIndex;
       
       //after a restart or rebuild the application might have no information about the last update.
       //In this case try to use index creation date instead.
       //TODO: find a better solution, i.e. checking the most recent updates in the index somehow
-      if(timestamp.equals(Date.from(Instant.EPOCH))) {
+      if(timestamp.equals(Instant.EPOCH)) {
         logger.warn("No date for last index build found");
-        Date creationDate = indexCreationDate();
+        Instant creationDate = indexCreationDate();
         
-        if(creationDate != null && creationDate.after(Date.from(Instant.EPOCH))) {
+        if(creationDate != null && creationDate.isAfter(Instant.EPOCH)) {
           timestamp = creationDate;
         }
       }
 
-      lastUpdatedIndex = Date.from(Instant.now());
-      final LocalDateTime startUpdate = LocalDateTime.now();
+      lastUpdatedIndex = Instant.now();
+      final Instant startUpdate = Instant.now();
       
       List<Manuscript> newManuscripts;
       
       try {
         newManuscripts = accessService.getAllManuscriptsModifiedAfter(timestamp);
-      } catch (ParseException | NoSuchIndexEntryException e) {
+      } catch (ParseException e) {
         throw new IllegalArgumentException("The timestamp format is not correct");
+      } catch ( NoSuchIndexEntryException e) {
+        throw new IllegalArgumentException("Failure to retrieve all necessary index entries ");
       }
       logger.info("Indexing new or modified Manuscripts.");
       for (Manuscript manuscript : newManuscripts) {
@@ -196,32 +187,27 @@ public class  SearchIndexService implements ISearchIndexService {
         Manuscript savedManuscript = manuscriptRepository.save(manuscript);
 
       }
-      Duration duration = Duration.between(startUpdate, LocalDateTime.now());
+      Duration duration = Duration.between(startUpdate, Instant.now());
       logger.info("Finished index update in {} minutes and {} seconds", duration.toMinutes(),
           duration.getSeconds() % 60);
     }
   }
   
-  public Date indexCreationDate() {
+  public Instant indexCreationDate() {
+    IndexOperations indexOp = elasticsearchOperations.indexOps(Manuscript.class);
 
-    GetIndexRequest indexReq = new GetIndexRequest(INDEX_NAME);
-    indexReq.includeDefaults(true);
     try {
       logger.info("Getting index creation date");
-      return elasticsearchRestTemplate.execute(client -> 
-        Date.from(Instant.ofEpochMilli(Long.parseLong(client.indices().get(indexReq, RequestOptions.DEFAULT).getSetting(INDEX_NAME, "index.creation_date"))))    
-      );      
+      //return elasticsearchOperations.execute(client -> 
+      //  Date.from(Instant.ofEpochMilli(Long.parseLong(client.indices().get(indexReq, RequestOptions.DEFAULT).getSetting(INDEX_NAME, "index.creation_date"))))    
+      //); 
+      return Instant.ofEpochMilli(indexOp.getSettings().getLong("index.creation_date"));     
     } catch (NullPointerException e) {
       logger.error("Search index creation date could not be parsed");
       return null;
     }
 
 }
-
-  private boolean indexExists() {
-    return elasticsearchRestTemplate.execute(client ->
-        client.indices().exists(new GetIndexRequest(INDEX_NAME), RequestOptions.DEFAULT));
-  }
   
   /**
    * Builds a new search index from scratch. This search index is limited to 5 manuscripts.
@@ -232,21 +218,21 @@ public class  SearchIndexService implements ISearchIndexService {
    */
   @Override
   public void buildSmallIndex() throws InterruptedException, IOException, JSONException {
+    IndexOperations indexOp = elasticsearchOperations.indexOps(Manuscript.class);
+
     logger.info("Limited Index rebuild started. Deleting old index.");
-    final LocalDateTime startBuild = LocalDateTime.now();
-    deleteIndex();
-    
-    //Creating the index
-    elasticsearchRestTemplate.execute(client ->
-        client.indices().create(new CreateIndexRequest(INDEX_NAME)
-                .settings(Settings.builder()
-                    .put("index.mapping.nested_objects.limit", 1000000)),
-            RequestOptions.DEFAULT));
-    
+    final Instant startBuild = Instant.now();
+    deleteIndex(indexOp);
+
+    Document settings = Document.create();
+    settings.put("index.mapping.nested_objects.limit", 1000000); //might be overkill on dev index. maybe limit number of annotations on small index creation instead
     logger.info("Building new small index.");
-  
-    IndexOperations indexOp = elasticsearchRestTemplate.indexOps(Manuscript.class);
+
+    indexOp.create(settings);
+    logger.info("Index created.");
+
     createMappings(indexOp);
+    logger.info("Mappings created.");
     
     List<Manuscript> allManuscripts = accessService.getFewManuscripts();
     logger.info("Indexing Manuscripts.");
@@ -256,7 +242,7 @@ public class  SearchIndexService implements ISearchIndexService {
     }
     indexOp.refresh();
     
-    Duration duration = Duration.between(startBuild, LocalDateTime.now());
+    Duration duration = Duration.between(startBuild, Instant.now());
     logger.info("Finished limited index build in {} minutes and {} seconds", duration.toMinutes(),
         duration.getSeconds() % 60);
   }
@@ -285,16 +271,14 @@ public class  SearchIndexService implements ISearchIndexService {
   @Override
   public Annotation addAnnotation(Annotation annotation) throws InterruptedException, IOException,
       JSONException, NoSuchIndexEntryException {
+   
     Page page = getPageById(annotation.getPageId());
-    Manuscript manuscript = getManuscriptById(page.getManuscriptId());
-    logger.info(manuscript.getPublisher());
-    
-    String manuscriptPublisher = manuscript.getPublisher();
+    String manuscriptPublisher = getManuscriptById(page.getManuscriptId()).getPublisher();
+        
     // bad string magic, take everything after the last occurence of "-", 
     // omit the space and convert it to lower case to use this as a subfolder 
     // in the annotion store
     String projectId = manuscriptPublisher.substring(manuscriptPublisher.lastIndexOf("-") + 2).toLowerCase() + "/";
-    
     Annotation newAnnotation;
     
     // if a parsing error occurs then store the annotation to a default subfolder
@@ -326,11 +310,9 @@ public class  SearchIndexService implements ISearchIndexService {
    */
   @Override
   public Annotation getAnnotationById(String id) throws NoSuchIndexEntryException {
-    Query query =
-        new NativeSearchQueryBuilder().withQuery(
-            matchQuery("pages.annotations.id.keyword", id)).build();
+    Query query = new CriteriaQuery(new Criteria("pages.annotations.id").is(id));
     
-    SearchHits<Manuscript> searchHits = elasticsearchRestTemplate.search(
+    SearchHits<Manuscript> searchHits = elasticsearchOperations.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
     if (searchHits.isEmpty()) {
       throw new NoSuchIndexEntryException("Could not find Annotation with id: " + id);
@@ -348,11 +330,9 @@ public class  SearchIndexService implements ISearchIndexService {
   
   @Override
   public List<Annotation> getAnnotationsForPageById(String id) throws NoSuchIndexEntryException {
-    Query query =
-        new NativeSearchQueryBuilder().withQuery(
-            matchQuery("pages.id.keyword", id)).build();
+    Query query = new CriteriaQuery(new Criteria("pages.id").is(id));
     
-    SearchHits<Manuscript> searchHits = elasticsearchRestTemplate.search(
+    SearchHits<Manuscript> searchHits = elasticsearchOperations.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
     if (searchHits.isEmpty()) {
       throw new NoSuchIndexEntryException("Could not find page with id: " + id);
@@ -404,10 +384,24 @@ public class  SearchIndexService implements ISearchIndexService {
   @Override
   public Annotation validateAnnotation(Annotation annotation)
       throws IOException, InterruptedException, JSONException, NoSuchIndexEntryException {
+
+    // TODO: same code lines for addAnnotation and validateAnnotation, create new method for that
     Page page = getPageById(annotation.getPageId());
+    String manuscriptPublisher = getManuscriptById(page.getManuscriptId()).getPublisher();
+        
+    // bad string magic, take everything after the last occurence of "-", 
+    // omit the space and convert it to lower case to use this as a subfolder 
+    // in the annotion store
+    String projectId = manuscriptPublisher.substring(manuscriptPublisher.lastIndexOf("-") + 2).toLowerCase() + "/";
+    Annotation validatedAnnotation;
     
-    Annotation validatedAnnotation = accessService.validateAnnotation(annotation,
-        page.getPageNumber());
+    // if a parsing error occurs then store the annotation to a default subfolder
+    if (projectId != null && !projectId.equals(manuscriptPublisher)) {
+        validatedAnnotation = accessService.validateAnnotation(annotation, page.getPageNumber(), projectId);
+    } else {
+        validatedAnnotation = accessService.validateAnnotation(annotation, page.getPageNumber(), "takitadefault");
+        logger.info("ProjectId could not be parsed from " + manuscriptPublisher + ", result: " + projectId);
+    }
     
     applyChangedAnnotation(page, annotation, validatedAnnotation);
     
@@ -489,7 +483,7 @@ public class  SearchIndexService implements ISearchIndexService {
     logger.info("OriginalAnno: " + updatedAnnotation);
     logger.info(body.toString());
     logger.info("1: " + body.getId());
-    if (body.getPurpose().equalsIgnoreCase("tagging")) {
+    if (body.getPurpose() != null && body.getPurpose().equalsIgnoreCase("tagging")) {
       updatedAnnotation.addTag((Tag) body);
     } else {
       updatedAnnotation.addTextCard((TextCard) body);
@@ -511,10 +505,9 @@ public class  SearchIndexService implements ISearchIndexService {
    */
   @Override
   public TextCard getTextCardById(String id) throws NoSuchIndexEntryException {
-    Query query = new NativeSearchQueryBuilder()
-        .withQuery(matchQuery("pages.annotations.textCards.id.keyword", id)).build();
+    Query query = new CriteriaQuery(new Criteria("pages.annotations.textCards.id").is(id));
     
-    SearchHits<Manuscript> manuscriptForPage = elasticsearchRestTemplate.search(
+    SearchHits<Manuscript> manuscriptForPage = elasticsearchOperations.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
     
     Manuscript manuscript;
@@ -554,10 +547,9 @@ public class  SearchIndexService implements ISearchIndexService {
    */
   @Override
   public Tag getTagById(String id) throws NoSuchIndexEntryException {
-    Query query = new NativeSearchQueryBuilder()
-        .withQuery(matchQuery("pages.annotations.tags.id.keyword", id)).build();
+    Query query = new CriteriaQuery(new Criteria("pages.annotations.tags.id").is(id));
     
-    SearchHits<Manuscript> manuscriptForPage = elasticsearchRestTemplate.search(
+    SearchHits<Manuscript> manuscriptForPage = elasticsearchOperations.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
     
     Manuscript manuscript;
@@ -630,7 +622,7 @@ public class  SearchIndexService implements ISearchIndexService {
     logger.info("Lösche Body aus " + updatedAnnotation.getId());
     Body body = getBodyFromAnnotationAndId(updatedAnnotation, id);
     logger.info("Lösche Body " + body.getFullJson().toString());
-    if (body.getPurpose().equalsIgnoreCase("tagging")) {
+    if (body.getPurpose() != null && body.getPurpose().equalsIgnoreCase("tagging")) {
       updatedAnnotation.getTags().remove(body);
     } else {
       updatedAnnotation.getTextCards().remove(body);
@@ -639,14 +631,9 @@ public class  SearchIndexService implements ISearchIndexService {
   }
   
   private Annotation getAnnotationByBodyId(String bodyId) throws NoSuchIndexEntryException {
-    Query query =
-        new NativeSearchQueryBuilder().withQuery(boolQuery()
-            .should(matchQuery("pages.annotations.tags.id.keyword", bodyId))
-            .should(matchQuery("pages.annotations.textCards.id.keyword", bodyId))
-            .minimumShouldMatch(1))
-            .build();
+    Query query = new CriteriaQuery(new Criteria("pages.annotations.textCards.id").is(bodyId).or("pages.annotations.tags.id").is(bodyId));
     
-    SearchHits<Manuscript> searchHits = elasticsearchRestTemplate.search(
+    SearchHits<Manuscript> searchHits = elasticsearchOperations.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
     
     for (Page page : searchHits.getSearchHit(0).getContent().getPages()) {
@@ -728,11 +715,9 @@ public class  SearchIndexService implements ISearchIndexService {
    */
   @Override
   public Page getPageById(String id) throws NoSuchIndexEntryException {
-    Query query = new NativeSearchQueryBuilder().withQuery(
-        nestedQuery("pages", matchQuery("pages.id.keyword", id), ScoreMode.Avg)
-            .innerHit(new InnerHitBuilder().setName("innerHitName"))).build();
+    Query query = new CriteriaQuery(new Criteria("pages.id").is(id));
     
-    SearchHits<Manuscript> manuscripts = elasticsearchRestTemplate.search(
+    SearchHits<Manuscript> manuscripts = elasticsearchOperations.search(
         query, Manuscript.class, IndexCoordinates.of(INDEX_NAME));
 
     if (manuscripts.hasSearchHits()) {
@@ -867,20 +852,11 @@ public class  SearchIndexService implements ISearchIndexService {
     allBodies.addAll(annotation.getTags());
     allBodies.addAll(annotation.getTextCards());
     for (Body newBody : allBodies) {
-        logger.info(newBody.getFullJson().toString());
-        logger.info(body.getFullJson().toString());
+        logger.info("New body: " + newBody.getFullJson().toString());
+        logger.info("Body to check: " + body.getFullJson().toString());
         if (newBody.equals(body)) {
             return newBody;
         }
-      // can't use ID because same body can have different IDs
-      // old bodies may miss a created date? newBody.getCreated() != null
-      // newBody.getCreated().equals(body.getCreated())
-      // && newBody.getTitle().equals(body.getTitle())
-      //if (newBody.getCreators().containsAll(body.getCreators())
-      //    && newBody.getPurpose() == body.getPurpose()
-      //    && newBody.getValue().equals(body.getValue())) {
-      //  return newBody;
-      //}
     }
     throw new NoSuchIndexEntryException("No body like this was found in the index.");
   }

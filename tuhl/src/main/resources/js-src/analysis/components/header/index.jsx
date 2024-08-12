@@ -2,7 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import { AbsoluteIconButton } from '../button';
-import { Container } from '../container';
+import { LeftAlignedContainer } from '../container';
 import Icon from '../icon';
 import { H1, TinyText } from '../text';
 import { StyledHeader } from './style';
@@ -21,14 +21,22 @@ const Header = (props) => {
   return (
     <StyledHeader>
       {showIcon && <Methan />}
-      <Container>
-        <Link to={target}>
+      <LeftAlignedContainer>
+        <a href={target}>
           <H1>
             Metaphor Analysis Tool
             <TinyText>(β–version)</TinyText>
           </H1>
-        </Link>
-      </Container>
+        </a>
+      </LeftAlignedContainer>
+      <AbsoluteIconButton
+        href='https://ruhr-uni-bochum.sciebo.de/apps/files/?dir=/SFB%201475/5_Glossary%20%26%20Annotation%20Guidelines&fileid=1537725455#pdfviewer'
+        label='Annotation Guidelines'
+        top='1.5em'
+        right='7em'
+      >
+        <Icon glyph='question' />
+      </AbsoluteIconButton>
       <AbsoluteIconButton
         href='mailto:gitlab-incoming+sfb1475-inf-takita-9732-issue-@ruhr-uni-bochum.de'
         label='Feedback'

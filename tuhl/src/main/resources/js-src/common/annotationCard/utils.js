@@ -33,12 +33,12 @@ export function mergeBodies(data) {
  */
 export function timestampsToISOString(object) {
   if (object.created) {
-    object.created = new Date(object.created.seconds * 1000 + object.created.nanos / 1000000).toISOString();
+    object.created = new Date(object.created * 1000).toISOString();
   }
   // bodies can have a modified date without having a created date
   // 'legacy annotations'
   if (object.modified) {
-    object.modified = new Date(object.modified.seconds * 1000 + object.modified.nanos / 1000000).toISOString();
+    object.modified = new Date(object.modified * 1000).toISOString();
   }
   return object;
 }

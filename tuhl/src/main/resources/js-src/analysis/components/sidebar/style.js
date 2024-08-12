@@ -18,6 +18,10 @@ const StyledSidebarItem = styled.li`
   color: var(--sidebar-color);
   cursor: pointer;
   transition: 0.5s ease;
+
+  &:hover {
+    color: var(--highlight-color);
+  }
 `;
 
 const StyledSidebarSection = styled.ul`

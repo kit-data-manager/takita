@@ -30,6 +30,13 @@ tei-rt {
 	display: ruby-text;	
 }
 
+/* text hat was rendered below a line will be preponed
+	by a "/" like in the SEAL portal */
+tei-metamark[function="belowline"]::before{
+    content: "/";
+    color: grey;
+}
+
 /* overriding the default styling of editorial interventions */
 tei-supplied::before {
     color: grey;

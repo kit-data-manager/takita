@@ -2,7 +2,7 @@ import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
 import Layout from './routes/Layout';
-import Analysis, { loader as analysisLoader, action as analyisAction } from './routes/Analysis';
+import Analysis, { loader as analysisLoader } from './routes/Analysis';
 import AuxiliaryText from './routes/AuxiliaryText';
 import Conceptualizing from './routes/Conceptualizing';
 import Linking from './routes/Linking';
@@ -19,7 +19,6 @@ const router = createBrowserRouter(
       children: [
         {
           element: <Analysis />,
-          action: analyisAction,
           loader: analysisLoader,
           id: 'analysis',
           path: 'analysis',

@@ -76,7 +76,7 @@ public class AnnoViewService implements IAnnoViewService {
    * @return List of Manuscripts
    */
   public List<Annotation> search() {
-    return searchService.searchAnno(currentPage, sortField, sortAscending);
+    return searchService.searchAnno();
   }
   
   /**

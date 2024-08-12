@@ -22,3 +22,17 @@ tei-pb[n]::after {
     font-size: 70%;
     vertical-align: super;
 }
+
+/* setting the font weight and margins for some 
+    sections in SongSiyol_HoyonChangChirui */
+tei-ab[type="source"]{
+    font-weight: bold;
+    margin-bottom: 0em;
+    margin-top: .5em;
+}
+
+/* whitespace between half verses (two are already in the file) */
+tei-caesura::before{
+    content: "\00a0\00a0";
+    white-space: pre;
+}

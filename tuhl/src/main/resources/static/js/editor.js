@@ -56,13 +56,13 @@ function selectAnnotation(event, annoId) {
         });
       }
 
-      if (responseJson.created.seconds) {
+      if (responseJson.created) {
         responseJson.created = new Date(
-          responseJson.created.seconds * 1000 + responseJson.created.nanos / 1000000,
+          responseJson.created * 1000,
         ).toISOString();
-        if (responseJson.modified.seconds) {
+        if (responseJson.modified) {
           responseJson.modified = new Date(
-            responseJson.modified.seconds * 1000 + responseJson.modified.nanos / 1000000,
+            responseJson.modified * 1000,
           ).toISOString();
         }
       }
@@ -139,7 +139,7 @@ function selectAnnotation(event, annoId) {
       for (let body in bodies) {
         if (bodies[body].created) {
           bodies[body].created = new Date(
-            bodies[body].created.seconds * 1000 + bodies[body].created.nanos / 1000000,
+            bodies[body].created * 1000,
           ).toISOString();
         }
 
@@ -147,7 +147,7 @@ function selectAnnotation(event, annoId) {
         // 'legacy annotations'
         if (bodies[body].modified) {
           bodies[body].modified = new Date(
-            bodies[body].modified.seconds * 1000 + bodies[body].modified.nanos / 1000000,
+            bodies[body].modified * 1000,
           ).toISOString();
         }
 

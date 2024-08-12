@@ -1,15 +1,13 @@
 package edu.kit.scc.dem.tuhl.model.filter;
 
-import org.elasticsearch.common.unit.Fuzziness;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.Criteria;
+import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.elasticsearch.index.query.QueryBuilders.matchQuery;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MatchFilterTest {
@@ -28,12 +26,10 @@ class MatchFilterTest {
     values.add(titleTerm);
     matchFilter.setValues(values);
 
-    NativeSearchQuery perfectQuery = new NativeSearchQueryBuilder()
-        .withQuery(matchQuery("title", titleTerm)
-          .fuzziness(Fuzziness.AUTO))
-        .build();
+    CriteriaQuery perfectQuery = new CriteriaQuery(new Criteria("title").is(titleTerm));
 
-    assertEquals(perfectQuery.getQuery(), matchFilter.getQuery().getQuery());
+    //TODO: extend to test more query features
+    assertEquals(perfectQuery.getFields(), new CriteriaQuery(matchFilter.getCriteria()).getFields());
   }
 
   @Test

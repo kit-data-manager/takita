@@ -11,15 +11,15 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 public class TeiDate {
 	private String content;
 	private String type;
-	@Field(type = FieldType.Date, format = DateFormat.custom, pattern ="uuuu-MM-dd")
+	@Field(type = FieldType.Date, format = DateFormat.year_month_day, pattern ="uuuu-MM-dd")
 	private LocalDate when;
-	@Field(type = FieldType.Date, format = DateFormat.custom, pattern ="uuuu-MM-dd")
+	@Field(type = FieldType.Date, format = DateFormat.year_month_day, pattern ="uuuu-MM-dd")
 	private LocalDate notBefore;
-	@Field(type = FieldType.Date, format = DateFormat.custom, pattern ="uuuu-MM-dd")
+	@Field(type = FieldType.Date, format = DateFormat.year_month_day, pattern ="uuuu-MM-dd")
 	private LocalDate notAfter;
-	@Field(type = FieldType.Date, format = DateFormat.custom, pattern ="uuuu-MM-dd")
+	@Field(type = FieldType.Date, format = DateFormat.year_month_day, pattern ="uuuu-MM-dd")
 	private LocalDate from;
-	@Field(type = FieldType.Date, format = DateFormat.custom, pattern ="uuuu-MM-dd")
+	@Field(type = FieldType.Date, format = DateFormat.year_month_day, pattern ="uuuu-MM-dd")
 	private LocalDate to;
 	
 	public TeiDate() {

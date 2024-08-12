@@ -14,14 +14,8 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.time.Instant;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import static java.time.format.DateTimeFormatter.ISO_INSTANT;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
@@ -844,7 +838,6 @@ public class AnnotationConverter {
     try {
       //Extracts the dates from the JSON
       String dateString;
-      DateTimeFormatter isoFormatter;
       if (json.has(type)) {
         dateString = json.getString(type);
         date = Instant.parse(dateString);

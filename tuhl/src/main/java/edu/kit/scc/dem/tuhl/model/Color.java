@@ -33,6 +33,8 @@ public enum Color {
   MRW_INDIRECT("#000012", "mrw (indirect)"),
   MRW_IMPLICIT("#000013", "mrw (implicit)"),
   MFLAG("#000014", "mflag"),
+  MRW("#000015", "mrw"),
+  MRW_CANDIDATE("#000016", "mrw candidate"),
   METAPHOR("#000021", "metaphor"),
   // toRoll colors
   // default
@@ -111,6 +113,10 @@ public enum Color {
         return Color.MRW_INDIRECT;
     } else if (Color.MRW_IMPLICIT.getName().equalsIgnoreCase(stringColor)) {
         return Color.MRW_IMPLICIT;
+    } else if (Color.MRW.getName().equalsIgnoreCase(stringColor)) {
+        return Color.MRW;
+    } else if (Color.MRW_CANDIDATE.getName().equalsIgnoreCase(stringColor)) {
+        return Color.MRW_CANDIDATE;
     } else if (Color.MFLAG.getName().equalsIgnoreCase(stringColor)) {
         return Color.MFLAG;
     } else if (Color.METAPHOR.getName().equalsIgnoreCase(stringColor)) {
@@ -158,6 +164,10 @@ public enum Color {
           return Color.MRW_INDIRECT.getName();
       case MRW_IMPLICIT:
           return Color.MRW_IMPLICIT.getName();
+      case MRW:
+          return Color.MRW.getName();
+      case MRW_CANDIDATE:
+          return Color.MRW_CANDIDATE.getName();
       case MFLAG:
           return Color.MFLAG.getName();
       case METAPHOR:

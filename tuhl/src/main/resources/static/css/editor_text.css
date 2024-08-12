@@ -274,9 +274,26 @@ tei-lb {
 	background-color: white;
 }
 
+tei-cb {
+	background-color: white;
+}
 /* linebreak before the start of a new line */
 tei-lb::before {
     content: "\00000a";
+    white-space: pre-wrap;
+}
+
+/* display the pagenumbers in front of the pagebeginnings */
+tei-pb[n]::before {
+	color: grey;
+    content: "\00000a"attr(n)"\00a0";
+    white-space: pre-wrap;
+}
+
+/* display the columnnumbers in front of the columnbeginnings */
+tei-cb[n]::before {
+	color: grey;
+    content: "\00000aCol.\00a0"attr(n)"\00a0";
     white-space: pre-wrap;
 }
 
@@ -306,32 +323,40 @@ tei-quote::after {
 }
 
 /* text highlights */
-tei-text *[rend="sup"] {
+tei-text *[rend~="italic"] {
+	font-style: italic;
+}
+
+tei-text *[rend~="bold"] {
+	font-weight: bold;
+}
+
+tei-text *[rend~="sup"] {
 	font-size: 70%;
 	vertical-align: super;
 }
 
-tei-text *[rend="superscript"] {
+tei-text *[rend~="superscript"] {
 	font-size: 70%;
 	vertical-align: super;
 }
 
-tei-text *[rend="sub"] {
+tei-text *[rend~="sub"] {
 	font-size: 70%;
 	vertical-align: sub;
 }
 
-tei-text *[rend="subscript"] {
+tei-text *[rend~="subscript"] {
 	font-size: 70%;
 	vertical-align: sub;
 }
 
 /* indentation */
-tei-text *[rend="indent"]{
+tei-text *[rend~="indent"]{
 	margin-left: 1em;
 }
   
-tei-text *[rend="indentTwo"]{
+tei-text *[rend~="indentTwo"]{
 	margin-left: 2em;
 }
 
