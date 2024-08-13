@@ -1,13 +1,16 @@
+import com.bmuschko.gradle.docker.tasks.image.Dockerfile
+
 plugins {
 	id 'org.springframework.boot' version '3.2.2'
 	id 'io.spring.dependency-management' version '1.1.4'
 	id 'com.github.jk1.dependency-license-report' version '1.17'
 	id 'java'
 	id 'jacoco'
+	id 'com.bmuschko.docker-spring-boot-application' version '9.4.0'
 }
 
 group = 'de.pse'
-version = '0.0.3-SNAPSHOT'
+version = '1.0.0-SNAPSHOT'
 
 repositories {
 	mavenCentral()
@@ -116,7 +119,23 @@ tasks.register('integrationTest', Test) {
 
 check.dependsOn integrationTest
 
-
+//create Dockerfile on release to update jar version
+tasks.register('createDockerfile', Dockerfile) {
+	destFile = project.file('../Dockerfile')
+	from 'eclipse-temurin:17.0.12_7-jdk'
+	exposePort 8080
+	entryPoint '/takita/start.sh'
+	runCommand 'mkdir -p /takita'
+	workingDir '/takita'
+	copyFile './build.sh', '/takita/build.sh'
+	copyFile './dockerstart.sh', '/takita/start.sh'
+	copyFile 'tuhl/', '/takita/tuhl/'
+	runCommand 'chmod +x /takita/build.sh'
+	runCommand 'chmod +x /takita/start.sh'
+	runCommand '/takita/build.sh'
+	runCommand 'chmod -R +x /takita/tuhl/build'
+	runCommand "cp /takita/tuhl/build/libs/tuhl-${project.version}.jar /takita/tuhl.jar"
+}
 
 jar {
 	manifest {
