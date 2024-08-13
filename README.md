@@ -100,4 +100,14 @@ thesaurus.searchPath = rest/v1/ct/search
   - Start by adding an entry to the enum in the **java** code (`tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java`) according to this: `ENTRY_NAME("#colorHex", "value")` schema, eg. `MRW_DIRECT("#000011", "mrw (direct)")`. Adapt the `buildColor`-function in `tuhl/src/main/java/edu/kit/scc/dem/tuhl/dataaccess/AnnotationConverter.java`, which chooses the body used for retrieving the "color"
   - Then add the values from the enum to the **js** code at multiple places (once at `tuhl/src/main/resources/static/js/creation_templates(_text).js`, three times at `tuhl/src/main/resources/static/js/editor_xml.js`). 
 - **All points in the code needed to be modified are marked with `TODO: CUSTOMISE` or `TODO: CUSTOMIZE` (this applies to points, where you can customise some things)**
+
+#### customization
+
+- **All points in the code needed to be modified are marked with `TODO: CUSTOMISE` or `TODO: CUSTOMIZE` (this applies to points, where you can customise some things)**
+- after the modularisation (d2b7400743445edb5ccc36df0da16dcda0f9c4a0) you only need to touch `/js-src/projectspecific` to adapt **text** tAkita to your use case (for image tAkita you still need to adjust the files in `/js`)
+- procedure:
+  - you should checkout the `modularisation` branch (`git checkout modularisation`) 
+  - then create your own branch from that state (`git checkout -b $YOUR_USE_CASE`)
+  - adjust tAkita to your needs
+  - push your changes to the branch you just created; please do not push your changes to `modularisation` as it serves as a "`main`"-branch for text tAkita
 - commit d852e893e6d726b49973d64ce199627f8e359c56 enables the "questionmark" (get help)-button in the topbar leading to CRC 1475 annotation guidelines. This behavior should be adapted for each tAkita installation.
