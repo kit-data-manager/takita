@@ -217,7 +217,7 @@
 }
 
 .bx.bx-help-circle {
-    color:var(--color-darkGrey);
+    cursor: not-allowed;
     font-size: 2rem;
 }
 
