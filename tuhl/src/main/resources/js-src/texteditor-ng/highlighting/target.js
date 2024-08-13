@@ -11,6 +11,7 @@ import { escapeSelector } from 'jquery';
  * @param {[Object]} hooks not called anywhere currently
  * @returns {[Object]} the most recent annoJson (all annotations of a page)
  */
+// eslint-disable-next-line no-unused-vars
 export async function updateDisplay(hooks = {}) {
   try {
     // update annoJson to get the current tagging-body-values

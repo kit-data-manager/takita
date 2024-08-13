@@ -1,7 +1,13 @@
 // linted version of https://github.com/kit-data-manager/metadata-editor
 // includes minor fixes to undeclared variables (_throw, showmodal, emptyElt)
-// and import of tabulator-tables and the whole code of the jsonform library (node_modules/jsonform/lib/jsonform.js), for an
-// explenation seee the next comments
+// and import of tabulator-tables
+// following eslint rules need to be ignored for this file as jsonform violates them
+/* eslint-disable no-self-assign */
+/* eslint-disable no-redeclare */
+/* eslint-disable no-constant-condition */
+/* eslint-disable no-useless-escape */
+/* eslint-disable no-prototype-builtins */
+/* eslint-disable @stylistic/js/max-len */
 
 // external modules
 import $ from 'jquery';
@@ -16,14 +22,6 @@ import Tabulator from 'tabulator-tables';
 // underscore is used by the metadataeditor as well, but for some reason it doesn't need to be imported
 // the code from the jsonform library needs it however (node_modules/jsonform/lib/jsonform.js)
 // import _ from 'underscore';
-// // assigning the jquery object to the "jQuery" variable as jsonform accesses it like that
-// let jQuery = $;
-// following eslint rules need to be ignored for this file as jsonform violates them
-/* eslint-disable no-self-assign */
-/* eslint-disable no-redeclare */
-/* eslint-disable no-constant-condition */
-/* eslint-disable no-useless-escape */
-/* eslint-disable no-prototype-builtins */
 
 /**
  * operation type enumeration
@@ -138,6 +136,7 @@ var formElt = null;
  * @param {type} modalInput indicates if an alert, success or a failed modal has to be generated.
  * @returns {String} modal
  */
+// eslint-disable-next-line no-unused-vars
 function modalTemplate(modalInput) {
   var modalId;
   var icon;
