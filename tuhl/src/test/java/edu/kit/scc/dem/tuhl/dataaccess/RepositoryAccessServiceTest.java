@@ -12,6 +12,7 @@ import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
@@ -24,6 +25,7 @@ import java.time.Instant;
 import java.util.*;
 
 @SpringBootTest(classes = RepositoryAccessService.class)
+@TestPropertySource("classpath:application-test.properties")
 class RepositoryAccessServiceTest {
   
   @Mock

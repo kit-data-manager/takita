@@ -19,6 +19,7 @@ import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.ui.Model;
 
 import java.io.IOException;
@@ -33,6 +34,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = TableViewService.class)
+@TestPropertySource("classpath:application-test.properties")
 class TableViewServiceTest {
   
   @Autowired

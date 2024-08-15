@@ -9,6 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.ui.Model;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest(classes = FilterService.class)
+@TestPropertySource("classpath:application-test.properties")
 class FilterServiceTest {
 
 
