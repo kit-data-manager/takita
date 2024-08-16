@@ -5,7 +5,7 @@
 </head>
 <body>
 <div th:fragment="header" class="row justify-content-end">
-    <div class="col-4 input-group">
+    <div class="col-4 input-group w-auto">
         <input class="form-control"
                th:placeholder="#{label.pseudonym}"
                id="pseudonymInput"
@@ -20,7 +20,7 @@
     </div>
     <button class="col-auto btn btn-info" th:text="#{buttons.help}" onclick="getHelp()"> </button>
     <div class="dropdown col-auto">
-        <button id="Languages" class="btn btn-info dropdown-toggle" type="button"  data-toggle="dropdown"
+        <button id="Languages" class="btn btn-info dropdown-toggle" type="button"  data-bs-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false" th:text="#{buttons.language}">
         </button>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">

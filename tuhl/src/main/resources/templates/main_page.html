@@ -8,9 +8,9 @@
     <title th:text="#{label.tuhl}"> </title>
 
     <!-- do not move this to the script loading fragment because it will break the modals in the editor -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous"
-          th:href="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
+          integrity="sha512-jnSuA4Ss2PkkikSOLtYs8BlYIeeIK1h99ty4YfvRPAlzr377vr3CXDb7sb7eEEBYjDtcYj+AjBH3FLv5uSJuXg=="
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <script src="js/main_page.js"></script>
     <script>
@@ -27,7 +27,7 @@
     </script>
 </head> <!-- script imports in centralized head.html -->
 <body class="container-fluid p-0">
-<div class="modal" tabindex="-1" role="dialog" id="pseudonymInputModal" data-backdrop="static">
+<div class="modal" tabindex="-1" role="dialog" id="pseudonymInputModal" data-bs-backdrop="static">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -56,7 +56,7 @@
     <div class="col-sm-5 col-md-4 col-lg-3 col-xl-2 p-6 align-self-center">
         <h1 class="text-center display-4" th:text="#{label.tuhl}"> </h1>
     </div>
-    <div class="col-sm-4 p-6 my-1 align-self-center">
+    <div class="col-sm-4 p-3 my-1 align-self-center">
         <form onsubmit="setSearchTerm(event)">
             <div class="input-group">
                 <input id="searchTerm"
