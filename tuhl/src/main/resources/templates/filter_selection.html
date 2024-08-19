@@ -56,7 +56,7 @@
             </span>
             </div>
             <div class="row" th:id="matchInput"
-                 th:if="${filter.TYPE == T(edu.kit.scc.dem.tuhl.model.filter.FilterType).MATCH}">
+                 th:if="${filter.TYPE == T(edu.kit.datamanager.takita.model.filter.FilterType).MATCH}">
                 <input type="text"
                        class="form-control"
                        th:if="*{filterConfigs[__${i.index}__].values.size() > 0}"
@@ -70,7 +70,7 @@
                        th:placeholder="#{input_label.match_term}">
             </div>
             <div class="row" th:id="rangeInput"
-                 th:if="${filter.TYPE == T(edu.kit.scc.dem.tuhl.model.filter.FilterType).RANGE}">
+                 th:if="${filter.TYPE == T(edu.kit.datamanager.takita.model.filter.FilterType).RANGE}">
                 <input type="number"
                        class="form-control"
                        th:if="*{filterConfigs[__${i.index}__].values.size() > 0}"

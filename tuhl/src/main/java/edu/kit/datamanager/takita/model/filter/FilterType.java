@@ -4,9 +4,9 @@ package edu.kit.datamanager.takita.model.filter;
  * Enum for saving the type of filter for UI and search package.
  */
 public enum FilterType {
-  UNDEFINED("edu.kit.scc.dem.tuhl.model.filter.Undefined"),
-  MATCH("edu.kit.scc.dem.tuhl.model.filter.MatchFilter"),
-  RANGE("edu.kit.scc.dem.tuhl.model.filter.RangeFilter");
+  UNDEFINED("edu.kit.datamanager.takita.model.filter.Undefined"),
+  MATCH("edu.kit.datamanager.takita.model.filter.MatchFilter"),
+  RANGE("edu.kit.datamanager.takita.model.filter.RangeFilter");
 
   private final String className;
 
