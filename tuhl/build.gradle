@@ -143,7 +143,7 @@ tasks.register('createDockerfile', Dockerfile) {
 	workingDir '/takita'
 	copyFile './build.sh', '/takita/build.sh'
 	copyFile './dockerstart.sh', '/takita/start.sh'
-	copyFile 'application/', '/takita/application/'
+	copyFile 'tuhl/', '/takita/tuhl/'
 	runCommand 'chmod +x /takita/build.sh'
 	runCommand 'chmod +x /takita/start.sh'
 	runCommand '/takita/build.sh'
