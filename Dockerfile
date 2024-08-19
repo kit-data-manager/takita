@@ -5,9 +5,9 @@ RUN mkdir -p /takita
 WORKDIR /takita
 COPY ./build.sh /takita/build.sh
 COPY ./dockerstart.sh /takita/start.sh
-COPY application/ /takita/application/
+COPY tuhl/ /takita/tuhl/
 RUN chmod +x /takita/build.sh
 RUN chmod +x /takita/start.sh
 RUN /takita/build.sh
-RUN chmod -R +x /takita/application/build
-RUN cp /takita/application/build/libs/takita-1.0.0-SNAPSHOT.jar /takita/takita.jar
+RUN chmod -R +x /takita/tuhl/build
+RUN cp /takita/tuhl/build/libs/takita-1.0.0-SNAPSHOT.jar /takita/takita.jar
