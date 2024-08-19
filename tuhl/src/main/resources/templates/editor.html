@@ -141,11 +141,11 @@
                 <script th:inline="javascript">
                     var currentPageId = [[${currentPage.getResourceUrl()}]];
                 </script>
-                <img th:if="${currentPage.resourceType == (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).IMAGE)}"
+                <img th:if="${currentPage.resourceType == (T(edu.kit.datamanager.takita.model.page.ResourceType).IMAGE)}"
                         th:src="${currentPage.getResourceUrl()}"
                         id="pageImage">
                 <label class="text-center"
-                    th:if="${currentPage.resourceType != (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).IMAGE)}"
+                    th:if="${currentPage.resourceType != (T(edu.kit.datamanager.takita.model.page.ResourceType).IMAGE)}"
                     th:text="#{info.no_text_support}">
                 </label>
                 <div id="canvas">

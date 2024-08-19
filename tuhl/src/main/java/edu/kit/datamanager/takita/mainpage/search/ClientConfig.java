@@ -16,7 +16,7 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
  * Some configurations for elasticsearch.
  */
 @Configuration
-@EnableElasticsearchRepositories(basePackages = "edu.kit.scc.dem.tuhl.mainpage.search")
+@EnableElasticsearchRepositories(basePackages = "edu.kit.datamanager.takita.mainpage.search")
 public class ClientConfig extends ElasticsearchConfiguration{
   
   @Value("${elasticsearch.ip}")
