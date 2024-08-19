@@ -134,6 +134,7 @@ check.dependsOn integrationTest
 
 //create Dockerfile on release to update jar version
 tasks.register('createDockerfile', Dockerfile) {
+	def basename = tasks.named('bootJar').get().archiveFileName.get()
 	destFile = project.file('../Dockerfile')
 	from 'eclipse-temurin:17.0.12_7-jdk'
 	exposePort 8080
@@ -142,20 +143,21 @@ tasks.register('createDockerfile', Dockerfile) {
 	workingDir '/takita'
 	copyFile './build.sh', '/takita/build.sh'
 	copyFile './dockerstart.sh', '/takita/start.sh'
-	copyFile 'tuhl/', '/takita/tuhl/'
+	copyFile 'application/', '/takita/application/'
 	runCommand 'chmod +x /takita/build.sh'
 	runCommand 'chmod +x /takita/start.sh'
 	runCommand '/takita/build.sh'
 	runCommand 'chmod -R +x /takita/tuhl/build'
-	runCommand "cp /takita/tuhl/build/libs/tuhl-${project.version}.jar /takita/tuhl.jar"
+	runCommand "cp /takita/tuhl/build/libs/${basename} /takita/takita.jar"
 }
 
 jar {
 	manifest {
 		attributes(
-				'Main-Class': 'edu.kit.scc.dem.tuhl.TuhlApplication'
+				'Main-Class': 'edu.kit.datamanager.takita.TakitaApplication'
 		)
 	}
+	archiveFileName
 }
 
 tasks.withType(Copy).all {
