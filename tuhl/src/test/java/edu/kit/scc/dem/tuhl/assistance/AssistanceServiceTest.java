@@ -25,9 +25,11 @@ import org.mockito.internal.verification.VerificationModeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.ui.Model;
 
-@SpringBootTest
+@SpringBootTest(classes = AssistanceService.class)
+@TestPropertySource("classpath:application-test.properties")
 class AssistanceServiceTest {
   
   @Autowired

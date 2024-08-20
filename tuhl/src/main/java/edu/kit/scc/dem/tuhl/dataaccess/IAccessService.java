@@ -6,7 +6,7 @@ import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -46,7 +46,7 @@ public interface IAccessService {
    * @throws NoSuchIndexEntryException if there is a problem finding a modified manuscript in the
    * index
    */
-  List<Manuscript> getAllManuscriptsModifiedAfter(Date timestamp)
+  List<Manuscript> getAllManuscriptsModifiedAfter(Instant timestamp)
       throws InterruptedException, JSONException, IOException,
       ParseException, NoSuchIndexEntryException;
 
@@ -86,7 +86,7 @@ public interface IAccessService {
    * @throws IOException if an error occurs while sending or receiving http request
    * @throws InterruptedException if the http request is interrupted
    */
-  Annotation validateAnnotation(Annotation annotation, String pageNumber)
+  Annotation validateAnnotation(Annotation annotation, String pageNumber, String projectId)
       throws JSONException, IOException, InterruptedException;
 
   /**

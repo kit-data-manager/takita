@@ -1,37 +1,140 @@
+import com.bmuschko.gradle.docker.tasks.image.Dockerfile
+
 plugins {
-	id 'org.springframework.boot' version '2.3.0.RELEASE'
-	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'org.springframework.boot' version '3.2.2'
+	id 'io.spring.dependency-management' version '1.1.4'
+	id 'com.github.jk1.dependency-license-report' version '1.17'
 	id 'java'
+	id 'jacoco'
+	id 'com.bmuschko.docker-spring-boot-application' version '9.4.0'
 }
 
 group = 'de.pse'
-version = '0.0.2-SNAPSHOT'
-sourceCompatibility = '11'
+version = '1.0.0-SNAPSHOT'
 
 repositories {
 	mavenCentral()
-	jcenter()
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+sourceSets {
+	intTest {
+		compileClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.main.output
+		java {
+			srcDir 'src/intTest/java'
+		}
+		resources {
+			srcDir 'src/intTest/resources'
+		}
+	}
+}
+
+configurations {
+	intTestImplementation.extendsFrom implementation
+	intTestRuntimeOnly.extendsFrom runtimeOnly
+}
+ext {
+	set('testcontainersVersion', "1.20.0")
+}
+dependencyManagement {
+	imports {
+		mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
+	}
 }
 
 dependencies {
-	implementation 'org.webjars:bootstrap:4.5.0'
-	implementation 'org.mockito:mockito-core:2.7.22'
+	implementation 'org.webjars:bootstrap:5.3.2'
+	implementation 'org.mockito:mockito-core:5.9.0'
 	implementation 'org.springframework.data:spring-data-elasticsearch'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'com.google.code.gson:gson:2.8.6'
+	implementation 'com.google.code.gson:gson:2.10.1'
+	implementation 'jakarta.json:jakarta.json-api:2.1.0'
+	implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 	runtimeOnly 'com.h2database:h2'
 	implementation 'org.springframework.boot:spring-boot-configuration-processor'
 	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api:3.1.0"
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
+	intTestImplementation "org.testcontainers:testcontainers"
+	intTestImplementation "org.testcontainers:junit-jupiter"
+	intTestImplementation "org.testcontainers:elasticsearch"
+	intTestImplementation "io.specto:hoverfly-java-junit5:0.19.0"
+	intTestImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	intTestImplementation 'org.junit.jupiter:junit-jupiter'
+	intTestRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
+
+
 
 test {
 	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed" //, "standardOut", "standardError"
+
+		showExceptions true
+		exceptionFormat "full"
+		showCauses true
+		showStackTraces true
+
+		// Change to `true` for more verbose test output
+		showStandardStreams = false
+	}
+}
+
+jacocoTestReport {
+	//dependsOn test // tests are required to run before generating the report
+	reports {
+		xml.required = true
+		csv.required = true
+	}
+}
+
+tasks.register('integrationTest', Test) {
+	description = 'Runs integration tests.'
+	group = 'verification'
+
+	testClassesDirs = sourceSets.intTest.output.classesDirs
+	classpath = sourceSets.intTest.runtimeClasspath
+	shouldRunAfter test
+
+	useJUnitPlatform()
+
+	testLogging {
+		events "passed"
+	}
+}
+
+check.dependsOn integrationTest
+
+//create Dockerfile on release to update jar version
+tasks.register('createDockerfile', Dockerfile) {
+	destFile = project.file('../Dockerfile')
+	from 'eclipse-temurin:17.0.12_7-jdk'
+	exposePort 8080
+	entryPoint '/takita/start.sh'
+	runCommand 'mkdir -p /takita'
+	workingDir '/takita'
+	copyFile './build.sh', '/takita/build.sh'
+	copyFile './dockerstart.sh', '/takita/start.sh'
+	copyFile 'tuhl/', '/takita/tuhl/'
+	runCommand 'chmod +x /takita/build.sh'
+	runCommand 'chmod +x /takita/start.sh'
+	runCommand '/takita/build.sh'
+	runCommand 'chmod -R +x /takita/tuhl/build'
+	runCommand "cp /takita/tuhl/build/libs/tuhl-${project.version}.jar /takita/tuhl.jar"
 }
 
 jar {
@@ -40,4 +143,8 @@ jar {
 				'Main-Class': 'edu.kit.scc.dem.tuhl.TuhlApplication'
 		)
 	}
+}
+
+tasks.withType(Copy).all {
+	duplicatesStrategy 'exclude'
 }

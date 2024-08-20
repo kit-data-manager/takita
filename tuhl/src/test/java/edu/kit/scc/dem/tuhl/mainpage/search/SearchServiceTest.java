@@ -3,30 +3,37 @@ package edu.kit.scc.dem.tuhl.mainpage.search;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
 import edu.kit.scc.dem.tuhl.model.filter.Filter;
 import edu.kit.scc.dem.tuhl.model.filter.MatchFilter;
+import edu.kit.scc.dem.tuhl.model.page.ImagePage;
 import edu.kit.scc.dem.tuhl.model.page.Page;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.SearchHits;
+import edu.kit.scc.dem.tuhl.model.page.ResourceType;
+
+//import org.elasticsearch.action.search.SearchResponse;
+//import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
+import org.springframework.data.elasticsearch.core.IndexOperations;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.Query;
+import org.springframework.data.elasticsearch.core.SearchHit;
+import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.ui.Model;
 
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
 
-@SpringBootTest
+@SpringBootTest(classes = SearchService.class)
+@TestPropertySource("classpath:application-test.properties")
 class SearchServiceTest {
   
   @Autowired
@@ -36,7 +43,10 @@ class SearchServiceTest {
   private IFilterService mockedFilterService;
   
   @MockBean
-  private ElasticsearchRestTemplate mockedRestTemplate;
+  private ElasticsearchOperations mockedOperations;
+
+  @MockBean
+  private IndexOperations mockedIndexOperations;
   
   @MockBean
   private ManuscriptRepository mockedManuscriptRepository;
@@ -52,62 +62,42 @@ class SearchServiceTest {
     filters.add(matchFilter);
     Mockito.when(mockedFilterService.getCurrentFilters()).thenReturn(filters);
     long resultPagesCount = 1;
-    Mockito.when(mockedRestTemplate.count(Mockito.any(Query.class),
+    Mockito.when(mockedOperations.count(Mockito.any(Query.class),
         Mockito.any(IndexCoordinates.class))).thenAnswer(invocation -> resultPagesCount);
     
     String id = "000073cd-c425-4214-9648-b380ff20c61a";
-    long created = 1552309842000L;
+    //long created = 1552309842000L;
     String title = "Florenz Laur 72.5";
     String publisher = "SFB 980 - A04";
     int publicationYear = 2019;
-    long lastModified = 1552309842000L;
+    //long lastModified = 1552309842000L;
     int noPages = 1;
-    
-    List<Map<String, Object>> pages = new ArrayList<>();
-    Map<String, Object> pageMap = new HashMap<>();
-    pageMap.put("id", "3f3bf25b-e0b9-48a9-b344-20630f733f8b");
-    pageMap.put("thumbResourceUrl", "http://samplerepo.edu/api/v1/dataresources/3f3bf25b-e0b9-48a9-b344-20630f733f8b/data/076r.thumb.jpg");
-    pageMap.put("created", 1552310017000L);
-    pageMap.put("resourceUrl", "http://samplerepo.edu/api/v1/dataresources/3f3bf25b" +
-        "-e0b9-48a9-b344-20630f733f8b/data/076r.master.jpg");
-    pageMap.put("manuscriptId", "000073cd-c425-4214-9648-b380ff20c61a");
-    pageMap.put("pageNumber", "076r");
-    pageMap.put("resourceType", "IMAGE");
-    pages.add(pageMap);
-    
-    Map<String, Object> hitMap = new HashMap<>();
-    hitMap.put("id", id);
-    hitMap.put("created", created);
-    hitMap.put("title", title);
-    hitMap.put("publisher", publisher);
-    hitMap.put("publicationYear", publicationYear);
-    hitMap.put("lastModified", lastModified);
-    hitMap.put("noPages", noPages);
-    hitMap.put("hasAlgorithmAnnotations", true);
-    hitMap.put("pages", pages);
-    
-    SearchHit mockedHit = Mockito.mock(SearchHit.class);
-    Mockito.when(mockedHit.getSourceAsMap()).thenReturn(hitMap);
-    
-    SearchHit[] searchHitArray = new SearchHit[1];
-    searchHitArray[0] = mockedHit;
-    
-    SearchHits mockedHits = Mockito.mock(SearchHits.class);
-    Mockito.when(mockedHits.getHits()).thenReturn(searchHitArray);
-  
-    SearchResponse mockedResponse = Mockito.mock(SearchResponse.class);
-    Mockito.when(mockedResponse.getHits()).thenReturn(mockedHits);
-    
-    Mockito.when(mockedRestTemplate.execute(Mockito.any())).thenAnswer(invocation -> {
-      Class<?> returnType = invocation.getArgument(0).getClass().getMethod("doWithClient",
-          RestHighLevelClient.class).getReturnType();
-      
-      if (returnType.equals(Boolean.class)) {
-        return true;
-      } else {
-        return mockedResponse;
-      }
-    });
+
+    Manuscript searchHit = new Manuscript(id, Instant.parse("2019-04-11T14:13:45.000Z"), title, publisher, publicationYear);
+    searchHit.setLastModified(Instant.parse("2019-04-11T14:13:45.000Z"));
+    searchHit.setNoPages(noPages);
+    searchHit.setHasAlgorithmAnnotations(true);
+
+    Page imagePage = new ImagePage("3f3bf25b-e0b9-48a9-b344-20630f733f8b", ResourceType.IMAGE, "076r", Instant.parse("2019-04-11T14:13:45.000Z"), "http://samplerepo.edu/api/v1/dataresources/3f3bf25b" +
+    "-e0b9-48a9-b344-20630f733f8b/data/076r.master.jpg", "http://samplerepo.edu/api/v1/dataresources/3f3bf25b-e0b9-48a9-b344-20630f733f8b/data/076r.thumb.jpg");
+    imagePage.setManuscriptId(id);
+    List<Page> pageList = new ArrayList<>();
+    pageList.add(imagePage);
+    searchHit.setPages(pageList);
+
+    //TODO: mocks unsafe, improve when search is updated
+    Mockito.when(mockedOperations.indexOps(Manuscript.class)).thenReturn(mockedIndexOperations);
+    Mockito.when(mockedIndexOperations.exists()).thenReturn(true);
+
+    SearchHit<Manuscript> mockedManuscriptHit = Mockito.mock(SearchHit.class);
+    Mockito.when(mockedManuscriptHit.getContent()).thenReturn(searchHit);
+    List<SearchHit<Manuscript>> mockedManuscriptList = new ArrayList<>();
+    mockedManuscriptList.add(mockedManuscriptHit);
+
+    SearchHits<Manuscript> mockedManuscriptHits = Mockito.mock(SearchHits.class);
+    Mockito.when(mockedManuscriptHits.getSearchHits()).thenReturn(mockedManuscriptList);
+
+    Mockito.when(mockedOperations.search(Mockito.any(Query.class), any(Class.class))).thenReturn(mockedManuscriptHits);
     
     searchService.setSearchTerm("a search term");
     List<Manuscript> results = searchService.search(1, "id", false);
@@ -116,11 +106,11 @@ class SearchServiceTest {
     assertEquals(1, results.size());
     Manuscript result = results.get(0);
     assertEquals(id, result.getId());
-    assertEquals(created, result.getCreated().getTime());
+    assertEquals(Instant.parse("2019-04-11T14:13:45.000Z"), result.getCreated());
     assertEquals(title, result.getTitle());
     assertEquals(publisher, result.getPublisher());
     assertEquals(publicationYear, result.getPublicationYear());
-    assertEquals(lastModified, result.getLastModified().getTime());
+    assertEquals(Instant.parse("2019-04-11T14:13:45.000Z"), result.getLastModified());
     assertEquals(noPages, result.getNoPages());
     assertTrue(result.hasAlgorithmAnnotations());
     
@@ -129,7 +119,7 @@ class SearchServiceTest {
     assertEquals("3f3bf25b-e0b9-48a9-b344-20630f733f8b", page.getId());
     assertEquals("http://samplerepo.edu/api/v1/dataresources/" +
         "3f3bf25b-e0b9-48a9-b344-20630f733f8b/data/076r.thumb.jpg", page.getThumbResourceUrl());
-    assertEquals(Long.valueOf(1552310017000L), page.getCreated().getTime());
+    assertEquals(Instant.parse("2019-04-11T14:13:45.000Z"), page.getCreated());
     assertEquals("http://samplerepo.edu/api/v1/dataresources/" +
         "3f3bf25b-e0b9-48a9-b344-20630f733f8b/data/076r.master.jpg", page.getResourceUrl());
     assertEquals(result.getId(), page.getManuscriptId());

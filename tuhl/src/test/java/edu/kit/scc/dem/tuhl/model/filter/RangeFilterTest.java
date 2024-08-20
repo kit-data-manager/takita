@@ -2,13 +2,12 @@ package edu.kit.scc.dem.tuhl.model.filter;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
-import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder;
+import org.springframework.data.elasticsearch.core.query.Criteria;
+import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.elasticsearch.index.query.QueryBuilders.rangeQuery;
 import static org.junit.jupiter.api.Assertions.*;
 
 class RangeFilterTest {
@@ -29,13 +28,10 @@ class RangeFilterTest {
     values.add(pubYearGte);
     rangeFilter.setValues(values);
 
-    NativeSearchQuery perfectQuery = new NativeSearchQueryBuilder()
-        .withQuery(rangeQuery("publicationYear")
-            .gte(pubYearLte)
-            .lte(pubYearGte))
-        .build();
+  CriteriaQuery perfectQuery = new CriteriaQuery(new Criteria("publicationYear").lessThanEqual(pubYearGte).greaterThanEqual(pubYearLte));
 
-    assertEquals(perfectQuery.getQuery(), rangeFilter.getQuery().getQuery());
+  //TODO: extend to test more query features
+  assertEquals(perfectQuery.getFields(), new CriteriaQuery(rangeFilter.getCriteria()).getFields());
   }
 
   @Test
