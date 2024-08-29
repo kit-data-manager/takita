@@ -4,36 +4,40 @@
 <head>
     <meta charset="UTF-8">
     <title th:text="#{label.editor}"> </title>
-    <!-- Bootstrap core JavaScript -->
-    <!-- CSS only
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
-          integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous"
-          th:href="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css}">
-    <!-- <link href="https://www.cssscript.com/demo/sticky.css" rel="stylesheet" type="text/css">-->
+
+    <!-- define common scripts in head fragment to include here -->
+    <th:block th:replace="~{head :: baseContent}"></th:block>
 
     <link rel="stylesheet" th:href="@{/css/reset.css}">
-    <link rel="stylesheet" th:href="@{/css/tabulator_bootstrap4.min.css}">
+
     <link rel="stylesheet" th:href="@{/css/editor_sidebar_topbar.css}">
     <link rel="stylesheet" th:href="@{/css/modal.css}">
 
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css">
     <link rel="stylesheet" href="https://unpkg.com/chota@latest">
 
-
-    <!-- JS, Popper.js, and jQuery -->
-    <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
-            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"
-            th:src="@{https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js}"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
-            integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"
-            th:src="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js}"></script>
     <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js@3.0/dist/svg.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.js/dist/svg.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@svgdotjs/svg.panzoom.js/dist/svg.panzoom.js"></script>
 
     <script src="https://d3js.org/d3.v6.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js"
+            integrity="sha512-tBzZQxySO5q5lqwLWfu8Q+o4VkTcRGOeQGVQ0ueJga4A1RKuzmAu5HXDOXLEjpbKyV7ow9ympVoa6wZLEzRzDg=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ajv/8.17.1/ajv7.min.js"
+            integrity="sha512-OIkF2zyWS+sUanhT2i75RexNDQ2EKHayyeOxBx4Z4ct0D+dlPzZPhHTi7xZ5eU7aznNLMX7pCZyZVSi25+EGMQ=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.13.7/underscore.min.js"
+            integrity="sha512-4qhSVMvk8zO40MuZxPTbcQX27lfw0FAXv3n6FqlWxhn3PgIX/57GUv5k9g3t28H+rMcpDt/eod1uWJnxkUup1Q=="
+            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsonform/2.2.5/jsonform.js"
+            integrity="sha512-7+/iHAMg7Yn0B7v6kbWoZYGstHvUeehAe0Rd77bndsvA0jk5z7fQt0qagSyvCRrr6pCBVDUUZlIXlcVhSv2l6g=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer"></script>
+
 
 </head>
 <body class="container-fluid p-0" th:data-field="${currentAnnotationsJson}"
@@ -380,15 +384,11 @@
         });
     </script>
 
-    <script src="/js/raphael.js"></script>
-    <script src="/js/ajv7.js"></script>
-    <script src="/js/underscore.js"></script>
-    <script src="/js/jsonform.js"></script>
-    <script src="/js/tabulator.min.js"></script>
-    <script src="/js/metadataeditor.js"></script>
-    <script src="/js/editor.js"></script>
-    <script src="/js/editor_svg.js"></script>
-    <script src="/js/creation_templates.js"></script>
+    <script th:src="@{/js/metadataeditor.js}"></script>
+    <script th:src="@{/js/editor.js}"></script>
+    <script th:src="@{/js/editor_svg.js}"></script>
+    <script th:src="@{/js/creation_templates.js}"></script>
+
 
 </body>
 
