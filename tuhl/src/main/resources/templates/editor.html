@@ -186,9 +186,9 @@
         <!-- th:fragment="editor -->
 
     <!-- manuscript page -->
-    <div class="row is-full-width">
+    <div class="row">
         <div class="col-7">
-            <div id="imageWorkspace" class="is-full-width">
+            <div id="imageWorkspace">
                 <script th:inline="javascript">
                     var currentPageId = [[${currentPage.getResourceUrl()}]];
                 </script>
@@ -207,14 +207,8 @@
         <!-- bodies and annotations -->
         <div class="col-5" style="height: 100vh">
             <div class="row mx-auto" id="viewerHolder">
-                <div class="card card-body is-full-width is-hidden" id="annotationCard">
+                <div class="card card-body row-gap-2 invisible" id="annotationCard">
                     <div class="row" id="iconRow">
-                        <div class="col">
-                            <div class="is-right">
-                                <i class="bx bx-plus" onclick="imageZoomIn()"></i>
-                                <i class="bx bx-trash" onclick="imageZoomIn()"></i>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -222,7 +216,7 @@
     </div>
 
     <!-- Page overview for the whole book onclick="window.open(${page.id})" no-wrap> -->
-    <div class="collapse col-auto is-hidden is-full-width" id="pages">
+    <div class="collapse col-auto invisible" id="pages">
         <div class="card">
             <div class="row">
                 <div class="col-auto" th:each="page : ${currentManuscript.pages}">
@@ -239,7 +233,7 @@
                                  th:if="${page.id == currentPage.id}">
                         </div>
                     </div>
-                    <div class="row is-center">
+                    <div class="row text-center">
                         <label class="col-auto" th:text="${page.pageNumber}"
                         th:if="${page.id != currentPage.id}">
                         </label>
@@ -252,7 +246,7 @@
         </div>
     </div>
 
-    <div class="collapse col-auto is-hidden is-full-width" id="editortable">
+    <div class="collapse col-auto invisible" id="editortable">
         <div class="card">
                 <div class="boxlist margin-top-30" id="training-box">
                     <div class="box-header bg-green-blue"></div>
