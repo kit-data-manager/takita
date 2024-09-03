@@ -136,44 +136,50 @@
   <div>
 </div>
 
-    <div class="row topbar-row is-full-width">
-        <div class="col-1"></div>
-        <div class="col-1 is-vertical-align is-horizontal-align"> <i class="bx bx-home" onclick="goHome();"></i> </div>
-        <div class="col-4 is-vertical-align is-horizontal-align" th:text="${currentManuscript.title}"></div>
-        <div class="col-5 is-vertical-align is-horizontal-align">
-            <div class="row input-group">
-                <input class="form-control col-9 is-vertical-align"
-                th:placeholder="#{label.pseudonym}"
-                id="pseudonymInput"
-                th:value="${user.getName()}"
-                disabled>
-                <div class="col-3 input-group-append is-vertical-align">
+<table class="table table-borderless">
+    <thead class="table-light align-middle">
+        <th width="10%"></th>
+        <th width="20%"><i class="bx bx-home" onclick="goHome();"></i></th>
+        <th width="20%" th:text="${currentManuscript.title}"></th>
+        <th width="10%"></th>
+        <th width="20%"></th>
+        <th class="text-end" width="20%">
+            <div class="input-group w-auto">
+                <input class="form-control col-7"
+                       th:placeholder="#{label.pseudonym}"
+                       id="pseudonymInput"
+                       th:value="${user.getName()}"
+                       disabled>
+                <div class="input-group-append col-2">
                     <button id="editButton"
-                    class="bx bx-edit"
-                    onclick="clickButton()"
-                    > </button>
+                        class="btn btn-outline-secondary"
+                        onclick="clickButton()"
+                        th:text="#{buttons.edit}"> </button>
                 </div>
+                <span> </span>
+                <i class="bx bx-help-circle col-3" onclick="console.log('ZoomIn!')"></i>
             </div>
-        </div>
-        <div class="col-1 is-vertical-align is-horizontal-align"> <i class="bx bx-help-circle" onclick="console.log('ZoomIn!')"></i> </div>
-    </div>
-    <div class="row is-full-width"><div class="col-12"></div></div>
-    <div class="row is-full-width">
-        <div class="col-1"></div>
-        <div class="col-2" th:text="#{col_name.noPages}">"></div>
-        <div class="col-2" th:text="${currentManuscript.noPages}"></div>
-        <div class="col-1"></div>
-        <div class="col-2" th:text="#{col_name.created}"></div>
-        <div class="col-4" th:text="${currentManuscript.created}"></div>
-    </div>
-    <div class="row is-full-width">
-        <div class="col-1"></div>
-        <div class="col-2" th:text="#{col_name.pageNumber}"></div>
-        <div class="col-2" th:text="${currentPage.pageNumber}"></div>
-        <div class="col-1"></div>
-        <div class="col-2" th:text="#{col_name.lastModified}">"></div>
-        <div class="col-4" th:text="${currentManuscript.lastModified}"></div>
-    </div>
+        </th>
+    </thead>
+    <tbody>
+        <tr>
+            <td width="10%"></td>
+            <td width="20%" th:text="#{col_name.noPages}"></td>
+            <td width="20%" th:text="${currentManuscript.noPages}"></td>
+            <td width="10%"></td>
+            <td width="20%" th:text="#{col_name.created}"></td>
+            <td width="20%" th:text="${currentManuscript.created}"></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td th:text="#{col_name.pageNumber}"></td>
+            <td th:text="${currentPage.pageNumber}"></td>
+            <td></td>
+            <td th:text="#{col_name.lastModified}"></td>
+            <td th:text="${currentManuscript.lastModified}"></td>
+        </tr>
+    </tbody>
+  </table>
 
 
     <div id="editor">
