@@ -58,7 +58,7 @@
         </div>
       </div>
 
-  <ul class="features-list">
+  <div class="features-list">
       <div class="category-header">View Mode</div>
     <li class="features-item draft">
       <i id="zoomInButton" class="bx bx-zoom-in features-item-icon" onclick="hideExpandedSidebar(); imageZoomIn()"></i>
@@ -85,8 +85,8 @@
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); resetView()">Reset View</span>
       <span class="tooltip">Reset View</span>
     </li>
-  </ul>
-  <ul class="features-list">
+</div>
+  <div class="features-list">
       <div class="category-header">Create Mode</div>
     <li class="features-item draft">
       <i id="createRectangleButton" class="bx bx-shape-square features-item-icon" onclick="hideExpandedSidebar(); addingRectangle = true; confirmDiscardChanges(); mode = Mode.Create;"></i>
@@ -103,8 +103,8 @@
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); confirmDiscardChanges(); mode = Mode.Create; createPageAnnotation();">Create Annotation</span>
       <span class="tooltip">Create Annotation</span>
     </li>
-   </ul>
-   <ul class="features-list">
+</div>
+   <div class="features-list">
        <div class="category-header">Modify Mode</div>
     <li class="features-item star">
       <i id="modifyButton" class="bx bx-edit features-item-icon" onclick="hideExpandedSidebar(); modifyShape();"></i>
@@ -121,8 +121,8 @@
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); saveShape();">Save</span>
       <span class="tooltip">Save</span>
     </li>
-  </ul>
-    <ul class="features-list">
+  <div>
+    <div class="features-list">
     <li class="features-item star">
       <i id="pagesButton" class="bx bx-book-open features-item-icon" onclick="hideExpandedSidebar(); toggleOverview('pages')"></i>
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); toggleOverview('pages')">Show Book</span>
@@ -133,7 +133,7 @@
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); toggleOverview('editortable')">Show Annotations</span>
       <span class="tooltip">Show Annotations</span>
     </li>
-  </ul>
+  <div>
 </div>
 
     <div class="row topbar-row is-full-width">
