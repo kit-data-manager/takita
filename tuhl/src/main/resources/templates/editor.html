@@ -265,21 +265,35 @@
 
 </div>
 
-    <div class="modal" id="createBody">
+<div class="modal" tabindex="-1" role="dialog" id="createBody" data-bs-backdrop="static">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <span class="close-button" id="closeButton">&times;</span>
-            <form id="pickBodyTemplateForm"></form>
-            <form id="createForm"></form>
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Body</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="pickBodyTemplateForm"></form>
+                <form id="createForm"></form>   
+            </div>
         </div>
     </div>
+</div>
 
-    <div class="modal" id="createAnnotation">
+<div class="modal" tabindex="-1" role="dialog" id="createAnnotation" data-bs-backdrop="static">
+    <div class="modal-dialog" role="document">
         <div class="modal-content">
-            <span class="close-button" id="closeButtonAnno">&times;</span>
-            <form id="pickAnnotationTemplateForm"></form>
-            <form id="createAnnotationForm"></form>
+            <div class="modal-header">
+                <h5 class="modal-title">Create New Annotation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="pickAnnotationTemplateForm"></form>
+                <form id="createAnnotationForm"></form>    
+            </div>
         </div>
     </div>
+</div>
 
     <div class="modal" id="loading">
         <div class="modal-loading">

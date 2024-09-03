@@ -1108,9 +1108,9 @@ window.addEventListener("wheel", function(e) {
   passive: false
 });
 
-// adding the closing functionality to annotation creation modal
-document.getElementById('closeButtonAnno').addEventListener('click', function (e) {
-    document.getElementById("createAnnotation").classList.toggle("show-modal");
+// adding custom closing functionality to annotation creation modal
+const createAnnotationModal = document.getElementById('createAnnotation')
+createAnnotationModal.addEventListener('hidden.bs.modal', event => {
 
     // if modal was shown during creation of new rectangle, remove rectangle
     if (newRectangle) {
@@ -1123,11 +1123,6 @@ document.getElementById('closeButtonAnno').addEventListener('click', function (e
         polygonPath.remove();
         document.getElementById('createPolygonButton').parentElement.classList.remove('active');
     };
-});
-
-// adding the closing functionality to body creation modal
-document.getElementById('closeButton').addEventListener('click', function (e) {
-    document.getElementById("createBody").classList.toggle("show-modal");
 });
 
 function hideExpandedSidebar() {
