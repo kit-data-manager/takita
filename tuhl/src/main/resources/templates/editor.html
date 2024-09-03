@@ -295,11 +295,16 @@
     </div>
 </div>
 
-    <div class="modal" id="loading">
-        <div class="modal-loading">
-            <img th:src="@{/images/Book.gif}"/>
+<div class="modal" tabindex="-1" role="dialog" id="loading" data-bs-backdrop="static">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-body text-center">
+                <i class='bx bxs-dog bx-tada bx-lg'></i>
+                <span>... loading ...</span>
+            </div>
         </div>
     </div>
+</div>
 
     <!-- Copied from main_page.html - may be exchanged in the future -->
     <div class="modal" id="pseudonymInputModal">

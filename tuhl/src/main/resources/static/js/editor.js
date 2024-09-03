@@ -478,11 +478,10 @@ function toggleExpand(div) {
     };
 };
 
+const loadingModal = new bootstrap.Modal(document.getElementById('loading'));
 // show the animated book as loading icon whenever an ajax call is running
 $(document).ajaxStart(function(){
-    const modal = document.getElementById("loading");
-    modal.classList.toggle("show-modal");
+    loadingModal.toggle();
  }).ajaxStop(function(){
-    const modal = document.getElementById("loading"); 
-    modal.classList.toggle("show-modal"); 
+    loadingModal.toggle(); 
  });
