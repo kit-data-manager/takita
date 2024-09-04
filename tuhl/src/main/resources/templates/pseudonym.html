@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Header</title>
+</head>
+<body>
+<div class="col-4 input-group w-auto" th:fragment="pseudonym">
+    <input class="form-control"
+        th:placeholder="#{label.pseudonym}"
+        id="pseudonymInput"
+        th:value="${user.getName()}"
+        disabled>
+    <div class="input-group-append">
+        <button id="editButton"
+            class="btn btn-outline-secondary"
+            onclick="clickButton()"
+            th:text="#{buttons.edit}"> </button>
+    </div>      
+
+<script th:inline="javascript">
+
+    function clickButton(){
+        /*<![CDATA[*/
+        let button = document.getElementById('editButton');
+        let input = document.getElementById('pseudonymInput');
+        let edit = [[#{buttons.edit}]];
+            let ok = [[#{buttons.ok}]];
+        if (button.innerText === edit){
+            button.innerText = ok;
+            button.className = 'btn btn-info';
+            input.disabled = false;
+        } else {
+            button.innerText = edit;
+            button.className = 'btn btn-outline-secondary';
+            input.disabled = true;
+            setPseudonym();
+        }
+        /*]]>*/
+    }
+
+    function setPseudonym() {
+        let input = $('#pseudonymInput').val();
+        $.ajax({
+            type: 'GET',
+            url: 'assistance/' + input,
+            dataType: 'text',
+            success: function (responseData) {
+                location.href = '?lang=' + responseData;
+            }
+        });
+    }
+</script>
+</div>
+</body>
+</html>
