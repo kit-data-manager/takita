@@ -36,8 +36,9 @@ function selectAnnotation(event, annoId) {
             addBody.classList.add("bx-plus");
             addBody.onclick = function() {
                 console.log("create");
-                const modal = new bootstrap.Modal(document.getElementById('createBody'));
-                modal.toggle();
+                let createBody = document.getElementById('createBody');
+                let createBodyModal = bootstrap.Modal.getOrCreateInstance(createBody);
+                createBodyModal.toggle();
                 pickTemplate("",encodeAnnoId(responseJson.id), "createForm", "pickBodyTemplateForm", "bodyTemplate");
             };
                 
@@ -432,10 +433,11 @@ function toggleExpand(div) {
     };
 };
 
-const loadingModal = new bootstrap.Modal(document.getElementById('loading'));
 // show the animated book as loading icon whenever an ajax call is running
 $(document).ajaxStart(function(){
+    let loadingModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('loading'));
     loadingModal.toggle();
  }).ajaxStop(function(){
+    let loadingModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('loading'));
     loadingModal.toggle(); 
  });

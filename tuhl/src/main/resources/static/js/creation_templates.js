@@ -296,8 +296,9 @@ const formObjectCreateBody = {
                         success: function(responseData) {
                             console.log(responseData);
                             selectAnnotation(null, document.getElementById("createForm").title);
-                            const modal = new bootstrap.Modal(document.getElementById('createBody'));
-                            modal.toggle();
+                            let createBody = document.getElementById('createBody');
+                            let createBodyModal = bootstrap.Modal.getOrCreateInstance(createBody);
+                            createBodyModal.toggle();
                         },
         
                         error: function(errorData) {
@@ -498,8 +499,9 @@ function storeBody(responseJson, jsonObject, index) {
         
     } else {
         // if no more body needs to be created, hide modal and update global annotation list
-        const modal = new bootstrap.Modal(document.getElementById('createAnnotation'));
-        modal.toggle();
+        let createAnnotation = document.getElementById('createAnnotation');
+        let createAnnotationModal = bootstrap.Modal.getOrCreateInstance(createAnnotation);
+        createAnnotationModal.toggle();
         selectAnnotation(null, encodeAnnoId(responseJson.id));
         if (document.getElementById('annotationCard').classList.contains('invisible')) {
             toggleOverview('annotationCard');

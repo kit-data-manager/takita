@@ -618,8 +618,9 @@ function fillMetaDataEditorTable(annoJson) {
 };
 
 function createPageAnnotation() {
-    const modal = new bootstrap.Modal(document.getElementById('createAnnotation'));
-    modal.toggle();
+    let createAnnotation = document.getElementById('createAnnotation');
+    let createAnnotationModal = bootstrap.Modal.getOrCreateInstance(createAnnotation);
+    createAnnotationModal.toggle();
     pickTemplate("", "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
 };
 
@@ -911,8 +912,9 @@ function init(annotations) {
                     };
                     svgString += "\"/></svg>";
 
-                    const modal = new bootstrap.Modal(document.getElementById('createAnnotation'));
-                    modal.toggle();
+                    let createAnnotation = document.getElementById('createAnnotation');
+                    let createAnnotationModal = bootstrap.Modal.getOrCreateInstance(createAnnotation);
+                    createAnnotationModal.toggle();
                     pickTemplate(svgString, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
 
                 firstPolygonPoint = undefined;
@@ -1021,8 +1023,9 @@ function init(annotations) {
 
             let svgString = "<svg><rect x=\"" + newRectangle.attrs.x + "\" y=\"" + newRectangle.attrs.y + "\" width=\"" + newRectangle.attrs.width + "\" height=\"" + newRectangle.attrs.height + "\"/></svg>";
 
-            const modal = new bootstrap.Modal(document.getElementById('createAnnotation'));
-            modal.toggle();
+            let createAnnotation = document.getElementById('createAnnotation');
+            let createAnnotationModal = bootstrap.Modal.getOrCreateInstance(createAnnotation);
+            createAnnotationModal.toggle();
             pickTemplate(svgString, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
 
             // reset variables needed for rectangle creation
@@ -1108,8 +1111,8 @@ window.addEventListener("wheel", function(e) {
 });
 
 // adding custom closing functionality to annotation creation modal
-const createAnnotationModal = document.getElementById('createAnnotation')
-createAnnotationModal.addEventListener('hidden.bs.modal', event => {
+let createAnnotation = document.getElementById('createAnnotation')
+createAnnotation.addEventListener('hidden.bs.modal', event => {
 
     // if modal was shown during creation of new rectangle, remove rectangle
     if (newRectangle) {
