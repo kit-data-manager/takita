@@ -136,7 +136,7 @@
 </div>
 </div>
 
-<div th:replace="header_editor.html :: header_editor"></div>
+<div th:replace="~{header_editor.html :: header_editor}"></div>
 
     <div id="editor">
         <!-- th:fragment="editor -->
@@ -256,7 +256,7 @@
     </div>
 </div>
 
-<div th:replace="pseudonym.html :: pseudonym_modal"></div>
+<div th:replace="~{pseudonym.html :: pseudonym_modal}"></div>
 
     <script th:src="@{/js/metadataeditor.js}"></script>
     <script th:src="@{/js/editor.js}"></script>

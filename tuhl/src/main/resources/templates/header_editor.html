@@ -15,7 +15,7 @@
             <th width="20%"></th>
             <th class="text-end" width="20%">
                 <div class="row">
-                    <div class="col-9" th:insert="pseudonym.html :: pseudonym"></div>
+                    <div class="col-9" th:insert="~{pseudonym.html :: pseudonym}"></div>
                     <button class="col-auto btn btn-info" th:text="#{buttons.help}" onclick="getHelp()"> </button>
                 </div>
             </th>

@@ -16,7 +16,7 @@
 
 </head> <!-- script imports in centralized head.html -->
 <body class="container-fluid p-0">
-    <div th:replace="pseudonym.html :: pseudonym_modal"></div>
+    <div th:replace="~{pseudonym.html :: pseudonym_modal}"></div>
 
 <div class="row mx-auto pr-3 bg-light">
     <div class="col-sm-5 col-md-4 col-lg-3 col-xl-2 p-6 align-self-center">
@@ -46,16 +46,16 @@
         </form>
     </div>
     <div class="col-sm p-6 my-1 align-self-center"
-         th:insert="header.html :: header"></div>
+         th:insert="~{header.html :: header}"></div>
 </div>
 
 
 <div class="row mx-auto fill-height">
     <div class="col-xs-12 col-sm-5 col-md-4 col-lg-3 col-xl-2 p-0 pr-2 bg-light container-fluid"
-         th:insert="filter_selection.html :: filterSelection"></div>
+         th:insert="~{filter_selection.html :: filterSelection}"></div>
     <div class="col-xs-12 col-sm-7 col-md-8 col-lg-9 col-xl-10 p-0 container-fluid"
          id="dashboard"
-         th:insert="table_view.html :: tableView"></div>
+         th:insert="~{table_view.html :: tableView}"></div>
 </div>
 
 </body>
