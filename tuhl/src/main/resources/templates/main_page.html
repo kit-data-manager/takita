@@ -13,18 +13,7 @@
           crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <script th:src="@{/js/main_page.js}"></script>
-    <script>
-        $(document).ready(function () {
-            let visited = sessionStorage.getItem('visited');
-            if (visited === null) {
-                $('#pseudonymInputModal').modal('show');
-            } else {
-                $('#pseudonymInputModal').modal('hide');
-            }
 
-
-        });
-    </script>
 </head> <!-- script imports in centralized head.html -->
 <body class="container-fluid p-0">
     <div th:replace="pseudonym.html :: pseudonym_modal"></div>

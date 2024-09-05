@@ -34,20 +34,18 @@
             button.innerText = edit;
             button.className = 'btn btn-outline-secondary';
             input.disabled = true;
-            setPseudonym();
+            setPseudonym($('#pseudonymInput').val());
         }
         /*]]>*/
     }
 
-    function setPseudonym() {
-            let input =  $('#pseudonymInput').val();
+    function setPseudonym(input) {
             $.ajax({
                 type: 'GET',
                 url: '../assistance/' + input,
                 dataType: 'text',
                 success: function (responseData) {
                     console.log("Response from succesfull pseudonym update: ", responseData);
-                    //location.href = '?lang=' + responseData;
                     // reload the page with the new pseudonym
                     location.reload();
                 },
@@ -65,7 +63,7 @@
             <div class="modal-header">
                 <h5 class="modal-title" th:text="#{label.pseudonym}"> </h5>
             </div>
-            <form onsubmit="enterPseudonym(event)">
+            <form>
                 <div class="modal-body form-group">
                     <label for="pseudonymInitInput" th:text="#{prompt.pseudonym}"> </label>
                     <input type="text"
@@ -83,22 +81,20 @@
     </div>
 
     <script th:inline="javascript">
-        /*<![CDATA[*/
-        function enterPseudonym(event) {
-            event.preventDefault();
-            let input = $('#pseudonymInitInput').val();
-            $.ajax({
-                type: 'GET',
-                url: 'assistance/' + input,
-                dataType: 'text',
-                success: function (responseData) {
-                    location.href = '/?lang=' + responseData;
-                }
-            });
 
-            sessionStorage.setItem('visited', '1');
-        }
-        /*]]>*/
+        $(document).ready(function () {
+            let userName = /*[[${user.getName()}]]*/ "default";
+            if (userName === 'default') {
+                let pseudonym = document.getElementById("pseudonymInputModal");
+                bootstrap.Modal.getOrCreateInstance(pseudonym).toggle();
+            }
+        });
+
+        document.getElementById('pseudonymInputModal').addEventListener('submit', function(event) {
+            event.preventDefault();
+            let input =  $('#pseudonymInitInput').val();
+            setPseudonym(input);
+        });
     </script>
 
 </div>

@@ -258,26 +258,10 @@
 
 <div th:replace="pseudonym.html :: pseudonym_modal"></div>
 
-    <script th:inline="javascript">
-
-        // adding eventhandler for pseudonym change to the pseudonym input modal
-        document.querySelector("#pseudonymInputModal > div:nth-child(1) > form:nth-child(1)")
-            .addEventListener("submit", (event) => setPseudonym(event, "pseudonymInitInput"));
-
-        // adapted from main_page.html - may be exchanged in the future
-        $(document).ready(function () {
-            let userName = /*[[${user.getName()}]]*/ "default";
-            if (userName === 'default') {
-              document.getElementById("pseudonymInputModal").classList.toggle("show-modal");
-            }
-        });
-    </script>
-
     <script th:src="@{/js/metadataeditor.js}"></script>
     <script th:src="@{/js/editor.js}"></script>
     <script th:src="@{/js/editor_svg.js}"></script>
     <script th:src="@{/js/creation_templates.js}"></script>
-
 
 </body>
 
