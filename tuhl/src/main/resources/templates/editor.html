@@ -256,25 +256,7 @@
     </div>
 </div>
 
-    <!-- Copied from main_page.html - may be exchanged in the future -->
-    <div class="modal" id="pseudonymInputModal">
-            <div class="modal-content">
-                <form>
-                    <div class="modal-body form-group">
-                        <label for="pseudonymInitInput" th:text="#{prompt.pseudonym}"> </label>
-                        <input type="text"
-                               class="form-control"
-                               id="pseudonymInitInput"
-                               th:placeholder="#{label.pseudonym}"
-                               required>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}">
-                        </button>
-                    </div>
-                </form>
-            </div>
-    </div>
+<div th:replace="pseudonym.html :: pseudonym_modal"></div>
 
     <script th:inline="javascript">
 

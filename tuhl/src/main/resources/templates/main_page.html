@@ -27,30 +27,7 @@
     </script>
 </head> <!-- script imports in centralized head.html -->
 <body class="container-fluid p-0">
-<div class="modal" tabindex="-1" role="dialog" id="pseudonymInputModal" data-bs-backdrop="static">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" th:text="#{label.pseudonym}"> </h5>
-            </div>
-            <form onsubmit="enterPseudonym(event)">
-                <div class="modal-body form-group">
-                    <label for="pseudonymInitInput" th:text="#{prompt.pseudonym}"> </label>
-                    <input type="text"
-                           class="form-control"
-                           id="pseudonymInitInput"
-                           th:placeholder="#{label.pseudonym}"
-                           required>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}">
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
+    <div th:replace="pseudonym.html :: pseudonym_modal"></div>
 
 <div class="row mx-auto pr-3 bg-light">
     <div class="col-sm-5 col-md-4 col-lg-3 col-xl-2 p-6 align-self-center">
@@ -92,25 +69,6 @@
          th:insert="table_view.html :: tableView"></div>
 </div>
 
-<script th:inline="javascript">
-    /*<![CDATA[*/
-    function enterPseudonym(event) {
-        event.preventDefault();
-        let input = $('#pseudonymInitInput').val();
-        $.ajax({
-            type: 'GET',
-            url: 'assistance/' + input,
-            dataType: 'text',
-            success: function (responseData) {
-                location.href = '/?lang=' + responseData;
-            }
-        });
-
-        sessionStorage.setItem('visited', '1');
-    }
-    /*]]>*/
-
-</script>
 </body>
 </html>
 <style>
