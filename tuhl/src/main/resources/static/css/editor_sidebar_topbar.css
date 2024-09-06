@@ -69,7 +69,7 @@
   align-items: center;
   position: relative;
   padding: 0.5rem 0.9rem;
-  margin-bottom: 1.1rem;
+  margin-bottom: 1rem;
   color: var(--grey-color);
   cursor: pointer;
   transition: 0.5s ease;
@@ -111,7 +111,7 @@
 }
 
 .features-item-icon {
-  font-size: 3rem;
+  font-size: 2rem;
 }
 
 .features-item-text {
