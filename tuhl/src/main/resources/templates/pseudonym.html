@@ -47,7 +47,14 @@
                 success: function (responseData) {
                     console.log("Response from succesfull pseudonym update: ", responseData);
                     // reload the page with the new pseudonym
-                    location.reload();
+                    // location.reload();
+
+                    document.getElementById('pseudonymInput').value = input;
+
+                    let pseudonym = document.getElementById("pseudonymInputModal");
+                    if (pseudonym.classList.contains('show')) {
+                        bootstrap.Modal.getOrCreateInstance(pseudonym).toggle();
+                    };  
                 },
                 error: function (responseData) {
                     console.error(responseData);
