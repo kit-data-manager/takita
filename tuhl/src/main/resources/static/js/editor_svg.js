@@ -1112,6 +1112,13 @@ window.addEventListener("wheel", function(e) {
 
 // adding custom closing functionality to annotation creation modal
 let createAnnotation = document.getElementById('createAnnotation')
+
+// brings the image in front of the modal backdrop while annotating
+// for now only for creating annotations not bodies
+createAnnotation.addEventListener('shown.bs.modal', event => {
+    document.getElementById('imageWorkspace').style.zIndex = "1100";
+});
+
 createAnnotation.addEventListener('hidden.bs.modal', event => {
 
     // if modal was shown during creation of new rectangle, remove rectangle
@@ -1125,6 +1132,8 @@ createAnnotation.addEventListener('hidden.bs.modal', event => {
         polygonPath.remove();
         document.getElementById('createPolygonButton').parentElement.classList.remove('active');
     };
+
+    document.getElementById('imageWorkspace').style.zIndex = "1";
 });
 
 function hideExpandedSidebar() {
