@@ -117,7 +117,7 @@
   background-color: white;
   color: var(--dark-grey-color);
   border-radius: 0.4rem;
-  padding: 0.5rem 0.9rem;
+  padding: 0.5rem 1rem;
   font-size: 1.4rem;
   transition: 0s;
   opacity: 0;
