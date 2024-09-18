@@ -58,6 +58,12 @@
          th:insert="~{table_view.html :: tableView}"></div>
 </div>
 
+<script th:inline="javascript">
+    document.addEventListener('pseudonymUpdate', function(event) {
+        location.reload();
+    });
+</script>
+
 </body>
 </html>
 <style>

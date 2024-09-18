@@ -54,7 +54,11 @@
                     let pseudonym = document.getElementById("pseudonymInputModal");
                     if (pseudonym.classList.contains('show')) {
                         bootstrap.Modal.getOrCreateInstance(pseudonym).toggle();
-                    };  
+                    };
+                    
+                    // emitting event in case of successful pseudonym update
+                    // can be used to reload the page where necessary
+                    document.dispatchEvent(new Event('pseudonymUpdate'))
                 },
                 error: function (responseData) {
                     console.error(responseData);
