@@ -36,11 +36,9 @@ function selectAnnotation(event, annoId) {
             addBody.classList.add("bx-plus");
             addBody.onclick = function() {
                 console.log("create");
-                //var modal = document.createElement("div");
-                //modal.classList.add("modal");
-                //modal.style.display = "block";
-                const modal = document.getElementById("createBody");
-                modal.classList.toggle("show-modal");
+                let createBody = document.getElementById('createBody');
+                let createBodyModal = bootstrap.Modal.getOrCreateInstance(createBody);
+                createBodyModal.toggle();
                 pickTemplate("",encodeAnnoId(responseJson.id), "createForm", "pickBodyTemplateForm", "bodyTemplate");
             };
                 
@@ -52,9 +50,7 @@ function selectAnnotation(event, annoId) {
             
             iconRowTop.append(addBody);
             iconRowTop.append(deleteAnnotationIcon);
-            iconRowTop.classList.add("is-right");
-            iconRowTop.classList.add("is-full-width");
-            
+            iconRowTop.classList.add("text-end");
             
             var formDataModel = {
                 "type": "object",
@@ -101,34 +97,28 @@ function selectAnnotation(event, annoId) {
                 
                 var bodyRowDiv = document.createElement("div");
                 bodyRowDiv.classList.add("row");
-                bodyRowDiv.classList.add("is-full-width");
                 bodyCard.append(bodyRowDiv);
                 
                 var bodyDiv = document.createElement("div");
-                bodyDiv.innerText = bodies[body].purpose;
                 bodyDiv.id = bodies[body].id;
                 bodyDiv.title = bodies[body].annotationId;
-                bodyDiv.classList.add("is-left");
+                bodyDiv.classList.add("text-start");
                 bodyDiv.classList.add("col");
                 bodyRowDiv.append(bodyDiv);
                 console.log(bodyDiv.id);
                 
                 var formRowDiv = document.createElement("div");
                 formRowDiv.classList.add("row");
-                formRowDiv.classList.add("is-full-width");
                 bodyCard.append(formRowDiv);
                 
                 var bodyForm = document.createElement("form");
                 bodyForm.id = "form" + bodies[body].id;
                 bodyForm.addEventListener('submit', function(e) {e.preventDefault();});
-                //bodyForm.style.paddingLeft = "20rem";
-                //bodyForm.classList.add("is-full-width");
                 bodyForm.classList.add("col");
                 formRowDiv.append(bodyForm);
                 
                 var iconRow = document.createElement("div");
                 iconRow.id = "iconRow" + body;
-                //iconRow.classList.add("is-full-width");
                 iconRow.style.paddingRight = "1rem";
                 
                 var expand = document.createElement("i");
@@ -145,8 +135,12 @@ function selectAnnotation(event, annoId) {
                 //deleteBody.style.color = "#b5b5be";
                 deleteBody.onclick = function() {console.log("Hier wird gelöscht!"); deleteBodyFromAnnotation(document.getElementById(this.id).parentNode.parentNode.title, document.getElementById(this.id).parentNode.parentNode.id);};
                 
+                var purpose = document.createElement('span');
+                purpose.textContent = bodies[body].purpose;
+
                 iconRow.append(expand);
                 iconRow.append(deleteBody);
+                iconRow.append(purpose);
                 document.getElementById('annotationCard').append(bodyCard);
                 
                 var formBodyDataModel = {
@@ -215,11 +209,8 @@ function selectAnnotation(event, annoId) {
                         }
                     });
                 });
-                //document.getElementById(expand.id).parentNode.previousElementSibling.classList.add("is-hidden");
-                //document.getElementById(bodyDiv.id).childNodes[0].classList.add("is-hidden");
                 bodyDiv.prepend(iconRow);
-                //bodyDiv.childNodes[2].classList.add("is-hidden");
-                formRowDiv.classList.add("is-hidden");
+                formRowDiv.classList.add("collapse");
                 
             };
         }                
@@ -281,7 +272,7 @@ function deleteAnnotation(annoId) {
             
             success: function(responseData) {
                 console.log(responseData);
-                if (!document.getElementById('annotationCard').classList.contains('is-hidden')) {
+                if (!document.getElementById('annotationCard').classList.contains('invisible')) {
                     toggleOverview('annotationCard');
                 };
                 
@@ -305,42 +296,6 @@ function deleteAnnotation(annoId) {
         });
     };
 };
-
-//function readAnnotation(event, annoId) {
-    //event.preventDefault();
-//    let params = {
-//        id: annoId
-//    }
-//    postEditorDeleteController("get_annotation", params);
-//}
-
-//function postEditorDeleteController(endpoint, params) {
-//    $ .ajax({
-//        type: 'POST',
-//        url: '/editor_stub/' + endpoint,
-//        headers: {
-//            'Accept': 'application/json',
-//            'Content-Type': 'application/json'
-//        },
-//        dataType: 'text',
-//        data: JSON.stringify(params),
-//
-//        success: function(responseData) {
-//            console.log(responseData);
-//        }
-//    });
-//};
-
-
-
-
-//function showSvgs(annotations) {
-//    console.log("show svgs " + annotations)
-//    annotations.forEach(element => {
-//        drawSvg(element.getSvgCode());
-//    });
-//}
-
 
 function completeFormDataModel (responseJson, formDataModel, addition, omitFields) {
     if (Array.isArray(responseJson[addition])) {
@@ -449,14 +404,14 @@ function toggleAnnoSideBar() {
 function toggleOverview(divId) {
     var classDomTokens = document.getElementById(divId).classList;
     let buttonElement = document.getElementById(divId + 'Button');
-    if (classDomTokens.contains('is-hidden')) {
-        classDomTokens.remove('is-hidden');
+    if (classDomTokens.contains('invisible')) {
+        classDomTokens.remove('invisible');
         if (buttonElement) {
             buttonElement.parentElement.classList.add('active');
             document.getElementById(divId).scrollIntoView();
         };
     } else {
-        classDomTokens.add('is-hidden');
+        classDomTokens.add('invisible');
         if (buttonElement) {
             buttonElement.parentElement.classList.remove('active');
         };
@@ -467,12 +422,12 @@ function toggleOverview(divId) {
 function toggleExpand(div) {
     var classDomTokens = div.classList;
     var expandIcon = div.previousElementSibling.firstChild.firstChild.firstChild; 
-    if (classDomTokens.contains('is-hidden')) {
-        classDomTokens.remove('is-hidden');
+    if (classDomTokens.contains('collapse')) {
+        classDomTokens.remove('collapse');
         expandIcon.classList.remove('bx-chevron-right');
         expandIcon.classList.add('bx-chevron-down');
     } else {
-        classDomTokens.add('is-hidden');
+        classDomTokens.add('collapse');
         expandIcon.classList.remove('bx-chevron-down');
         expandIcon.classList.add('bx-chevron-right');
     };
@@ -480,9 +435,9 @@ function toggleExpand(div) {
 
 // show the animated book as loading icon whenever an ajax call is running
 $(document).ajaxStart(function(){
-    const modal = document.getElementById("loading");
-    modal.classList.toggle("show-modal");
+    let loadingModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('loading'));
+    loadingModal.toggle();
  }).ajaxStop(function(){
-    const modal = document.getElementById("loading"); 
-    modal.classList.toggle("show-modal"); 
+    let loadingModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('loading'));
+    loadingModal.toggle(); 
  });

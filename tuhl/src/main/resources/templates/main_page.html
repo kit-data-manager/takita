@@ -13,44 +13,10 @@
           crossorigin="anonymous" referrerpolicy="no-referrer" />
 
     <script th:src="@{/js/main_page.js}"></script>
-    <script>
-        $(document).ready(function () {
-            let visited = sessionStorage.getItem('visited');
-            if (visited === null) {
-                $('#pseudonymInputModal').modal('show');
-            } else {
-                $('#pseudonymInputModal').modal('hide');
-            }
 
-
-        });
-    </script>
 </head> <!-- script imports in centralized head.html -->
 <body class="container-fluid p-0">
-<div class="modal" tabindex="-1" role="dialog" id="pseudonymInputModal" data-bs-backdrop="static">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" th:text="#{label.pseudonym}"> </h5>
-            </div>
-            <form onsubmit="enterPseudonym(event)">
-                <div class="modal-body form-group">
-                    <label for="pseudonymInitInput" th:text="#{prompt.pseudonym}"> </label>
-                    <input type="text"
-                           class="form-control"
-                           id="pseudonymInitInput"
-                           th:placeholder="#{label.pseudonym}"
-                           required>
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}">
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
+    <div th:replace="~{pseudonym.html :: pseudonym_modal}"></div>
 
 <div class="row mx-auto pr-3 bg-light">
     <div class="col-sm-5 col-md-4 col-lg-3 col-xl-2 p-6 align-self-center">
@@ -80,37 +46,24 @@
         </form>
     </div>
     <div class="col-sm p-6 my-1 align-self-center"
-         th:insert="header.html :: header"></div>
+         th:insert="~{header.html :: header}"></div>
 </div>
 
 
 <div class="row mx-auto fill-height">
     <div class="col-xs-12 col-sm-5 col-md-4 col-lg-3 col-xl-2 p-0 pr-2 bg-light container-fluid"
-         th:insert="filter_selection.html :: filterSelection"></div>
+         th:insert="~{filter_selection.html :: filterSelection}"></div>
     <div class="col-xs-12 col-sm-7 col-md-8 col-lg-9 col-xl-10 p-0 container-fluid"
          id="dashboard"
-         th:insert="table_view.html :: tableView"></div>
+         th:insert="~{table_view.html :: tableView}"></div>
 </div>
 
 <script th:inline="javascript">
-    /*<![CDATA[*/
-    function enterPseudonym(event) {
-        event.preventDefault();
-        let input = $('#pseudonymInitInput').val();
-        $.ajax({
-            type: 'GET',
-            url: 'assistance/' + input,
-            dataType: 'text',
-            success: function (responseData) {
-                location.href = '/?lang=' + responseData;
-            }
-        });
-
-        sessionStorage.setItem('visited', '1');
-    }
-    /*]]>*/
-
+    document.addEventListener('pseudonymUpdate', function(event) {
+        location.reload();
+    });
 </script>
+
 </body>
 </html>
 <style>
