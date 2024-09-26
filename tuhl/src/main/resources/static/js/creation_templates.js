@@ -40,7 +40,7 @@ function getFormModel(chosenTemplate) {
                     "purpose" : {
                         "type" : "string",
                         "title" : "purpose",
-                        "enum" : ["", "assessing", "bookmarking", "classifying", "commenting", "describing", "editing", "highlighting", "identifying", "linking", "moderating", "questioning", "replying", "tagging"]
+                        "enum" : ["assessing", "bookmarking", "classifying", "commenting", "describing", "editing", "highlighting", "identifying", "linking", "moderating", "questioning", "replying", "tagging"]
                     },
                     "value" : {
                         "type" : "string",
