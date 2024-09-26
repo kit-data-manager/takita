@@ -2,6 +2,8 @@ package edu.kit.datamanager.takita.mainpage.search;
 
 import java.time.Instant;
 
+import edu.kit.datamanager.takita.MissingPropertyException;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
@@ -19,9 +21,9 @@ import org.springframework.data.elasticsearch.repository.config.EnableElasticsea
 @EnableElasticsearchRepositories(basePackages = "edu.kit.datamanager.takita.mainpage.search")
 public class ClientConfig extends ElasticsearchConfiguration{
   
-  @Value("${elasticsearch.ip}")
+  @Value("${elasticsearch.ip:#{null}}")
   private String elasticsearchIP;
-  @Value("${elasticsearch.port}")
+  @Value("${elasticsearch.port:#{null}}")
   private String elasticsearchPort;
 
   /**
@@ -39,8 +41,9 @@ public class ClientConfig extends ElasticsearchConfiguration{
 
   @Override
   public ClientConfiguration clientConfiguration() {
+    String esURL = (elasticsearchPort != null && !elasticsearchPort.equals("")) ? elasticsearchIP + ":" + elasticsearchPort : elasticsearchIP;
     return ClientConfiguration.builder()
-      .connectedTo(elasticsearchIP + ":" + elasticsearchPort)
+      .connectedTo(esURL)
             .withConnectTimeout(100000).withSocketTimeout(100000)
      .build();
   }
@@ -90,6 +93,13 @@ public class ClientConfig extends ElasticsearchConfiguration{
     public Instant convert(Integer time) {
       
       return Instant.ofEpochSecond(time);
+    }
+  }
+
+  @PostConstruct
+  public void checkProperty() {
+    if (elasticsearchIP == null || elasticsearchIP.equals("")) {
+      throw new MissingPropertyException("elasticsearch.ip");
     }
   }
   
