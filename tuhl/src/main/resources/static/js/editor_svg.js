@@ -112,12 +112,12 @@ function drawRectangle(x, y, width, height, color, id, idEncoded){
         };
         if (mode.name === "view") {
             if (this.selected) {
-                if (!document.getElementById('annotationCard').classList.contains('is-hidden')) {
+                if (!document.getElementById('annotationCard').classList.contains('invisible')) {
                     toggleOverview('annotationCard');
                 };
             } else {
                 selectAnnotation(null, this.annoIdEncoded);
-                if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
+                if (document.getElementById('annotationCard').classList.contains('invisible')) {
                     toggleOverview('annotationCard');
                 };
             };
@@ -176,12 +176,12 @@ function drawPolygon(path, color, id, idEncoded) {
         };
         if (mode.name === "view") {
             if (this.selected) {
-                if (!document.getElementById('annotationCard').classList.contains('is-hidden')) {
+                if (!document.getElementById('annotationCard').classList.contains('invisible')) {
                     toggleOverview('annotationCard');
                 };
             } else {
                 selectAnnotation(null, this.annoIdEncoded);
-                if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
+                if (document.getElementById('annotationCard').classList.contains('invisible')) {
                     toggleOverview('annotationCard');
                 };
             };
@@ -563,7 +563,7 @@ function fillMetaDataEditorTable(annoJson) {
 
     let items = [{title: "Identifier", field: "id", headerSort: false, cellClick: function (e, cell) {
                 selectAnnotation(null, encodeAnnoId(cell.getValue()));
-                if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
+                if (document.getElementById('annotationCard').classList.contains('invisible')) {
                     toggleOverview('annotationCard');
                 };
                 // function to select shape on the canvas
@@ -596,7 +596,7 @@ function fillMetaDataEditorTable(annoJson) {
             //},
             updateOperation: function (rowColumnvalue){
                 selectAnnotation(null, encodeAnnoId(rowColumnvalue.id));
-                if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
+                if (document.getElementById('annotationCard').classList.contains('invisible')) {
                     toggleOverview('annotationCard');
                 };
                 // toggling shape selection on the canvas
@@ -631,8 +631,9 @@ function fillMetaDataEditorTable(annoJson) {
 };
 
 function createPageAnnotation() {
-    const modal = document.getElementById("createAnnotation");
-    modal.classList.toggle("show-modal");
+    let createAnnotation = document.getElementById('createAnnotation');
+    let createAnnotationModal = bootstrap.Modal.getOrCreateInstance(createAnnotation);
+    createAnnotationModal.toggle();
     pickTemplate("", "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
 };
 
@@ -924,8 +925,9 @@ function init(annotations) {
                     };
                     svgString += "\"/></svg>";
 
-                    const modal = document.getElementById("createAnnotation");
-                    modal.classList.toggle("show-modal");
+                    let createAnnotation = document.getElementById('createAnnotation');
+                    let createAnnotationModal = bootstrap.Modal.getOrCreateInstance(createAnnotation);
+                    createAnnotationModal.toggle();
                     pickTemplate(svgString, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
 
                 firstPolygonPoint = undefined;
@@ -1035,9 +1037,9 @@ function init(annotations) {
 
             let svgString = "<svg><rect x=\"" + newRectangle.attrs.x + "\" y=\"" + newRectangle.attrs.y + "\" width=\"" + newRectangle.attrs.width + "\" height=\"" + newRectangle.attrs.height + "\"/></svg>";
 
-            //document.getElementById('closeButtonAnno').hide();
-            const modal = document.getElementById("createAnnotation");
-            modal.classList.toggle("show-modal");
+            let createAnnotation = document.getElementById('createAnnotation');
+            let createAnnotationModal = bootstrap.Modal.getOrCreateInstance(createAnnotation);
+            createAnnotationModal.toggle();
             pickTemplate(svgString, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
 
             // reset variables needed for rectangle creation
@@ -1070,7 +1072,7 @@ function confirmDiscardChanges() {
         document.getElementById('createPolygonButton').parentElement.classList.add('active');
     };
 
-    if (!document.getElementById('annotationCard').classList.contains('is-hidden')) {
+    if (!document.getElementById('annotationCard').classList.contains('invisible')) {
         toggleOverview('annotationCard');
     };
 
@@ -1131,9 +1133,16 @@ window.addEventListener("mouseup", function(e) {
     initiated = false;
 })
 
-// adding the closing functionality to annotation creation modal
-document.getElementById('closeButtonAnno').addEventListener('click', function (e) {
-    document.getElementById("createAnnotation").classList.toggle("show-modal");
+// adding custom closing functionality to annotation creation modal
+let createAnnotation = document.getElementById('createAnnotation')
+
+// brings the image in front of the modal backdrop while annotating
+// for now only for creating annotations not bodies
+createAnnotation.addEventListener('shown.bs.modal', event => {
+    document.getElementById('imageWorkspace').style.zIndex = "1100";
+});
+
+createAnnotation.addEventListener('hidden.bs.modal', event => {
 
     // if modal was shown during creation of new rectangle, remove rectangle
     if (newRectangle) {
@@ -1146,11 +1155,8 @@ document.getElementById('closeButtonAnno').addEventListener('click', function (e
         polygonPath.remove();
         document.getElementById('createPolygonButton').parentElement.classList.remove('active');
     };
-});
 
-// adding the closing functionality to body creation modal
-document.getElementById('closeButton').addEventListener('click', function (e) {
-    document.getElementById("createBody").classList.toggle("show-modal");
+    document.getElementById('imageWorkspace').style.zIndex = "1";
 });
 
 function hideExpandedSidebar() {

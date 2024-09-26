@@ -296,7 +296,9 @@ const formObjectCreateBody = {
                         success: function(responseData) {
                             console.log(responseData);
                             selectAnnotation(null, document.getElementById("createForm").title);
-                            document.getElementById('createBody').classList.toggle("show-modal");
+                            let createBody = document.getElementById('createBody');
+                            let createBodyModal = bootstrap.Modal.getOrCreateInstance(createBody);
+                            createBodyModal.toggle();
                         },
         
                         error: function(errorData) {
@@ -497,15 +499,17 @@ function storeBody(responseJson, jsonObject, index) {
         
     } else {
         // if no more body needs to be created, hide modal and update global annotation list
-        document.getElementById('createAnnotation').classList.toggle("show-modal");
+        let createAnnotation = document.getElementById('createAnnotation');
+        let createAnnotationModal = bootstrap.Modal.getOrCreateInstance(createAnnotation);
+        createAnnotationModal.toggle();
         selectAnnotation(null, encodeAnnoId(responseJson.id));
-        if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
+        if (document.getElementById('annotationCard').classList.contains('invisible')) {
             toggleOverview('annotationCard');
         };
         
-        let newAnnotation = {"created" : new Date(responseJson.created.seconds * 1000 + responseJson.created.nanos / 1000000).toISOString(), 
+        let newAnnotation = {"created" : new Date(responseJson.created * 1000).toISOString(), 
             "creator" : responseJson.creators, "id" : responseJson.id, "idEncoded" : encodeAnnoId(responseJson.id), 
-            "modified" : new Date(responseJson.modified.seconds * 1000 + responseJson.modified.nanos / 1000000).toISOString(), 
+            "modified" : new Date(responseJson.modified * 1000).toISOString(), 
             "motivation" : responseJson.motivation, "visible" : true};
         
         if (document.getElementById("createAnnotationForm").title !== "") {

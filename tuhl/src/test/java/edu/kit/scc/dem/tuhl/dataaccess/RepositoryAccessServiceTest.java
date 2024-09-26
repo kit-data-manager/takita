@@ -6,13 +6,14 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.internal.util.reflection.FieldSetter;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
 import java.net.http.HttpHeaders;
@@ -20,9 +21,11 @@ import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.ParseException;
+import java.time.Instant;
 import java.util.*;
 
-@SpringBootTest
+@SpringBootTest(classes = RepositoryAccessService.class)
+@TestPropertySource("classpath:application-test.properties")
 class RepositoryAccessServiceTest {
   
   @Mock
@@ -54,9 +57,7 @@ class RepositoryAccessServiceTest {
     MockitoAnnotations.initMocks(this);
     
     //Insert mock HttpRequestHelper into private field of the RepositoryAccessService instance
-    FieldSetter.setField(repositoryAccessService,
-        repositoryAccessService.getClass().getDeclaredField("httpRequestHelper"),
-        mockedRequestHelper);
+    ReflectionTestUtils.setField(repositoryAccessService, "httpRequestHelper", mockedRequestHelper);
   }
   
   @Test
@@ -142,7 +143,7 @@ class RepositoryAccessServiceTest {
     expected.add(new JSONObject(readStringFromRelativePath("getAllManuscripts/expectedObject2.json")));
   
     List<JSONObject> actual = repositoryAccessService.getManuscriptsModifiedAfter(
-        TimeStampFormats.TIMESTAMP_FORMAT_REPO.getDateFormat().parse("2019-03-11T14:13:46Z"));
+        Instant.parse("2019-03-11T14:13:46Z"));
   
     assertEquals(expected.size(), actual.size());
     for (int i = 0; i < expected.size(); i++) {

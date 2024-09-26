@@ -4,8 +4,8 @@ package edu.kit.scc.dem.tuhl.dataaccess;
 import java.io.IOException;
 import java.net.http.HttpResponse;
 import java.text.ParseException;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
@@ -92,7 +92,8 @@ public class RepositoryAccessService implements IRepositoryAccessService {
   @Override
   public JSONArray getPageAssignmentForManuscriptId(String manuscriptId)
       throws InterruptedException, JSONException, IOException {
-      logger.info("Trying to get pages.json");
+      logger.info("Trying to get pages.json"); //Keeping logging for now due to expectations
+      logger.info("Get pages.json for manuscript with id {}", manuscriptId);
     return new JSONArray(httpRequestHelper
         .get(baseUrl + staticPath + manuscriptId + DATA_PATH + PAGES_JSON)
         .body());
@@ -185,7 +186,7 @@ public class RepositoryAccessService implements IRepositoryAccessService {
    * @throws InterruptedException if the get request is interrupted
    */
   @Override
-  public List<JSONObject> getManuscriptsModifiedAfter(Date timestamp)
+  public List<JSONObject> getManuscriptsModifiedAfter(Instant timestamp)
       throws InterruptedException, JSONException, IOException {
     List<JSONObject> modifiedManuscripts = new ArrayList<>();
 
@@ -218,11 +219,14 @@ public class RepositoryAccessService implements IRepositoryAccessService {
     return modifiedManuscripts;
   }
 
-  private boolean isAfterFromString(String manuscriptDateString, Date isAfterDate)
+  private boolean isAfterFromString(String manuscriptDateString, Instant isAfterDate)
       throws ParseException {
-    Date manuscriptDate = TimeStampFormats.TIMESTAMP_FORMAT_REPO.getDateFormat()
-        .parse(manuscriptDateString);
-    return manuscriptDate.after(isAfterDate);
+    //Date manuscriptDate = TimeStampFormats.TIMESTAMP_FORMAT_REPO.getDateFormat()
+    //    .parse(manuscriptDateString);
+        Instant manuscriptDate = Instant.parse(manuscriptDateString);
+        return manuscriptDate.isAfter(isAfterDate);
+
+    //return manuscriptDate.after(isAfterDate);
   }
 
 

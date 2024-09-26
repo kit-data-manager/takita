@@ -4,15 +4,15 @@ import edu.kit.scc.dem.tuhl.model.Annotation;
 import edu.kit.scc.dem.tuhl.model.Manuscript;
 import edu.kit.scc.dem.tuhl.model.page.ImagePage;
 import edu.kit.scc.dem.tuhl.model.page.Page;
+import edu.kit.scc.dem.tuhl.model.page.ResourceType;
 import edu.kit.scc.dem.tuhl.model.page.TextPage;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 import java.io.IOException;
-import java.text.ParseException;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -62,12 +62,12 @@ class ManuscriptConverter {
           .getString(RepositoryStrings.VALUE.getName());
     }
 
-    Date created = extractDateFromJsonManuscript(manuscriptJson,
+    Instant created = extractInstantFromJsonManuscript(manuscriptJson,
         RepositoryStrings.CREATED.getName());
-    Date modified;
-    if (extractDateFromJsonManuscript(manuscriptJson,
+    Instant modified;
+    if (extractInstantFromJsonManuscript(manuscriptJson,
         RepositoryStrings.MODIFIED.getName()) != null) {
-      modified = extractDateFromJsonManuscript(manuscriptJson,
+      modified = extractInstantFromJsonManuscript(manuscriptJson,
           RepositoryStrings.MODIFIED.getName());
     } else {
       modified = created;
@@ -100,30 +100,31 @@ class ManuscriptConverter {
     return manuscript;
   }
 
-  private Date extractDateFromJsonManuscript(JSONObject json, String type) {
-    Date date = null;
+  private Instant extractInstantFromJsonManuscript(JSONObject json, String type) {
+    Instant date = null;
     try {
       //Extracts the dates array from the JSON
       if (json.has(RepositoryStrings.DATES.getName())) {
         JSONArray dates = json.getJSONArray(RepositoryStrings.DATES.getName());
         for (int i = 0; i < dates.length(); i++) {
           JSONObject dateJson = dates.getJSONObject(i);
-          //Checks for each date if it has the required type & parse the right date to a Date object
+          //Checks for each date if it has the required type & parse the right date to a Instant object
           if (dateJson.has(RepositoryStrings.TYPE.getName())
               && dateJson.getString(RepositoryStrings.TYPE.getName()).equals(type)
               && dateJson.has(RepositoryStrings.VALUE.getName())) {
             String dateString = dateJson.getString((RepositoryStrings.VALUE.getName()));
-            if (dateString.contains(".")) {
-              date = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_REPO.getDateFormat()
-                  .parse(dateString);
-            } else {
-              date = TimeStampFormats.TIMESTAMP_FORMAT_REPO.getDateFormat().parse(dateString);
-            }
+            date = Instant.parse(dateString);
+            //if (dateString.contains(".")) {
+            //  date = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_REPO.getDateFormat()
+            //      .parse(dateString);
+            //} else {
+            //  date = TimeStampFormats.TIMESTAMP_FORMAT_REPO.getDateFormat().parse(dateString);
+            //}
             break;
           }
         }
       }
-    } catch (ParseException | JSONException e) {
+    } catch (JSONException e) {
       e.printStackTrace();
     }
     return date;
@@ -138,8 +139,8 @@ class ManuscriptConverter {
       throws JSONException, IOException, InterruptedException {
     String id = pageJson.getString(RepositoryStrings.ID.getName());
 
-    Date created = extractDateFromJsonManuscript(pageJson, RepositoryStrings.CREATED.getName());
-    Date modified = extractDateFromJsonManuscript(pageJson, RepositoryStrings.MODIFIED.getName());
+    Instant created = extractInstantFromJsonManuscript(pageJson, RepositoryStrings.CREATED.getName());
+    Instant modified = extractInstantFromJsonManuscript(pageJson, RepositoryStrings.MODIFIED.getName());
 
     //Create the Page object depending on the resource type.
     Page page;
@@ -153,7 +154,7 @@ class ManuscriptConverter {
       String thumbResourceUrl = repositoryAccessService.getBaseUrl() + repositoryAccessService.getStaticPath()
           + id + RepositoryAccessService.DATA_PATH + pageNumber + RepositoryAccessService.THUMB_JPG;
 
-      ImagePage imagePage = new ImagePage(id, pageNumber, created, resourceUrl, thumbResourceUrl);
+      ImagePage imagePage = new ImagePage(id, ResourceType.IMAGE, pageNumber, created, resourceUrl, thumbResourceUrl);
  
       if (sortedAnnotations == null) {
         imagePage.setAnnotations(getAnnotationsByPage(imagePage));
@@ -167,7 +168,7 @@ class ManuscriptConverter {
       // Here comes the URL to the resource of the page
       String resourceUrl = "";
 
-      page = new TextPage(id, pageNumber, created, resourceUrl);
+      page = new TextPage(id, ResourceType.TEXT, pageNumber, created, resourceUrl);
     } else {
       throw new IllegalStateException("Unexpected value: " + resourceTypeString);
     }

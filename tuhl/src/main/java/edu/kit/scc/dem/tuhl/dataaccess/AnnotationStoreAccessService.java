@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URLEncoder;
 import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -312,11 +313,12 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
    * @throws InterruptedException if the http request is interrupted
    */
   @Override
-  public List<JSONObject> getAnnotationsModifiedAfter(Date timestamp)
+  public List<JSONObject> getAnnotationsModifiedAfter(Instant timestamp)
       throws JSONException, IOException, InterruptedException {
     logger.info("Getting all annotations modified after {}.", timestamp);
 
-    String date = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat().format(timestamp);
+    //String date = TimeStampFormats.TIMESTAMP_FORMAT_MILLIS_ANNO.getDateFormat().format(timestamp);
+    String date = timestamp.toString();
 
     //Sparql query to get only the annotations modified after date
     HttpResponse<String> response = httpRequestHelper.get(sparqlQueryUrlPrefix
@@ -355,7 +357,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
    * @throws JSONException if the response body could not be parsed to json
    */
   @Override
-  public JSONObject validateAnnotation(JSONObject jsonAnnotation)
+  public JSONObject validateAnnotation(JSONObject jsonAnnotation, String projectId)
       throws IOException, InterruptedException, JSONException {
     jsonAnnotation.put(AnnotationStoreStrings.VIA.getName(), jsonAnnotation.getString(
         AnnotationStoreStrings.ID.getName()));
@@ -363,7 +365,7 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
         AnnotationStoreStrings.ID.getName()));
     jsonAnnotation.remove(AnnotationStoreStrings.ID.getName());
     HttpResponse<String> response = httpRequestHelper.postAnnotations(urlPrefix
-        + VALIDATED_URL, jsonAnnotation);
+        + projectId + VALIDATED_URL, jsonAnnotation);
   
     JSONObject result = new JSONObject(response.body());
   
@@ -388,6 +390,8 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
       throws IOException, InterruptedException, JSONException {
 
     // put in deinterpretatione and add via and canonical fields if anno is already in validated
+    // TODO: serious doubts about the function of this method - investigate!
+    // TODO: extend test when fixed
     if (jsonAnnotation.has(AnnotationStoreStrings.CANONICAL.getName())) {
       JSONObject deInterpretationeAnnotation = getAnnotationById(jsonAnnotation.getString(
           AnnotationStoreStrings.CANONICAL.getName()));

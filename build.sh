@@ -3,5 +3,5 @@
 BASEDIR=$(dirname "$0")
 echo "Building project from source."
 cd $BASEDIR/tuhl
-./gradlew build -x test
+./gradlew build -x integrationTest
 echo "Build done."
