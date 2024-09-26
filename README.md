@@ -1,6 +1,6 @@
 # tAKITA - Annotation tool for WADM
 
-![coverage](https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/badges/development/coverage.svg) ![pipeline](https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/badges/development/pipeline.svg) [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+![coverage](https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/badges/development/coverage.svg) ![pipeline](https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/badges/development/pipeline.svg)
 
 ## Note:
 
