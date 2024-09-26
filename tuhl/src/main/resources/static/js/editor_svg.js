@@ -240,6 +240,8 @@ Raphael.el.isVisible = function() {
 };
 
 // Storing original rectangle values (coordinates, width, height) before modifying
+// This is a re-use from Ethan Zimmerman's code published on GitHub Gist under MIT licence:
+// https://gist.github.com/thebinarypenguin/1558194
 let dragRectangleStart = function() {
     this.ox = this.attr('x');
     this.oy = this.attr('y');
@@ -265,6 +267,8 @@ let dragCircleStart = function() {
 
 // resizing or dragging rectangles
 // x and y input coordinates are scaled to match the resolution of the image
+// This is an adaption from Ethan Zimmerman's code published on GitHub Gist under MIT licence:
+// https://gist.github.com/thebinarypenguin/1558194
 let dragRectangleMove = function(screenDx, screenDy) {
     let scalingRatios = getScalingRatios();
 
@@ -397,6 +401,8 @@ let dragCircleEnd = function() {
     };
 };
 
+// This is an adaption from Ethan Zimmerman's code published on GitHub Gist under MIT licence:
+// https://gist.github.com/thebinarypenguin/1558194
 let changeCursor = function(e, mouseX, mouseY) {
 
     // Don't change cursor during a drag operation
