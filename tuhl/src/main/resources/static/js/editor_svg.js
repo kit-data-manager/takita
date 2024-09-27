@@ -33,9 +33,22 @@ let mode = Mode.View;
 // also includes scrolling offsets
 // ToDo: check browser compatibility!
 function getRelativeCoordinates(x, y) {
-    let imageWorkspaceBoundingRect = document.getElementById("imageWorkspace").getBoundingClientRect();
-    let relativeX = (x - imageWorkspaceBoundingRect.left - window.pageXOffset); //* paper.currentWidth / paper.originalWidth;
-    let relativeY = (y - imageWorkspaceBoundingRect.top - window.pageYOffset); //* paper.currentHeight / paper.originalHeight;
+    let image = document.getElementById("pageImage");
+
+    let relativeX = (x - image.getBoundingClientRect().left - window.pageXOffset);
+    let relativeY = (y - image.getBoundingClientRect().top - window.pageYOffset); 
+    
+    let styleLeft = parseInt(image.style.left);
+    let styleTop = parseInt(image.style.top);
+
+    // only adding the offset if a shape is created
+    // otherwise the image flies out of bounds while moving
+    if (!isNaN(styleLeft) && (addingRectangle || addingPolygon)) {
+        relativeX = relativeX + styleLeft;
+    };
+    if (!isNaN(styleTop) && (addingRectangle || addingPolygon)) {
+        relativeY = relativeY + styleTop;
+    }
 
     return [relativeX, relativeY];
 };
@@ -227,6 +240,8 @@ Raphael.el.isVisible = function() {
 };
 
 // Storing original rectangle values (coordinates, width, height) before modifying
+// This is a re-use from Ethan Zimmerman's code published on GitHub Gist under MIT licence:
+// https://gist.github.com/thebinarypenguin/1558194
 let dragRectangleStart = function() {
     this.ox = this.attr('x');
     this.oy = this.attr('y');
@@ -252,6 +267,8 @@ let dragCircleStart = function() {
 
 // resizing or dragging rectangles
 // x and y input coordinates are scaled to match the resolution of the image
+// This is an adaption from Ethan Zimmerman's code published on GitHub Gist under MIT licence:
+// https://gist.github.com/thebinarypenguin/1558194
 let dragRectangleMove = function(screenDx, screenDy) {
     let scalingRatios = getScalingRatios();
 
@@ -384,6 +401,8 @@ let dragCircleEnd = function() {
     };
 };
 
+// This is an adaption from Ethan Zimmerman's code published on GitHub Gist under MIT licence:
+// https://gist.github.com/thebinarypenguin/1558194
 let changeCursor = function(e, mouseX, mouseY) {
 
     // Don't change cursor during a drag operation
@@ -861,7 +880,7 @@ function init(annotations) {
             newRectangle = drawRectangle(scaledX, scaledY, 0, 0, '#ff8d00', null, null);
         };
 
-        if (movingImage) {
+        if (movingImage || coordinates.ctrlKey) {
 
             initiated = true;
             let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
@@ -946,6 +965,7 @@ function init(annotations) {
 
     };
     document.getElementById("imageWorkspace").onmousemove = function(coordinates) {
+
         if (addingRectangle && newRectangle) {
             let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
             let scalingRatios = getScalingRatios();
@@ -986,17 +1006,17 @@ function init(annotations) {
             polygonPath.attr({'path' : polygonPath.attrs.path.toString().substring(0,polygonPath.attrs.path.toString().lastIndexOf('L')) + 'L' + polygonX + " " + polygonY});
 
         };
-        if (movingImage && initiated) {
+        if (movingImage && initiated || coordinates.ctrlKey && initiated) {
             let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
             let scalingRatios = getScalingRatios();
 
             //let deltaX = Math.round((relativeCoordinates[0] - mouseDownX) * paper.currentWidth / scalingRatios[0] / 10 / paper.originalWidth);
             //let deltaY = Math.round((relativeCoordinates[1] - mouseDownY) * paper.currentHeight / scalingRatios[1] / 10 / paper.originalHeight);
 
-            let deltaX = Math.round((relativeCoordinates[0] - mouseDownX) / scalingRatios[0] / 100);
-            let deltaY = Math.round((relativeCoordinates[1] - mouseDownY) / scalingRatios[1] / 100);
+            let deltaX = Math.round((relativeCoordinates[0] - mouseDownX) / scalingRatios[0] / 10);
+            let deltaY = Math.round((relativeCoordinates[1] - mouseDownY) / scalingRatios[1] / 10);
 
-
+            // if movement needs to be quicker, introduce a factor e.g. 2 before deltaX and deltaY
             paper.currentX = paper.currentX - deltaX;
             paper.currentY = paper.currentY - deltaY;
 
@@ -1039,8 +1059,10 @@ function init(annotations) {
 
         if (movingImage) {
           movingImage = false;
-          initiated = false;
         };
+
+        // moved out of the if clause to prevent unintentional movement after ctrl-move
+        initiated = false;
     };
 
     // Drawing anno svgs on first opening of page
@@ -1109,6 +1131,13 @@ window.addEventListener("wheel", function(e) {
 }, {
   passive: false
 });
+
+window.addEventListener("mouseup", function(e) {
+    // prevent unintended movement after ctrl moving
+    // if the user gets out of the canvas while ctrl moving the variable is not resetted 
+    // if the ctrl button is pushed again, the image moves with every mouse move otherwise
+    initiated = false;
+})
 
 // adding custom closing functionality to annotation creation modal
 let createAnnotation = document.getElementById('createAnnotation')

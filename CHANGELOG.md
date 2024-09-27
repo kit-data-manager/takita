@@ -17,4 +17,6 @@ While status above is 'unreleased', you may and should add all major changes of 
 
 ### Fixed
 - Fix repeated prompt for user name on editor window
+- Fix movement with ctrl key to prevent unintended image moving
+
 ### Security

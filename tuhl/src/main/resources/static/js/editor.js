@@ -409,11 +409,15 @@ function toggleOverview(divId) {
         if (buttonElement) {
             buttonElement.parentElement.classList.add('active');
             document.getElementById(divId).scrollIntoView();
+            if (classDomTokens.contains('collapse')) {
+                classDomTokens.remove('collapse');
+            };
         };
     } else {
         classDomTokens.add('invisible');
         if (buttonElement) {
             buttonElement.parentElement.classList.remove('active');
+            classDomTokens.add('collapse');
         };
     };
 };
