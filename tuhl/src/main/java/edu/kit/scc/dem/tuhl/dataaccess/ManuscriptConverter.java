@@ -256,37 +256,41 @@ class ManuscriptConverter {
 	  List<TeiTitle> titlesDefault = new ArrayList<TeiTitle>();
 	  
 	  for (int i = 0; i < titles.getLength(); i++) {
-		  TeiTitle title = new TeiTitle(titles.item(i).getTextContent());
-		  
-		  // getting the values of the attribute of the title (title[@attribute])
-		  if (titles.item(i).getAttributes().getNamedItem("type") != null) {
-			  title.setType(titles.item(i).getAttributes().getNamedItem("type").getNodeValue());
-		  }
-		  
-		  if (titles.item(i).getAttributes().getNamedItem("xml:lang") != null) {
-			  title.setLevel(titles.item(i).getAttributes().getNamedItem("xml:lang").getNodeValue());
-		  }
-		  
-		  if (titles.item(i).getAttributes().getNamedItem("level") != null) {
+		  try {
+			  TeiTitle title = new TeiTitle(titles.item(i).getTextContent());
 			  
-			  String level = titles.item(i).getAttributes().getNamedItem("level").getNodeValue();
-			  title.setLevel(level);
-			  
-			  switch (level) {
-				  case "s":
-					  titlesSeries.add(title);
-					  break;
-				  case "m":
-					  titlesMonographic.add(title);
-					  break;
-				  case "a":
-					  titlesAnalytic.add(title);
-					  break;
+			  // getting the values of the attribute of the title (title[@attribute])
+			  if (titles.item(i).getAttributes().getNamedItem("type") != null) {
+				  title.setType(titles.item(i).getAttributes().getNamedItem("type").getNodeValue());
 			  }
-		  } else {
-			  titlesDefault.add(title);
-		  }
-
+			  
+			  if (titles.item(i).getAttributes().getNamedItem("xml:lang") != null) {
+				  title.setLevel(titles.item(i).getAttributes().getNamedItem("xml:lang").getNodeValue());
+			  }
+			  
+			  if (titles.item(i).getAttributes().getNamedItem("level") != null) {
+				  
+				  String level = titles.item(i).getAttributes().getNamedItem("level").getNodeValue();
+				  title.setLevel(level);
+				  
+				  switch (level) {
+					  case "s":
+						  titlesSeries.add(title);
+						  break;
+					  case "m":
+						  titlesMonographic.add(title);
+						  break;
+					  case "a":
+						  titlesAnalytic.add(title);
+						  break;
+				  }
+			  	} else {
+			  		titlesDefault.add(title);
+			  	}  
+		  	} catch (Exception e) {
+				System.out.println("Could not parse titles for manuscript: " + manuscript.getId());
+				e.printStackTrace();
+		  	}
 	  }
 	  
 	  if (!titlesSeries.isEmpty()) {
@@ -311,27 +315,32 @@ class ManuscriptConverter {
 	  List<String> authorList = new ArrayList<String>();
 	  
 	  for (int i = 0; i < authors.getLength(); i++) {
-		  NodeList persNames = authors.item(i).getChildNodes();
-		  
-		  // removing all the text nodes
-		  List<Node> cleanedPersNames = new ArrayList<Node>();
-		  for (int l = 0; l < persNames.getLength(); l++) {
-			  if (persNames.item(l).getNodeType() != 3) {
-				  cleanedPersNames.add(persNames.item(l));
+		  try {
+			  NodeList persNames = authors.item(i).getChildNodes();
+			  
+			  // removing all the text nodes
+			  List<Node> cleanedPersNames = new ArrayList<Node>();
+			  for (int l = 0; l < persNames.getLength(); l++) {
+				  if (persNames.item(l).getNodeType() != 3) {
+					  cleanedPersNames.add(persNames.item(l));
+				  }
 			  }
-		  }
-		  
-		  // getting the persNames text content and adding them to the
-		  // list of authors
-		  List<String> persNamesList = new ArrayList<String>();
-		  for (int l = 0; l < cleanedPersNames.size(); l++) {
-			  persNamesList.add(cleanedPersNames.get(l).getTextContent());
-		  }
-		  if (persNamesList.size() > 1) {
-			  String concatedPersNames = concatList(persNamesList);
-			  authorList.add(concatedPersNames);
-		  } else {
-			  authorList.add(persNamesList.get(0));
+			  
+			  // getting the persNames text content and adding them to the
+			  // list of authors
+			  List<String> persNamesList = new ArrayList<String>();
+			  for (int l = 0; l < cleanedPersNames.size(); l++) {
+				  persNamesList.add(cleanedPersNames.get(l).getTextContent());
+			  }
+			  if (persNamesList.size() > 1) {
+				  String concatedPersNames = concatList(persNamesList);
+				  authorList.add(concatedPersNames);
+			  } else {
+				  authorList.add(persNamesList.get(0));
+			  }
+		  } catch (Exception e) {
+				System.out.println("Could not authors for manuscript: " + manuscript.getId());
+				e.printStackTrace();
 		  }
 	  }
 	  
@@ -389,11 +398,10 @@ class ManuscriptConverter {
 				  date.setTo(to);
 			  }
 			  datesList.add(date);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			System.out.println("Could not parse dates for manuscript: " + manuscript.getId());
-			e.printStackTrace();
-		}
+		  } catch (Exception e) {
+				System.out.println("Could not parse dates for manuscript: " + manuscript.getId());
+				e.printStackTrace();
+		  }
 	  }
 	  
 	  if(!datesList.isEmpty()) {
@@ -443,6 +451,17 @@ class ManuscriptConverter {
 					  dateString = dateString + "-31";
 				  }
 			  }
+		  }
+	  }
+	  
+	  // dates including a time have to be cut. They are longer than 11 characters
+	  // and usually contain a "T" to mark the beginning of the time stamp
+	  // (10 would be the length for YYYY-MM-DD AD dates, but BC dates include a leading "-")
+	  if (dateString.length() > 11 && dateString.contains("T")) {
+		  if (dateString.startsWith("-")) {
+			  dateString = dateString.substring(0, 11);
+		  } else {
+			  dateString = dateString.substring(0, 10);
 		  }
 	  }
 	  return dateString;
