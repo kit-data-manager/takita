@@ -37,9 +37,13 @@ export { getColorHexFromEnumEntry, getColorNameFromEnumEntry } from './utils';
 const targetUpdateCallback = updateTargetData;
 
 // TODO: CUSTOMISE the divisions used in the project for dividing texts into chapters, sections. etc.
-// This is used by the navigation module.
-// TODO: move "subchapter" to the second navigation level
-const POSSIBLE_DIVISION_TYPES = ['chapter', 'section', 'subchapter'];
+// This is used by the navigation module. Currently a two-level navigation is possible, i.e. you
+// can navigate chapters and subchapters, if available.
+// NOTE: this has to be a json-object, so that it can be mocked by jest for testing
+const POSSIBLE_DIVISION_TYPES = {
+  top: ['chapter', 'section'],
+  low: ['subchapter'],
+};
 
 /**
  * TODO: CUSTOMISE to be the correct function for your project case
