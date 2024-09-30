@@ -265,7 +265,7 @@ class ManuscriptConverter {
 			  }
 			  
 			  if (titles.item(i).getAttributes().getNamedItem("xml:lang") != null) {
-				  title.setLevel(titles.item(i).getAttributes().getNamedItem("xml:lang").getNodeValue());
+				  title.setLanguage(titles.item(i).getAttributes().getNamedItem("xml:lang").getNodeValue());;
 			  }
 			  
 			  if (titles.item(i).getAttributes().getNamedItem("level") != null) {
