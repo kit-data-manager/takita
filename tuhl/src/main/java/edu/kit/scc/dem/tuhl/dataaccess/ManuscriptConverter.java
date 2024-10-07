@@ -339,7 +339,7 @@ class ManuscriptConverter {
 				  authorList.add(persNamesList.get(0));
 			  }
 		  } catch (Exception e) {
-				System.out.println("Could not authors for manuscript: " + manuscript.getId());
+				System.out.println("Could not parse authors for manuscript: " + manuscript.getId());
 				e.printStackTrace();
 		  }
 	  }
