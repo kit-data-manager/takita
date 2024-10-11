@@ -132,6 +132,7 @@
   line-height: 1.8rem;
   color: var(--white-color);
   margin-bottom: 1.3rem;
+  margin-left: 1rem;
   white-space: nowrap;
 }
 
