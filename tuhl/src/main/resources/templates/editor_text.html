@@ -14,6 +14,8 @@
     <!-- external/framework css-->
     <link rel="stylesheet" th:href="@{/css/reset.css}">
     <link rel="stylesheet" th:href="@{/css/tabulator_bootstrap4.min.css}">
+    <link href="https://unpkg.com/tabulator-tables@4.7.1/dist/css/tabulator.min.css" rel="stylesheet"
+    th:href="@{https://unpkg.com/tabulator-tables@4.7.1/dist/css/tabulator.min.css}">
     <!-- Font Awesome icons-->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.0.9/css/boxicons.min.css">
@@ -91,6 +93,11 @@
       <i id="pagesButton" class="bx bx-book-open features-item-icon"></i>
       <span id="pagesSpan" class="features-item-text annocollapse">Show Parts</span>
       <span class="tooltip">Show Parts</span>
+    </li>
+    <li class="features-item star">
+        <i id="annotationTableBottomButton" class="bx bx-list-ul features-item-icon"></i>
+        <span id="annotationTableBottomSpan" class="features-item-text annocollapse">Show Annotations</span>
+        <span class="tooltip">Show Annotations</span>
     </li>
   </ul>
 </div>
@@ -232,7 +239,7 @@
     </div>
 
 	<!-- Part overview for the whole text onclick="window.open(${page.id})" no-wrap> -->
-    <div class="collapse col-auto is-hidden is-full-width" id="pages">
+    <div class="collapse col-auto is-hidden" id="pages">
         <div class="card">
             <div class="row">
                 <div class="col-auto" th:each="page : ${currentManuscript.pages}">
@@ -283,11 +290,11 @@
         </div>
     </div>
 
-    <div class="collapse col-auto is-hidden is-full-width" id="editortable">
+    <div class="collapse col-auto is-hidden" id="annotationTableBottomDiv">
         <div class="card">
                 <div class="boxlist margin-top-30" id="training-box">
                     <div class="box-header bg-green-blue"></div>
-                    <div class="box-body"><div id="table"></div>
+                    <div class="box-body"><div id="annotationTableBottom"></div>
 
                     </div>
                 </div>

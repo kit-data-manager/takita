@@ -1,4 +1,4 @@
-import { fillMetaDataEditorTable } from '../../common/utils';
+import { updateAnnotationTable } from '../../common/annotationTable';
 import { getAllAnnotationsData } from '../data/annotations';
 import { checkIsTargetCompatible, makeTargetsCompatible } from '../utils';
 import { highlightAnnotationFunction, possibleHighlightClasses } from '../../projectspecific';
@@ -26,6 +26,12 @@ export async function updateDisplay(hooks = {}) {
       }
       return annotation;
     });
+
+    // updating the annotation table.
+    // TODO: this should be independent of the highlighting procedure in the future;
+    // for now it is convenient as the updateDisplay function gets called on changes
+    // for the annotations anyways and it also fetches a new version of annoJson
+    updateAnnotationTable(annoJson, hooks);
     // remove all styling/highlighting
     removeStyles(document.getElementById('TEI'), possibleHighlightClasses);
     // highlight all annotated words
@@ -63,8 +69,6 @@ export function drawAnnos(annoJson) {
   annoJson.forEach((annotation) => {
     highlightAnnotationFunction(annotation);
   });
-
-  fillMetaDataEditorTable(annoJson);
 }
 
 /**

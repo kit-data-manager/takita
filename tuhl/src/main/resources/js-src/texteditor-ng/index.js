@@ -4,6 +4,7 @@ import { hooks } from '../projectspecific';
 
 import { initializeTextEditor } from './editor';
 import { initializeSidebar } from './sidebar';
+import { initializeAnnotationTable } from '../common/annotationTable';
 import { initializeNavigation } from './navigation';
 import { appendTEIDocument } from './textloader/textloader';
 import { fetchText } from './network';
@@ -42,7 +43,13 @@ async function initializeTextEditorComponent(linkToResource, annotationsString, 
   // initializing the sidebar
   const $sidebar = document.querySelector('.anno-side-bar');
   const $pagesDialog = document.getElementById('pages');
-  initializeSidebar($sidebar, $teiContatinerElement, $pagesDialog, hooks);
+  const $tableContainer = document.getElementById('annotationTableBottomDiv');
+  initializeSidebar($sidebar, $teiContatinerElement, $pagesDialog, $tableContainer, hooks);
+
+  //initializing the annotation table
+  const $annotationCard = document.getElementById('annotationCard');
+  const $annotationTable = document.getElementById('annotationTableBottom');
+  initializeAnnotationTable(annoJson, $annotationTable, $annotationCard, hooks);
 
   // Construct and display a navigation bar.
   const $navbar = document.getElementById('textNavBar');
