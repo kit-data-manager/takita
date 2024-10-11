@@ -45,86 +45,73 @@
           <i
             class="bx bx-arrow-from-left logo-name__icon annocollapse"
             id="logo-name__icon"
+            title="Expand"
             onclick="toggleAnnoSideBar()"
           ></i>
-          <span class="tooltip">Expand</span>
         </div>
       </div>
 
   <div class="features-list">
       <div class="category-header">View Mode</div>
     <li class="features-item draft">
-      <i id="zoomInButton" class="bx bx-zoom-in features-item-icon" onclick="hideExpandedSidebar(); imageZoomIn()"></i>
+      <i id="zoomInButton" title="Zoom In" class="bx bx-zoom-in features-item-icon" onclick="hideExpandedSidebar(); imageZoomIn()"></i>
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); imageZoomIn()">Zoom In</span>
-      <span class="tooltip">Zoom In</span>
     </li>
     <li class="features-item draft">
-      <i id="zoomOutButton" class="bx bx-zoom-out features-item-icon" onclick="hideExpandedSidebar(); imageZoomOut()"></i>
+      <i id="zoomOutButton" title="Zoom Out" class="bx bx-zoom-out features-item-icon" onclick="hideExpandedSidebar(); imageZoomOut()"></i>
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); imageZoomOut()">Zoom Out</span>
-      <span class="tooltip">Zoom Out</span>
     </li>
     <li class="features-item draft">
-      <i id="moveImageButton" class="bx bx-move features-item-icon" onclick="hideExpandedSidebar(); movingImage = true; mode = Mode.Move"></i>
+      <i id="moveImageButton" title="Move Image" class="bx bx-move features-item-icon" onclick="hideExpandedSidebar(); movingImage = true; mode = Mode.Move"></i>
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); movingImage = true; mode = Mode.Move">Move Image</span>
-      <span class="tooltip">Move Image</span>
     </li>
     <li class="features-item draft">
-      <i id="hideShapeButton" class="bx bx-low-vision features-item-icon" onclick="hideExpandedSidebar(); hideShape()"></i>
+      <i id="hideShapeButton" title="Hide Shape" class="bx bx-low-vision features-item-icon" onclick="hideExpandedSidebar(); hideShape()"></i>
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); hideShape()">Hide Shape</span>
-      <span class="tooltip">Hide Shape</span>
     </li>
     <li class="features-item draft">
-      <i id="resetViewButton" class="bx bx-reset features-item-icon" onclick="hideExpandedSidebar(); resetView()"></i>
+      <i id="resetViewButton" title="Reset View" class="bx bx-reset features-item-icon" onclick="hideExpandedSidebar(); resetView()"></i>
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); resetView()">Reset View</span>
-      <span class="tooltip">Reset View</span>
     </li>
 </div>
   <div class="features-list">
       <div class="category-header">Create Mode</div>
     <li class="features-item draft">
-      <i id="createRectangleButton" class="bx bx-shape-square features-item-icon" onclick="hideExpandedSidebar(); addingRectangle = true; confirmDiscardChanges(); mode = Mode.Create;"></i>
+      <i id="createRectangleButton" title="Create Square" class="bx bx-shape-square features-item-icon" onclick="hideExpandedSidebar(); addingRectangle = true; confirmDiscardChanges(); mode = Mode.Create;"></i>
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); addingRectangle = true; confirmDiscardChanges(); mode = Mode.Create;">Create Square</span>
-      <span class="tooltip">Create Square</span>
     </li>
     <li class="features-item draft">
-      <i id="createPolygonButton" class="bx bx-shape-polygon features-item-icon" onclick="hideExpandedSidebar(); addingPolygon = true; confirmDiscardChanges(); mode = Mode.Create;"></i>
+      <i id="createPolygonButton" title="Create Polygon" class="bx bx-shape-polygon features-item-icon" onclick="hideExpandedSidebar(); addingPolygon = true; confirmDiscardChanges(); mode = Mode.Create;"></i>
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); addingPolygon = true; confirmDiscardChanges(); mode = Mode.Create;">Create Polygon</span>
-      <span class="tooltip">Create Polygon</span>
     </li>
     <li class="features-item draft">
-      <i id="createPageAnnoButton" class="bx bx-note features-item-icon" onclick="hideExpandedSidebar(); confirmDiscardChanges(); mode = Mode.Create; createPageAnnotation();"></i>
+      <i id="createPageAnnoButton" title="Create Annotation" class="bx bx-note features-item-icon" onclick="hideExpandedSidebar(); confirmDiscardChanges(); mode = Mode.Create; createPageAnnotation();"></i>
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); confirmDiscardChanges(); mode = Mode.Create; createPageAnnotation();">Create Annotation</span>
-      <span class="tooltip">Create Annotation</span>
     </li>
 </div>
    <div class="features-list">
        <div class="category-header">Modify Mode</div>
     <li class="features-item star">
-      <i id="modifyButton" class="bx bx-edit features-item-icon" onclick="hideExpandedSidebar(); modifyShape();"></i>
+      <i id="modifyButton" title="Modify Shape" class="bx bx-edit features-item-icon" onclick="hideExpandedSidebar(); modifyShape();"></i>
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); modifyShape();">Modify Shape</span>
-      <span class="tooltip">Modify Shape</span>
     </li>
     <li class="features-item star">
-      <i id="undoButton" class="bx bx-undo features-item-icon" onclick="hideExpandedSidebar(); undo();"></i>
+      <i id="undoButton" title="Undo" class="bx bx-undo features-item-icon" onclick="hideExpandedSidebar(); undo();"></i>
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); undo()">Undo</span>
-      <span class="tooltip">Undo</span>
     </li>
     <li class="features-item star">
-      <i id="saveButton" class="bx bx-save features-item-icon" onclick="hideExpandedSidebar(); saveShape();"></i>
+      <i id="saveButton" title="Save" class="bx bx-save features-item-icon" onclick="hideExpandedSidebar(); saveShape();"></i>
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); saveShape();">Save</span>
-      <span class="tooltip">Save</span>
     </li>
 </div>
     <div class="features-list">
     <li class="features-item star">
-      <i id="pagesButton" class="bx bx-book-open features-item-icon" onclick="hideExpandedSidebar(); toggleOverview('pages')"></i>
+      <i id="pagesButton" title="Show Book" class="bx bx-book-open features-item-icon" onclick="hideExpandedSidebar(); toggleOverview('pages')"></i>
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); toggleOverview('pages')">Show Book</span>
-      <span class="tooltip">Show Book</span>
     </li>
     <li class="features-item star">
-      <i id="editortableButton" class="bx bx-list-ul features-item-icon" onclick="hideExpandedSidebar(); toggleOverview('editortable')"></i>
+      <i id="editortableButton" title="Show Annotations" class="bx bx-list-ul features-item-icon" onclick="hideExpandedSidebar(); toggleOverview('editortable')"></i>
       <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); toggleOverview('editortable')">Show Annotations</span>
-      <span class="tooltip">Show Annotations</span>
     </li>
 </div>
 </div>
