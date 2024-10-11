@@ -648,14 +648,17 @@ function imageZoomIn() {
     paper.currentHeight = paper.currentHeight - paper.originalHeight/10;
 
     if (paper.currentWidth > 0 && paper.currentHeight > 0) {
-       paper.setViewBox(paper.currentX, paper.currentY, paper.currentWidth, paper.currentHeight);
 
        let image = document.getElementById('pageImage');
        image.style.width = document.getElementById('imageWorkspace').clientWidth * paper.originalWidth / paper.currentWidth + 'px';
-       //image.style.left = Math.round(-paper.currentX * document.getElementById('imageWorkspace').clientWidth / paper.originalWidth)  + 'px';
        image.style.left = Math.round(-paper.currentX * image.clientWidth / paper.originalWidth)  + 'px';
-       //image.style.top = Math.round(-paper.currentY * document.getElementById('imageWorkspace').clientHeight / paper.originalHeight) + 'px';
        image.style.top = Math.round(-paper.currentY * image.clientHeight / paper.originalHeight) + 'px';
+
+       paper.setSize(image.clientWidth, image.clientHeight);
+       let canvas = document.getElementById('canvas');
+       canvas.style.left = Math.round(-paper.currentX * image.clientWidth / paper.originalWidth)  + 'px';
+       canvas.style.top = Math.round(-paper.currentY * image.clientHeight / paper.originalHeight) + 'px';
+
     } else {
         alert("Can't zoom in further!");
     };
@@ -665,12 +668,17 @@ function imageZoomIn() {
 function imageZoomOut() {
     paper.currentWidth = paper.currentWidth + paper.originalWidth/10;
     paper.currentHeight = paper.currentHeight + paper.originalHeight/10;
-    paper.setViewBox(paper.currentX, paper.currentY, paper.currentWidth, paper.currentHeight);
 
     let image = document.getElementById('pageImage');
+
     image.style.width = document.getElementById('imageWorkspace').clientWidth * paper.originalWidth / paper.currentWidth + 'px';
     image.style.left = Math.round(-paper.currentX * image.clientWidth / paper.originalWidth)  + 'px';
     image.style.top = Math.round(-paper.currentY * image.clientHeight / paper.originalHeight) + 'px';
+
+    paper.setSize(image.clientWidth, image.clientHeight);
+    let canvas = document.getElementById('canvas');
+    canvas.style.left = Math.round(-paper.currentX * image.clientWidth / paper.originalWidth)  + 'px';
+    canvas.style.top = Math.round(-paper.currentY * image.clientHeight / paper.originalHeight) + 'px';
 };
 
 function hideShape() {
@@ -686,7 +694,7 @@ function resetView() {
     paper.currentHeight = paper.originalHeight;
     paper.currentX = 0;
     paper.currentY = 0;
-    paper.setViewBox(0, 0, paper.originalWidth, paper.originalHeight);
+  
     paper.forEach(function(element) {
         if (!element.isVisible() && element.type !== "circle") {
             toggleShapeVisibility(element);
@@ -696,6 +704,10 @@ function resetView() {
     image.style.width = document.getElementById('imageWorkspace').clientWidth + 'px';
     image.style.left = 0  + 'px';
     image.style.top = 0 + 'px';
+    paper.setSize(image.clientWidth, image.clientHeight);
+    let canvas = document.getElementById('canvas');
+    canvas.style.left = 0  + 'px';
+    canvas.style.top = 0 + 'px';
 };
 
 function modifyShape() {
@@ -849,7 +861,7 @@ function init(annotations) {
   paper.originalHeight = image.naturalHeight;
   paper.setViewBox(0, 0, paper.originalWidth, paper.originalHeight);
 
-    document.getElementById("imageWorkspace").oncontextmenu = function(e) {
+    document.getElementById("canvas").oncontextmenu = function(e) {
         e.preventDefault();
         if (addingPolygon) {
             document.getElementById('createPolygonButton').parentElement.classList.remove('active');
@@ -865,7 +877,8 @@ function init(annotations) {
             addingPolygon = false;
         };
     };
-    document.getElementById("imageWorkspace").onmousedown = function(coordinates) {
+    document.getElementById("canvas").onmousedown = function(coordinates) {
+
         if (addingRectangle) {
 
             let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
@@ -892,7 +905,7 @@ function init(annotations) {
           mode = Mode.View;
         };
     };
-    document.getElementById("imageWorkspace").onclick = function(coordinates){
+    document.getElementById("canvas").onclick = function(coordinates){
         if (mode.name === "move" && !movingImage) {
           mode = Mode.View;
         };
@@ -964,7 +977,7 @@ function init(annotations) {
         }
 
     };
-    document.getElementById("imageWorkspace").onmousemove = function(coordinates) {
+    document.getElementById("canvas").onmousemove = function(coordinates) {
 
         if (addingRectangle && newRectangle) {
             let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
@@ -1010,9 +1023,6 @@ function init(annotations) {
             let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
             let scalingRatios = getScalingRatios();
 
-            //let deltaX = Math.round((relativeCoordinates[0] - mouseDownX) * paper.currentWidth / scalingRatios[0] / 10 / paper.originalWidth);
-            //let deltaY = Math.round((relativeCoordinates[1] - mouseDownY) * paper.currentHeight / scalingRatios[1] / 10 / paper.originalHeight);
-
             let deltaX = Math.round((relativeCoordinates[0] - mouseDownX) / scalingRatios[0] / 10);
             let deltaY = Math.round((relativeCoordinates[1] - mouseDownY) / scalingRatios[1] / 10);
 
@@ -1021,13 +1031,16 @@ function init(annotations) {
             paper.currentY = paper.currentY - deltaY;
 
             let image = document.getElementById('pageImage');
-            image.style.left = Math.round(-paper.currentX * scalingRatios[0]) + 'px';//*  document.getElementById('imageWorkspace').clientWidth / paper.originalWidth  + 'px';
-            image.style.top = Math.round(-paper.currentY * scalingRatios[1]) + 'px';//*  document.getElementById('imageWorkspace').clientHeight / paper.originalHeight + 'px';
+            image.style.left = Math.round(-paper.currentX * scalingRatios[0]) + 'px';
+            image.style.top = Math.round(-paper.currentY * scalingRatios[1]) + 'px';
 
-            paper.setViewBox(paper.currentX, paper.currentY, paper.currentWidth, paper.currentHeight);
+            //paper.setViewBox(paper.currentX, paper.currentY, paper.currentWidth, paper.currentHeight);
+            let canvas = document.getElementById('canvas');
+            canvas.style.left = Math.round(-paper.currentX * scalingRatios[0]) + 'px';
+            canvas.style.top = Math.round(-paper.currentY * scalingRatios[1]) + 'px';
         };
     };
-    document.getElementById("imageWorkspace").onmouseup = function (coordinates) {
+    document.getElementById("canvas").onmouseup = function (coordinates) {
         let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
         // prevent rectangles with zero width and height if the user clicks
         if (addingRectangle && Math.round(relativeCoordinates[0]) === mouseDownX && Math.round(relativeCoordinates[1]) === mouseDownY) {

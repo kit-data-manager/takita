@@ -128,8 +128,8 @@
                     var currentPageId = [[${currentPage.getResourceUrl()}]];
                 </script>
                 <img th:if="${currentPage.resourceType == (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).IMAGE)}"
-                        th:src="${currentPage.getResourceUrl()}"
-                        id="pageImage">
+                    th:src="${currentPage.getResourceUrl()}"
+                    id="pageImage">
                 <label class="text-center"
                     th:if="${currentPage.resourceType != (T(edu.kit.scc.dem.tuhl.model.page.ResourceType).IMAGE)}"
                     th:text="#{info.no_text_support}">
@@ -248,7 +248,6 @@
 <style>
 
 #imageWorkspace {
-    background-color: transparent; /* debug color, is hidden behind image if everything works as intended */
     position: relative;
     display: inline-block;  /*shrinks container to image size */
     overflow: hidden;
