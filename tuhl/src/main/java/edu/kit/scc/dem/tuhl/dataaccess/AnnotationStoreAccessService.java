@@ -8,6 +8,8 @@ import java.nio.charset.Charset;
 import java.time.Instant;
 import java.util.*;
 
+import edu.kit.scc.dem.tuhl.MissingPropertyException;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,10 +30,10 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   private final HttpRequestHelper httpRequestHelper;
   private IRepositoryAccessService repositoryAccessService;
 
-  @Value("${annotationStore.url}")
+  @Value("${annotationStore.url:#{null}}")
   private String urlPrefix;
 
-  @Value("${sparqlQuery.urlPrefix}")
+  @Value("${sparqlQuery.urlPrefix:#{null}}")
   private String sparqlQueryUrlPrefix;
 
   private static final String VALIDATED_URL = "validated/";
@@ -74,6 +76,16 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   public AnnotationStoreAccessService(IRepositoryAccessService repositoryAccessService) {
     httpRequestHelper = new HttpRequestHelper();
     this.repositoryAccessService = repositoryAccessService;
+  }
+
+  @PostConstruct
+  public void checkProperty() {
+    if (urlPrefix == null || urlPrefix.equals("")) {
+      throw new MissingPropertyException("annotationStore.url");
+    }
+    if (sparqlQueryUrlPrefix == null || sparqlQueryUrlPrefix.equals("")) {
+      throw new MissingPropertyException("sparqlQuery.urlPrefix");
+    }
   }
 
   /**

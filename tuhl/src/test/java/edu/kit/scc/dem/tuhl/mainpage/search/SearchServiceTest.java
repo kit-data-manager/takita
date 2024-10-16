@@ -20,6 +20,7 @@ import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.ui.Model;
 
 import java.time.Instant;
@@ -32,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest(classes = SearchService.class)
+@TestPropertySource("classpath:application-test.properties")
 class SearchServiceTest {
   
   @Autowired

@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import edu.kit.scc.dem.tuhl.MissingPropertyException;
+import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +39,7 @@ public class RepositoryAccessService implements IRepositoryAccessService {
   private static final String SEARCH_URL = "search?page=";
   private static final String SEARCH_SIZE_URL = "&size=";
 
-  @Value("${repository.baseUrl}")
+  @Value("${repository.baseUrl:#{null}}")
   private String baseUrl;
   @Value("${repository.staticPath}")
   private String staticPath;
@@ -48,6 +51,13 @@ public class RepositoryAccessService implements IRepositoryAccessService {
    */
   public RepositoryAccessService() {
     httpRequestHelper = new HttpRequestHelper();
+  }
+
+  @PostConstruct
+  public void checkProperty() {
+    if (baseUrl == null || baseUrl.equals("")) {
+      throw new MissingPropertyException("repository.baseUrl");
+    }
   }
 
   /**

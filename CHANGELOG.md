@@ -12,7 +12,12 @@ While status above is 'unreleased', you may and should add all major changes of 
 
 ### Changed
 - Rest API call to create annotation now returns HTTP 500 on more errors (annotationserver non success codes, i.e. container not existing).
+- Unified pseudonym input field on all pages
+- Bump to bootstrap 5 with slight changes to look of UI elements. Breaking change: read-only elements currently look editable in annotation forms (until incompatible jsonforms lib is removed)
+- Removal of custom modal implementations
 
 ### Fixed
 - Fix repeated prompt for user name on editor window
+- Fix movement with ctrl key to prevent unintended image moving
+
 ### Security
