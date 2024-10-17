@@ -711,9 +711,6 @@ function resetView() {
 };
 
 function modifyShape() {
-    mode = Mode.Modify;
-
-    document.getElementById('modifyButton').parentElement.classList.add('active');
 
     paper.forEach(function(element) {
         // adding the Raphael events for modification if a shape was already
@@ -721,13 +718,25 @@ function modifyShape() {
         if (element.selected) {
             if (element.type === "rect") {
                 enableRectangleModification(element);
+                mode = Mode.Modify;
+                document.getElementById('modifyButton').parentElement.classList.add('active');
             };
 
             if (element.type === "path") {
                 enablePolygonModification(element);
+                mode = Mode.Modify;
+                document.getElementById('modifyButton').parentElement.classList.add('active');
             };
         };
     });
+
+    if (mode != Mode.Modify) {
+        alert("Please select a shape first!");
+    };
+
+    
+
+    
 }
 
 // undo also works for multiple objects and object creation
@@ -1114,6 +1123,12 @@ function confirmDiscardChanges() {
             document.getElementById('createPolygonButton').parentElement.classList.remove('active');
         };
     };
+
+    if (mode == Mode.Modify) {
+        paper.forEach(function(element) {
+            endModification(element);
+        });    
+    }
 };
 
 window.addEventListener("beforeunload", function (e) {
