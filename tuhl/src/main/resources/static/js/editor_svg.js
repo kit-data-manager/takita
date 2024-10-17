@@ -1162,7 +1162,10 @@ createAnnotation.addEventListener('shown.bs.modal', event => {
 });
 
 createAnnotation.addEventListener('hidden.bs.modal', event => {
+    document.getElementById('imageWorkspace').style.zIndex = "1";
+});
 
+document.getElementById('dismissAnnotation').addEventListener('click', event =>{
     // if modal was shown during creation of new rectangle, remove rectangle
     if (newRectangle) {
         newRectangle.remove();
@@ -1174,8 +1177,6 @@ createAnnotation.addEventListener('hidden.bs.modal', event => {
         polygonPath.remove();
         document.getElementById('createPolygonButton').parentElement.classList.remove('active');
     };
-
-    document.getElementById('imageWorkspace').style.zIndex = "1";
 });
 
 function hideExpandedSidebar() {
