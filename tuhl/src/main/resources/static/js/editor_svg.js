@@ -534,6 +534,7 @@ function drawAnnos(annoJson) {
                 polygonPoint.path = polygonPath;
                 polygonPath.points.push(polygonPoint);
             };
+            polygonPath = undefined;
         };
       };
   };
