@@ -712,6 +712,12 @@ function resetView() {
 };
 
 function modifyShape() {
+    let modifyButton = document.getElementById('modifyButton').parentElement.classList;
+
+    if (modifyButton.contains('active')) {
+        confirmDiscardChanges();
+        return;
+    }
 
     paper.forEach(function(element) {
         // adding the Raphael events for modification if a shape was already
@@ -720,13 +726,13 @@ function modifyShape() {
             if (element.type === "rect") {
                 enableRectangleModification(element);
                 mode = Mode.Modify;
-                document.getElementById('modifyButton').parentElement.classList.add('active');
+                modifyButton.add('active');
             };
 
             if (element.type === "path") {
                 enablePolygonModification(element);
                 mode = Mode.Modify;
-                document.getElementById('modifyButton').parentElement.classList.add('active');
+                modifyButton.add('active');
             };
         };
     });
@@ -734,10 +740,6 @@ function modifyShape() {
     if (mode != Mode.Modify) {
         alert("Please select a shape first!");
     };
-
-    
-
-    
 }
 
 // undo also works for multiple objects and object creation
@@ -1106,6 +1108,9 @@ function confirmDiscardChanges() {
     };
 
     if (drawingHistory.length > 0) {
+        for (item in drawingHistory) {
+            console.log(drawingHistory[item])
+        }
         let confirmation = confirm("There are unsaved changes. Do you want to continue and discard them?");
 
         if (confirmation) {
@@ -1115,8 +1120,14 @@ function confirmDiscardChanges() {
                 console.log(drawingHistory);
                 undo();
             };
-            toggleShapeSelect(modifiedShape);
-            endModification(modifiedShape);
+            if (modifiedShape.type === "circle") {
+                endModification(modifiedShape.path);
+                toggleShapeSelect(modifiedShape.path);
+            } else {
+                endModification(modifiedShape);
+                toggleShapeSelect(modifiedShape);
+            };
+            
         } else {
             addingRectangle = false;
             addingPolygon = false;
