@@ -145,16 +145,33 @@ function postAppendingBodies(annotationData, $annotationDiv) {
 
 /**
  * called at common/annotationCard/annotationCard.js (createAndAppendBodyForms())
- * Can be used to change the data of an individual body passed to the horizontal bodyCard creation
- * and therefore influence the displayed values of the horizontal bodyCard PRIOR to its creation.
+ * Can be used to change the various configuration objects and/or the data of an individual
+ * body passed to the horizontal bodyCard creation and therefore influence the display and/or
+ * the displayed values of the horizontal bodyCard PRIOR to its creation.
  *
  * @param {String} annotationId id of the annotation
+ * @param {String} operationHorizontal the operation type of the form
+ * @param {Object} formBodyDataModelHorizontal the dataModel used by JSONForms
+ * @param {Object} uiFormHorizontal the uiForm used by JSONForms
  * @param {Object} body the body as JSON
- * @returns {Object} modifiedBody manipulated/changed body
+ * @returns {[Object]} holding the manipulated inputs
+ * - operationHorizontal
+ * - formBodyDataModelHorizontal
+ * - uiFormHorizontal
+ * - modifiedBody manipulated/changed body
+ * NOTE: all implementations for this hook take the same input, they must always return all four
+ * objects. If one object is not modified just return it anyways as the code calling the hook
+ * will not function properly otherwise.
  */
-async function preHorizontalBodyCardCreation(annotationId, body) {
+async function preHorizontalBodyCardCreation(
+  operationHorizontal,
+  formBodyDataModelHorizontal,
+  uiFormHorizontal,
+  annotationId,
+  body,
+) {
   let modifiedBody;
   // do stuff. This can be asynchronous as well.
-  return modifiedBody;
+  return [operationHorizontal, formBodyDataModelHorizontal, uiFormHorizontal, modifiedBody];
 }
 // ------ HOOK API DEFINITION END ------

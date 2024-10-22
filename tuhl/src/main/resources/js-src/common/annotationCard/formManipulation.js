@@ -86,7 +86,7 @@ export async function createAndAppendBodyForms(
   const [formBodyDataModel, uiForm] = getFormBodyDataModelAndUiForm(body, omitFields, formDataModel);
   createAndAppendBodyForm(formBodyDataModel, uiForm, body);
   // create the hoirzontal ("quick view") JSONForm
-  const [operationHorizontal, formBodyDataModelHorizontal, uiFormHorizontal] = getFormBodyDataModelAndUiFormHorizontal(
+  let [operationHorizontal, formBodyDataModelHorizontal, uiFormHorizontal] = getFormBodyDataModelAndUiFormHorizontal(
     body,
     omitFields,
     editableFields,
@@ -99,7 +99,13 @@ export async function createAndAppendBodyForms(
     // Therefore a "for of" loop is used
     // see: https://stackoverflow.com/questions/37576685/using-async-await-with-a-foreach-loop
     for (let hook of hooks.preHorizontalBodyCardCreation) {
-      modifiedBody = await hook(annotationId, body);
+      [operationHorizontal, formBodyDataModelHorizontal, uiFormHorizontal, modifiedBody] = await hook(
+        operationHorizontal,
+        formBodyDataModelHorizontal,
+        uiFormHorizontal,
+        annotationId,
+        body,
+      );
     }
   }
 
@@ -184,19 +190,28 @@ export function modifyBodyFormHorizontal($horizontalForm, modifiedBody) {
     inputButtonHorizontal.classList.add('horizontalFormInput');
   }
 
+  // enabling/diasbling the "Save"-buttons for inputs and textareas of the form
   // the form contains multiple inputs elements. Apart from the one with "name === 'value'" all are hidden.
   $horizontalForm.querySelectorAll('input[type="text"]').forEach((input) => {
     if (input.name === 'value') {
-      // The following lines have become unncessary after the modularisation process as
-      // the input fields are not getting "disabled" anymore.
-      // improve readibility of the value of the "disabled" input fields
-      // input.style.color = 'black';
-      // input.style.opacity = 1;
-
       // enable the input submit button if the value of the input field changes
       // from the original body value
       input.addEventListener('input', (_event) => {
         if (input.value !== modifiedBody.value) {
+          inputButtonHorizontal.disabled = false;
+        } else {
+          inputButtonHorizontal.disabled = true;
+        }
+      });
+    }
+  });
+
+  $horizontalForm.querySelectorAll('textarea').forEach((textarea) => {
+    if (textarea.name === 'value') {
+      // enable the input submit button if the value of the textarea changes
+      // from the original body value
+      textarea.addEventListener('input', (_event) => {
+        if (textarea.value !== modifiedBody.value) {
           inputButtonHorizontal.disabled = false;
         } else {
           inputButtonHorizontal.disabled = true;
@@ -299,7 +314,17 @@ export function getFormBodyDataModelAndUiFormHorizontal(body, omitFields, editab
         }
       }
       if (key === 'value' && omitFields.indexOf(key) === -1) {
-        uiFormHorizontal.items.push({ key: key, htmlClass: 'horizontalFormDiv' });
+        // if a body value contains more than 45 characters, display it using a textarea.
+        // This allows for better readbility of the value
+        if (document.getElementById('annotationCard').getBoundingClientRect().width > 700) {
+          body?.value?.length > 35
+            ? uiFormHorizontal.items.push({ key: key, type: 'textarea', htmlClass: 'horizontalFormDiv' })
+            : uiFormHorizontal.items.push({ key: key, htmlClass: 'horizontalFormDiv' });
+        } else {
+          body?.value?.length > 20
+            ? uiFormHorizontal.items.push({ key: key, type: 'textarea', htmlClass: 'horizontalFormDiv' })
+            : uiFormHorizontal.items.push({ key: key, htmlClass: 'horizontalFormDiv' });
+        }
       }
     }
   });
