@@ -2,7 +2,7 @@ import { getAnnotationData, deleteAnnotationData, deleteBodyData, updateBodyData
 import { makeTargetsCompatible, checkIsTargetCompatible } from '../../texteditor-ng/utils';
 import { removeStyles } from '../../texteditor-ng/highlighting';
 import { updateDisplay } from '../../texteditor-ng/display';
-import { fillMetaDataEditorTable, toggleVisibility } from '../utils';
+import { toggleVisibility } from '../utils';
 import { selectAnnotation } from './annotationCard';
 // data manipulation
 /**
@@ -192,7 +192,15 @@ export async function deleteAnnotation(annoId) {
 
       // maybe move it within the if clause?
       //console.log(annoJson);
-      fillMetaDataEditorTable(window.ANNOJSON);
+      // TODO: previuosly fillMetaDataEditorTable() was used. When modularizing the imageEditor
+      // uncomment the next line and import the corresponding function. The textEditor doesn't
+      // need it, as the function is included in updateDisplay()
+      // initializeAnnotationTable(
+      //   window.ANNOJSON,
+      //   document.getElementById('annotationTableBottom'),
+      //   document.getElementById('annotationCard'),
+      //   hooks,
+      // );
     } catch (exception) {
       console.error(exception);
       confirmation = false;

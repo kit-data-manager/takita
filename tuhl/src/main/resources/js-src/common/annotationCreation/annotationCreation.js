@@ -2,7 +2,7 @@
 import $ from 'jquery';
 import 'jsonform';
 //internal modules
-import { fillMetaDataEditorTable, toggleVisibility, encodeAnnoId } from '../utils';
+import { toggleVisibility, encodeAnnoId } from '../utils';
 import { updateDisplay } from '../../texteditor-ng/display';
 import { selectAnnotation } from '../annotationCard';
 import { createBodyData, createAnnotationData, getAnnotationData } from '../../texteditor-ng/data/annotations';
@@ -133,7 +133,15 @@ export async function resetFormAndUpdateDisplay(annotation, hooks = {}) {
     await updateDisplay();
   }
 
-  fillMetaDataEditorTable(window.ANNOJSON);
+  // TODO: previuosly fillMetaDataEditorTable() was used. When modularizing the imageEditor
+  // uncomment the next line and import the corresponding function. The textEditor doesn't
+  // need it, as the function is included in updateDisplay()
+  // initializeAnnotationTable(
+  //   window.ANNOJSON,
+  //   document.getElementById('annotationTableBottom'),
+  //   document.getElementById('annotationCard'),
+  //   hooks,
+  // );
   //document.getElementById('createRectangleButton').parentElement.classList.remove('active');
   //document.getElementById('createPolygonButton').parentElement.classList.remove('active');
   document.getElementById('createAnnotationForm').removeAttribute('title');

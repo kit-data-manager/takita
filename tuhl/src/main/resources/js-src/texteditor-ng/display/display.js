@@ -28,9 +28,6 @@ export async function updateDisplay(hooks = {}) {
     });
 
     // updating the annotation table.
-    // TODO: this should be independent of the highlighting procedure in the future;
-    // for now it is convenient as the updateDisplay function gets called on changes
-    // for the annotations anyways and it also fetches a new version of annoJson
     initializeAnnotationTable(
       annoJson,
       document.getElementById('annotationTableBottom'),

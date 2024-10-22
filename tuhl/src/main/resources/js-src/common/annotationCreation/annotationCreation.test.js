@@ -70,7 +70,7 @@ describe('reseting the form and updating the display', () => {
     window.EDITORTYPE = 'TEXT';
     jest.spyOn(display, 'updateDisplay').mockReturnValue(true);
     jest.spyOn(annotationCard, 'selectAnnotation').mockReturnValue(true);
-    jest.spyOn(metadataEditorWrapper, 'fillMetaDataEditorTable').mockReturnValue(true);
+    // jest.spyOn(metadataEditorWrapper, 'fillMetaDataEditorTable').mockReturnValue(true);
 
     await resetFormAndUpdateDisplay({ id: 'annoId' }, {});
 
@@ -91,7 +91,7 @@ describe('reseting the form and updating the display', () => {
     document.getElementById('createAnnotation').classList.add('show-modal');
     document.getElementById('createAnnotationForm').title = 'removeMe';
     jest.spyOn(annotationCard, 'selectAnnotation').mockReturnValue(true);
-    jest.spyOn(metadataEditorWrapper, 'fillMetaDataEditorTable').mockReturnValue(true);
+    // jest.spyOn(metadataEditorWrapper, 'fillMetaDataEditorTable').mockReturnValue(true);
 
     await resetFormAndUpdateDisplay({ id: 'annoId' }, {});
 
