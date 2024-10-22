@@ -426,10 +426,10 @@ public class AnnotationConverter {
             hasColor = true;
           }
         }
-        if (!hasColor) {
+        if (!hasColor && annotation.getColor() != Color.DEFAULT) {
           JSONObject colorBody = new JSONObject();
           colorBody.put(AnnotationStoreStrings.DC_SUBJECT.getName(),
-              Color.colorToString(annotation.getColor()));
+          Color.colorToString(annotation.getColor()));
           buildCreator(annotation, colorBody);
           jsonAnnotation.getJSONArray(AnnotationStoreStrings.BODY.getName()).put(colorBody);
         }

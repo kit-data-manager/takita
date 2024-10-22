@@ -20,8 +20,7 @@ function selectAnnotation(event, annoId) {
             
             //var responseJson = JSON.parse(responseData);
             var annotationDiv = document.getElementById("annotationCard");
-            console.log(annotationDiv);
-            console.log(annotationDiv.childElementCount);
+
             while (annotationDiv.lastElementChild) {
               annotationDiv.removeChild(annotationDiv.lastElementChild);  
             };
@@ -62,12 +61,9 @@ function selectAnnotation(event, annoId) {
             
             for (field in headerFields) {
                 if (responseJson[headerFields[field]]) {
-                    console.log(responseJson[headerFields[field]]);
                     formDataModel = completeFormDataModel(responseJson, formDataModel, headerFields[field], omitFields);    
                 };
             };
-            
-            console.log(formDataModel);
             
             options = {operation: "READ", dataModel: formDataModel, uiForm: "*", resource: responseJson};
             
@@ -90,8 +86,6 @@ function selectAnnotation(event, annoId) {
                     bodies[body].modified = new Date(bodies[body].modified * 1000).toISOString();
                 };
                 
-                console.log(bodies[body]);
-                
                 var bodyCard = document.createElement("div");
                 bodyCard.classList.add("card");
                 
@@ -105,7 +99,6 @@ function selectAnnotation(event, annoId) {
                 bodyDiv.classList.add("text-start");
                 bodyDiv.classList.add("col");
                 bodyRowDiv.append(bodyDiv);
-                console.log(bodyDiv.id);
                 
                 var formRowDiv = document.createElement("div");
                 formRowDiv.classList.add("row");
@@ -154,7 +147,6 @@ function selectAnnotation(event, annoId) {
                 };
                 
                 for (let key in bodies[body]) {
-                    console.log(key);
                     if(bodies[body].hasOwnProperty(key)) {
                         formDataModel = completeFormDataModel(bodies[body], formBodyDataModel, key, omitFields);
                         if (key !== "value" && omitFields.indexOf(key) === -1) {
@@ -171,19 +163,13 @@ function selectAnnotation(event, annoId) {
                     };
                 };
                 
-                console.log(uiForm);
-                
-                console.log(formBodyDataModel);
-                
                 options = {operation: "UPDATE", dataModel: formBodyDataModel, uiForm: uiForm, resource: bodies[body]};
             
                 $('#form' + bodies[body].id).metadataeditorForm(options, function onSubmitValid(value) {
-                    console.log(value);
                     var jsonObject = JSON.parse(value);
     
                     var endpoint;
                     var annoIdEncoded = encodeAnnoId(document.getElementById("iconRowTop").title);
-                    console.log(document.activeElement);
                     
                     if (jsonObject.purpose==="tagging") {
                         endpoint = '/editor_rest/annotations/' + annoIdEncoded + '/tags/' + jsonObject.id;
@@ -221,8 +207,6 @@ function deleteBodyFromAnnotation(annoId, bodyId) {
     let confirmation = confirm("Are you sure to delete this body?");
     
     if (confirmation) {
-        console.log(annoId);
-        console.log(bodyId);
     
         let annoIdEncoded = encodeAnnoId(annoId);
     
@@ -254,9 +238,7 @@ function deleteBodyFromAnnotation(annoId, bodyId) {
 
 function encodeAnnoId(annoId) {
     var annoIdEncoded = encodeURIComponent(annoId);
-    console.log(annoIdEncoded);
     var annoIdEncodedDouble = encodeURIComponent(annoIdEncoded);
-    console.log(annoIdEncodedDouble);
     return annoIdEncodedDouble;
 }
 
