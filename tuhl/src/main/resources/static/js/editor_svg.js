@@ -1046,7 +1046,7 @@ function init(annotations) {
                 'height' : rectangleHeight
             });
         };
-        if (addingPolygon && polygonPoint) {
+        if (addingPolygon && polygonPoint && invisiblePolygonPoint) {
             let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
             let scalingRatios = getScalingRatios();
 
