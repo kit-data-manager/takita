@@ -76,12 +76,12 @@
   <div class="features-list">
       <div class="category-header">Create Mode</div>
     <li class="features-item draft">
-      <i id="createRectangleButton" title="Create Square" class="bx bx-shape-square features-item-icon" onclick="hideExpandedSidebar(); addingRectangle = true; confirmDiscardChanges(); mode = Mode.Create;"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); addingRectangle = true; confirmDiscardChanges(); mode = Mode.Create;">Create Square</span>
+      <i id="createRectangleButton" title="Create Square" class="bx bx-shape-square features-item-icon" onclick="hideExpandedSidebar(); addRectangle(); confirmDiscardChanges(); mode = Mode.Create;"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); addRectangle(); confirmDiscardChanges(); mode = Mode.Create;">Create Square</span>
     </li>
     <li class="features-item draft">
-      <i id="createPolygonButton" title="Create Polygon" class="bx bx-shape-polygon features-item-icon" onclick="hideExpandedSidebar(); addingPolygon = true; confirmDiscardChanges(); mode = Mode.Create;"></i>
-      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); addingPolygon = true; confirmDiscardChanges(); mode = Mode.Create;">Create Polygon</span>
+      <i id="createPolygonButton" title="Create Polygon" class="bx bx-shape-polygon features-item-icon" onclick="hideExpandedSidebar(); addPolygon(); confirmDiscardChanges(); mode = Mode.Create;"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); addPolygon(); confirmDiscardChanges(); mode = Mode.Create;">Create Polygon</span>
     </li>
     <li class="features-item draft">
       <i id="createPageAnnoButton" title="Create Annotation" class="bx bx-note features-item-icon" onclick="hideExpandedSidebar(); confirmDiscardChanges(); mode = Mode.Create; createPageAnnotation();"></i>

@@ -711,6 +711,32 @@ function resetView() {
     canvas.style.top = 0 + 'px';
 };
 
+function addRectangle() {
+    if (addingRectangle) {
+        addingRectangle = false;
+        document.getElementById('createRectangleButton').parentElement.classList.remove('active');
+    } else {
+        addingRectangle = true;
+        if (addingPolygon) {
+            addingPolygon = false;
+            document.getElementById('createPolygonButton').parentElement.classList.remove('active');
+        };
+    };
+};
+
+function addPolygon() {
+    if (addingPolygon) {
+        addingPolygon = false;
+        document.getElementById('createPolygonButton').parentElement.classList.remove('active');
+    } else {
+        addingPolygon = true;
+        if (addingRectangle) {
+            addingRectangle = false;
+            document.getElementById('createRectangleButton').parentElement.classList.remove('active');
+        };
+    };
+};
+
 function modifyShape() {
     let modifyButton = document.getElementById('modifyButton').parentElement.classList;
 
