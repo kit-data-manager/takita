@@ -809,7 +809,7 @@ function saveShape() {
         let modifiedShape;
         let svgString;
         if (drawingHistory[0].pathId) {
-            // modified shape is a polygon
+            // modified shape is a polygon, vertex has been moved first
             modifiedShape = paper.getById(drawingHistory[0].pathId);
             svgString = "<svg><polygon points=\"";
             for (let point in modifiedShape.points) {
@@ -817,9 +817,19 @@ function saveShape() {
             };
             svgString += "\"/></svg>";
         } else {
-            // modified shape is a rectangle
-            modifiedShape = paper.getById(drawingHistory[0].id);
-            svgString = "<svg><rect x=\"" + modifiedShape.attrs.x + "\" y=\"" + modifiedShape.attrs.y + "\" width=\"" + modifiedShape.attrs.width + "\" height=\"" + modifiedShape.attrs.height + "\"/></svg>";
+            if(drawingHistory[0].points) {
+                // modified shape is a polygon, whole shape has been moved first
+                modifiedShape = paper.getById(drawingHistory[0].id);
+                svgString = "<svg><polygon points=\"";
+                for (let point in modifiedShape.points) {
+                    svgString += modifiedShape.points[point].attrs.cx + "," + modifiedShape.points[point].attrs.cy + " ";
+                };
+                svgString += "\"/></svg>";
+            } else {
+                // modified shape is a rectangle
+                modifiedShape = paper.getById(drawingHistory[0].id);
+                svgString = "<svg><rect x=\"" + modifiedShape.attrs.x + "\" y=\"" + modifiedShape.attrs.y + "\" width=\"" + modifiedShape.attrs.width + "\" height=\"" + modifiedShape.attrs.height + "\"/></svg>";
+            };
         };
 
         let annotationDataJson = {"color" : modifiedShape.attrs.fill, "motivation" : "describing", "svgCode" : svgString};
