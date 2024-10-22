@@ -22,7 +22,7 @@ export function initializeAnnotationTable(annoJson, $annotationTable, $annotatio
 
   let columns = [
     {
-      formatter: function (cell, _formatterParams, _onRendered) {
+      formatter: function (_cell, _formatterParams, _onRendered) {
         return "<i class='fa fa-eye'></i>";
       },
       hozAlign: 'center',
@@ -61,6 +61,7 @@ export function initializeAnnotationTable(annoJson, $annotationTable, $annotatio
     });
   }
 
+  // eslint-disable-next-line no-unused-vars
   const annotable = new Tabulator($annotationTable, {
     layout: 'fitColumns',
     pagination: 'local',
@@ -68,7 +69,7 @@ export function initializeAnnotationTable(annoJson, $annotationTable, $annotatio
     movableColumns: true, //enable user movable columns
     paginationSize: 10,
     paginationSizeSelector: [10, 20, 30, 40],
-    rowDblClick: function (e, row) {
+    rowDblClick: function (_e, row) {
       //shows and hides the bodies for each row/annotation
       let id = row.getData().id;
       if (document.getElementById('holder' + id) == null) {
@@ -133,17 +134,4 @@ export function fixTableStyling($annotationTable) {
   $annotationTable.querySelector('.tabulator-footer').style.backgroundColor = 'white';
 
   return $annotationTable;
-}
-
-/**
- * updates the table displaying all annotation of the current editor window
- * by recreating it
- *
- * @param {[Object]} annoJson containing all annotations
- * @param {Object} [hooks] containing an array for various hooks to be called in initializeAnnotationTable()
- */
-export function updateAnnotationTable(annoJson, hooks = {}) {
-  const $annotationCard = document.getElementById('annotationCard');
-  const $annotationTable = document.getElementById('annotationTableBottom');
-  initializeAnnotationTable(annoJson, $annotationTable, $annotationCard, hooks);
 }

@@ -1,5 +1,5 @@
 import * as annotationCard from '../../common/annotationCard/annotationCard';
-import * as target from '../highlighting/target';
+import * as display from '../display/display';
 import { Mode } from '../../common/mode';
 import { modifySelection, saveModification, cancelModification, updateTarget } from './targetModification';
 
@@ -258,7 +258,7 @@ describe('updating target callback for eventListener', () => {
     // mocking functions and dom-state
     document.body.innerHTML = innerHtml;
     jest.spyOn(annotationCard, 'selectAnnotation').mockResolvedValue(true);
-    const updateDisplayMock = jest.spyOn(target, 'updateDisplay');
+    const updateDisplayMock = jest.spyOn(display, 'updateDisplay');
     const $modal = document.getElementById('updateSelection');
     $modal.classList.toggle('show-modal');
     window.MODE = window.MODE_CLASS.Modify;
@@ -278,7 +278,7 @@ describe('updating target callback for eventListener', () => {
     // mocking functions and dom-state
     document.body.innerHTML = innerHtml;
     jest.spyOn(annotationCard, 'selectAnnotation').mockRejectedValue(new Error('Async error message'));
-    jest.spyOn(target, 'updateDisplay');
+    jest.spyOn(display, 'updateDisplay');
     const $modal = document.getElementById('updateSelection');
     $modal.classList.toggle('show-modal');
     const callback = jest.fn(() => {
@@ -296,7 +296,7 @@ describe('updating target callback for eventListener', () => {
     // mocking functions and dom-state
     document.body.innerHTML = innerHtml;
     const selectAnnotationMock = jest.spyOn(annotationCard, 'selectAnnotation').mockRejectedValue(new Error('Error'));
-    jest.spyOn(target, 'updateDisplay');
+    jest.spyOn(display, 'updateDisplay');
     const $modal = document.getElementById('updateSelection');
     $modal.classList.toggle('show-modal');
     const callback = jest.fn();

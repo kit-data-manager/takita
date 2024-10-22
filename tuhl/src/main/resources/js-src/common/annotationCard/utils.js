@@ -1,6 +1,7 @@
 import { getAnnotationData, deleteAnnotationData, deleteBodyData, updateBodyData } from '../../texteditor-ng/data';
 import { makeTargetsCompatible, checkIsTargetCompatible } from '../../texteditor-ng/utils';
-import { updateDisplay, removeStyles } from '../../texteditor-ng/highlighting';
+import { removeStyles } from '../../texteditor-ng/highlighting';
+import { updateDisplay } from '../../texteditor-ng/display';
 import { fillMetaDataEditorTable, toggleVisibility } from '../utils';
 import { selectAnnotation } from './annotationCard';
 // data manipulation

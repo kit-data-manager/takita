@@ -3,7 +3,7 @@ import $ from 'jquery';
 import 'jsonform';
 //internal modules
 import { fillMetaDataEditorTable, toggleVisibility, encodeAnnoId } from '../utils';
-import { updateDisplay } from '../../texteditor-ng/highlighting';
+import { updateDisplay } from '../../texteditor-ng/display';
 import { selectAnnotation } from '../annotationCard';
 import { createBodyData, createAnnotationData, getAnnotationData } from '../../texteditor-ng/data/annotations';
 import { formObjectCreateAnnotation, formObjectCreateBody } from '../../projectspecific';

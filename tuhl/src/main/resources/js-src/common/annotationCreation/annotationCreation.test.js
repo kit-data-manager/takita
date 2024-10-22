@@ -1,5 +1,5 @@
 import * as templates from '../../projectspecific/annotationCreation/templates';
-import * as target from '../../texteditor-ng/highlighting/target';
+import * as display from '../../texteditor-ng/display/display';
 import * as annotationCard from '../annotationCard/annotationCard';
 import * as metadataEditorWrapper from '../utils/metadataEditorWrapper';
 import { pickTemplate, resetFormAndUpdateDisplay } from './annotationCreation';
@@ -68,7 +68,7 @@ describe('reseting the form and updating the display', () => {
     document.getElementById('createAnnotation').classList.add('show-modal');
     document.getElementById('createAnnotationForm').title = 'removeMe';
     window.EDITORTYPE = 'TEXT';
-    jest.spyOn(target, 'updateDisplay').mockReturnValue(true);
+    jest.spyOn(display, 'updateDisplay').mockReturnValue(true);
     jest.spyOn(annotationCard, 'selectAnnotation').mockReturnValue(true);
     jest.spyOn(metadataEditorWrapper, 'fillMetaDataEditorTable').mockReturnValue(true);
 

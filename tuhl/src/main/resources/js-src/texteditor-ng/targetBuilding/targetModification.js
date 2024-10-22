@@ -1,6 +1,6 @@
 import { toggleButtonState, encodeAnnoId } from '../../common/utils';
 import { selectAnnotation } from '../../common/annotationCard';
-import { updateDisplay } from '../highlighting';
+import { updateDisplay } from '../display';
 import { createTargetString } from './targetCreation';
 import {
   reduceWhitespaceInString,

@@ -1,1 +1,1 @@
-export { initializeAnnotationTable, updateAnnotationTable } from './annotationTable';
+export { initializeAnnotationTable } from './annotationTable';
