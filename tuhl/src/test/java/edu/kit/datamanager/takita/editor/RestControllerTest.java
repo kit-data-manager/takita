@@ -205,7 +205,7 @@ class RestControllerTest {
     JSONObject target = new JSONObject();
     target.put("type", "SpecificResource");
     target.put("selector", selector);
-    target.put("source", "http://host.scc.kit.edu:8800/api/v1/dataresources/4c4a12ad-ff05-4740-8347-302b67bea80e/data/19r.master.jpg");
+    target.put("source", "http://samplerepo.edu/api/v1/dataresources/4c4a12ad-ff05-4740-8347-302b67bea80e/data/19r.master.jpg");
     mockAnnoJson.put("target", target);
     mockAnnoJson.put("motivation", "editing");
   
@@ -654,7 +654,7 @@ class RestControllerTest {
     JSONObject mockRelIds = new JSONObject();
     mockRelIds.put("id", 2998);
     mockRelIds.put("identifierType", "URL");
-    mockRelIds.put("value", "http://host.scc.kit.edu:8800/api/v1/dataresources/58469f38-4072-4dc4-83a7-39fbabdcde39");
+    mockRelIds.put("value", "http://samplerepo.edu/api/v1/dataresources/58469f38-4072-4dc4-83a7-39fbabdcde39");
     mockRelIds.put("relationType", "IS_METADATA_FOR");
     mockJsonObject.put("relatedIdentifierts", new JSONArray().put(mockRelIds));
 
