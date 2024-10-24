@@ -102,8 +102,8 @@ test {
 		showCauses true
 		showStackTraces true
 
-		// Change to `true` for more verbose test output
-		showStandardStreams = false
+		// Change to `false` for less verbose test output (only 'passed' for working tests)
+		showStandardStreams = true
 	}
 }
 
