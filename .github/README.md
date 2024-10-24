@@ -25,7 +25,17 @@ native installation guide TBD
 ### Docker
 
 As an alternative to native installation, the provided Dockerfile can be used for containerized installation. To setup tAKITA together with the necessary elasticsearch API, the `docker-compose.yml`configuration can be used.
-    
+
+To use the docker setup, the following minimal environment variables are needed (for example provided by an .env file):
+
+```
+TAKITA_REPOURL=http://<some-repo>/
+TAKITA_WAPURL=http://<some wadm server>/
+TAKITA_SPARQLURL=http://<some wadm server...>/sparql?query=
+```
+
+Starting with Docker:
+
 ```
 git clone https://github.com/kit-data-manager/takita.git
 cd takita
