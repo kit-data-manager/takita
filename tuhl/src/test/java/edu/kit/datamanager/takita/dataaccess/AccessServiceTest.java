@@ -304,7 +304,6 @@ class AccessServiceTest {
     manuscript2.setPages(pagesManuscript2);
     manuscript2.setLastModified(Instant.parse("2019-03-11T14:10:42Z"));
 
-
     List<String> creatorListAkita = new ArrayList<>();
     creatorListAkita.add("M. K.");
     creatorListAkita.add("Akita");
