@@ -11,13 +11,8 @@ const bodyTemplate = {
 // for adding new: include name here and add dataModel in 
 // getFormModel(chosenTemplate)
 const annotationTemplate = {
-    DIAGRAM : "diagram",
-    GLOSS : "gloss",
-    PAGEREGION : "pageregion",
-    MAINTEXT : "maintext",
-    TARGETAUDIENCE : "targetaudience",
+    EXAMPLE: "example",
     NOTEMPLATE : "notemplate"
-    
 };
 
 // assigns data model needed for MetadataEditor to specific template
@@ -44,7 +39,8 @@ function getFormModel(chosenTemplate) {
                 "properties" : {
                     "purpose" : {
                         "type" : "string",
-                        "title" : "purpose"
+                        "title" : "purpose",
+                        "enum" : ["assessing", "bookmarking", "classifying", "commenting", "describing", "editing", "highlighting", "identifying", "linking", "moderating", "questioning", "replying", "tagging"]
                     },
                     "value" : {
                         "type" : "string",
@@ -54,172 +50,33 @@ function getFormModel(chosenTemplate) {
                 "required" : ["purpose", "value"]
             };
             break;
-        case "GLOSS":
+        case "EXAMPLE":
             dataModel = {
                 "type" : "object",
                 "properties" : {
-                    "reference" : {
+                    "freetext" : {
                         "type" : "string",
-                        "title" : "Bekker reference"
+                        "title" : "free text input"
                     },
-                    "anchor" : {
+                    "enum" : {
                         "type" : "string",
-                        "title" : "annotated content"
-                    },
-                    "transcription" : {
-                        "type" : "string",
-                        "title" : "transcription"
-                    },
-                    "classification" : {
-                        "type" : "string",
-                        "title" : "classification",
-                        "enum" : ["", "Interlinearglosse", "Marginalglosse", "Scholie", "Kommentar"]
-                    },
-                    "color" : {
-                        "type" : "string",
-                        "title" : "color",
-                        "default" : "#00edff",
-                        "readOnly" : true
-                    }
-                }
-            };
-            uiForm = {
-                "type" : "fieldset",
-                "items" : [
-                    "reference",
-                    "anchor",
-                    {
-                        "key": "transcription",
-                        "type": "textarea"
-                    },
-                    "classification",
-                    {
-                        "key" : "color",
-                        "readOnly" : true
-                    }
-                
-            ]};
-            break;
-        case "DIAGRAM":
-            dataModel = {
-                "type" : "object",
-                "properties" : {
-                    "reference" : {
-                        "type" : "string",
-                        "title" : "Bekker reference"
+                        "title" : "enum input",
+                        "enum" : ["", "Term1", "Term2", "Term3"]
                     },
                     "tag" : {
                         "type" : "string",
-                        "title" : "tag"
-                    },
-                    "transcription" : {
-                        "type" : "string",
-                        "title" : "transcription"
-                    },
-                    "classification" : {
-                        "type" : "string",
-                        "title" : "classification",
-                        "enum" :["", "Syllogiusmusschema (1. Figur)", "Syllogiusmusschema (2. Figur)", "Syllogiusmusschema (3. Figur)", "Dihairese", "Kreuzdiagramm", "sonstiges erklärendes Diagramm/Schema"]
-                    },
-                    "color" : {
-                        "type" : "string",
-                        "title" : "color",
-                        "default" : "#2e8da6",
-                        "readOnly" : true
+                        "title" : "tag input"
                     }
                 }
             };
             uiForm = {
                 "type" : "fieldset",
                 "items" : [
-                    "reference",
-                    "tag",
-                    {
-                        "key": "transcription",
-                        "type": "textarea"
-                    },
-                    "classification",
-                    {
-                        "key" : "color",
-                        "readOnly" : true
-                    }
-                
+                    "freetext",
+                    "enum",
+                    "tag"
             ]};
             break;
-        case "PAGEREGION":
-            dataModel = {
-                "type" : "object",
-                "properties" : {
-                    "color" : {
-                        "type" : "string",
-                        "title" : "color",
-                        "default" : "#e2b8f7",
-                        "readOnly" : true
-                    }
-                }
-            };
-            uiForm = {
-                "type" : "fieldset",
-                "items" : [
-                    {
-                        "key" : "color",
-                        "readOnly" : true
-                    }
-                ]
-            };
-            break;
-        case "MAINTEXT":
-            dataModel = {
-                "type" : "object",
-                "properties" : {
-                    "color" : {
-                        "type" : "string",
-                        "title" : "color",
-                        "default" : "#00edff",
-                        "readOnly" : true
-                    }
-                }
-            };
-            uiForm = {
-                "type" : "fieldset",
-                "items" : [
-                    {
-                        "key" : "color",
-                        "readOnly" : true
-                    }
-                ]
-            };
-            break;
-            case "TARGETAUDIENCE":
-            dataModel = {
-                "type" : "object",
-                "properties" : {
-                    "transcription" : {
-                        "type" : "string",
-                        "title" : "transcription"
-                    },
-                    "tag" : {
-                        "type" : "string",
-                        "title" : "tag",
-                        "default" : "Zielgruppe",
-                        "readOnly" : true
-                    }
-                }
-            };
-            uiForm = {
-                "type" : "fieldset",
-                "items" : [
-                    {
-                        "key": "transcription",
-                        "type": "textarea"
-                    },
-                    {
-                        "key" : "tag",
-                        "readOnly" : true
-                    }
-                
-            ]};
-            break;     
         case "NOTEMPLATE":
             dataModel = {
                 "type" : "object",
@@ -296,7 +153,9 @@ const formObjectCreateBody = {
                         success: function(responseData) {
                             console.log(responseData);
                             selectAnnotation(null, document.getElementById("createForm").title);
-                            document.getElementById('createBody').classList.toggle("show-modal");
+                            let createBody = document.getElementById('createBody');
+                            let createBodyModal = bootstrap.Modal.getOrCreateInstance(createBody);
+                            createBodyModal.toggle();
                         },
         
                         error: function(errorData) {
@@ -414,65 +273,16 @@ function storeBody(responseJson, jsonObject, index) {
     
     console.log(Object.keys(jsonObject)[index]);
     if (Object.keys(jsonObject)[index]) {
-        if (Object.keys(jsonObject)[index] === 'color') {
-            endpoint = '/editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/bodies';
-            switch(jsonObject.color) {
-                case "#e2b8f7":
-                    bodyDataJson = {"purpose" : "classifying", "subject" : "PageRegion"};
-                    $ .ajax({
-                        type : 'POST',
-                        url : endpoint,
-                        data : JSON.stringify(bodyDataJson),
-                        headers: {
-                            'Content-Type' : 'application/json'
-                         },
-                        
-                        success: function(responseData) {
-                            console.log(responseData);
-                            storeBody(responseJson, jsonObject, index + 1);
-                        },
-        
-                        error: function(errorData) {
-                            console.log(errorData);
-                        }
-                    });
-                    break;
-                case "#00edff":
-                    bodyDataJson = {"purpose" : "classifying", "subject" : "TextRegion", "source" : "http://episteme.org/A04Vokabular#text_block"};
-                    $ .ajax({
-                        type : 'POST',
-                        url : endpoint,
-                        data : JSON.stringify(bodyDataJson),
-                        headers: {
-                            'Content-Type' : 'application/json'
-                         },
-                        
-                        success: function(responseData) {
-                            console.log(responseData);
-                            storeBody(responseJson, jsonObject, index + 1);
-                        },
-        
-                        error: function(errorData) {
-                            console.log(errorData);
-                        }
-                    });
-                    break;
-                default:
-                    storeBody(responseJson, jsonObject, index + 1);    
-            };
-            
-            
-        } else {
             // defines the correct endpoints and purposes for the AJAX call
-            if (Object.keys(jsonObject)[index] === "reference" || Object.keys(jsonObject)[index] === "anchor" || Object.keys(jsonObject)[index] === "tag") {
+            if (Object.keys(jsonObject)[index] === "tag") {
                 endpoint = '/editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/tags';
                 bodyDataJson = {"value" : jsonObject[Object.keys(jsonObject)[index]]};
             } else {
                 endpoint = '/editor_rest/annotations/' + encodeAnnoId(responseJson.id) + '/bodies';
-                if (Object.keys(jsonObject)[index] === "transcription") {
-                    bodyDataJson = {"purpose" : "tadirah:transcription", "value" : jsonObject[Object.keys(jsonObject)[index]]};
-                } else {
+                if (Object.keys(jsonObject)[index] === "enum") {
                     bodyDataJson = {"purpose" : "classifying", "value" : jsonObject[Object.keys(jsonObject)[index]]};
+                } else {
+                    bodyDataJson = {"purpose" : "describing", "value" : jsonObject[Object.keys(jsonObject)[index]]};
                 }
             };
         
@@ -493,19 +303,20 @@ function storeBody(responseJson, jsonObject, index) {
                     console.log(errorData);
                 }
             });
-        };
         
     } else {
         // if no more body needs to be created, hide modal and update global annotation list
-        document.getElementById('createAnnotation').classList.toggle("show-modal");
+        let createAnnotation = document.getElementById('createAnnotation');
+        let createAnnotationModal = bootstrap.Modal.getOrCreateInstance(createAnnotation);
+        createAnnotationModal.toggle();
         selectAnnotation(null, encodeAnnoId(responseJson.id));
-        if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
+        if (document.getElementById('annotationCard').classList.contains('invisible')) {
             toggleOverview('annotationCard');
         };
         
-        let newAnnotation = {"created" : new Date(responseJson.created.seconds * 1000 + responseJson.created.nanos / 1000000).toISOString(), 
+        let newAnnotation = {"created" : new Date(responseJson.created * 1000).toISOString(), 
             "creator" : responseJson.creators, "id" : responseJson.id, "idEncoded" : encodeAnnoId(responseJson.id), 
-            "modified" : new Date(responseJson.modified.seconds * 1000 + responseJson.modified.nanos / 1000000).toISOString(), 
+            "modified" : new Date(responseJson.modified * 1000).toISOString(), 
             "motivation" : responseJson.motivation, "visible" : true};
         
         if (document.getElementById("createAnnotationForm").title !== "") {

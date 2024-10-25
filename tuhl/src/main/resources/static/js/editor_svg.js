@@ -33,9 +33,22 @@ let mode = Mode.View;
 // also includes scrolling offsets
 // ToDo: check browser compatibility!
 function getRelativeCoordinates(x, y) {
-    let imageWorkspaceBoundingRect = document.getElementById("imageWorkspace").getBoundingClientRect();
-    let relativeX = (x - imageWorkspaceBoundingRect.left - window.pageXOffset); //* paper.currentWidth / paper.originalWidth;
-    let relativeY = (y - imageWorkspaceBoundingRect.top - window.pageYOffset); //* paper.currentHeight / paper.originalHeight;
+    let image = document.getElementById("pageImage");
+
+    let relativeX = (x - image.getBoundingClientRect().left - window.pageXOffset);
+    let relativeY = (y - image.getBoundingClientRect().top - window.pageYOffset); 
+    
+    let styleLeft = parseInt(image.style.left);
+    let styleTop = parseInt(image.style.top);
+
+    // only adding the offset if a shape is created
+    // otherwise the image flies out of bounds while moving
+    if (!isNaN(styleLeft) && (addingRectangle || addingPolygon)) {
+        relativeX = relativeX + styleLeft;
+    };
+    if (!isNaN(styleTop) && (addingRectangle || addingPolygon)) {
+        relativeY = relativeY + styleTop;
+    }
 
     return [relativeX, relativeY];
 };
@@ -99,12 +112,12 @@ function drawRectangle(x, y, width, height, color, id, idEncoded){
         };
         if (mode.name === "view") {
             if (this.selected) {
-                if (!document.getElementById('annotationCard').classList.contains('is-hidden')) {
+                if (!document.getElementById('annotationCard').classList.contains('invisible')) {
                     toggleOverview('annotationCard');
                 };
             } else {
                 selectAnnotation(null, this.annoIdEncoded);
-                if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
+                if (document.getElementById('annotationCard').classList.contains('invisible')) {
                     toggleOverview('annotationCard');
                 };
             };
@@ -163,12 +176,12 @@ function drawPolygon(path, color, id, idEncoded) {
         };
         if (mode.name === "view") {
             if (this.selected) {
-                if (!document.getElementById('annotationCard').classList.contains('is-hidden')) {
+                if (!document.getElementById('annotationCard').classList.contains('invisible')) {
                     toggleOverview('annotationCard');
                 };
             } else {
                 selectAnnotation(null, this.annoIdEncoded);
-                if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
+                if (document.getElementById('annotationCard').classList.contains('invisible')) {
                     toggleOverview('annotationCard');
                 };
             };
@@ -227,6 +240,8 @@ Raphael.el.isVisible = function() {
 };
 
 // Storing original rectangle values (coordinates, width, height) before modifying
+// This is a re-use from Ethan Zimmerman's code published on GitHub Gist under MIT licence:
+// https://gist.github.com/thebinarypenguin/1558194
 let dragRectangleStart = function() {
     this.ox = this.attr('x');
     this.oy = this.attr('y');
@@ -252,6 +267,8 @@ let dragCircleStart = function() {
 
 // resizing or dragging rectangles
 // x and y input coordinates are scaled to match the resolution of the image
+// This is an adaption from Ethan Zimmerman's code published on GitHub Gist under MIT licence:
+// https://gist.github.com/thebinarypenguin/1558194
 let dragRectangleMove = function(screenDx, screenDy) {
     let scalingRatios = getScalingRatios();
 
@@ -384,6 +401,8 @@ let dragCircleEnd = function() {
     };
 };
 
+// This is an adaption from Ethan Zimmerman's code published on GitHub Gist under MIT licence:
+// https://gist.github.com/thebinarypenguin/1558194
 let changeCursor = function(e, mouseX, mouseY) {
 
     // Don't change cursor during a drag operation
@@ -515,6 +534,7 @@ function drawAnnos(annoJson) {
                 polygonPoint.path = polygonPath;
                 polygonPath.points.push(polygonPoint);
             };
+            polygonPath = undefined;
         };
       };
   };
@@ -550,7 +570,7 @@ function fillMetaDataEditorTable(annoJson) {
 
     let items = [{title: "Identifier", field: "id", headerSort: false, cellClick: function (e, cell) {
                 selectAnnotation(null, encodeAnnoId(cell.getValue()));
-                if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
+                if (document.getElementById('annotationCard').classList.contains('invisible')) {
                     toggleOverview('annotationCard');
                 };
                 // function to select shape on the canvas
@@ -583,7 +603,7 @@ function fillMetaDataEditorTable(annoJson) {
             //},
             updateOperation: function (rowColumnvalue){
                 selectAnnotation(null, encodeAnnoId(rowColumnvalue.id));
-                if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
+                if (document.getElementById('annotationCard').classList.contains('invisible')) {
                     toggleOverview('annotationCard');
                 };
                 // toggling shape selection on the canvas
@@ -618,8 +638,9 @@ function fillMetaDataEditorTable(annoJson) {
 };
 
 function createPageAnnotation() {
-    const modal = document.getElementById("createAnnotation");
-    modal.classList.toggle("show-modal");
+    let createAnnotation = document.getElementById('createAnnotation');
+    let createAnnotationModal = bootstrap.Modal.getOrCreateInstance(createAnnotation);
+    createAnnotationModal.toggle();
     pickTemplate("", "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
 };
 
@@ -628,14 +649,17 @@ function imageZoomIn() {
     paper.currentHeight = paper.currentHeight - paper.originalHeight/10;
 
     if (paper.currentWidth > 0 && paper.currentHeight > 0) {
-       paper.setViewBox(paper.currentX, paper.currentY, paper.currentWidth, paper.currentHeight);
 
        let image = document.getElementById('pageImage');
        image.style.width = document.getElementById('imageWorkspace').clientWidth * paper.originalWidth / paper.currentWidth + 'px';
-       //image.style.left = Math.round(-paper.currentX * document.getElementById('imageWorkspace').clientWidth / paper.originalWidth)  + 'px';
        image.style.left = Math.round(-paper.currentX * image.clientWidth / paper.originalWidth)  + 'px';
-       //image.style.top = Math.round(-paper.currentY * document.getElementById('imageWorkspace').clientHeight / paper.originalHeight) + 'px';
        image.style.top = Math.round(-paper.currentY * image.clientHeight / paper.originalHeight) + 'px';
+
+       paper.setSize(image.clientWidth, image.clientHeight);
+       let canvas = document.getElementById('canvas');
+       canvas.style.left = Math.round(-paper.currentX * image.clientWidth / paper.originalWidth)  + 'px';
+       canvas.style.top = Math.round(-paper.currentY * image.clientHeight / paper.originalHeight) + 'px';
+
     } else {
         alert("Can't zoom in further!");
     };
@@ -645,12 +669,17 @@ function imageZoomIn() {
 function imageZoomOut() {
     paper.currentWidth = paper.currentWidth + paper.originalWidth/10;
     paper.currentHeight = paper.currentHeight + paper.originalHeight/10;
-    paper.setViewBox(paper.currentX, paper.currentY, paper.currentWidth, paper.currentHeight);
 
     let image = document.getElementById('pageImage');
+
     image.style.width = document.getElementById('imageWorkspace').clientWidth * paper.originalWidth / paper.currentWidth + 'px';
     image.style.left = Math.round(-paper.currentX * image.clientWidth / paper.originalWidth)  + 'px';
     image.style.top = Math.round(-paper.currentY * image.clientHeight / paper.originalHeight) + 'px';
+
+    paper.setSize(image.clientWidth, image.clientHeight);
+    let canvas = document.getElementById('canvas');
+    canvas.style.left = Math.round(-paper.currentX * image.clientWidth / paper.originalWidth)  + 'px';
+    canvas.style.top = Math.round(-paper.currentY * image.clientHeight / paper.originalHeight) + 'px';
 };
 
 function hideShape() {
@@ -666,7 +695,7 @@ function resetView() {
     paper.currentHeight = paper.originalHeight;
     paper.currentX = 0;
     paper.currentY = 0;
-    paper.setViewBox(0, 0, paper.originalWidth, paper.originalHeight);
+  
     paper.forEach(function(element) {
         if (!element.isVisible() && element.type !== "circle") {
             toggleShapeVisibility(element);
@@ -676,12 +705,45 @@ function resetView() {
     image.style.width = document.getElementById('imageWorkspace').clientWidth + 'px';
     image.style.left = 0  + 'px';
     image.style.top = 0 + 'px';
+    paper.setSize(image.clientWidth, image.clientHeight);
+    let canvas = document.getElementById('canvas');
+    canvas.style.left = 0  + 'px';
+    canvas.style.top = 0 + 'px';
+};
+
+function addRectangle() {
+    if (addingRectangle) {
+        addingRectangle = false;
+        document.getElementById('createRectangleButton').parentElement.classList.remove('active');
+    } else {
+        addingRectangle = true;
+        if (addingPolygon) {
+            addingPolygon = false;
+            document.getElementById('createPolygonButton').parentElement.classList.remove('active');
+        };
+    };
+};
+
+function addPolygon() {
+    if (addingPolygon) {
+        addingPolygon = false;
+        document.getElementById('createPolygonButton').parentElement.classList.remove('active');
+    } else {
+        addingPolygon = true;
+        if (addingRectangle) {
+            addingRectangle = false;
+            document.getElementById('createRectangleButton').parentElement.classList.remove('active');
+        };
+    };
 };
 
 function modifyShape() {
-    mode = Mode.Modify;
+    let modifyButton = document.getElementById('modifyButton').parentElement.classList;
 
-    document.getElementById('modifyButton').parentElement.classList.add('active');
+    if (modifyButton.contains('active')) {
+        confirmDiscardChanges();
+        return;
+    }
 
     paper.forEach(function(element) {
         // adding the Raphael events for modification if a shape was already
@@ -689,13 +751,21 @@ function modifyShape() {
         if (element.selected) {
             if (element.type === "rect") {
                 enableRectangleModification(element);
+                mode = Mode.Modify;
+                modifyButton.add('active');
             };
 
             if (element.type === "path") {
                 enablePolygonModification(element);
+                mode = Mode.Modify;
+                modifyButton.add('active');
             };
         };
     });
+
+    if (mode != Mode.Modify) {
+        alert("Please select a shape first!");
+    };
 }
 
 // undo also works for multiple objects and object creation
@@ -739,7 +809,7 @@ function saveShape() {
         let modifiedShape;
         let svgString;
         if (drawingHistory[0].pathId) {
-            // modified shape is a polygon
+            // modified shape is a polygon, vertex has been moved first
             modifiedShape = paper.getById(drawingHistory[0].pathId);
             svgString = "<svg><polygon points=\"";
             for (let point in modifiedShape.points) {
@@ -747,9 +817,19 @@ function saveShape() {
             };
             svgString += "\"/></svg>";
         } else {
-            // modified shape is a rectangle
-            modifiedShape = paper.getById(drawingHistory[0].id);
-            svgString = "<svg><rect x=\"" + modifiedShape.attrs.x + "\" y=\"" + modifiedShape.attrs.y + "\" width=\"" + modifiedShape.attrs.width + "\" height=\"" + modifiedShape.attrs.height + "\"/></svg>";
+            if(drawingHistory[0].points) {
+                // modified shape is a polygon, whole shape has been moved first
+                modifiedShape = paper.getById(drawingHistory[0].id);
+                svgString = "<svg><polygon points=\"";
+                for (let point in modifiedShape.points) {
+                    svgString += modifiedShape.points[point].attrs.cx + "," + modifiedShape.points[point].attrs.cy + " ";
+                };
+                svgString += "\"/></svg>";
+            } else {
+                // modified shape is a rectangle
+                modifiedShape = paper.getById(drawingHistory[0].id);
+                svgString = "<svg><rect x=\"" + modifiedShape.attrs.x + "\" y=\"" + modifiedShape.attrs.y + "\" width=\"" + modifiedShape.attrs.width + "\" height=\"" + modifiedShape.attrs.height + "\"/></svg>";
+            };
         };
 
         let annotationDataJson = {"color" : modifiedShape.attrs.fill, "motivation" : "describing", "svgCode" : svgString};
@@ -829,7 +909,7 @@ function init(annotations) {
   paper.originalHeight = image.naturalHeight;
   paper.setViewBox(0, 0, paper.originalWidth, paper.originalHeight);
 
-    document.getElementById("imageWorkspace").oncontextmenu = function(e) {
+    document.getElementById("canvas").oncontextmenu = function(e) {
         e.preventDefault();
         if (addingPolygon) {
             document.getElementById('createPolygonButton').parentElement.classList.remove('active');
@@ -845,7 +925,8 @@ function init(annotations) {
             addingPolygon = false;
         };
     };
-    document.getElementById("imageWorkspace").onmousedown = function(coordinates) {
+    document.getElementById("canvas").onmousedown = function(coordinates) {
+
         if (addingRectangle) {
 
             let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
@@ -860,7 +941,7 @@ function init(annotations) {
             newRectangle = drawRectangle(scaledX, scaledY, 0, 0, '#ff8d00', null, null);
         };
 
-        if (movingImage) {
+        if (movingImage || coordinates.ctrlKey) {
 
             initiated = true;
             let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
@@ -872,7 +953,7 @@ function init(annotations) {
           mode = Mode.View;
         };
     };
-    document.getElementById("imageWorkspace").onclick = function(coordinates){
+    document.getElementById("canvas").onclick = function(coordinates){
         if (mode.name === "move" && !movingImage) {
           mode = Mode.View;
         };
@@ -911,8 +992,9 @@ function init(annotations) {
                     };
                     svgString += "\"/></svg>";
 
-                    const modal = document.getElementById("createAnnotation");
-                    modal.classList.toggle("show-modal");
+                    let createAnnotation = document.getElementById('createAnnotation');
+                    let createAnnotationModal = bootstrap.Modal.getOrCreateInstance(createAnnotation);
+                    createAnnotationModal.toggle();
                     pickTemplate(svgString, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
 
                 firstPolygonPoint = undefined;
@@ -943,7 +1025,8 @@ function init(annotations) {
         }
 
     };
-    document.getElementById("imageWorkspace").onmousemove = function(coordinates) {
+    document.getElementById("canvas").onmousemove = function(coordinates) {
+
         if (addingRectangle && newRectangle) {
             let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
             let scalingRatios = getScalingRatios();
@@ -973,7 +1056,7 @@ function init(annotations) {
                 'height' : rectangleHeight
             });
         };
-        if (addingPolygon && polygonPoint) {
+        if (addingPolygon && polygonPoint && invisiblePolygonPoint) {
             let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
             let scalingRatios = getScalingRatios();
 
@@ -984,28 +1067,28 @@ function init(annotations) {
             polygonPath.attr({'path' : polygonPath.attrs.path.toString().substring(0,polygonPath.attrs.path.toString().lastIndexOf('L')) + 'L' + polygonX + " " + polygonY});
 
         };
-        if (movingImage && initiated) {
+        if (movingImage && initiated || coordinates.ctrlKey && initiated) {
             let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
             let scalingRatios = getScalingRatios();
 
-            //let deltaX = Math.round((relativeCoordinates[0] - mouseDownX) * paper.currentWidth / scalingRatios[0] / 10 / paper.originalWidth);
-            //let deltaY = Math.round((relativeCoordinates[1] - mouseDownY) * paper.currentHeight / scalingRatios[1] / 10 / paper.originalHeight);
+            let deltaX = Math.round((relativeCoordinates[0] - mouseDownX) / scalingRatios[0] / 10);
+            let deltaY = Math.round((relativeCoordinates[1] - mouseDownY) / scalingRatios[1] / 10);
 
-            let deltaX = Math.round((relativeCoordinates[0] - mouseDownX) / scalingRatios[0] / 100);
-            let deltaY = Math.round((relativeCoordinates[1] - mouseDownY) / scalingRatios[1] / 100);
-
-
+            // if movement needs to be quicker, introduce a factor e.g. 2 before deltaX and deltaY
             paper.currentX = paper.currentX - deltaX;
             paper.currentY = paper.currentY - deltaY;
 
             let image = document.getElementById('pageImage');
-            image.style.left = Math.round(-paper.currentX * scalingRatios[0]) + 'px';//*  document.getElementById('imageWorkspace').clientWidth / paper.originalWidth  + 'px';
-            image.style.top = Math.round(-paper.currentY * scalingRatios[1]) + 'px';//*  document.getElementById('imageWorkspace').clientHeight / paper.originalHeight + 'px';
+            image.style.left = Math.round(-paper.currentX * scalingRatios[0]) + 'px';
+            image.style.top = Math.round(-paper.currentY * scalingRatios[1]) + 'px';
 
-            paper.setViewBox(paper.currentX, paper.currentY, paper.currentWidth, paper.currentHeight);
+            //paper.setViewBox(paper.currentX, paper.currentY, paper.currentWidth, paper.currentHeight);
+            let canvas = document.getElementById('canvas');
+            canvas.style.left = Math.round(-paper.currentX * scalingRatios[0]) + 'px';
+            canvas.style.top = Math.round(-paper.currentY * scalingRatios[1]) + 'px';
         };
     };
-    document.getElementById("imageWorkspace").onmouseup = function (coordinates) {
+    document.getElementById("canvas").onmouseup = function (coordinates) {
         let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
         // prevent rectangles with zero width and height if the user clicks
         if (addingRectangle && Math.round(relativeCoordinates[0]) === mouseDownX && Math.round(relativeCoordinates[1]) === mouseDownY) {
@@ -1021,9 +1104,9 @@ function init(annotations) {
 
             let svgString = "<svg><rect x=\"" + newRectangle.attrs.x + "\" y=\"" + newRectangle.attrs.y + "\" width=\"" + newRectangle.attrs.width + "\" height=\"" + newRectangle.attrs.height + "\"/></svg>";
 
-            //document.getElementById('closeButtonAnno').hide();
-            const modal = document.getElementById("createAnnotation");
-            modal.classList.toggle("show-modal");
+            let createAnnotation = document.getElementById('createAnnotation');
+            let createAnnotationModal = bootstrap.Modal.getOrCreateInstance(createAnnotation);
+            createAnnotationModal.toggle();
             pickTemplate(svgString, "", "createAnnotationForm", "pickAnnotationTemplateForm", "annotationTemplate");
 
             // reset variables needed for rectangle creation
@@ -1037,8 +1120,10 @@ function init(annotations) {
 
         if (movingImage) {
           movingImage = false;
-          initiated = false;
         };
+
+        // moved out of the if clause to prevent unintentional movement after ctrl-move
+        initiated = false;
     };
 
     // Drawing anno svgs on first opening of page
@@ -1054,11 +1139,14 @@ function confirmDiscardChanges() {
         document.getElementById('createPolygonButton').parentElement.classList.add('active');
     };
 
-    if (!document.getElementById('annotationCard').classList.contains('is-hidden')) {
+    if (!document.getElementById('annotationCard').classList.contains('invisible')) {
         toggleOverview('annotationCard');
     };
 
     if (drawingHistory.length > 0) {
+        for (item in drawingHistory) {
+            console.log(drawingHistory[item])
+        }
         let confirmation = confirm("There are unsaved changes. Do you want to continue and discard them?");
 
         if (confirmation) {
@@ -1068,8 +1156,14 @@ function confirmDiscardChanges() {
                 console.log(drawingHistory);
                 undo();
             };
-            toggleShapeSelect(modifiedShape);
-            endModification(modifiedShape);
+            if (modifiedShape.type === "circle") {
+                endModification(modifiedShape.path);
+                toggleShapeSelect(modifiedShape.path);
+            } else {
+                endModification(modifiedShape);
+                toggleShapeSelect(modifiedShape);
+            };
+            
         } else {
             addingRectangle = false;
             addingPolygon = false;
@@ -1077,6 +1171,12 @@ function confirmDiscardChanges() {
             document.getElementById('createPolygonButton').parentElement.classList.remove('active');
         };
     };
+
+    if (mode == Mode.Modify) {
+        paper.forEach(function(element) {
+            endModification(element);
+        });    
+    }
 };
 
 window.addEventListener("beforeunload", function (e) {
@@ -1108,10 +1208,27 @@ window.addEventListener("wheel", function(e) {
   passive: false
 });
 
-// adding the closing functionality to annotation creation modal
-document.getElementById('closeButtonAnno').addEventListener('click', function (e) {
-    document.getElementById("createAnnotation").classList.toggle("show-modal");
+window.addEventListener("mouseup", function(e) {
+    // prevent unintended movement after ctrl moving
+    // if the user gets out of the canvas while ctrl moving the variable is not resetted 
+    // if the ctrl button is pushed again, the image moves with every mouse move otherwise
+    initiated = false;
+})
 
+// adding custom closing functionality to annotation creation modal
+let createAnnotation = document.getElementById('createAnnotation')
+
+// brings the image in front of the modal backdrop while annotating
+// for now only for creating annotations not bodies
+createAnnotation.addEventListener('shown.bs.modal', event => {
+    document.getElementById('imageWorkspace').style.zIndex = "1100";
+});
+
+createAnnotation.addEventListener('hidden.bs.modal', event => {
+    document.getElementById('imageWorkspace').style.zIndex = "1";
+});
+
+document.getElementById('dismissAnnotation').addEventListener('click', event =>{
     // if modal was shown during creation of new rectangle, remove rectangle
     if (newRectangle) {
         newRectangle.remove();
@@ -1123,11 +1240,6 @@ document.getElementById('closeButtonAnno').addEventListener('click', function (e
         polygonPath.remove();
         document.getElementById('createPolygonButton').parentElement.classList.remove('active');
     };
-});
-
-// adding the closing functionality to body creation modal
-document.getElementById('closeButton').addEventListener('click', function (e) {
-    document.getElementById("createBody").classList.toggle("show-modal");
 });
 
 function hideExpandedSidebar() {

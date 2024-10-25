@@ -8,9 +8,9 @@ if [ $? -eq 22 ]
 then
   echo "No success finding search index"
   echo "Building new search index"
-  java --add-opens=java.base/java.time=ALL-UNNAMED -jar tuhl-0.0.2-SNAPSHOT.jar buildIndex scheduleIndex
+  java -jar takita.jar buildIndex #scheduleIndex
 else
   echo "Found existing search index"
   echo "Starting application"
-  java --add-opens=java.base/java.time=ALL-UNNAMED -jar tuhl-0.0.2-SNAPSHOT.jar updateIndex scheduleIndex
+  java -jar takita.jar #updateIndex scheduleIndex
 fi

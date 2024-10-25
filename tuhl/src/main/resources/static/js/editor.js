@@ -9,10 +9,10 @@ function selectAnnotation(event, annoId) {
 
         success: function(responseJson) {
             console.log(responseJson);
-            if (responseJson.created.seconds) {
-                responseJson.created = new Date(responseJson.created.seconds * 1000 + responseJson.created.nanos / 1000000).toISOString();
-                if(responseJson.modified.seconds) {
-                    responseJson.modified = new Date(responseJson.modified.seconds * 1000 + responseJson.modified.nanos / 1000000).toISOString();
+            if (responseJson.created) {
+                responseJson.created = new Date(responseJson.created * 1000).toISOString();
+                if(responseJson.modified) {
+                    responseJson.modified = new Date(responseJson.modified * 1000).toISOString();
                 };
             };
   
@@ -20,8 +20,7 @@ function selectAnnotation(event, annoId) {
             
             //var responseJson = JSON.parse(responseData);
             var annotationDiv = document.getElementById("annotationCard");
-            console.log(annotationDiv);
-            console.log(annotationDiv.childElementCount);
+
             while (annotationDiv.lastElementChild) {
               annotationDiv.removeChild(annotationDiv.lastElementChild);  
             };
@@ -36,11 +35,9 @@ function selectAnnotation(event, annoId) {
             addBody.classList.add("bx-plus");
             addBody.onclick = function() {
                 console.log("create");
-                //var modal = document.createElement("div");
-                //modal.classList.add("modal");
-                //modal.style.display = "block";
-                const modal = document.getElementById("createBody");
-                modal.classList.toggle("show-modal");
+                let createBody = document.getElementById('createBody');
+                let createBodyModal = bootstrap.Modal.getOrCreateInstance(createBody);
+                createBodyModal.toggle();
                 pickTemplate("",encodeAnnoId(responseJson.id), "createForm", "pickBodyTemplateForm", "bodyTemplate");
             };
                 
@@ -52,9 +49,7 @@ function selectAnnotation(event, annoId) {
             
             iconRowTop.append(addBody);
             iconRowTop.append(deleteAnnotationIcon);
-            iconRowTop.classList.add("is-right");
-            iconRowTop.classList.add("is-full-width");
-            
+            iconRowTop.classList.add("text-end");
             
             var formDataModel = {
                 "type": "object",
@@ -66,12 +61,9 @@ function selectAnnotation(event, annoId) {
             
             for (field in headerFields) {
                 if (responseJson[headerFields[field]]) {
-                    console.log(responseJson[headerFields[field]]);
                     formDataModel = completeFormDataModel(responseJson, formDataModel, headerFields[field], omitFields);    
                 };
             };
-            
-            console.log(formDataModel);
             
             options = {operation: "READ", dataModel: formDataModel, uiForm: "*", resource: responseJson};
             
@@ -85,50 +77,41 @@ function selectAnnotation(event, annoId) {
             
             for (let body in bodies) {
                 if (bodies[body].created) {
-                    bodies[body].created = new Date(bodies[body].created.seconds * 1000 + bodies[body].created.nanos / 1000000).toISOString();
+                    bodies[body].created = new Date(bodies[body].created * 1000).toISOString();
                 };
                 
                 // bodies can have a modified date without having a created date
                 // 'legacy annotations'
                 if (bodies[body].modified) {
-                    bodies[body].modified = new Date(bodies[body].modified.seconds * 1000 + bodies[body].modified.nanos / 1000000).toISOString();
+                    bodies[body].modified = new Date(bodies[body].modified * 1000).toISOString();
                 };
-                
-                console.log(bodies[body]);
                 
                 var bodyCard = document.createElement("div");
                 bodyCard.classList.add("card");
                 
                 var bodyRowDiv = document.createElement("div");
                 bodyRowDiv.classList.add("row");
-                bodyRowDiv.classList.add("is-full-width");
                 bodyCard.append(bodyRowDiv);
                 
                 var bodyDiv = document.createElement("div");
-                bodyDiv.innerText = bodies[body].purpose;
                 bodyDiv.id = bodies[body].id;
                 bodyDiv.title = bodies[body].annotationId;
-                bodyDiv.classList.add("is-left");
+                bodyDiv.classList.add("text-start");
                 bodyDiv.classList.add("col");
                 bodyRowDiv.append(bodyDiv);
-                console.log(bodyDiv.id);
                 
                 var formRowDiv = document.createElement("div");
                 formRowDiv.classList.add("row");
-                formRowDiv.classList.add("is-full-width");
                 bodyCard.append(formRowDiv);
                 
                 var bodyForm = document.createElement("form");
                 bodyForm.id = "form" + bodies[body].id;
                 bodyForm.addEventListener('submit', function(e) {e.preventDefault();});
-                //bodyForm.style.paddingLeft = "20rem";
-                //bodyForm.classList.add("is-full-width");
                 bodyForm.classList.add("col");
                 formRowDiv.append(bodyForm);
                 
                 var iconRow = document.createElement("div");
                 iconRow.id = "iconRow" + body;
-                //iconRow.classList.add("is-full-width");
                 iconRow.style.paddingRight = "1rem";
                 
                 var expand = document.createElement("i");
@@ -145,8 +128,12 @@ function selectAnnotation(event, annoId) {
                 //deleteBody.style.color = "#b5b5be";
                 deleteBody.onclick = function() {console.log("Hier wird gelöscht!"); deleteBodyFromAnnotation(document.getElementById(this.id).parentNode.parentNode.title, document.getElementById(this.id).parentNode.parentNode.id);};
                 
+                var purpose = document.createElement('span');
+                purpose.textContent = bodies[body].purpose;
+
                 iconRow.append(expand);
                 iconRow.append(deleteBody);
+                iconRow.append(purpose);
                 document.getElementById('annotationCard').append(bodyCard);
                 
                 var formBodyDataModel = {
@@ -160,7 +147,6 @@ function selectAnnotation(event, annoId) {
                 };
                 
                 for (let key in bodies[body]) {
-                    console.log(key);
                     if(bodies[body].hasOwnProperty(key)) {
                         formDataModel = completeFormDataModel(bodies[body], formBodyDataModel, key, omitFields);
                         if (key !== "value" && omitFields.indexOf(key) === -1) {
@@ -177,19 +163,13 @@ function selectAnnotation(event, annoId) {
                     };
                 };
                 
-                console.log(uiForm);
-                
-                console.log(formBodyDataModel);
-                
                 options = {operation: "UPDATE", dataModel: formBodyDataModel, uiForm: uiForm, resource: bodies[body]};
             
                 $('#form' + bodies[body].id).metadataeditorForm(options, function onSubmitValid(value) {
-                    console.log(value);
                     var jsonObject = JSON.parse(value);
     
                     var endpoint;
                     var annoIdEncoded = encodeAnnoId(document.getElementById("iconRowTop").title);
-                    console.log(document.activeElement);
                     
                     if (jsonObject.purpose==="tagging") {
                         endpoint = '/editor_rest/annotations/' + annoIdEncoded + '/tags/' + jsonObject.id;
@@ -215,11 +195,8 @@ function selectAnnotation(event, annoId) {
                         }
                     });
                 });
-                //document.getElementById(expand.id).parentNode.previousElementSibling.classList.add("is-hidden");
-                //document.getElementById(bodyDiv.id).childNodes[0].classList.add("is-hidden");
                 bodyDiv.prepend(iconRow);
-                //bodyDiv.childNodes[2].classList.add("is-hidden");
-                formRowDiv.classList.add("is-hidden");
+                formRowDiv.classList.add("collapse");
                 
             };
         }                
@@ -230,8 +207,6 @@ function deleteBodyFromAnnotation(annoId, bodyId) {
     let confirmation = confirm("Are you sure to delete this body?");
     
     if (confirmation) {
-        console.log(annoId);
-        console.log(bodyId);
     
         let annoIdEncoded = encodeAnnoId(annoId);
     
@@ -263,9 +238,7 @@ function deleteBodyFromAnnotation(annoId, bodyId) {
 
 function encodeAnnoId(annoId) {
     var annoIdEncoded = encodeURIComponent(annoId);
-    console.log(annoIdEncoded);
     var annoIdEncodedDouble = encodeURIComponent(annoIdEncoded);
-    console.log(annoIdEncodedDouble);
     return annoIdEncodedDouble;
 }
 
@@ -281,7 +254,7 @@ function deleteAnnotation(annoId) {
             
             success: function(responseData) {
                 console.log(responseData);
-                if (!document.getElementById('annotationCard').classList.contains('is-hidden')) {
+                if (!document.getElementById('annotationCard').classList.contains('invisible')) {
                     toggleOverview('annotationCard');
                 };
                 
@@ -305,42 +278,6 @@ function deleteAnnotation(annoId) {
         });
     };
 };
-
-//function readAnnotation(event, annoId) {
-    //event.preventDefault();
-//    let params = {
-//        id: annoId
-//    }
-//    postEditorDeleteController("get_annotation", params);
-//}
-
-//function postEditorDeleteController(endpoint, params) {
-//    $ .ajax({
-//        type: 'POST',
-//        url: '/editor_stub/' + endpoint,
-//        headers: {
-//            'Accept': 'application/json',
-//            'Content-Type': 'application/json'
-//        },
-//        dataType: 'text',
-//        data: JSON.stringify(params),
-//
-//        success: function(responseData) {
-//            console.log(responseData);
-//        }
-//    });
-//};
-
-
-
-
-//function showSvgs(annotations) {
-//    console.log("show svgs " + annotations)
-//    annotations.forEach(element => {
-//        drawSvg(element.getSvgCode());
-//    });
-//}
-
 
 function completeFormDataModel (responseJson, formDataModel, addition, omitFields) {
     if (Array.isArray(responseJson[addition])) {
@@ -449,16 +386,20 @@ function toggleAnnoSideBar() {
 function toggleOverview(divId) {
     var classDomTokens = document.getElementById(divId).classList;
     let buttonElement = document.getElementById(divId + 'Button');
-    if (classDomTokens.contains('is-hidden')) {
-        classDomTokens.remove('is-hidden');
+    if (classDomTokens.contains('invisible')) {
+        classDomTokens.remove('invisible');
         if (buttonElement) {
             buttonElement.parentElement.classList.add('active');
             document.getElementById(divId).scrollIntoView();
+            if (classDomTokens.contains('collapse')) {
+                classDomTokens.remove('collapse');
+            };
         };
     } else {
-        classDomTokens.add('is-hidden');
+        classDomTokens.add('invisible');
         if (buttonElement) {
             buttonElement.parentElement.classList.remove('active');
+            classDomTokens.add('collapse');
         };
     };
 };
@@ -467,12 +408,12 @@ function toggleOverview(divId) {
 function toggleExpand(div) {
     var classDomTokens = div.classList;
     var expandIcon = div.previousElementSibling.firstChild.firstChild.firstChild; 
-    if (classDomTokens.contains('is-hidden')) {
-        classDomTokens.remove('is-hidden');
+    if (classDomTokens.contains('collapse')) {
+        classDomTokens.remove('collapse');
         expandIcon.classList.remove('bx-chevron-right');
         expandIcon.classList.add('bx-chevron-down');
     } else {
-        classDomTokens.add('is-hidden');
+        classDomTokens.add('collapse');
         expandIcon.classList.remove('bx-chevron-down');
         expandIcon.classList.add('bx-chevron-right');
     };
@@ -480,9 +421,9 @@ function toggleExpand(div) {
 
 // show the animated book as loading icon whenever an ajax call is running
 $(document).ajaxStart(function(){
-    const modal = document.getElementById("loading");
-    modal.classList.toggle("show-modal");
+    let loadingModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('loading'));
+    loadingModal.toggle();
  }).ajaxStop(function(){
-    const modal = document.getElementById("loading"); 
-    modal.classList.toggle("show-modal"); 
+    let loadingModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('loading'));
+    loadingModal.toggle(); 
  });

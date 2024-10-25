@@ -13,7 +13,7 @@
                 th:data-select-all-text="#{buttons.select_all}"
                 th:data-deselect-all-text="#{buttons.deselect_all}"
                 multiple
-                class="col-8 mr-2 p-0 selectpicker"
+                class="col-8 me-2 p-0 selectpicker"
                 th:field="*{fields}" id="addFilterSelect">
             <option th:each="filter : ${possibleFilters.values()}"
                     th:if="${currentFilters.contains(filter)}"
@@ -56,7 +56,7 @@
             </span>
             </div>
             <div class="row" th:id="matchInput"
-                 th:if="${filter.TYPE == T(edu.kit.scc.dem.tuhl.model.filter.FilterType).MATCH}">
+                 th:if="${filter.TYPE == T(edu.kit.datamanager.takita.model.filter.FilterType).MATCH}">
                 <input type="text"
                        class="form-control"
                        th:if="*{filterConfigs[__${i.index}__].values.size() > 0}"
@@ -70,7 +70,7 @@
                        th:placeholder="#{input_label.match_term}">
             </div>
             <div class="row" th:id="rangeInput"
-                 th:if="${filter.TYPE == T(edu.kit.scc.dem.tuhl.model.filter.FilterType).RANGE}">
+                 th:if="${filter.TYPE == T(edu.kit.datamanager.takita.model.filter.FilterType).RANGE}">
                 <input type="number"
                        class="form-control"
                        th:if="*{filterConfigs[__${i.index}__].values.size() > 0}"
@@ -180,10 +180,6 @@
         }
     </script>
 
-    <!-- Selectpicker-->
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/css/bootstrap-select.min.css">
 
     <script src="js/filter_selection.js"></script>
 </div>
