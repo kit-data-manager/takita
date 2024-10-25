@@ -1,0 +1,106 @@
+{
+  "id": "3f3bf25b-e0b9-48a9-b344-20630f733f8b",
+  "identifier": {
+    "id": 1317,
+    "value": "(:tba)",
+    "identifierType": "DOI"
+  },
+  "creators": [
+    {
+      "id": 1317,
+      "familyName": null,
+      "givenName": "SELF",
+      "affiliations": [
+
+      ]
+    }
+  ],
+  "titles": [
+    {
+      "id": 1317,
+      "value": "Vatikan Vat Gr 247, 076r",
+      "titleType": null,
+      "lang": null
+    }
+  ],
+  "publisher": "SFB 980 - A04",
+  "publicationYear": "2019",
+  "resourceType": {
+    "id": 1317,
+    "value": "manuscriptPage",
+    "typeGeneral": "IMAGE"
+  },
+  "subjects": [
+
+  ],
+  "contributors": [
+
+  ],
+  "dates": [
+    {
+      "id": 1317,
+      "value": "2019-03-11T14:13:37Z",
+      "type": "CREATED"
+    }
+  ],
+  "relatedIdentifiers": [
+    {
+      "id": 2583,
+      "identifierType": "URL",
+      "value": "http://samplerepo.edu/api/v1/dataresources/000073cd-c425-4214-9648-b380ff20c61a",
+      "relationType": "HAS_METADATA",
+      "scheme": null,
+      "relatedMetadataScheme": null
+    }
+  ],
+  "descriptions": [
+
+  ],
+  "geoLocations": [
+    {
+      "id": 2634,
+      "point": null,
+      "box": null,
+      "polygon": null,
+      "place": "Vatikan"
+    },
+    {
+      "id": 2633,
+      "point": null,
+      "box": null,
+      "polygon": null,
+      "place": "Biblioteca Apostolica Vaticana"
+    }
+  ],
+  "language": null,
+  "alternateIdentifiers": [
+    {
+      "id": 1317,
+      "value": "3f3bf25b-e0b9-48a9-b344-20630f733f8b",
+      "identifierType": "INTERNAL"
+    }
+  ],
+  "sizes": [
+
+  ],
+  "formats": [
+
+  ],
+  "version": null,
+  "rights": [
+
+  ],
+  "fundingReferences": [
+
+  ],
+  "lastUpdate": "",
+  "state": "VOLATILE",
+  "embargoDate": "",
+  "acls": [
+    {
+      "id": 1317,
+      "sid": "SELF",
+      "permission": "ADMINISTRATE"
+    }
+  ]
+}

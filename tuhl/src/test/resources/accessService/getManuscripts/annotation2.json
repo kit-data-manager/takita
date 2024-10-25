@@ -1,0 +1,55 @@
+{
+  "@context": "http://www.w3.org/ns/anno.jsonld",
+  "id": "http://sampleannoserver.edu/wap/a04/deinterpretatione/3fe548c5-8be6-40f7-88c8-0118e47c9ac8",
+  "type": "Annotation",
+  "created": "2018-02-09T18:31:07Z",
+  "creator": "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
+  "modified": "2019-05-08T10:59:34Z",
+  "generator": {
+    "id": "urn:uuid:8202cbcb-67ea-3183-ad90-feed65a04ddc",
+    "type": [
+      "https://github.com/anno4j/ns#Agent",
+      "http://www.w3.org/ns/prov/SoftwareAgent",
+      "Software",
+      "https://github.com/anno4j/ns#Resource"
+    ],
+    "name": "PageXML Parsing"
+  },
+  "body": [
+    {
+      "id": "urn:anno4j:457dd56c-5036-4092-875f-5f90381fb5f7",
+      "type": [
+        "TextualBody",
+        "oa:EmbeddedContent",
+        "https://github.com/anno4j/ns#Resource",
+        "https://github.com/anno4j/ns#CreationProvenance",
+        "https://github.com/anno4j/ns#ExternalWebResource"
+      ],
+      "format": "xsd:string",
+      "dc:identifier": "r12",
+      "dc:subject": "NoiseRegion",
+      "dc:title": "RelativeVPOS",
+      "creator": "urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac",
+      "http://qudt.org/vocab/unit": "pct",
+      "value": "90.390656"
+    }
+  ],
+  "target": {
+    "id": "urn:anno4j:2cb4f095-8953-45d6-9a57-b71340dcf7d0",
+    "type": [
+      "SpecificResource",
+      "https://github.com/anno4j/ns#Resource",
+      "https://github.com/anno4j/ns#ExternalWebResource",
+      "https://github.com/anno4j/ns#CreationProvenance"
+    ],
+    "selector": {
+      "id": "urn:anno4j:4726e9cf-b88e-4bc4-a18d-1e5046c84702",
+      "type": "SvgSelector",
+      "dcterms:conformsTo": "http://www.w3.org/TR/SVG/",
+      "value": "<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"2140\" y=\"3170\" width=\"200\" height=\"205\"/></svg>"
+    },
+    "source": "http://samplerepo.edu/api/v1/dataresources/3f3bf25b-e0b9-48a9-b344-20630f733f8b/data/090v.master.jpg"
+  },
+  "motivation": "replying",
+  "via": "http://sampleannoserver.edu/wap/w3c/aea27124-b3be-417a-a3f3-ce9803f9afb4/00053422-d1b4-417d-b659-a294facb6485"
+}

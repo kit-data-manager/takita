@@ -1,0 +1,123 @@
+{
+  "@context" : "http://www.w3.org/ns/anno.jsonld",
+  "id" : "http://sampleannoserver.edu/wap/a04/validated/bb43925c-9903-43f6-92c4-0b3ed4b1d3d9",
+  "type" : "Annotation",
+  "created" : "2019-07-04T06:57:35.961Z",
+  "creator" : [ {
+    "type" : "Person",
+    "name" : "M. K."
+  }, {
+    "type" : "Software",
+    "name" : "Akita"
+  } ],
+  "modified" : "2019-07-04T07:03:03Z",
+  "canonical" : "http://sampleannoserver.edu/wap/a04/deinterpretatione/1749ce9c-a79a-4929-8299-edc9c0388fcc",
+  "body" : [ {
+    "type" : "TextualBody",
+    "creator" : [ {
+      "type" : "Person",
+      "name" : "M. K."
+    }, {
+      "type" : "Software",
+      "name" : "Akita"
+    } ],
+    "value" : "Questionable text block",
+    "purpose" : "questioning"
+  }, {
+    "type" : "TextualBody",
+    "creator" : [ {
+      "type" : "Person",
+      "name" : "M. K."
+    }, {
+      "type" : "Software",
+      "name" : "Akita"
+    } ],
+    "value" : "Questionable text block",
+    "purpose" : "questioning"
+  }, {
+    "type" : "TextualBody",
+    "creator" : [ {
+      "type" : "Person",
+      "name" : "M. K."
+    }, {
+      "type" : "Software",
+      "name" : "Akita"
+    } ],
+    "value" : "Questionable text block",
+    "purpose" : "questioning"
+  }, {
+    "type" : "TextualBody",
+    "creator" : [ {
+      "type" : "Person",
+      "name" : "M. K."
+    }, {
+      "type" : "Software",
+      "name" : "Akita"
+    } ],
+    "value" : "Questionable text block",
+    "purpose" : "questioning"
+  }, {
+    "dc:subject" : "PageRegion",
+    "creator" : [ {
+      "type" : "Software",
+      "name" : "Akita"
+    }, {
+      "type" : "Person",
+      "name" : "M. K."
+    } ]
+  }, {
+    "type" : "TextualBody",
+    "creator" : [ {
+      "type" : "Software",
+      "name" : "Akita"
+    }, {
+      "type" : "Person",
+      "name" : "M. K."
+    } ],
+    "value" : "Questionable text block",
+    "purpose" : "questioning"
+  }, {
+    "type" : "TextualBody",
+    "creator" : [ {
+      "type" : "Person",
+      "name" : "M. K."
+    }, {
+      "type" : "Software",
+      "name" : "Akita"
+    } ],
+    "value" : "Questionable text block",
+    "purpose" : "questioning"
+  }, {
+    "type" : "TextualBody",
+    "creator" : [ {
+      "type" : "Software",
+      "name" : "Akita"
+    }, {
+      "type" : "Person",
+      "name" : "M. K."
+    } ],
+    "value" : "Questionable text block",
+    "purpose" : "questioning"
+  }, {
+    "type" : "TextualBody",
+    "creator" : [ {
+      "type" : "Software",
+      "name" : "Akita"
+    }, {
+      "type" : "Person",
+      "name" : "M. K."
+    } ],
+    "value" : "Questionable text block",
+    "purpose" : "questioning"
+  } ],
+  "target" : {
+    "type" : "SpecificResource",
+    "selector" : {
+      "type" : "SvgSelector",
+      "value" : "<svg><rect x=\"101\" y=\"65\" width=\"3048\" height=\"4459\"/></svg>"
+    },
+    "source" : "http://samplerepo.edu/api/v1/dataresources/cb679599-7191-422c-923b-89c31c045f1d/data/082r.master.jpg"
+  },
+  "motivation" : "describing",
+  "via" : "http://sampleannoserver.edu/wap/a04/deinterpretatione/1749ce9c-a79a-4929-8299-edc9c0388fcc"
+}

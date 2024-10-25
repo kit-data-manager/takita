@@ -1,0 +1,45 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head th:fragment="head">
+    <th:block th:fragment="baseContent">
+
+        <!-- JS, Popper.js, and jQuery -->
+        <script src="https://code.jquery.com/jquery-3.5.1.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.11.8/umd/popper.min.js"
+                integrity="sha512-TPh2Oxlg1zp+kz3nFA0C5vVC6leG/6mm1z9+mA81MI5eaUVqasPLO8Cuk4gMF4gUfP5etR73rgU/8PNMsSesoQ=="
+                crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js"
+                integrity="sha512-ykZ1QQr0Jy/4ZkvKuqWn4iF3lqPZyij9iRv6sGqLRdTPkY69YX6+7wvVGmsdBbiIfN/8OdsI7HABjvEok6ZopQ=="
+                crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <!-- Selectpicker-->
+        <!-- Latest compiled and minified JavaScript -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/js/bootstrap-select.min.js"
+                integrity="sha512-yrOmjPdp8qH8hgLfWpSFhC/+R9Cj9USL8uJxYIveJZGAiedxyIxwNw4RsLDlcjNlIRR4kkHaDHSmNHAkxFTmgg=="
+                crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <!-- Latest compiled and minified CSS -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.14.0-beta3/css/bootstrap-select.min.css"
+              integrity="sha512-g2SduJKxa4Lbn3GW+Q7rNz+pKP9AWMR++Ta8fgwsZRCUsawjPvF/BxSMkGS61VsR9yinGoEgrHPGPn2mrj8+4w=="
+              crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+        <!-- Font Awesome icons-->
+        <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+
+        <!-- Tabulator -->
+        <script th:src="@{https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js}"
+                integrity="sha384-Dziy8F2VlJQLMShA6FHWNul/veM9bCkRUaLqr199K94ntO5QUrLJBEbYegdSkkqX" crossorigin="anonymous"></script>
+        <link th:href="@{https://unpkg.com/tabulator-tables@4.7.1/dist/css/tabulator.min.css}" rel="stylesheet" />
+        <!--<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/6.2.5/css/tabulator_bootstrap5.min.css"
+              integrity="sha512-qDEgvDbdp7tq+ytU/OgCzWfvbfdEe3pv0yEOMz/gurMcR0BWNgIF6I4VKeoACEj5E5PFf1uo3Vzuwk/ga9zeUg=="
+              crossorigin="anonymous" referrerpolicy="no-referrer" />-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/4.9.3/css/bootstrap/tabulator_bootstrap4.min.css"
+              integrity="sha512-pXZ8FsuOBAyDmJ3OWob4V2UgZWQ8zs8f99MrNv0sBG8VLzuucajpzJ3BIiVNzTpfIYgzWGUq0QPJ3Y/9Gr4h7Q=="
+              crossorigin="anonymous" referrerpolicy="no-referrer" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/4.9.3/js/tabulator.min.js"
+                integrity="sha512-N/WbW5rCM/O+/QpzuqYXkInRdSfFu6txbJcbQioBywGXDiF1XCJY2LXVKIGjNFUMS4P79mtf9pDu5ViXaa+BnA=="
+                crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tabulator/4.9.3/js/jquery_wrapper.min.js"
+                integrity="sha512-4+qHJZhYm23Bni8quZVcQnD/8/yuONttDRo05RzxSnWzY9y5cJQ2zPB9mgENvtckQ+0alFdYCnfr/GXNTuvIWg=="
+                crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    </th:block>
+</head>

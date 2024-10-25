@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<sparql xmlns="http://www.w3.org/2005/sparql-results#">
+<head>
+  <variable name="annotation"/>
+</head>
+  <results>
+    <result>
+      <binding name="annotation">
+       <uri>http://sampleannoserver.edu/wap/a04/deinterpretatione/1749ce9c-a79a-4929-8299-edc9c0388fcc</uri>
+      </binding>
+    </result>
+    <result>
+      <binding name="annotation">
+       <uri>http://sampleannoserver.edu/wap/a04/deinterpretatione/05c281d1-5184-4b74-a9dd-5fbac538f75c</uri>
+      </binding>
+    </result>
+  </results>
+</sparql>

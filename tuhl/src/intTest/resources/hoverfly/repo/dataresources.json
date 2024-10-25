@@ -1,0 +1,118 @@
+[
+  {
+    "id": "42",
+    "identifier": {
+      "id": 1,
+      "value": "(:tba)",
+      "identifierType": "DOI"
+    },
+    "titles": [
+      {
+        "id": 1,
+        "value": "Ich bin ein Buchtitel"
+      }
+    ],
+    "publisher": "ProjektID - publ",
+    "publicationYear": "2024",
+    "resourceType": {
+      "id": 1,
+      "value": "manuscriptMetadata",
+      "typeGeneral": "TEXT"
+    },
+    "dates": [
+      {
+        "id": 1,
+        "value": "2024-07-25T08:53:54Z",
+        "type": "CREATED"
+      }
+    ],
+    "relatedIdentifiers": [
+      {
+        "id": 2,
+        "identifierType": "URL",
+        "value": "http://repo.edu/api/v1/dataresources/1337",
+        "relationType": "IS_METADATA_FOR"
+      }
+    ],
+    "geoLocations": [
+      {
+        "id": 1,
+        "place": "Ich bin eine Bibliothek"
+      }
+    ],
+    "alternateIdentifiers": [
+      {
+        "id": 1,
+        "value": "42",
+        "identifierType": "INTERNAL"
+      }
+    ],
+    "lastUpdate": "2024-07-25T08:53:54.735Z",
+    "state": "VOLATILE",
+    "acls": [
+      {
+        "id": 1,
+        "sid": "SELF",
+        "permission": "ADMINISTRATE"
+      }
+    ]
+  },
+  {
+    "id": "1337",
+    "identifier": {
+      "id": 2,
+      "value": "(:tba)",
+      "identifierType": "DOI"
+    },
+    "titles": [
+      {
+        "id": 2,
+        "value": "Ich bin ein Buchtitel, 123.jpg"
+      }
+    ],
+    "publisher": "ProjektID - publ",
+    "publicationYear": "2024",
+    "resourceType": {
+      "id": 2,
+      "value": "manuscriptPage",
+      "typeGeneral": "IMAGE"
+    },
+    "dates": [
+      {
+        "id": 2,
+        "value": "2024-01-01T00:00:01Z",
+        "type": "CREATED"
+      }
+    ],
+    "relatedIdentifiers": [
+      {
+        "id": 1,
+        "identifierType": "URL",
+        "value": "http://repo.edu/api/v1/dataresources/42",
+        "relationType": "HAS_METADATA"
+      }
+    ],
+    "geoLocations": [
+      {
+        "id": 2,
+        "place": "Ich bin eine Bibliothek"
+      }
+    ],
+    "alternateIdentifiers": [
+      {
+        "id": 2,
+        "value": "1337",
+        "identifierType": "INTERNAL"
+      }
+    ],
+    "lastUpdate": "2024-07-25T08:53:54.487Z",
+    "state": "VOLATILE",
+    "acls": [
+      {
+        "id": 2,
+        "sid": "SELF",
+        "permission": "ADMINISTRATE"
+      }
+    ]
+  }
+]
