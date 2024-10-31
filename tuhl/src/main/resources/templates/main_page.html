@@ -5,7 +5,7 @@
     <!-- generic script loading in fragment -->
     <th:block th:replace="~{head :: baseContent}"></th:block>
 
-    <title th:text="#{label.tuhl}"> </title>
+    <title th:text="#{label.main}"> </title>
 
     <!-- do not move this to the script loading fragment because it will break the modals in the editor -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css"
@@ -20,7 +20,7 @@
 
 <div class="row mx-auto pr-3 bg-light">
     <div class="col-sm-5 col-md-4 col-lg-3 col-xl-2 p-6 align-self-center">
-        <h1 class="text-center display-4" th:text="#{label.tuhl}"> </h1>
+        <h1 class="text-center display-4" th:text="#{label.main}"> </h1>
     </div>
     <div class="col-sm-4 p-3 my-1 align-self-center">
         <form onsubmit="setSearchTerm(event)">

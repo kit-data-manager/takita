@@ -15,6 +15,8 @@
   transition: all 0.5s ease;
   overflow-y: scroll;
   z-Index: 5;
+  max-width: 100%; 
+  overflow-x: hidden;
 }
 
 .logo-name-wrapper {
@@ -110,36 +112,9 @@
   opacity: 1;
 }
 
-.tooltip {
-  position: absolute;
-  top: -2.1rem;
-  left: 6.4rem;
-  background-color: white;
-  color: var(--dark-grey-color);
-  border-radius: 0.4rem;
-  padding: 0.5rem 1rem;
-  font-size: 1.4rem;
-  transition: 0s;
-  opacity: 0;
-  display: none;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-  pointer-events: none;
-}
-
-.anno-side-bar.annocollapse .features-item:hover .tooltip,
-.logo-name__button:hover .tooltip{
-  top: 50%;
-  transform: translateY(-50%);
-  transition: all 0.5s ease;
-  opacity: 1;
-}
-
 .anno-side-bar.annocollapse {
   width: 5rem;
-}
-
-.anno-side-bar.annocollapse .tooltip {
-  display: block;
+  max-width: 100%;
 }
 
 .anno-side-bar.annocollapse .logo-name,
@@ -159,6 +134,7 @@
   line-height: 1.8rem;
   color: var(--white-color);
   margin-bottom: 1.3rem;
+  margin-left: 1rem;
   white-space: nowrap;
 }
 
