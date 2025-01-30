@@ -1,0 +1,1 @@
+export { initializeAnnotationTable } from './annotationTable';

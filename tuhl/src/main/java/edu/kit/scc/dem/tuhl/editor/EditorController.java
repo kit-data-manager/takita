@@ -177,6 +177,24 @@ public class EditorController {
         	System.out.println("No tags available");
         }
         
+        // adding textcards to the model
+        try {
+        	JSONArray textcardJson = new JSONArray();
+        	List<TextCard> textcards = annotations.get(i).getTextCards();
+        	
+        	for (TextCard textcard : textcards) {
+        		JSONObject value = new JSONObject();
+        		value.put("value", textcard.getValue());
+        		value.put("purpose", textcard.getPurpose());
+        		textcardJson.put(value);
+        	}
+        	
+        	thisAnno.put("textcards", textcardJson);
+        } catch (Exception e) {
+        	System.out.println(e);
+        	System.out.println("No textcards available");
+        }
+        
 
         displayable.put(i, thisAnno);
       }

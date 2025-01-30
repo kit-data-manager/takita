@@ -9,6 +9,7 @@ export const hooks = {
   preMakeHTML: [],
   postApplyStyles: [],
   postSidebarCreation: [enableLanguageViewToggleButton],
+  preAnnotationTableCreation: [],
   postTargetCreation: [],
   manipulatingData: [],
   postAnnotationCreation: [],
@@ -41,9 +42,25 @@ function initializeProjectspecifics() {}
  */
 function postSidebarCreation($sidebar, variant) {}
 
+// ANNOTATIONTABLE (in the editor)
+/**
+ * called at common/annotationTable/annotationTable.js (initializeAnnotationTable()).
+ * Can be used to modify the data and column definitions passed to tabulator to
+ * create the table of annotations displayed at the bottom of the screen after
+ * clicking on the "Show Annotations" button in the sidebar.
+ *
+ * @param {JSONArray} tableData the data to be put into the table
+ * @param {JSONArray} columns the column definitions of the table
+ * @returns {[JSONArray, JSONArray]} the modified [tableData, columns]
+ */
+function preAnnotationTableCreation(tableData, columns) {
+  // do stuff
+  return [tableData, columns];
+}
+
 // TEXTLOADER
 /**
- * called at texteditor-ng/textloader/textloader.js (prepareTEIDocument())
+ * called at texteditor-ng/textloader/textloader.js (prepareTEIDocument()).
  * Can be used to change the contents of the xml file (text) BEFORE being
  * passed to CETEIcean, which will convert the file (text) to custom HTML-elements.
  *

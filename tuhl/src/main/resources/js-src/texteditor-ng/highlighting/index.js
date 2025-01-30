@@ -1,7 +1,1 @@
-export {
-  drawAnnos,
-  updateDisplay,
-  highlightSelectedAnnotationsTarget,
-  removeStyles,
-  defaultHighlighting,
-} from './target';
+export { drawAnnos, highlightSelectedAnnotationsTarget, removeStyles, defaultHighlighting } from './target';

@@ -13,8 +13,9 @@ import { Variant } from '../../projectspecific';
  * @param {Element} $text HTML element which contains the text. Needed for language and project specific variants
  * @param {Element} $pagesDialog HTML element which contains the dialog for page switching
  */
-export function initializeSidebar($sidebar, $text, $pagesDialog, hooks = {}) {
+export function initializeSidebar($sidebar, $text, $pagesDialog, $tableContainer, hooks = {}) {
   const $pagesButton = $sidebar.querySelector('#pagesButton');
+  const $annotationTableButton = $sidebar.querySelector('#annotationTableBottomButton');
   const language = getTextLanguage($text);
   const variant = determineVariant($text, language);
 
@@ -58,6 +59,16 @@ export function initializeSidebar($sidebar, $text, $pagesDialog, hooks = {}) {
   $sidebar.querySelector('#pagesSpan').addEventListener('click', function () {
     collapseSidebar($sidebar);
     toggleVisibility($pagesDialog, $pagesButton);
+  });
+
+  // shows the annotation table
+  $sidebar.querySelector('#annotationTableBottomButton').addEventListener('click', function () {
+    collapseSidebar($sidebar);
+    toggleVisibility($tableContainer, $annotationTableButton);
+  });
+  $sidebar.querySelector('#annotationTableBottomSpan').addEventListener('click', function () {
+    collapseSidebar($sidebar);
+    toggleVisibility($tableContainer, $annotationTableButton);
   });
 
   if (hooks.postSidebarCreation) {
