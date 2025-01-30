@@ -45,8 +45,9 @@ async function initializeTextEditorComponent(linkToResource, annotationsString, 
   initializeSidebar($sidebar, $teiContatinerElement, $pagesDialog, hooks);
 
   // Construct and display a navigation bar.
-  const $navbar = document.getElementById('textNavBar');
-  await initializeNavigation($navbar, $teiContatinerElement, hooks);
+  const $navbarTop = document.getElementById('textNavBar');
+  const $navbarLow = document.getElementById('textNavBarLow');
+  await initializeNavigation($navbarTop, $navbarLow, $teiContatinerElement, hooks);
 
   // initializes projectspecfic things by executing the hooks
   if (hooks.initializeProjectspecifics) {

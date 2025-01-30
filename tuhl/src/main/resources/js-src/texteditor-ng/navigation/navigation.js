@@ -10,40 +10,59 @@ import { getTargetAnnotationId, getTargetFragment } from '../utils';
 // projectspecifics
 import { POSSIBLE_DIVISION_TYPES } from '../../projectspecific';
 
+// global state, modified by the various button callbacks.
+// It's needed to track the visible divisions to show only
+// the previously visible divisions after using the $showAllButton.
+let currentDivisionLabelTop;
+let currentDivisionLabelLow;
+
 /**
- * Initialize a navigation bar with a given DOM element.
+ * Initialize navigation bars with a given DOM element.
  *
  * Inspect the document to find the used text part type and create
  * callbacks for the existing UI elements which switch between
  * the different document parts.
- * @param {Element} $navBar the navigation bar to be initialized
+ * @param {Element} $navBarTop the top-level navigation bar to be initialized
+ * @param {Element} $navBarLow the low-level navigation bar to be initialized
  * @param {Element} $text in which the text is stored
  * @param {[Object]} [hooks] to be passed to navigateToAnnotation() and then to selectAnnotation(),
  * where they influence the rendering of the annotationCard
  */
-export async function initializeNavigation($navBar, $text, hooks = {}) {
+export async function initializeNavigation($navBarTop, $navBarLow, $text, hooks = {}) {
   // Local state, closed over and modified by the various button callbacks
   let showAllDivisions = false;
-  let currentDivisionLabel;
 
   // Text properties
-  const divisionType = getDivisionType($text);
-  const $divisions = $text.querySelectorAll('tei-div[type="' + divisionType + '"]');
+  const [divisionTypeTop, divisionTypeLow] = getDivisionTypes(
+    $text,
+    POSSIBLE_DIVISION_TYPES.top,
+    POSSIBLE_DIVISION_TYPES.low,
+  );
+  const hasMultiLevelDivision = divisionTypeLow != 'default' ? true : false;
+  const $divisions = $text.querySelectorAll('tei-div[type="' + divisionTypeTop + '"]');
   const divisionLabels = [...$divisions].map(getDivisionLabel);
+
+  // Keep track of the label of the currently displayed text part. If an annotation has been
+  // pre-selected as part of the URL, find the text part it belongs to and use this as default.
+  // If none is selected use the first part as default and display it.
+  const fragmentId = getTargetFragment(window.location);
+  const preselectedAnnoTarget = getTargetElement(fragmentId, $text);
+  const initialDivision = getTargetDivision(preselectedAnnoTarget, divisionTypeTop);
+  currentDivisionLabelTop = initialDivision ? getDivisionLabel(initialDivision) : divisionLabels[0];
 
   // No need for a navbar if there is only a single textPart
   if ($divisions.length > 1) {
     // UI elements
-    const $prevButton = $navBar.querySelector('#prevChaptButton');
-    const $nextButton = $navBar.querySelector('#nextChaptButton');
-    const $gotoButton = $navBar.querySelector('#goToChaptButton');
-    const $chapterSelect = $navBar.querySelector('#chapterSelect');
-    const $showAllButton = $navBar.querySelector('#toggleShowAllButton');
+    const $prevButton = $navBarTop.querySelector('#prevChaptButton');
+    const $nextButton = $navBarTop.querySelector('#nextChaptButton');
+    const $gotoButton = $navBarTop.querySelector('#goToChaptButton');
+    const $chapterSelect = $navBarTop.querySelector('#chapterSelect');
+    const $showAllButton = $navBarTop.querySelector('#toggleShowAllButton');
 
     // Initialize Buttons
-    $prevButton.innerHTML = 'Previous ' + divisionType;
-    $gotoButton.innerHTML = 'Go to ' + divisionType;
-    $nextButton.innerHTML = 'Next ' + divisionType;
+    $prevButton.innerHTML = 'Previous ' + divisionTypeTop;
+    $gotoButton.innerHTML = 'Go to ' + divisionTypeTop;
+    $nextButton.innerHTML = 'Next ' + divisionTypeTop;
     $showAllButton.innerHTML = 'Show all ' + divisionLabels + 's'; // yay for English pluralization rules
 
     // Hide all chapters initially
@@ -52,17 +71,10 @@ export async function initializeNavigation($navBar, $text, hooks = {}) {
     // Fill select element with options
     divisionLabels.map(createOption).forEach((option) => $chapterSelect.appendChild(option));
 
-    // Keep track of the label of the currently displayed text part. If an annotation has been
-    // pre-selected as part of the URL, find the text part it belongs to and use this as default.
-    // If none is selected use the first part as default and display it.
-    const fragmentId = getTargetFragment(window.location);
-    const preselectedAnnoTarget = getTargetElement(fragmentId, $text);
-    const initialDivision = getTargetDivision(preselectedAnnoTarget, divisionType);
-    currentDivisionLabel = initialDivision ? getDivisionLabel(initialDivision) : divisionLabels[0];
-    selectDivision(currentDivisionLabel, $divisions);
+    selectDivision(currentDivisionLabelTop, $divisions);
     updateButtons(
-      divisionType,
-      currentDivisionLabel,
+      divisionTypeTop,
+      currentDivisionLabelTop,
       showAllDivisions,
       divisionLabels,
       $prevButton,
@@ -73,12 +85,12 @@ export async function initializeNavigation($navBar, $text, hooks = {}) {
 
     // Define button callbacks
     const onClickGoTo = (_ev) => {
-      currentDivisionLabel = $chapterSelect.value;
+      currentDivisionLabelTop = $chapterSelect.value;
       showAllDivisions = false;
-      selectDivision(currentDivisionLabel, $divisions);
+      selectDivision(currentDivisionLabelTop, $divisions);
       updateButtons(
-        divisionType,
-        currentDivisionLabel,
+        divisionTypeTop,
+        currentDivisionLabelTop,
         showAllDivisions,
         divisionLabels,
         $prevButton,
@@ -86,16 +98,20 @@ export async function initializeNavigation($navBar, $text, hooks = {}) {
         $chapterSelect,
         $showAllButton,
       );
+      if (hasMultiLevelDivision) {
+        const $currentDivision = [...$divisions].filter((tp) => getDivisionLabel(tp) === currentDivisionLabelTop).pop();
+        initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, false, hooks);
+      }
     };
     const onClickPrev = (_ev) => {
-      const currentIdx = divisionLabels.indexOf(currentDivisionLabel);
+      const currentIdx = divisionLabels.indexOf(currentDivisionLabelTop);
       showAllDivisions = false;
       if (currentIdx > 0) {
-        currentDivisionLabel = divisionLabels[currentIdx - 1];
-        selectDivision(currentDivisionLabel, $divisions);
+        currentDivisionLabelTop = divisionLabels[currentIdx - 1];
+        selectDivision(currentDivisionLabelTop, $divisions);
         updateButtons(
-          divisionType,
-          currentDivisionLabel,
+          divisionTypeTop,
+          currentDivisionLabelTop,
           showAllDivisions,
           divisionLabels,
           $prevButton,
@@ -104,16 +120,20 @@ export async function initializeNavigation($navBar, $text, hooks = {}) {
           $showAllButton,
         );
       }
+      if (hasMultiLevelDivision) {
+        const $currentDivision = [...$divisions].filter((tp) => getDivisionLabel(tp) === currentDivisionLabelTop).pop();
+        initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, false, hooks);
+      }
     };
     const onClickNext = (_ev) => {
-      const currentIdx = divisionLabels.indexOf(currentDivisionLabel);
+      const currentIdx = divisionLabels.indexOf(currentDivisionLabelTop);
       showAllDivisions = false;
       if (currentIdx < divisionLabels.length - 1) {
-        currentDivisionLabel = divisionLabels[currentIdx + 1];
-        selectDivision(currentDivisionLabel, $divisions);
+        currentDivisionLabelTop = divisionLabels[currentIdx + 1];
+        selectDivision(currentDivisionLabelTop, $divisions);
         updateButtons(
-          divisionType,
-          currentDivisionLabel,
+          divisionTypeTop,
+          currentDivisionLabelTop,
           showAllDivisions,
           divisionLabels,
           $prevButton,
@@ -121,18 +141,37 @@ export async function initializeNavigation($navBar, $text, hooks = {}) {
           $chapterSelect,
           $showAllButton,
         );
+      }
+      if (hasMultiLevelDivision) {
+        const $currentDivision = [...$divisions].filter((tp) => getDivisionLabel(tp) === currentDivisionLabelTop).pop();
+        initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, false, hooks);
       }
     };
     const onClickShowAll = (_ev) => {
       showAllDivisions = !showAllDivisions;
       if (showAllDivisions) {
         setVisibility($divisions, true);
+        // showing all low-level divisions and hiding the low-level navbar
+        if (hasMultiLevelDivision) {
+          const $divisionsLow = $text.querySelectorAll('tei-div[type="' + divisionTypeLow + '"]');
+          console.log($divisionsLow.length, $divisionsLow);
+          setVisibility($divisionsLow, true);
+          setVisibility($navBarLow, false);
+        }
       } else {
-        selectDivision(currentDivisionLabel, $divisions);
+        selectDivision(currentDivisionLabelTop, $divisions);
+        // initialize the low-level navbar with its former state (regarding the previously shown
+        // low-level division), if necessary
+        if (hasMultiLevelDivision) {
+          const $currentDivision = [...$divisions]
+            .filter((tp) => getDivisionLabel(tp) === currentDivisionLabelTop)
+            .pop();
+          initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, currentDivisionLabelLow, false, hooks);
+        }
       }
       updateButtons(
-        divisionType,
-        currentDivisionLabel,
+        divisionTypeTop,
+        currentDivisionLabelTop,
         showAllDivisions,
         divisionLabels,
         $prevButton,
@@ -150,7 +189,7 @@ export async function initializeNavigation($navBar, $text, hooks = {}) {
 
     // After everything is set up, make navbar visible
     //console.log('make navbar visible');
-    $navBar.classList.remove('is-hidden');
+    $navBarTop.classList.remove('is-hidden');
 
     if (preselectedAnnoTarget !== null) {
       const preselectedAnnotationId = getTargetAnnotationId(window.location);
@@ -160,6 +199,207 @@ export async function initializeNavigation($navBar, $text, hooks = {}) {
         });
         await navigateToAnnotation(preselectedAnnotationId, hooks);
       }, 100);
+    }
+  }
+
+  if (hasMultiLevelDivision) {
+    const $currentDivision = [...$divisions].filter((tp) => getDivisionLabel(tp) === currentDivisionLabelTop).pop();
+    // Note: as this is the first initialization after a page-load, a pre-selected annotation should be displayed,
+    // hence navigateToAnnotation is set to true
+    initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, true, hooks);
+  }
+}
+
+/**
+ * initialize the low-level (second-level) navigation bar.
+ *
+ * create callbacks for the existing UI elements which switch between
+ * the different document parts (divisions).
+ *
+ * @param {Element} $navBar the low-level navigation bar to be initialized
+ * @param {Element} $text in which the text is stored
+ * @param {String} divisionTypeLow the low-level division type used in the $text
+ * @param {String} previouslyShownDivisionLabel the number/label of the previously shown low-level division;
+ * necessary for the $showAllButton of the top-level navigation bar to work properly (i.e. that the
+ * right low-level division is shown as well after returning from fully displayed text)
+ * @param {Boolean} navigateToAnnotation used to decide if a pre-selected annotation should be shown
+ * and navigated to. This should be true on page load for the first initialization of the navbar,
+ * and false for every other initialization of the low-level navbar. Otherwise on every change by the
+ * top-level navigation it can happen, that the pre-selected annotation will be displayed and navigated
+ * to.
+ * @param {[Object]} [hooks] to be passed to navigateToAnnotation() and then to selectAnnotation(),
+ * where they influence the rendering of the annotationCard
+ */
+export async function initializeNavigationLow(
+  $navBar,
+  $text,
+  divisionTypeLow,
+  previouslyShownDivisionLabel,
+  navigateToAnnotation,
+  hooks = {},
+) {
+  // hiding the navBar initially as there might not be more than one division
+  $navBar.classList.add('is-hidden');
+  // Local state, closed over and modified by the various button callbacks
+  let showAllDivisions = false;
+
+  // Text properties
+  if ($text.querySelector('tei-div[type="' + divisionTypeLow + '"]')) {
+    const $divisions = $text.querySelectorAll('tei-div[type="' + divisionTypeLow + '"]');
+    const divisionLabels = [...$divisions].map(getDivisionLabel);
+
+    // No need for a navbar if there is only a single textPart
+    if ($divisions.length > 1) {
+      // UI elements
+      const $prevButton = $navBar.querySelector('#prevChaptButtonLow');
+      const $nextButton = $navBar.querySelector('#nextChaptButtonLow');
+      const $gotoButton = $navBar.querySelector('#goToChaptButtonLow');
+      const $chapterSelect = $navBar.querySelector('#chapterSelectLow');
+      const $showAllButton = $navBar.querySelector('#toggleShowAllButtonLow');
+
+      // Initialize Buttons
+      $prevButton.innerHTML = 'Previous ' + divisionTypeLow;
+      $gotoButton.innerHTML = 'Go to ' + divisionTypeLow;
+      $nextButton.innerHTML = 'Next ' + divisionTypeLow;
+      $showAllButton.innerHTML = 'Show all ' + divisionLabels + 's'; // yay for English pluralization rules
+
+      // Hide all chapters initially
+      setVisibility($divisions, false);
+
+      // Fill select element with options
+      // removing old values first
+      while ($chapterSelect.lastElementChild) {
+        $chapterSelect.removeChild($chapterSelect.lastElementChild);
+      }
+      divisionLabels.map(createOption).forEach((option) => $chapterSelect.appendChild(option));
+
+      // Keep track of the label of the currently displayed text part.
+      // If the initializeNavigationLow() is called to show only one division after
+      // everything was shown, show the previously shown individual lower division, tracked in the
+      // global state. It will be undefined on page load.
+      // If an annotation has been pre-selected as part of the URL, find the text part it belongs
+      // to and use this as default. If none is selected use the first part as default and display it. This
+      // only happens on page load.
+      // Therefor, on page load the division targetted by an annotation will be displayed, if given;
+      // on interactions with the showAllButton the previously shown lower division, will
+      // be displayed.
+      // on page load: show low level division targetted by annotation, if given or the first low level division
+      // on press on next top level button: show the first low level division
+      // on press on showAllButton to only show one low level division: show the previously shown lower division
+      const fragmentId = getTargetFragment(window.location);
+      const preselectedAnnoTarget = getTargetElement(fragmentId, $text);
+      const initialDivision = getTargetDivision(preselectedAnnoTarget, divisionTypeLow);
+      currentDivisionLabelLow = previouslyShownDivisionLabel
+        ? previouslyShownDivisionLabel
+        : initialDivision
+          ? getDivisionLabel(initialDivision)
+          : divisionLabels[0];
+
+      selectDivision(currentDivisionLabelLow, $divisions);
+      updateButtons(
+        divisionTypeLow,
+        currentDivisionLabelLow,
+        showAllDivisions,
+        divisionLabels,
+        $prevButton,
+        $nextButton,
+        $chapterSelect,
+        $showAllButton,
+      );
+
+      // Define button callbacks
+      const onClickGoTo = (_ev) => {
+        currentDivisionLabelLow = $chapterSelect.value;
+        showAllDivisions = false;
+        selectDivision(currentDivisionLabelLow, $divisions);
+        updateButtons(
+          divisionTypeLow,
+          currentDivisionLabelLow,
+          showAllDivisions,
+          divisionLabels,
+          $prevButton,
+          $nextButton,
+          $chapterSelect,
+          $showAllButton,
+        );
+      };
+      const onClickPrev = (_ev) => {
+        const currentIdx = divisionLabels.indexOf(currentDivisionLabelLow);
+        showAllDivisions = false;
+        if (currentIdx > 0) {
+          currentDivisionLabelLow = divisionLabels[currentIdx - 1];
+          selectDivision(currentDivisionLabelLow, $divisions);
+          updateButtons(
+            divisionTypeLow,
+            currentDivisionLabelLow,
+            showAllDivisions,
+            divisionLabels,
+            $prevButton,
+            $nextButton,
+            $chapterSelect,
+            $showAllButton,
+          );
+        }
+      };
+      const onClickNext = (_ev) => {
+        const currentIdx = divisionLabels.indexOf(currentDivisionLabelLow);
+        showAllDivisions = false;
+        if (currentIdx < divisionLabels.length - 1) {
+          currentDivisionLabelLow = divisionLabels[currentIdx + 1];
+          selectDivision(currentDivisionLabelLow, $divisions);
+          updateButtons(
+            divisionTypeLow,
+            currentDivisionLabelLow,
+            showAllDivisions,
+            divisionLabels,
+            $prevButton,
+            $nextButton,
+            $chapterSelect,
+            $showAllButton,
+          );
+        }
+      };
+      const onClickShowAll = (_ev) => {
+        showAllDivisions = !showAllDivisions;
+        if (showAllDivisions) {
+          setVisibility($divisions, true);
+        } else {
+          selectDivision(currentDivisionLabelLow, $divisions);
+        }
+        updateButtons(
+          divisionTypeLow,
+          currentDivisionLabelLow,
+          showAllDivisions,
+          divisionLabels,
+          $prevButton,
+          $nextButton,
+          $chapterSelect,
+          $showAllButton,
+        );
+      };
+
+      // Set up callbacks for all interactive UI elements
+      $gotoButton.onclick = onClickGoTo;
+      $prevButton.onclick = onClickPrev;
+      $nextButton.onclick = onClickNext;
+      $showAllButton.onclick = onClickShowAll;
+
+      // After everything is set up, make navbar visible
+      //console.log('make navbar visible');
+      $navBar.classList.remove('is-hidden');
+
+      // only navigate to the annotation if necessary
+      if (navigateToAnnotation) {
+        if (preselectedAnnoTarget !== null) {
+          const preselectedAnnotationId = getTargetAnnotationId(window.location);
+          setTimeout(async () => {
+            preselectedAnnoTarget.scrollIntoView(true, {
+              behavior: 'smooth',
+            });
+            await navigateToAnnotation(preselectedAnnotationId, hooks);
+          }, 100);
+        }
+      }
     }
   }
 }
@@ -279,15 +519,106 @@ export function getDivisionLabel($textPart) {
 }
 
 /**
- * Check which types of text parts are present in the document.
- * Must be one of `POSSIBLE_DIVISION_TYPES` or "default".
- * @param {Element} $text the HTML element containing the document
- * @returns {String} the divisionType which is present in the text, or 'default' if none is found
+ * determines which of the found division types is the superordinate one
+ * by checking if elements having one division type contain elements having
+ * another division type.
+ *
+ * @param {Element} $text containing the tei-xml text
+ * @param {[String]} foundTypes division types present in the text
+ * @returns {String} the superordinate/top-level division type
  */
-export function getDivisionType($text) {
-  // setting divisionType based on the divisions used in the text
-  const foundTypes = POSSIBLE_DIVISION_TYPES.filter(
+function getTopLevelDivisionType($text, foundTypes) {
+  let topLevelDivisionType;
+  // comparing each type to every other type to find the superordinate one.
+  // The elements of the superordinate one will contain elements with the other one.
+  foundTypes.forEach((typeA) => {
+    foundTypes.forEach((typeB) => {
+      if ($text.querySelector('tei-div[type="' + typeA + '"]') != null) {
+        let divisions = $text.querySelectorAll('tei-div[type="' + typeA + '"]');
+        if (divisions) {
+          let divisionsArray = Array.from(divisions);
+          if (divisionsArray.some(($division) => $division.querySelector('tei-div[type="' + typeB + '"]') != null)) {
+            topLevelDivisionType = typeA;
+          }
+        }
+      }
+    });
+  });
+
+  return topLevelDivisionType;
+}
+
+/**
+ * This can be tricky as sometimes the possibleDivisionTypesTop and possibleDivisionTypesLow overlap.
+ * Eg. text 1 is divided into:
+ *   - "book"
+ *     - "chapter"
+ * and text 2 into
+ *   - "chapter"
+ *     - "section"
+ * and text 3 into
+ *   - "section"
+ *     - "subsection"
+ * Therefor "chapter" and "section" can both be top- and low-level division types.
+ *
+ * @param {Element} $text containing the tei-xml text
+ * @param {[String]} possibleDivisionTypesTop all possible top-level division types
+ * @param {[String]} possibleDivisionTypesLow all possible low-level division types
+ * @returns {[String]} the divisionTypes which are present in the text, or 'default'
+ * for the ones not found. It holds the top-level division type as a first and the low-level
+ * divsion type as the second entry.
+ */
+export function getDivisionTypes($text, possibleDivisionTypesTop, possibleDivisionTypesLow) {
+  const foundTypesTop = possibleDivisionTypesTop.filter(
     (possibility) => $text.querySelector('tei-div[type="' + possibility + '"]') != null,
   );
-  return foundTypes.pop() || 'default';
+  const foundTypesLow = possibleDivisionTypesLow.filter(
+    (possibility) => $text.querySelector('tei-div[type="' + possibility + '"]') != null,
+  );
+
+  // setting default values in case the function returns early
+  let typeTop = 'default';
+  let typeLow = 'default';
+
+  // logic to identify the top-level division type:
+  // - use the found top-level types
+  // - unless none were found, in that case use the low-level types instead
+  if (foundTypesTop.length == 1) {
+    typeTop = foundTypesTop.pop();
+  } else if (foundTypesTop.length > 1) {
+    // as a division type can be present in the top- and low-level list of possible
+    // division types.
+    // Not setting the typeLow here as it is set later by only using the possibleDivisionTypesLow.
+    typeTop = getTopLevelDivisionType($text, foundTypesTop);
+  } else if (foundTypesTop.length == 0 && foundTypesLow.length == 1) {
+    // if only a low level division type could be found, return it as a top level one
+    // as there only needs to be a single division navigation anyways.
+    // Return early to prevent the low-level type to be set again later
+    // as it is set to be the top-level type already.
+    typeTop = foundTypesLow.pop();
+    return [typeTop, typeLow];
+  } else if (foundTypesTop.length == 0 && foundTypesLow.length > 1) {
+    // if only a low level division types could be found, return it as a top level one
+    // as there only needs to be a single division navigation anyways.
+    // Return early to prevent the low-level type to be set again later
+    // as it is set already.
+    typeTop = getTopLevelDivisionType($text, foundTypesLow);
+    // distinguish the found low-level types, by finding out, which one is the superordinate one and
+    // choosing the other one
+    typeLow = foundTypesLow.find((types) => types != typeTop);
+    return [typeTop, typeLow];
+  }
+
+  // logic to identify the low-level division type
+  // this part of code might be skipped, if the low-level type was identified
+  // as a top-level type by the code above
+  if (foundTypesLow.length == 1) {
+    typeLow = foundTypesLow.pop();
+  } else if (foundTypesLow.length > 1) {
+    // distinguish the found low-level types, by finding out, which one is the superordinate one and
+    // choosing the other one
+    typeLow = foundTypesLow.find((types) => types != getTopLevelDivisionType($text, foundTypesLow));
+  }
+
+  return [typeTop, typeLow];
 }

@@ -1,9 +1,10 @@
 import * as annotationCard from '../../common/annotationCard/annotationCard';
+import * as projectspecific from '../../projectspecific/index';
 import { createOption } from '../../common/utils';
 import {
   getTargetDivision,
   selectDivision,
-  getDivisionType,
+  getDivisionTypes,
   getDivisionLabel,
   getTargetElement,
   updateButtons,
@@ -26,6 +27,22 @@ const defaultNavBar = `
   </div>
   <div class="col-1"><button type="button" id="nextChaptButton">Next chapter</button></div>
   <div class="col-1"><button type="button" id="toggleShowAllButton">Show all</button></div>
+  <div class="col-6"></div>
+</div>
+<div id="textNavBarLow" class="textNavBar row is-full-width is-hidden">
+  <div class="col-1"></div>
+  <div class="col-1"><button type="button" id="prevChaptButtonLow">Previous chapter</button></div>
+  <div class="col-2">
+    <div class="row">
+            <div class="col-7">
+                <button id="goToChaptButtonLow">Go to chapter:</button>
+            </div>
+            <select class="col-5" id="chapterSelectLow">
+            </select>
+    </div>
+  </div>
+  <div class="col-1"><button type="button" id="nextChaptButtonLow">Next chapter</button></div>
+  <div class="col-1"><button type="button" id="toggleShowAllButtonLow">Show all</button></div>
   <div class="col-6"></div>
 </div>`;
 
@@ -112,32 +129,130 @@ const teiWithSections = `
 </tei-text>
 `;
 
+const teiWithChaptersNSections = `
+<tei-text data-xmlns="http://www.tei-c.org/ns/1.0" xml:lang="och" lang="och" type="book" data-origname="text" data-origatts="xmlns xml:lang type" data-processed="">
+  <tei-body xml:id="b.3" id="b.3" n="guangzi_2" data-origname="body" data-origatts="xml:id n" data-processed="">
+    <tei-div type="chapter" n="prosa" data-origname="div" data-origatts="type n" data-processed="" class="">
+      <tei-div type="section" n="1" xml:id="c.10" id="c.10" data-origname="div" data-origatts="type n xml:id" data-processed="">
+      </tei-div>
+      <tei-div type="section" n="2" xml:id="c.20" id="c.20" data-origname="div" data-origatts="type n xml:id" data-processed="">
+      </tei-div>
+    </tei-div>
+  </tei-body>
+</tei-text>
+`;
+
+const teiWithSectionsNChapters = `
+<tei-text data-xmlns="http://www.tei-c.org/ns/1.0" xml:lang="och" lang="och" type="book" data-origname="text" data-origatts="xmlns xml:lang type" data-processed="">
+  <tei-body xml:id="b.3" id="b.3" n="guangzi_2" data-origname="body" data-origatts="xml:id n" data-processed="">
+    <tei-div type="section" n="1" xml:id="c.10" id="c.10" data-origname="div" data-origatts="type n xml:id" data-processed="">
+      <tei-div type="chapter" n="1" data-origname="div" data-origatts="type n" data-processed="" class="">
+      </tei-div>
+      <tei-div type="chapter" n="2" data-origname="div" data-origatts="type n" data-processed="" class="">
+      </tei-div>
+    </tei-div>
+    <tei-div type="section" n="2" xml:id="c.20" id="c.20" data-origname="div" data-origatts="type n xml:id" data-processed="">
+      <tei-div type="chapter" n="prosa" data-origname="div" data-origatts="type n" data-processed="" class="">
+      </tei-div>
+  </tei-div>
+  </tei-body>
+</tei-text>
+`;
+
+const teiWithSubsectionsNSubchapters = `
+<tei-text data-xmlns="http://www.tei-c.org/ns/1.0" xml:lang="och" lang="och" type="book" data-origname="text" data-origatts="xmlns xml:lang type" data-processed="">
+  <tei-body xml:id="b.3" id="b.3" n="guangzi_2" data-origname="body" data-origatts="xml:id n" data-processed="">
+    <tei-div type="subsection" n="1" xml:id="c.10" id="c.10" data-origname="div" data-origatts="type n xml:id" data-processed="">
+      <tei-div type="subchapter" n="1" data-origname="div" data-origatts="type n" data-processed="" class="">
+      </tei-div>
+      <tei-div type="subchapter" n="2" data-origname="div" data-origatts="type n" data-processed="" class="">
+      </tei-div>
+    </tei-div>
+    <tei-div type="subsection" n="2" xml:id="c.20" id="c.20" data-origname="div" data-origatts="type n xml:id" data-processed="">
+      <tei-div type="subchapter" n="prosa" data-origname="div" data-origatts="type n" data-processed="" class="">
+      </tei-div>
+  </tei-div>
+  </tei-body>
+</tei-text>
+`;
+
 describe('naviation.initializeNavigation()', () => {
+  beforeAll(() => {
+    // mocking the projectspecific division types so the test works independetly
+    // from project setups
+    jest.replaceProperty(projectspecific.POSSIBLE_DIVISION_TYPES, 'top', ['chapter', 'section']);
+    jest.replaceProperty(projectspecific.POSSIBLE_DIVISION_TYPES, 'low', ['chapter', 'section', 'subsection']);
+  });
+
+  afterAll(() => {
+    // restore replaced property
+    jest.restoreAllMocks();
+  });
+
   it('initializes the navBar for a text with only one divsion, so no navigation bar is needed', () => {
     const $body = document.createElement('div');
     $body.innerHTML = defaultNavBar + teiWithUnknownDivtype;
     const $navBar = $body.querySelector('#textNavBar');
+    const $navBarLow = $body.querySelector('#textNavBar');
     const $text = $body.querySelector('tei-text');
-    initializeNavigation($navBar, $text);
+    initializeNavigation($navBar, $navBarLow, $text);
     expect($navBar.classList.contains('is-hidden')).toBe(true);
   });
   it('initializes the navBar for a text with multiple sections as divisions', () => {
     const $body = document.createElement('div');
     $body.innerHTML = defaultNavBar + teiWithSections;
     const $navBar = $body.querySelector('#textNavBar');
+    const $navBarLow = $body.querySelector('#textNavBarLow');
     const $text = $body.querySelector('tei-text');
     const $prevButton = $navBar.querySelector('#prevChaptButton');
     const $nextButton = $navBar.querySelector('#nextChaptButton');
     const $gotoButton = $navBar.querySelector('#goToChaptButton');
     const $chapterSelect = $navBar.querySelector('#chapterSelect');
     const $showAllButton = $navBar.querySelector('#toggleShowAllButton');
-    initializeNavigation($navBar, $text);
+    initializeNavigation($navBar, $navBarLow, $text);
     expect($navBar.classList.contains('is-hidden')).toBe(false);
     expect($prevButton.disabled).toBe(true);
     expect($nextButton.disabled).toBe(false);
     expect($gotoButton.innerHTML).toStrictEqual('Go to section');
     expect($showAllButton.innerHTML).toStrictEqual('Show all sections');
     expect($chapterSelect.children.length).toBe(2);
+  });
+
+  it(`initializes the navBar for a text with multiple sections as divisions
+     and chapters as low-level divisions`, () => {
+    const $body = document.createElement('div');
+    $body.innerHTML = defaultNavBar + teiWithSectionsNChapters;
+    const $navBar = $body.querySelector('#textNavBar');
+    const $navBarLow = $body.querySelector('#textNavBarLow');
+    const $text = $body.querySelector('tei-text');
+
+    const $prevButton = $navBar.querySelector('#prevChaptButton');
+    const $nextButton = $navBar.querySelector('#nextChaptButton');
+    const $gotoButton = $navBar.querySelector('#goToChaptButton');
+    const $chapterSelect = $navBar.querySelector('#chapterSelect');
+    const $showAllButton = $navBar.querySelector('#toggleShowAllButton');
+
+    const $prevButtonLow = $navBarLow.querySelector('#prevChaptButtonLow');
+    const $nextButtonLow = $navBarLow.querySelector('#nextChaptButtonLow');
+    const $gotoButtonLow = $navBarLow.querySelector('#goToChaptButtonLow');
+    const $chapterSelectLow = $navBarLow.querySelector('#chapterSelectLow');
+    const $showAllButtonLow = $navBarLow.querySelector('#toggleShowAllButtonLow');
+
+    initializeNavigation($navBar, $navBarLow, $text);
+
+    expect($navBar.classList.contains('is-hidden')).toBe(false);
+    expect($prevButton.disabled).toBe(true);
+    expect($nextButton.disabled).toBe(false);
+    expect($gotoButton.innerHTML).toStrictEqual('Go to section');
+    expect($showAllButton.innerHTML).toStrictEqual('Show all sections');
+    expect($chapterSelect.children.length).toBe(2);
+
+    expect($navBarLow.classList.contains('is-hidden')).toBe(false);
+    expect($prevButtonLow.disabled).toBe(true);
+    expect($nextButtonLow.disabled).toBe(false);
+    expect($gotoButtonLow.innerHTML).toStrictEqual('Go to chapter');
+    expect($showAllButtonLow.innerHTML).toStrictEqual('Show all chapters');
+    expect($chapterSelectLow.children.length).toBe(2);
   });
 });
 
@@ -152,26 +267,99 @@ describe('navigation.navigateToAnnotation()', () => {
   });
 });
 
-describe('navigation.getDivisionType()', () => {
+describe('navigation.getDivisionTypes()', () => {
   it('yields "default" when no known text part type is present', () => {
     const $text = document.createElement('div');
     $text.innerHTML = teiWithUnknownDivtype;
-    const divType = getDivisionType($text);
-    expect(divType).toBe('default');
+    const topDivisions = ['chapter'];
+    const lowDivisions = ['subchapter'];
+    const divType = getDivisionTypes($text, topDivisions, lowDivisions);
+    expect(divType).toStrictEqual(['default', 'default']);
   });
 
-  it('can identify "chapter" text part type', () => {
+  it('can identify "chapter" top-level text part type', () => {
     const $text = document.createElement('div');
     $text.innerHTML = teiWithChapters;
-    const divType = getDivisionType($text);
-    expect(divType).toBe('chapter');
+    const topDivisions = ['chapter'];
+    const lowDivisions = ['subchapter'];
+    const divType = getDivisionTypes($text, topDivisions, lowDivisions);
+    expect(divType).toStrictEqual(['chapter', 'default']);
   });
 
-  it('can identify "section" text part type', () => {
+  it('can identify "chapter" top-level text part type (no low-level text parts given as options)', () => {
+    const $text = document.createElement('div');
+    $text.innerHTML = teiWithChapters;
+    const topDivisions = ['chapter'];
+    const lowDivisions = [];
+    const divType = getDivisionTypes($text, topDivisions, lowDivisions);
+    expect(divType).toStrictEqual(['chapter', 'default']);
+  });
+
+  it('can identify "section" top-level text part type', () => {
     const $text = document.createElement('div');
     $text.innerHTML = teiWithSections;
-    const divType = getDivisionType($text);
-    expect(divType).toBe('section');
+    const topDivisions = ['section'];
+    const lowDivisions = ['subchapter'];
+    const divType = getDivisionTypes($text, topDivisions, lowDivisions);
+    expect(divType).toStrictEqual(['section', 'default']);
+  });
+
+  it(`can identify "chapter" top-level text part type when others are given as well, 
+    but the low-level text part type doesn't match`, () => {
+    const $text = document.createElement('div');
+    $text.innerHTML = teiWithChaptersNSections;
+    const topDivisions = ['chapter', 'section'];
+    const lowDivisions = ['subchapter'];
+    const divType = getDivisionTypes($text, topDivisions, lowDivisions);
+    expect(divType).toStrictEqual(['chapter', 'default']);
+  });
+
+  it(`can identify "chapter" as a top-level text part type as no top-level type is available
+    and it is only listed as a low-level text part type`, () => {
+    const $text = document.createElement('div');
+    $text.innerHTML = teiWithChapters;
+    const topDivisions = ['section'];
+    const lowDivisions = ['chapter'];
+    const divType = getDivisionTypes($text, topDivisions, lowDivisions);
+    expect(divType).toStrictEqual(['chapter', 'default']);
+  });
+
+  describe('it can properly distinguish top- and low-level text part types', () => {
+    it('can identify "chapter" top-level text part type when low-level text parts are present as well', () => {
+      const $text = document.createElement('div');
+      $text.innerHTML = teiWithChaptersNSections;
+      const topDivisions = ['chapter'];
+      const lowDivisions = ['section'];
+      const divType = getDivisionTypes($text, topDivisions, lowDivisions);
+      expect(divType).toStrictEqual(['chapter', 'section']);
+    });
+
+    it('can identify "chapter" top-level text part type when other top-level text parts are given as well', () => {
+      const $text = document.createElement('div');
+      $text.innerHTML = teiWithChaptersNSections;
+      const topDivisions = ['chapter', 'section'];
+      const lowDivisions = ['section'];
+      const divType = getDivisionTypes($text, topDivisions, lowDivisions);
+      expect(divType).toStrictEqual(['chapter', 'section']);
+    });
+
+    it('can identify "chapter" top-level text part type when other top-level text parts are given as well', () => {
+      const $text = document.createElement('div');
+      $text.innerHTML = teiWithChaptersNSections;
+      const topDivisions = ['section', 'chapter'];
+      const lowDivisions = ['section'];
+      const divType = getDivisionTypes($text, topDivisions, lowDivisions);
+      expect(divType).toStrictEqual(['chapter', 'section']);
+    });
+
+    it('can identify top- and low-level text part type, if only low-level types are present', () => {
+      const $text = document.createElement('div');
+      $text.innerHTML = teiWithSubsectionsNSubchapters;
+      const topDivisions = ['section', 'chapter'];
+      const lowDivisions = ['subsection', 'subchapter'];
+      const divType = getDivisionTypes($text, topDivisions, lowDivisions);
+      expect(divType).toStrictEqual(['subsection', 'subchapter']);
+    });
   });
 });
 
