@@ -239,7 +239,7 @@ class ManuscriptConverter {
 		  }
 
 	  } catch (Exception e) {
-		  System.out.println("Could not convert manuscript metadata for"
+		  logger.info("Could not convert manuscript metadata for"
 		  		+ " elastic index for manuscript: " + manuscript.getId());
 		  e.printStackTrace();
 	  }
@@ -288,8 +288,8 @@ class ManuscriptConverter {
 			  		titlesDefault.add(title);
 			  	}  
 		  	} catch (Exception e) {
-				System.out.println("Could not parse titles for manuscript: " + manuscript.getId());
-				e.printStackTrace();
+          logger.info("Could not parse titles for manuscript: " + manuscript.getId());
+          e.printStackTrace();
 		  	}
 	  }
 	  
@@ -339,7 +339,7 @@ class ManuscriptConverter {
 				  authorList.add(persNamesList.get(0));
 			  }
 		  } catch (Exception e) {
-				System.out.println("Could not parse authors for manuscript: " + manuscript.getId());
+				logger.info("Could not parse authors for manuscript: " + manuscript.getId());
 				e.printStackTrace();
 		  }
 	  }
@@ -399,7 +399,7 @@ class ManuscriptConverter {
 			  }
 			  datesList.add(date);
 		  } catch (Exception e) {
-				System.out.println("Could not parse dates for manuscript: " + manuscript.getId());
+				logger.info("Could not parse dates for manuscript: " + manuscript.getId());
 				e.printStackTrace();
 		  }
 	  }
