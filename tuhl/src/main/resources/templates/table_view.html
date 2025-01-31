@@ -414,9 +414,7 @@ function callEditor(manId){
         let checkbox;
         let label;
         let tbl = window.table.getColumns();
-        for (let i = 1; i < table.getColumns().length - 1; i++) {
-            //tbl[i] = table.getColumns()[i + 1];
-        }
+
         tbl.forEach(function (col, index) {
             if(col.getField() !== "id" && index > 0) {
                 cont = document.createElement("div");
