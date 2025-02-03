@@ -388,9 +388,7 @@
         let checkbox;
         let label;
         let tbl = window.annotable.getColumns();
-        for (let i = 1; i < table.getColumns().length - 1; i++) {
-            //tbl[i] = table.getColumns()[i + 1];
-        }
+
         tbl.forEach(function (col, index) {
             // index needs to be bigger than 1 to ignore the buttons in the first 2 columns
             if(index > 1) {
