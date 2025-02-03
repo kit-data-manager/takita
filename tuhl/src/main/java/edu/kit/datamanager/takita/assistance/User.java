@@ -3,12 +3,10 @@ package edu.kit.datamanager.takita.assistance;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-
 import edu.kit.datamanager.takita.model.filter.Filter;
 import edu.kit.datamanager.takita.model.filter.FilterType;
 import edu.kit.datamanager.takita.model.filter.MatchFilter;
 import edu.kit.datamanager.takita.model.filter.RangeFilter;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +16,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
-
 
 
 

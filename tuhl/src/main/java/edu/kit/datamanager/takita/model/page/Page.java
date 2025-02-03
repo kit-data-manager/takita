@@ -1,12 +1,12 @@
 package edu.kit.datamanager.takita.model.page;
 
+import edu.kit.datamanager.takita.model.Annotation;
+
 import java.time.Instant;
 import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-
-import edu.kit.datamanager.takita.model.Annotation;
 
 /**
  * The Page class represents the model of an abstract Page.

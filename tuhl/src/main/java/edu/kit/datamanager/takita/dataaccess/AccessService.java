@@ -1,5 +1,11 @@
 package edu.kit.datamanager.takita.dataaccess;
 
+import edu.kit.datamanager.takita.NoSuchIndexEntryException;
+import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
+import edu.kit.datamanager.takita.model.Annotation;
+import edu.kit.datamanager.takita.model.Manuscript;
+import edu.kit.datamanager.takita.model.page.Page;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.Instant;

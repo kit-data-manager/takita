@@ -9,6 +9,13 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import edu.kit.datamanager.takita.mainpage.IMainPageService;
+import edu.kit.datamanager.takita.mainpage.search.IFilterService;
+import edu.kit.datamanager.takita.model.filter.Filter;
+import edu.kit.datamanager.takita.model.filter.FilterConfiguration;
+import edu.kit.datamanager.takita.model.filter.FilterConfigurationHolder;
+import edu.kit.datamanager.takita.model.filter.MatchFilter;
+import edu.kit.datamanager.takita.model.filter.RangeFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -18,21 +25,11 @@ import org.mockito.internal.verification.VerificationModeFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.ui.Model;
 
-import edu.kit.datamanager.takita.assistance.AssistanceService;
-import edu.kit.datamanager.takita.assistance.IAssistanceService;
-import edu.kit.datamanager.takita.assistance.User;
-import edu.kit.datamanager.takita.assistance.UserRepository;
-import edu.kit.datamanager.takita.mainpage.IMainPageService;
-import edu.kit.datamanager.takita.mainpage.search.IFilterService;
-import edu.kit.datamanager.takita.model.filter.Filter;
-import edu.kit.datamanager.takita.model.filter.FilterConfiguration;
-import edu.kit.datamanager.takita.model.filter.FilterConfigurationHolder;
-import edu.kit.datamanager.takita.model.filter.MatchFilter;
-import edu.kit.datamanager.takita.model.filter.RangeFilter;
-
 @SpringBootTest(classes = AssistanceService.class)
+@TestPropertySource("classpath:application-test.properties")
 class AssistanceServiceTest {
   
   @Autowired

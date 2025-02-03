@@ -1,5 +1,6 @@
 package edu.kit.datamanager.takita;
 
+import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Locale;
@@ -20,15 +21,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.i18n.LocaleChangeInterceptor;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 
-import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
-
 /**
  * Main class. Runs the application and distributes command line arguments.
  */
 @SpringBootApplication
 @Configuration
-public class TuhlApplication implements ApplicationRunner, WebMvcConfigurer {
-  private static final Logger logger = LoggerFactory.getLogger(TuhlApplication.class);
+public class TakitaApplication implements ApplicationRunner, WebMvcConfigurer {
+  private static final Logger logger = LoggerFactory.getLogger(TakitaApplication.class);
 
   @Autowired
   private ISearchIndexService searchIndexService;
@@ -39,7 +38,7 @@ public class TuhlApplication implements ApplicationRunner, WebMvcConfigurer {
    * @param args command line arguments
    */
   public static void main(String[] args) {
-    SpringApplication.run(TuhlApplication.class, args);
+    SpringApplication.run(TakitaApplication.class, args);
   }
 
   /**

@@ -1,5 +1,11 @@
 package edu.kit.datamanager.takita.mainpage.dashboard.contentview;
 
+import edu.kit.datamanager.takita.NoSuchIndexEntryException;
+import edu.kit.datamanager.takita.assistance.IAssistanceService;
+import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
+import edu.kit.datamanager.takita.mainpage.search.ISearchService;
+import edu.kit.datamanager.takita.model.Manuscript;
+import edu.kit.datamanager.takita.model.page.Page;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
@@ -8,13 +14,6 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.annotation.SessionScope;
-
-import edu.kit.datamanager.takita.NoSuchIndexEntryException;
-import edu.kit.datamanager.takita.assistance.IAssistanceService;
-import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
-import edu.kit.datamanager.takita.mainpage.search.ISearchService;
-import edu.kit.datamanager.takita.model.Manuscript;
-import edu.kit.datamanager.takita.model.page.Page;
 
 /**
  * Implementation of ContentView Service for type TableView.

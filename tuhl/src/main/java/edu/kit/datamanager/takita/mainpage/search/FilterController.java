@@ -1,5 +1,10 @@
 package edu.kit.datamanager.takita.mainpage.search;
 
+import edu.kit.datamanager.takita.assistance.IAssistanceService;
+import edu.kit.datamanager.takita.mainpage.IMainPageService;
+import edu.kit.datamanager.takita.mainpage.dashboard.contentview.TableViewService;
+import edu.kit.datamanager.takita.model.filter.FilterConfigurationHolder;
+import edu.kit.datamanager.takita.model.filter.FilterSelection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,12 +13,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-import edu.kit.datamanager.takita.assistance.IAssistanceService;
-import edu.kit.datamanager.takita.mainpage.IMainPageService;
-import edu.kit.datamanager.takita.mainpage.dashboard.contentview.TableViewService;
-import edu.kit.datamanager.takita.model.filter.FilterConfigurationHolder;
-import edu.kit.datamanager.takita.model.filter.FilterSelection;
 
 /**
  * Controls the interaction with the user interface concerning filters and provides the api

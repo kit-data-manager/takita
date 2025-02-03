@@ -1,15 +1,14 @@
 package edu.kit.datamanager.takita.model;
 
+import edu.kit.datamanager.takita.model.body.Tag;
+import edu.kit.datamanager.takita.model.body.TextCard;
+import edu.kit.datamanager.takita.model.target.Target;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-
-import edu.kit.datamanager.takita.model.body.Tag;
-import edu.kit.datamanager.takita.model.body.TextCard;
-import edu.kit.datamanager.takita.model.target.Target;
 
 /**
  * The Annotation class represents the model of an annotation with all its attributes.

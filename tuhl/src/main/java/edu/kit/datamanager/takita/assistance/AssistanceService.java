@@ -1,5 +1,9 @@
 package edu.kit.datamanager.takita.assistance;
 
+import edu.kit.datamanager.takita.mainpage.IMainPageService;
+import edu.kit.datamanager.takita.mainpage.search.IFilterService;
+import edu.kit.datamanager.takita.model.filter.Filter;
+import edu.kit.datamanager.takita.model.filter.FilterConfigurationHolder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -7,11 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.annotation.SessionScope;
-
-import edu.kit.datamanager.takita.mainpage.IMainPageService;
-import edu.kit.datamanager.takita.mainpage.search.IFilterService;
-import edu.kit.datamanager.takita.model.filter.Filter;
-import edu.kit.datamanager.takita.model.filter.FilterConfigurationHolder;
 
 
 

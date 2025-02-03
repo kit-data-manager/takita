@@ -1,17 +1,15 @@
 package edu.kit.datamanager.takita.mainpage.search;
 
-
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.ui.Model;
-
-import edu.kit.datamanager.takita.mainpage.search.FilterService;
 import edu.kit.datamanager.takita.model.filter.Filter;
 import edu.kit.datamanager.takita.model.filter.FilterConfigurationHolder;
 import edu.kit.datamanager.takita.model.filter.FilterSelection;
 import edu.kit.datamanager.takita.model.filter.MatchFilter;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.ui.Model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest(classes = FilterService.class)
+@TestPropertySource("classpath:application-test.properties")
 class FilterServiceTest {
 
 

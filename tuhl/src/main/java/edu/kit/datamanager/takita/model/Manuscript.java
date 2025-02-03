@@ -1,5 +1,9 @@
 package edu.kit.datamanager.takita.model;
 
+import edu.kit.datamanager.takita.mainpage.search.SearchIndexService;
+import edu.kit.datamanager.takita.model.page.Page;
+import edu.kit.datamanager.takita.model.page.ResourceType;
+
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,10 +15,6 @@ import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
-
-import edu.kit.datamanager.takita.mainpage.search.SearchIndexService;
-import edu.kit.datamanager.takita.model.page.Page;
-import edu.kit.datamanager.takita.model.page.ResourceType;
 
 
 /**

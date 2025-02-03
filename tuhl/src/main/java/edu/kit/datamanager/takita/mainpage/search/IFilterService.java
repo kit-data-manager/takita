@@ -1,12 +1,11 @@
 package edu.kit.datamanager.takita.mainpage.search;
 
+import edu.kit.datamanager.takita.model.filter.Filter;
+import edu.kit.datamanager.takita.model.filter.FilterConfigurationHolder;
 import java.util.List;
 import java.util.Map;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
-
-import edu.kit.datamanager.takita.model.filter.Filter;
-import edu.kit.datamanager.takita.model.filter.FilterConfigurationHolder;
 
 /**
  * Interface for class FilterService, contains logic for handling filters.

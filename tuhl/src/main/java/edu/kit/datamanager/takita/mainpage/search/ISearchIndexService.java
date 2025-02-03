@@ -1,12 +1,5 @@
 package edu.kit.datamanager.takita.mainpage.search;
 
-import java.io.IOException;
-import java.util.List;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
-import org.springframework.stereotype.Service;
-import org.springframework.web.context.annotation.ApplicationScope;
-
 import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 import edu.kit.datamanager.takita.model.Annotation;
 import edu.kit.datamanager.takita.model.Manuscript;
@@ -14,6 +7,12 @@ import edu.kit.datamanager.takita.model.body.Body;
 import edu.kit.datamanager.takita.model.body.Tag;
 import edu.kit.datamanager.takita.model.body.TextCard;
 import edu.kit.datamanager.takita.model.page.Page;
+import java.io.IOException;
+import java.util.List;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.stereotype.Service;
+import org.springframework.web.context.annotation.ApplicationScope;
 
 
 /**

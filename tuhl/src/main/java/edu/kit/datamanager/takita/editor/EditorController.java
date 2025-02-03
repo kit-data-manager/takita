@@ -1,5 +1,14 @@
 package edu.kit.datamanager.takita.editor;
 
+import edu.kit.datamanager.takita.NoSuchIndexEntryException;
+import edu.kit.datamanager.takita.assistance.IAssistanceService;
+import edu.kit.datamanager.takita.model.Annotation;
+import edu.kit.datamanager.takita.model.Color;
+import edu.kit.datamanager.takita.model.body.Tag;
+import edu.kit.datamanager.takita.model.body.TextCard;
+import edu.kit.datamanager.takita.model.page.ResourceType;
+import edu.kit.datamanager.takita.model.target.Target;
+
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -25,14 +34,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.context.request.WebRequest;
 
-import edu.kit.datamanager.takita.NoSuchIndexEntryException;
-import edu.kit.datamanager.takita.assistance.IAssistanceService;
-import edu.kit.datamanager.takita.model.Annotation;
-import edu.kit.datamanager.takita.model.Color;
-import edu.kit.datamanager.takita.model.body.Tag;
-import edu.kit.datamanager.takita.model.body.TextCard;
-import edu.kit.datamanager.takita.model.page.ResourceType;
-import edu.kit.datamanager.takita.model.target.Target;
 
 /**
  * Handles requests and directs them to the EditorService.

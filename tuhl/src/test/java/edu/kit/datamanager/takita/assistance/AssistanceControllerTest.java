@@ -1,25 +1,23 @@
 package edu.kit.datamanager.takita.assistance;
 
+import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.ui.Model;
-
-import edu.kit.datamanager.takita.assistance.AssistanceController;
-import edu.kit.datamanager.takita.assistance.IAssistanceService;
-import edu.kit.datamanager.takita.assistance.User;
-import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(AssistanceController.class)
+@TestPropertySource("classpath:application-test.properties")
 class AssistanceControllerTest {
 
   @Autowired

@@ -1,11 +1,10 @@
 package edu.kit.datamanager.takita.mainpage.search;
 
+import edu.kit.datamanager.takita.model.Annotation;
+import edu.kit.datamanager.takita.model.Manuscript;
 import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
-
-import edu.kit.datamanager.takita.model.Annotation;
-import edu.kit.datamanager.takita.model.Manuscript;
 
 /**
  * Interface for class SearchService, contains logic for search related tasks.

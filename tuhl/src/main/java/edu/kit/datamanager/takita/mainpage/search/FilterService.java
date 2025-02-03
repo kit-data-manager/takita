@@ -1,5 +1,11 @@
 package edu.kit.datamanager.takita.mainpage.search;
 
+import edu.kit.datamanager.takita.model.filter.Filter;
+import edu.kit.datamanager.takita.model.filter.FilterConfiguration;
+import edu.kit.datamanager.takita.model.filter.FilterConfigurationHolder;
+import edu.kit.datamanager.takita.model.filter.FilterSelection;
+import edu.kit.datamanager.takita.model.filter.MatchFilter;
+import edu.kit.datamanager.takita.model.filter.RangeFilter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -14,13 +20,6 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.annotation.SessionScope;
-
-import edu.kit.datamanager.takita.model.filter.Filter;
-import edu.kit.datamanager.takita.model.filter.FilterConfiguration;
-import edu.kit.datamanager.takita.model.filter.FilterConfigurationHolder;
-import edu.kit.datamanager.takita.model.filter.FilterSelection;
-import edu.kit.datamanager.takita.model.filter.MatchFilter;
-import edu.kit.datamanager.takita.model.filter.RangeFilter;
 
 /**
  * Class containing business logic for handling filters.

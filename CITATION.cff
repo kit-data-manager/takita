@@ -1,0 +1,25 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using these metadata."
+title: "tAKITA"
+authors:
+- family-names: Tonne
+  given-names: Danah
+  affiliation: Karlsruhe Institute of Technology
+  email: danah.tonne@kit.edu
+  orcid: "https://orcid.org/0000-0001-6296-7282"
+- family-names: "Götzelmann"
+  given-names: Germaine
+  affiliation: Karlsruhe Institute of Technology
+  email: germaine.goetzelmann@kit.edu
+  orcid: "https://orcid.org/0000-0003-3974-3728"
+- family-names: "Pütz"
+  given-names: Nicoletta
+- family-names: Walz
+  given-names: Maximilian
+  orcid: "https://orcid.org/0009-0009-4590-519X"
+- family-names: Schmidt
+  given-names: "Kathrin Leonie"
+  orcid: "https://orcid.org/0009-0000-7670-7094"         
+keywords:
+  - "Web Annotation Data Model"
+license: Apache-2.0

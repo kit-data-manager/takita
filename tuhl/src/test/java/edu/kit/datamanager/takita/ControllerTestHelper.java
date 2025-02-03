@@ -1,14 +1,13 @@
 package edu.kit.datamanager.takita;
 
-import org.mockito.Mockito;
-import org.springframework.ui.Model;
-
 import edu.kit.datamanager.takita.assistance.User;
 import edu.kit.datamanager.takita.mainpage.IMainPageService;
 import edu.kit.datamanager.takita.model.filter.Filter;
 import edu.kit.datamanager.takita.model.filter.FilterConfigurationHolder;
 import edu.kit.datamanager.takita.model.filter.FilterSelection;
 import edu.kit.datamanager.takita.model.filter.MatchFilter;
+import org.mockito.Mockito;
+import org.springframework.ui.Model;
 
 import java.util.ArrayList;
 import java.util.HashMap;

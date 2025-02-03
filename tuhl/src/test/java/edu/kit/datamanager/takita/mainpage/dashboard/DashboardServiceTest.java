@@ -1,15 +1,13 @@
 package edu.kit.datamanager.takita.mainpage.dashboard;
 
+import edu.kit.datamanager.takita.assistance.User;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.ui.Model;
-
-import edu.kit.datamanager.takita.assistance.User;
-import edu.kit.datamanager.takita.mainpage.dashboard.DashboardService;
-import edu.kit.datamanager.takita.mainpage.dashboard.IDashboardService;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -23,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes = DashboardService.class)
+@TestPropertySource("classpath:application-test.properties")
 class DashboardServiceTest {
   
   @Autowired

@@ -1,9 +1,9 @@
 package edu.kit.datamanager.takita.dataaccess;
 
-
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import edu.kit.datamanager.takita.model.body.Body;
+import edu.kit.datamanager.takita.model.body.Tag;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,14 +17,8 @@ import org.mockito.Mock;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.skyscreamer.jsonassert.JSONCompareMode;
 
-import edu.kit.datamanager.takita.TestUtils;
-import edu.kit.datamanager.takita.dataaccess.AnnotationConverter;
-import edu.kit.datamanager.takita.dataaccess.IAccessService;
-import edu.kit.datamanager.takita.dataaccess.IAnnotationStoreAccessService;
-import edu.kit.datamanager.takita.dataaccess.IRepositoryAccessService;
 import edu.kit.datamanager.takita.model.Annotation;
-import edu.kit.datamanager.takita.model.body.Body;
-import edu.kit.datamanager.takita.model.body.Tag;
+import edu.kit.datamanager.takita.TestUtils;
 
 import java.io.IOException;
 
@@ -41,7 +35,7 @@ public class AnnotationConverterTest {
     public IRepositoryAccessService mockedRepositoryAccessService;
     
     @Mock
-    public IAnnotationStoreAccessService mockedAnnotationStoreAccessService;  
+    public IAnnotationStoreAccessService mockedAnnotationStoreAccessService;
 
     private AnnotationConverter annoConverter;
     private JSONObject testAnnoJson;

@@ -2,6 +2,12 @@ package edu.kit.datamanager.takita.mainpage.search;
 
 import static edu.kit.datamanager.takita.mainpage.search.SearchIndexService.INDEX_NAME;
 
+import edu.kit.datamanager.takita.model.Annotation;
+import edu.kit.datamanager.takita.model.Manuscript;
+import edu.kit.datamanager.takita.model.body.Tag;
+import edu.kit.datamanager.takita.model.body.TextCard;
+import edu.kit.datamanager.takita.model.filter.Filter;
+import edu.kit.datamanager.takita.model.page.Page;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -20,14 +26,6 @@ import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.annotation.SessionScope;
-
-import edu.kit.datamanager.takita.model.Annotation;
-import edu.kit.datamanager.takita.model.Manuscript;
-import edu.kit.datamanager.takita.model.body.Tag;
-import edu.kit.datamanager.takita.model.body.TextCard;
-import edu.kit.datamanager.takita.model.filter.Filter;
-import edu.kit.datamanager.takita.model.page.Page;
-
 
 /**
  * SearchService contains all business logic to search the index provided by Spring.Data.

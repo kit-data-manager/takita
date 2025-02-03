@@ -1,13 +1,11 @@
 package edu.kit.datamanager.takita.model;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import edu.kit.datamanager.takita.model.Annotation;
-import edu.kit.datamanager.takita.model.Manuscript;
 import edu.kit.datamanager.takita.model.page.ImagePage;
 import edu.kit.datamanager.takita.model.page.Page;
 import edu.kit.datamanager.takita.model.page.ResourceType;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.text.ParseException;
 import java.time.Instant;

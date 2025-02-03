@@ -36,53 +36,83 @@
                     th:text="#{buttons.add_filters}">
             </button>
         </form>
+    <form th:object="${filterSelection}" th:fragment="filterDropdown" id="filterDropdown"
+          class="row justify-content-center mb-2">
+        <select th:title="#{buttons.select_filters}"
+                data-actions-box="true"
+                data-style="btn-primary"
+                th:data-select-all-text="#{buttons.select_all}"
+                th:data-deselect-all-text="#{buttons.deselect_all}"
+                multiple
+                class="col-8 me-2 p-0 selectpicker"
+                th:field="*{fields}" id="addFilterSelect">
+            <option th:each="filter : ${possibleFilters.values()}"
+                    th:if="${currentFilters.contains(filter)}"
+                    th:value="${filter.field}"
+                    th:text="#{col_name.__${filter.field}__}"
+                    th:data-subtext="${filter.TYPE.toString().toLowerCase()}"
+                    disabled>
+            </option>
+            <option th:each="filter : ${possibleFilters.values()}"
+                    th:unless="${currentFilters.contains(filter)}"
+                    th:value="${filter.field}"
+                    th:text="#{col_name.__${filter.field}__}"
+                    th:data-subtext="${filter.TYPE.toString().toLowerCase()}">
+            </option>
+        </select>
+        <button class="btn btn-primary col-auto"
+                type="button"
+                onclick="add()"
+                th:text="#{buttons.add_filters}">
+        </button>
+    </form>
 
-        <form th:action="@{/filter/apply}"
-            method="post"
-            th:object="${filterConfigurationHolder}"
-            id="filterInput">
-            <div class="container-fluid mb-2"
-                th:each="filter,i : ${currentFilters}"
-                th:id="${filter.field}">
-                <div class="row">
-                    <label class="col pl-0" th:text="#{col_name.__${filter.field}__}"> </label>
-                    <input type="hidden"
-                        th:field="*{filterConfigs[__${i.index}__].field}"
-                        th:value="${filter.field}">
-                    <span class="badge badge-secondary m-auto"
-                        type="button"
-                        th:data-field="${filter.field}"
-                        onclick="remove(this.getAttribute('data-field'))"
-                        th:text="#{buttons.remove}">
-                </span>
-                </div>
-                <div class="row" th:id="matchInput"
-                    th:if="${filter.TYPE == T(edu.kit.scc.dem.tuhl.model.filter.FilterType).MATCH}">
-                    <input type="text"
-                        class="form-control"
-                        th:if="*{filterConfigs[__${i.index}__].values.size() > 0}"
-                        th:field="*{filterConfigs[__${i.index}__].values[0]}"
-                        th:value="*{filterConfigs[__${i.index}__].values[0].toString()}"
-                        th:placeholder="#{input_label.match_term}">
-                    <input type="text"
-                        class="form-control"
-                        th:unless="*{filterConfigs[__${i.index}__].values.size() > 0}"
-                        th:field="*{filterConfigs[__${i.index}__].values[0]}"
-                        th:placeholder="#{input_label.match_term}">
-                </div>
-                <div class="row" th:id="rangeInput"
-                    th:if="${filter.TYPE == T(edu.kit.scc.dem.tuhl.model.filter.FilterType).RANGE}">
-                    <input type="number"
-                        class="form-control"
-                        th:if="*{filterConfigs[__${i.index}__].values.size() > 0}"
-                        th:field="*{filterConfigs[__${i.index}__].values[0]}"
-                        th:value="*{filterConfigs[__${i.index}__].values[0]}"
-                        th:placeholder="#{input_label.range_from}">
-                    <input type="number"
-                        class="form-control"
-                        th:unless="*{filterConfigs[__${i.index}__].values.size() > 0}"
-                        th:field="*{filterConfigs[__${i.index}__].values[0]}"
-                        th:placeholder="#{input_label.range_from}">
+    <form th:action="@{/filter/apply}"
+          method="post"
+          th:object="${filterConfigurationHolder}"
+          id="filterInput">
+        <div class="container-fluid mb-2"
+             th:each="filter,i : ${currentFilters}"
+             th:id="${filter.field}">
+            <div class="row">
+                <label class="col pl-0" th:text="#{col_name.__${filter.field}__}"> </label>
+                <input type="hidden"
+                       th:field="*{filterConfigs[__${i.index}__].field}"
+                       th:value="${filter.field}">
+                <span class="badge badge-secondary m-auto"
+                      type="button"
+                      th:data-field="${filter.field}"
+                      onclick="remove(this.getAttribute('data-field'))"
+                      th:text="#{buttons.remove}">
+            </span>
+            </div>
+            <div class="row" th:id="matchInput"
+                 th:if="${filter.TYPE == T(edu.kit.datamanager.takita.model.filter.FilterType).MATCH}">
+                <input type="text"
+                       class="form-control"
+                       th:if="*{filterConfigs[__${i.index}__].values.size() > 0}"
+                       th:field="*{filterConfigs[__${i.index}__].values[0]}"
+                       th:value="*{filterConfigs[__${i.index}__].values[0].toString()}"
+                       th:placeholder="#{input_label.match_term}">
+                <input type="text"
+                       class="form-control"
+                       th:unless="*{filterConfigs[__${i.index}__].values.size() > 0}"
+                       th:field="*{filterConfigs[__${i.index}__].values[0]}"
+                       th:placeholder="#{input_label.match_term}">
+            </div>
+            <div class="row" th:id="rangeInput"
+                 th:if="${filter.TYPE == T(edu.kit.datamanager.takita.model.filter.FilterType).RANGE}">
+                <input type="number"
+                       class="form-control"
+                       th:if="*{filterConfigs[__${i.index}__].values.size() > 0}"
+                       th:field="*{filterConfigs[__${i.index}__].values[0]}"
+                       th:value="*{filterConfigs[__${i.index}__].values[0]}"
+                       th:placeholder="#{input_label.range_from}">
+                <input type="number"
+                       class="form-control"
+                       th:unless="*{filterConfigs[__${i.index}__].values.size() > 0}"
+                       th:field="*{filterConfigs[__${i.index}__].values[0]}"
+                       th:placeholder="#{input_label.range_from}">
 
                     <input type="number"
                         class="form-control mt-1"
@@ -119,7 +149,7 @@
                     th:data-select-all-text="#{buttons.select_all}"
                     th:data-deselect-all-text="#{buttons.deselect_all}"
                     multiple
-                    class="col-8 mr-2 p-0 selectpicker"
+                    class="col-8 m2-2 p-0 selectpicker"
                     th:field="*{fields}" id="addAnnotationFilterSelect">
                 <!--<option th:each="filter : ${possibleAnnotationFilters.values()}"
                         th:value="${filter.field}"
@@ -228,10 +258,6 @@
         }
     </script>
 
-    <!-- Selectpicker-->
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/css/bootstrap-select.min.css">
 
     <script th:src="@{js/filter_selection.js}"></script>
 </div>

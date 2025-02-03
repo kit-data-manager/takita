@@ -1,16 +1,14 @@
 package edu.kit.datamanager.takita.mainpage;
 
+import edu.kit.datamanager.takita.assistance.IAssistanceService;
+import edu.kit.datamanager.takita.mainpage.dashboard.IDashboardService;
+import edu.kit.datamanager.takita.mainpage.dashboard.contentview.TableViewService;
+import edu.kit.datamanager.takita.mainpage.search.IFilterService;
+import edu.kit.datamanager.takita.mainpage.search.ISearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.annotation.SessionScope;
-
-import edu.kit.datamanager.takita.assistance.IAssistanceService;
-import edu.kit.datamanager.takita.mainpage.dashboard.IDashboardService;
-import edu.kit.datamanager.takita.mainpage.dashboard.annoview.AnnoViewService;
-import edu.kit.datamanager.takita.mainpage.dashboard.contentview.TableViewService;
-import edu.kit.datamanager.takita.mainpage.search.IFilterService;
-import edu.kit.datamanager.takita.mainpage.search.ISearchService;
 
 @SessionScope
 @Service

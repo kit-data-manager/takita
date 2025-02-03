@@ -1,9 +1,23 @@
 package edu.kit.datamanager.takita.editor;
 
+import edu.kit.datamanager.takita.NoSuchIndexEntryException;
+import edu.kit.datamanager.takita.assistance.IAssistanceService;
+import edu.kit.datamanager.takita.dataaccess.AnnotationConverter;
+import edu.kit.datamanager.takita.dataaccess.IAnnotationStoreAccessService;
+import edu.kit.datamanager.takita.dataaccess.IRepositoryAccessService;
+import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
+import edu.kit.datamanager.takita.model.Annotation;
+import edu.kit.datamanager.takita.model.Color;
+import edu.kit.datamanager.takita.model.Manuscript;
+import edu.kit.datamanager.takita.model.body.Tag;
+import edu.kit.datamanager.takita.model.body.TextCard;
+import edu.kit.datamanager.takita.model.page.Page;
+import edu.kit.datamanager.takita.model.target.SVGSelector;
+import edu.kit.datamanager.takita.model.target.Target;
+import edu.kit.datamanager.takita.model.target.XPathSelector;
+
 import java.io.IOException;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -15,23 +29,6 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.SessionScope;
-
-import edu.kit.datamanager.takita.NoSuchIndexEntryException;
-import edu.kit.datamanager.takita.assistance.IAssistanceService;
-import edu.kit.datamanager.takita.dataaccess.AnnotationConverter;
-import edu.kit.datamanager.takita.dataaccess.IAnnotationStoreAccessService;
-import edu.kit.datamanager.takita.dataaccess.IRepositoryAccessService;
-import edu.kit.datamanager.takita.dataaccess.RepositoryAccessService;
-import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
-import edu.kit.datamanager.takita.model.Annotation;
-import edu.kit.datamanager.takita.model.Color;
-import edu.kit.datamanager.takita.model.Manuscript;
-import edu.kit.datamanager.takita.model.body.Tag;
-import edu.kit.datamanager.takita.model.body.TextCard;
-import edu.kit.datamanager.takita.model.page.Page;
-import edu.kit.datamanager.takita.model.target.SVGSelector;
-import edu.kit.datamanager.takita.model.target.Target;
-import edu.kit.datamanager.takita.model.target.XPathSelector;
 
 /**
  * Implements the Interface IEditorService, handles methods needed by the EditorController.

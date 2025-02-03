@@ -5,16 +5,6 @@
   --dark-grey-color: #292932;
 }
 
-.topbar-row {
-    background-color: #b5b5be;
-}
-
-.topbar-row .col-1,
-.topbar-row .col-4,
-.topbar-row .col-5 {
-    margin-top: 1rem;
-}
-
 .anno-side-bar {
   width: 20rem;
   height: 100%;
@@ -26,6 +16,8 @@
   overflow-y: auto;
   overflow-x: hidden;
   z-Index: 5;
+  max-width: 100%; 
+  overflow-x: hidden;
 }
 
 .logo-name-wrapper {
@@ -70,7 +62,7 @@
   align-items: center;
   position: relative;
   padding: 0.5rem 0.9rem;
-  margin-bottom: 1.1rem;
+  margin-bottom: 1rem;
   color: var(--grey-color);
   cursor: pointer;
   transition: 0.5s ease;
@@ -112,7 +104,7 @@
 }
 
 .features-item-icon {
-  font-size: 3rem;
+  font-size: 2rem;
 }
 
 .features-item-text {
@@ -190,6 +182,7 @@
   line-height: 1.8rem;
   color: var(--white-color);
   margin-bottom: 1.3rem;
+  margin-left: 1rem;
   white-space: nowrap;
 }
 

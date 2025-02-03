@@ -1,5 +1,16 @@
 package edu.kit.datamanager.takita.mainpage.search;
 
+import edu.kit.datamanager.takita.NoSuchIndexEntryException;
+import edu.kit.datamanager.takita.dataaccess.IAccessService;
+import edu.kit.datamanager.takita.model.Annotation;
+import edu.kit.datamanager.takita.model.Manuscript;
+import edu.kit.datamanager.takita.model.body.Body;
+import edu.kit.datamanager.takita.model.body.Tag;
+import edu.kit.datamanager.takita.model.body.TextCard;
+import edu.kit.datamanager.takita.model.page.ImagePage;
+import edu.kit.datamanager.takita.model.page.Page;
+import edu.kit.datamanager.takita.model.page.ResourceType;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.*;
@@ -14,20 +25,7 @@ import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.Query;
-
-import edu.kit.datamanager.takita.NoSuchIndexEntryException;
-import edu.kit.datamanager.takita.dataaccess.IAccessService;
-import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
-import edu.kit.datamanager.takita.mainpage.search.ManuscriptRepository;
-import edu.kit.datamanager.takita.mainpage.search.SearchIndexService;
-import edu.kit.datamanager.takita.model.Annotation;
-import edu.kit.datamanager.takita.model.Manuscript;
-import edu.kit.datamanager.takita.model.body.Body;
-import edu.kit.datamanager.takita.model.body.Tag;
-import edu.kit.datamanager.takita.model.body.TextCard;
-import edu.kit.datamanager.takita.model.page.ImagePage;
-import edu.kit.datamanager.takita.model.page.Page;
-import edu.kit.datamanager.takita.model.page.ResourceType;
+import org.springframework.test.context.TestPropertySource;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -40,6 +38,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 
 @SpringBootTest(classes = SearchIndexService.class)
+@TestPropertySource("classpath:application-test.properties")
 class SearchIndexServiceTest {
   @Autowired
   private ISearchIndexService searchIndexService;

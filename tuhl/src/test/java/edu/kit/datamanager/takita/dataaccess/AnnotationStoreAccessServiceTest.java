@@ -12,6 +12,7 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.xml.sax.SAXException;
 
@@ -35,6 +36,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest (classes = AnnotationStoreAccessService.class)
+@TestPropertySource("classpath:application-test.properties")
 class AnnotationStoreAccessServiceTest {
   @Autowired
   public AnnotationStoreAccessService annotationStoreAccessService;

@@ -1,15 +1,20 @@
 package edu.kit.datamanager.takita.dataaccess;
 
+import edu.kit.datamanager.takita.model.Annotation;
+import edu.kit.datamanager.takita.model.Manuscript;
+import edu.kit.datamanager.takita.model.TeiDate;
+import edu.kit.datamanager.takita.model.TeiTitle;
+import edu.kit.datamanager.takita.model.page.ImagePage;
+import edu.kit.datamanager.takita.model.page.Page;
+import edu.kit.datamanager.takita.model.page.ResourceType;
+import edu.kit.datamanager.takita.model.page.TextPage;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
@@ -28,16 +33,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
-
-import edu.kit.datamanager.takita.model.Annotation;
-import edu.kit.datamanager.takita.model.Manuscript;
-import edu.kit.datamanager.takita.model.TeiDate;
-import edu.kit.datamanager.takita.model.TeiTitle;
-import edu.kit.datamanager.takita.model.page.ImagePage;
-import edu.kit.datamanager.takita.model.page.Page;
-import edu.kit.datamanager.takita.model.page.ResourceType;
 import edu.kit.datamanager.takita.model.page.TextPage;
-
 /**
  * Class responsible for converting manuscripts from JSON to Manuscript Object.
  */
@@ -495,10 +491,10 @@ class ManuscriptConverter {
 
     //Create the Page object depending on the resource type.
     Page page;
-    String resourceTypeGeneral = pageJson.getJSONObject(RepositoryStrings.RESOURCE_TYPE.getName())
+    String resourceTypeString = pageJson.getJSONObject(RepositoryStrings.RESOURCE_TYPE.getName())
         .getString(RepositoryStrings.TYPE_GENERAL.getName());
 
-    if (resourceTypeGeneral.equals(RepositoryStrings.IMAGE.getName())) {
+    if (resourceTypeString.equals(RepositoryStrings.IMAGE.getName())) {
       // URL to image of Page
       String resourceUrl = repositoryAccessService.getBaseUrl() + repositoryAccessService.getStaticPath() + id
           + RepositoryAccessService.DATA_PATH + pageNumber + RepositoryAccessService.MASTER_JPG;
@@ -514,7 +510,7 @@ class ManuscriptConverter {
       }
 
       page = imagePage;
-    } else if (resourceTypeGeneral.equals(RepositoryStrings.TEXT.getName())) {
+    } else if (resourceTypeString.equals(RepositoryStrings.TEXT.getName())) {
 
       // Here comes the URL to the resource of the page
       // just a copy of the image code from above and added "RepositoryAccessService.FILE_EXTENSION_XML"
@@ -531,7 +527,7 @@ class ManuscriptConverter {
 
       page = textPage;
     } else {
-      throw new IllegalStateException("Unexpected value: " + resourceTypeGeneral);
+      throw new IllegalStateException("Unexpected value: " + resourceTypeString);
     }
 
     page.setLastModified(modified);

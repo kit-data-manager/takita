@@ -1,9 +1,5 @@
 package edu.kit.datamanager.takita.dataaccess;
 
-import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
-
 import edu.kit.datamanager.takita.model.Annotation;
 import edu.kit.datamanager.takita.model.Color;
 import edu.kit.datamanager.takita.model.body.Body;
@@ -12,6 +8,9 @@ import edu.kit.datamanager.takita.model.body.TextCard;
 import edu.kit.datamanager.takita.model.target.SVGSelector;
 import edu.kit.datamanager.takita.model.target.Target;
 import edu.kit.datamanager.takita.model.target.XPathSelector;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -527,10 +526,10 @@ public class AnnotationConverter {
             hasColor = true;
           }
         }
-        if (!hasColor) {
+        if (!hasColor && annotation.getColor() != Color.DEFAULT) {
           JSONObject colorBody = new JSONObject();
           colorBody.put(AnnotationStoreStrings.DC_SUBJECT.getName(),
-              Color.colorToString(annotation.getColor()));
+          Color.colorToString(annotation.getColor()));
           buildCreator(annotation, colorBody);
           jsonAnnotation.getJSONArray(AnnotationStoreStrings.BODY.getName()).put(colorBody);
         }

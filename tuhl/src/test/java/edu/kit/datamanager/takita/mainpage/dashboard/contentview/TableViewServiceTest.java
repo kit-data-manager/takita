@@ -1,5 +1,16 @@
 package edu.kit.datamanager.takita.mainpage.dashboard.contentview;
 
+import edu.kit.datamanager.takita.NoSuchIndexEntryException;
+import edu.kit.datamanager.takita.assistance.IAssistanceService;
+import edu.kit.datamanager.takita.assistance.User;
+import edu.kit.datamanager.takita.dataaccess.TimeStampFormats;
+import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
+import edu.kit.datamanager.takita.mainpage.search.ISearchService;
+import edu.kit.datamanager.takita.model.Manuscript;
+import edu.kit.datamanager.takita.model.page.ImagePage;
+import edu.kit.datamanager.takita.model.page.Page;
+import edu.kit.datamanager.takita.model.page.ResourceType;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -8,19 +19,8 @@ import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.ui.Model;
-
-import edu.kit.datamanager.takita.NoSuchIndexEntryException;
-import edu.kit.datamanager.takita.assistance.IAssistanceService;
-import edu.kit.datamanager.takita.assistance.User;
-import edu.kit.datamanager.takita.dataaccess.TimeStampFormats;
-import edu.kit.datamanager.takita.mainpage.dashboard.contentview.TableViewService;
-import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
-import edu.kit.datamanager.takita.mainpage.search.ISearchService;
-import edu.kit.datamanager.takita.model.Manuscript;
-import edu.kit.datamanager.takita.model.page.ImagePage;
-import edu.kit.datamanager.takita.model.page.Page;
-import edu.kit.datamanager.takita.model.page.ResourceType;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,6 +34,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @SpringBootTest(classes = TableViewService.class)
+@TestPropertySource("classpath:application-test.properties")
 class TableViewServiceTest {
   
   @Autowired

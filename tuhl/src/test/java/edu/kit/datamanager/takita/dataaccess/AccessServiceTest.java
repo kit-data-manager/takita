@@ -1,25 +1,6 @@
 package edu.kit.datamanager.takita.dataaccess;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import org.skyscreamer.jsonassert.JSONAssert;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.configurationprocessor.json.JSONArray;
-import org.springframework.boot.configurationprocessor.json.JSONException;
-import org.springframework.boot.configurationprocessor.json.JSONObject;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import edu.kit.datamanager.takita.NoSuchIndexEntryException;
-import edu.kit.datamanager.takita.dataaccess.AccessService;
-import edu.kit.datamanager.takita.dataaccess.AnnotationConverter;
-import edu.kit.datamanager.takita.dataaccess.IAccessService;
-import edu.kit.datamanager.takita.dataaccess.IAnnotationStoreAccessService;
-import edu.kit.datamanager.takita.dataaccess.IRepositoryAccessService;
-import edu.kit.datamanager.takita.dataaccess.ManuscriptConverter;
-import edu.kit.datamanager.takita.dataaccess.TimeStampFormats;
 import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import edu.kit.datamanager.takita.model.Annotation;
 import edu.kit.datamanager.takita.model.Color;
@@ -30,9 +11,18 @@ import edu.kit.datamanager.takita.model.page.ImagePage;
 import edu.kit.datamanager.takita.model.page.Page;
 import edu.kit.datamanager.takita.model.page.ResourceType;
 import edu.kit.datamanager.takita.model.page.TextPage;
-import edu.kit.datamanager.takita.model.target.SVGSelector;
-import edu.kit.datamanager.takita.model.target.Target;
-
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.skyscreamer.jsonassert.JSONAssert;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.util.ReflectionTestUtils;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,6 +41,7 @@ import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @SpringBootTest (classes = AccessService.class)
+@TestPropertySource("classpath:application-test.properties")
 class AccessServiceTest {
   
   @Autowired
@@ -312,7 +303,6 @@ class AccessServiceTest {
     pagesManuscript2.add(page3);
     manuscript2.setPages(pagesManuscript2);
     manuscript2.setLastModified(Instant.parse("2019-03-11T14:10:42Z"));
-
 
     List<String> creatorListAkita = new ArrayList<>();
     creatorListAkita.add("M. K.");

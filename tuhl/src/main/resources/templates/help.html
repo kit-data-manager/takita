@@ -4,12 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Help</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" th:href="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css}">
+    
+    <!-- define common scripts in head fragment to include here -->
+    <th:block th:replace="~{head :: baseContent}"></th:block>
 
-    <!-- JS, Popper.js, and jQuery -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js" integrity="sha384-ZvpUoO/+PpLXR1lu4jmpXWu80pZlYUAfxl5NsBMWOEPSjUn/6Z/hRTt8+pR6L4N2" crossorigin="anonymous" th:src="@{https://code.jquery.com/jquery-3.5.1.min.js}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous" th:src="@{https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js}"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous" th:src="@{https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" 
+    integrity="sha512-jnSuA4Ss2PkkikSOLtYs8BlYIeeIK1h99ty4YfvRPAlzr377vr3CXDb7sb7eEEBYjDtcYj+AjBH3FLv5uSJuXg==" 
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
 <div class="row p-3 bg-light justify-content-between">
@@ -18,7 +19,7 @@
         </button>
     </div>
     <div class="dropdown col-auto">
-        <button class="btn btn-info dropdown-toggle" type="button"  data-toggle="dropdown"
+        <button class="btn btn-info dropdown-toggle" type="button"  data-bs-toggle="dropdown"
                 aria-haspopup="true" aria-expanded="false" th:text="#{buttons.language}">
         </button>
         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -34,7 +35,7 @@
 
         <div class="card m-4">
             <div class="card-body">
-                <h5 class="card-title display-5" th:text="#{text.headingPseudonym}"> </h5>
+                <h5 class="card-title display-6" th:text="#{text.headingPseudonym}"> </h5>
                 <p class="card-text font-weight-light" size="3"
                    th:text="#{text.helpPseudonym}">
                 </p>
@@ -43,7 +44,7 @@
 
         <div class="card m-4">
             <div class="card-body">
-                <h5 class="card-title display-5" th:text="#{text.headingLanguage}"> </h5>
+                <h5 class="card-title display-6" th:text="#{text.headingLanguage}"> </h5>
                 <p class="card-text font-weight-light" size="3"
                    th:text="#{text.helpLanguage}">
                 </p>
@@ -52,7 +53,7 @@
 
         <div class="card m-4">
             <div class="card-body">
-                <h5 class="card-title display-5" th:text="#{text.headingColumns}"> </h5>
+                <h5 class="card-title display-6" th:text="#{text.headingColumns}"> </h5>
                 <p class="card-text font-weight-light" size="3"
                    th:text="#{text.helpColumns}">
                 </p>
@@ -61,7 +62,7 @@
 
         <div class="card m-4">
             <div class="card-body">
-                <h5 class="card-title display-5" th:text="#{text.headingSorting}"> </h5>
+                <h5 class="card-title display-6" th:text="#{text.headingSorting}"> </h5>
                 <p class="card-text font-weight-light" size="3"
                    th:text="#{text.helpSorting}">
                 </p>
@@ -70,7 +71,7 @@
 
         <div class="card m-4">
             <div class="card-body">
-                <h5 class="card-title display-5" th:text="#{text.headingRows}"> </h5>
+                <h5 class="card-title display-6" th:text="#{text.headingRows}"> </h5>
                 <p class="card-text font-weight-light" size="3"
                    th:text="#{text.helpRows}">
                 </p>
@@ -79,7 +80,7 @@
 
         <div class="card m-4">
             <div class="card-body">
-                <h5 class=card-text display-5 th:text="#{text.headingPages}"> </h5>
+                <h5 class="card-text display-6" th:text="#{text.headingPages}"> </h5>
                 <p class="card-text font-weight-light" size="3"
                    th:text="#{text.helpPages}">
                 </p>
@@ -88,7 +89,7 @@
 
         <div class="card m-4">
             <div class="card-body">
-                <h5 class="card-title display-5" th:text="#{text.headingSearch}"> </h5>
+                <h5 class="card-title display-6" th:text="#{text.headingSearch}"> </h5>
                 <p class="card-text font-weight-light" size="3"
                    th:text="#{text.helpSearch}">
                 </p>
@@ -97,7 +98,7 @@
 
         <div class="card m-4">
             <div class="card-body">
-                <h5 class="card-title display-5" th:text="#{text.headingFilters}"> </h5>
+                <h5 class="card-title display-6" th:text="#{text.headingFilters}"> </h5>
                 <p class="card-text font-weight-light" size="3"
                    th:text="#{text.helpFilters}">
                 </p>

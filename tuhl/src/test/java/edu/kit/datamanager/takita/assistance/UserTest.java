@@ -1,12 +1,10 @@
 package edu.kit.datamanager.takita.assistance;
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import edu.kit.datamanager.takita.assistance.User;
 import edu.kit.datamanager.takita.model.filter.Filter;
 import edu.kit.datamanager.takita.model.filter.MatchFilter;
 import edu.kit.datamanager.takita.model.filter.RangeFilter;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;

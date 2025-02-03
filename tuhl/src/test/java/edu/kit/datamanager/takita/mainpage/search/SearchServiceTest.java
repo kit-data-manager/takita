@@ -1,5 +1,12 @@
 package edu.kit.datamanager.takita.mainpage.search;
 
+import edu.kit.datamanager.takita.model.Manuscript;
+import edu.kit.datamanager.takita.model.filter.Filter;
+import edu.kit.datamanager.takita.model.filter.MatchFilter;
+import edu.kit.datamanager.takita.model.page.ImagePage;
+import edu.kit.datamanager.takita.model.page.Page;
+import edu.kit.datamanager.takita.model.page.ResourceType;
+
 //import org.elasticsearch.action.search.SearchResponse;
 //import org.elasticsearch.client.RestHighLevelClient;
 import org.junit.jupiter.api.Test;
@@ -13,18 +20,8 @@ import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.ui.Model;
-
-import edu.kit.datamanager.takita.mainpage.search.IFilterService;
-import edu.kit.datamanager.takita.mainpage.search.ISearchService;
-import edu.kit.datamanager.takita.mainpage.search.ManuscriptRepository;
-import edu.kit.datamanager.takita.mainpage.search.SearchService;
-import edu.kit.datamanager.takita.model.Manuscript;
-import edu.kit.datamanager.takita.model.filter.Filter;
-import edu.kit.datamanager.takita.model.filter.MatchFilter;
-import edu.kit.datamanager.takita.model.page.ImagePage;
-import edu.kit.datamanager.takita.model.page.Page;
-import edu.kit.datamanager.takita.model.page.ResourceType;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -36,6 +33,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
 @SpringBootTest(classes = SearchService.class)
+@TestPropertySource("classpath:application-test.properties")
 class SearchServiceTest {
   
   @Autowired

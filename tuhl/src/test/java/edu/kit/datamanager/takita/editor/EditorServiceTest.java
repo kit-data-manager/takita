@@ -1,5 +1,16 @@
 package edu.kit.datamanager.takita.editor;
 
+import edu.kit.datamanager.takita.NoSuchIndexEntryException;
+import edu.kit.datamanager.takita.assistance.IAssistanceService;
+import edu.kit.datamanager.takita.assistance.User;
+import edu.kit.datamanager.takita.dataaccess.IAnnotationStoreAccessService;
+import edu.kit.datamanager.takita.dataaccess.IRepositoryAccessService;
+import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
+import edu.kit.datamanager.takita.model.Annotation;
+import edu.kit.datamanager.takita.model.Color;
+import edu.kit.datamanager.takita.model.body.Body;
+import edu.kit.datamanager.takita.model.body.Tag;
+import edu.kit.datamanager.takita.model.body.TextCard;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
@@ -8,22 +19,7 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-
-import edu.kit.datamanager.takita.NoSuchIndexEntryException;
-import edu.kit.datamanager.takita.assistance.IAssistanceService;
-import edu.kit.datamanager.takita.assistance.User;
-import edu.kit.datamanager.takita.dataaccess.IAnnotationStoreAccessService;
-import edu.kit.datamanager.takita.dataaccess.IRepositoryAccessService;
-import edu.kit.datamanager.takita.editor.EditorService;
-import edu.kit.datamanager.takita.editor.IEditorService;
-import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
-import edu.kit.datamanager.takita.model.Annotation;
-import edu.kit.datamanager.takita.model.Color;
-import edu.kit.datamanager.takita.model.body.Body;
-import edu.kit.datamanager.takita.model.body.Tag;
-import edu.kit.datamanager.takita.model.body.TextCard;
-import edu.kit.datamanager.takita.model.target.SVGSelector;
-import edu.kit.datamanager.takita.model.target.Target;
+import org.springframework.test.context.TestPropertySource;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -36,6 +32,7 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(classes = EditorService.class)
+@TestPropertySource("classpath:application-test.properties")
 class EditorServiceTest {
 
   @Autowired

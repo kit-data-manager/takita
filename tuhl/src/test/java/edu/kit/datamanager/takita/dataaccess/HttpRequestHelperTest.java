@@ -40,7 +40,7 @@ class HttpRequestHelperTest {
   
   @Test
   void get() throws IOException, InterruptedException, URISyntaxException {
-    String uriString = "http://www.samplerepo.edu";
+    String uriString = "http://www.example.edu";
     URI uri = new URI(uriString);
     
     Mockito.when(mockedHttpClient.send(Mockito.any(HttpRequest.class),
@@ -58,7 +58,7 @@ class HttpRequestHelperTest {
   
   @Test
   void post() throws URISyntaxException, IOException, InterruptedException, JSONException {
-    String uriString = "http://www.samplerepo.edu";
+    String uriString = "http://www.example.edu";
     URI uri = new URI(uriString);
     JSONObject requestBody = new JSONObject("{\"test\": \"postRequest\"}");
   
@@ -79,7 +79,7 @@ class HttpRequestHelperTest {
   
   @Test
   void put() throws URISyntaxException, IOException, InterruptedException, JSONException {
-    String uriString = "http://www.samplerepo.edu";
+    String uriString = "http://www.example.edu";
     URI uri = new URI(uriString);
     JSONObject requestBody = new JSONObject("{\"test\": \"putRequest\"}");
     String etag = "etag";
@@ -102,7 +102,7 @@ class HttpRequestHelperTest {
   
   @Test
   void delete() throws URISyntaxException, IOException, InterruptedException {
-    String uriString = "http://www.samplerepo.edu";
+    String uriString = "http://www.example.edu";
     URI uri = new URI(uriString);
     String etag = new String("abc");
   

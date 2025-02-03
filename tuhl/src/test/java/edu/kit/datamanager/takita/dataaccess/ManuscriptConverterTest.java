@@ -1,15 +1,9 @@
 package edu.kit.datamanager.takita.dataaccess;
 
 import edu.kit.datamanager.takita.TestUtils;
-import edu.kit.datamanager.takita.dataaccess.IAnnotationStoreAccessService;
-import edu.kit.datamanager.takita.dataaccess.IRepositoryAccessService;
-import edu.kit.datamanager.takita.dataaccess.ManuscriptConverter;
 import edu.kit.datamanager.takita.model.Annotation;
 import edu.kit.datamanager.takita.model.Manuscript;
 import edu.kit.datamanager.takita.model.page.ResourceType;
-import edu.kit.datamanager.takita.model.target.SVGSelector;
-import edu.kit.datamanager.takita.model.target.Target;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
