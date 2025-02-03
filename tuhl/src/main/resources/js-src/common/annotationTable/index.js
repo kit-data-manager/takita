@@ -1,1 +1,5 @@
-export { initializeAnnotationTable } from './annotationTable';
+export {
+  initializeAnnotationTable,
+  defaultDisplayAnnotationFunction,
+  textDisplayAnnotationFunction,
+} from './annotationTable';
