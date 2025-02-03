@@ -1,15 +1,14 @@
 import { Mode } from '../common/mode';
 import { initializeTopbar } from '../common/topbar';
 import { hooks } from '../projectspecific';
-
 import { initializeTextEditor } from './editor';
 import { initializeSidebar } from './sidebar';
-import { initializeAnnotationTable } from '../common/annotationTable';
+import { initializeAnnotationTable, textDisplayAnnotationFunction } from '../common/annotationTable';
 import { initializeNavigation } from './navigation';
 import { appendTEIDocument } from './textloader/textloader';
 import { fetchText } from './network';
 import { drawAnnos } from './highlighting';
-import { checkIsTargetCompatible, makeTargetsCompatible } from './utils';
+import { checkIsTargetCompatible, getTargetAnnotationId, getTargetFragment, makeTargetsCompatible } from './utils';
 
 window.textEditor = {
   initializeTextEditorComponent,
@@ -46,15 +45,16 @@ async function initializeTextEditorComponent(linkToResource, annotationsString, 
   const $tableContainer = document.getElementById('annotationTableBottomDiv');
   initializeSidebar($sidebar, $teiContatinerElement, $pagesDialog, $tableContainer, hooks);
 
-  //initializing the annotation table
-  const $annotationCard = document.getElementById('annotationCard');
-  const $annotationTable = document.getElementById('annotationTableBottom');
-  initializeAnnotationTable(annoJson, $annotationTable, $annotationCard, hooks);
-
   // Construct and display a navigation bar.
   const $navbarTop = document.getElementById('textNavBar');
   const $navbarLow = document.getElementById('textNavBarLow');
-  await initializeNavigation($navbarTop, $navbarLow, $teiContatinerElement, hooks);
+  const fragmentId = getTargetFragment(window.location);
+  const annotationId = getTargetAnnotationId(window.location);
+  await initializeNavigation($navbarTop, $navbarLow, $teiContatinerElement, fragmentId, annotationId, hooks);
+
+  //initializing the annotation table
+  const $annotationTable = document.getElementById('annotationTableBottom');
+  initializeAnnotationTable(annoJson, $annotationTable, textDisplayAnnotationFunction, hooks);
 
   // initializes projectspecfic things by executing the hooks
   if (hooks.initializeProjectspecifics) {
