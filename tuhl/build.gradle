@@ -124,7 +124,7 @@ check.dependsOn integrationTest
 jar {
 	manifest {
 		attributes(
-				'Main-Class': 'edu.kit.scc.dem.tuhl.TuhlApplication'
+				'Main-Class': 'edu.kit.datamanager.takita.TakitaApplication'
 		)
 	}
 }

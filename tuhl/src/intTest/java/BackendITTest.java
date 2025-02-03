@@ -3,17 +3,6 @@ import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
 import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
 import static org.junit.jupiter.api.Assertions.*;
 
-import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
-import edu.kit.scc.dem.tuhl.TuhlApplication;
-import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
-import edu.kit.scc.dem.tuhl.dataaccess.IAnnotationStoreAccessService;
-import edu.kit.scc.dem.tuhl.dataaccess.IRepositoryAccessService;
-import edu.kit.scc.dem.tuhl.editor.EditorService;
-import edu.kit.scc.dem.tuhl.editor.IEditorService;
-import edu.kit.scc.dem.tuhl.editor.RestController;
-import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
-import edu.kit.scc.dem.tuhl.model.Annotation;
-import edu.kit.scc.dem.tuhl.model.Manuscript;
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit.core.model.RequestFieldMatcher;
@@ -37,6 +26,18 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.unbescape.html.HtmlEscape;
+
+import edu.kit.datamanager.takita.NoSuchIndexEntryException;
+import edu.kit.datamanager.takita.TuhlApplication;
+import edu.kit.datamanager.takita.assistance.IAssistanceService;
+import edu.kit.datamanager.takita.dataaccess.IAnnotationStoreAccessService;
+import edu.kit.datamanager.takita.dataaccess.IRepositoryAccessService;
+import edu.kit.datamanager.takita.editor.EditorService;
+import edu.kit.datamanager.takita.editor.IEditorService;
+import edu.kit.datamanager.takita.editor.RestController;
+import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
+import edu.kit.datamanager.takita.model.Annotation;
+import edu.kit.datamanager.takita.model.Manuscript;
 
 import java.io.IOException;
 import java.net.URLDecoder;

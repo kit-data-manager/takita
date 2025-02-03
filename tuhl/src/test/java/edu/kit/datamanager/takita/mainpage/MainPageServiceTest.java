@@ -1,0 +1,58 @@
+package edu.kit.datamanager.takita.mainpage;
+
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.ui.Model;
+
+import edu.kit.datamanager.takita.assistance.IAssistanceService;
+import edu.kit.datamanager.takita.mainpage.IMainPageService;
+import edu.kit.datamanager.takita.mainpage.MainPageService;
+import edu.kit.datamanager.takita.mainpage.dashboard.IDashboardService;
+import edu.kit.datamanager.takita.mainpage.dashboard.annoview.AnnoViewService;
+import edu.kit.datamanager.takita.mainpage.dashboard.contentview.TableViewService;
+import edu.kit.datamanager.takita.mainpage.search.IFilterService;
+import edu.kit.datamanager.takita.mainpage.search.ISearchService;
+
+
+@SpringBootTest(classes = MainPageService.class)
+class MainPageServiceTest {
+
+  @Autowired
+  IMainPageService mockedMainPageService;
+
+  @MockBean
+  private IAssistanceService mockedAssistanceService;
+
+  @MockBean
+  private IFilterService mockedFilterService;
+
+  @MockBean
+  private IDashboardService mockedDashboardService;
+
+  @MockBean
+  private TableViewService mockedTableViewService;
+  
+  @MockBean
+  private AnnoViewService mockedAnnoViewService;
+
+  @MockBean
+  private ISearchService mockedSearchService;
+
+  @Test
+  void update() {
+
+    Model mockModel = Mockito.mock(Model.class);
+    mockedMainPageService.update(mockModel);
+    Mockito.verify(mockedAssistanceService).updateModel(mockModel);
+    Mockito.verify(mockedFilterService).updateModel(mockModel);
+    Mockito.verify(mockedDashboardService).updateModel(mockModel);
+    Mockito.verify(mockedTableViewService).updateModel(mockModel);
+    Mockito.verify(mockedAnnoViewService).updateModel(mockModel);
+    Mockito.verify(mockedSearchService).updateModel(mockModel);
+
+  }
+
+}
