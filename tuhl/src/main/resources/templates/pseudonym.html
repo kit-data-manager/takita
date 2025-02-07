@@ -19,7 +19,7 @@
 
 <script th:inline="javascript">
 
-    function clickButton(event){
+    async function clickButton(event){
         /*<![CDATA[*/
         event.preventDefault();
         let button = document.getElementById('editButton');
@@ -34,37 +34,33 @@
             button.innerText = edit;
             button.className = 'btn btn-outline-secondary';
             input.disabled = true;
-            setPseudonym($('#pseudonymInput').val());
+            await setPseudonym(document.getElementById('pseudonymInput').value);
         }
         /*]]>*/
     }
 
-    function setPseudonym(input) {
-            $.ajax({
-                type: 'GET',
-                url: '../assistance/' + input,
-                dataType: 'text',
-                success: function (responseData) {
-                    console.log("Response from succesfull pseudonym update: ", responseData);
-                    // reload the page with the new pseudonym
-                    // location.reload();
+    async function setPseudonym(input) {
+        const response = await fetch('../assistance/' + input);
 
-                    document.getElementById('pseudonymInput').value = input;
+        if (response.ok) {
+            console.log("Response from succesfull pseudonym update: ", response);
+            // reload the page with the new pseudonym
+            // location.reload();
 
-                    let pseudonym = document.getElementById("pseudonymInputModal");
-                    if (pseudonym.classList.contains('show')) {
-                        bootstrap.Modal.getOrCreateInstance(pseudonym).toggle();
-                    };
-                    
-                    // emitting event in case of successful pseudonym update
-                    // can be used to reload the page where necessary
-                    document.dispatchEvent(new Event('pseudonymUpdate'))
-                },
-                error: function (responseData) {
-                    console.error(responseData);
-                }
-            });
+            document.getElementById('pseudonymInput').value = input;
+
+            let pseudonym = document.getElementById("pseudonymInputModal");
+            if (pseudonym.classList.contains('show')) {
+                bootstrap.Modal.getOrCreateInstance(pseudonym).toggle();
+            };
+            
+            // emitting event in case of successful pseudonym update
+            // can be used to reload the page where necessary
+            document.dispatchEvent(new Event('pseudonymUpdate'))
+        } else {
+            console.error("Response from failed pseudonym update: ",response)
         }
+    }
 </script>
 </div>
 
@@ -93,7 +89,8 @@
 
     <script th:inline="javascript">
 
-        $(document).ready(function () {
+        // maybe the "load"-event might be necessary here
+        document.addEventListener("DOMContentLoaded", (event) => {
             let userName = /*[[${user.getName()}]]*/ "default";
             if (userName === 'default') {
                 let pseudonym = document.getElementById("pseudonymInputModal");
@@ -101,10 +98,10 @@
             }
         });
 
-        document.getElementById('pseudonymInputModal').addEventListener('submit', function(event) {
+        document.getElementById('pseudonymInputModal').addEventListener('submit', async function(event) {
             event.preventDefault();
-            let input =  $('#pseudonymInitInput').val();
-            setPseudonym(input);
+            let input =  document.getElementById("pseudonymInitInput").value;
+            await setPseudonym(input);
         });
     </script>
 
