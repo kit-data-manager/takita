@@ -53,7 +53,7 @@ export function initializeTextEditor(_annotations, hooks = {}) {
   // adding the closing functionality to annotation creation modal
   document.getElementById('dismissAnnotation').addEventListener('click', function (_e) {
     const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('createAnnotation'));
-    $modal.toggle();
+    $modal.hide();
     // disabling the option to create an annotation. needed, because selecting text
     // can be done before the mode was set to create by clicking the button after the text selection process
     window.MODE = window.MODE_CLASS.View;

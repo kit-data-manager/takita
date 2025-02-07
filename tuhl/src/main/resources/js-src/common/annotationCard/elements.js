@@ -393,7 +393,7 @@ function appendTextTargetModificationButtons(annotationData, $annotationDiv, hoo
   // $dismissTargetUpdate.replaceWith($dismissTargetUpdateClone);
   document.getElementById('dismissTargetUpdate').onclick = (_event) => {
     const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('updateSelection'));
-    $modal.toggle();
+    $modal.hide();
     // document.getElementById('modifyButton').parentElement.classList.remove('active');
     cancelModification();
     // disabling the option to create an annotation. needed, because selecting text
