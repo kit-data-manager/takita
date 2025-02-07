@@ -1,6 +1,7 @@
 // external imports
 import { isEmpty } from 'underscore';
 import $ from 'jquery';
+import * as bootstrap from 'bootstrap';
 // internal imports
 import { makeAnnotationData, makeBodiesData } from './utils';
 import { hooks } from '..';
@@ -150,7 +151,9 @@ export const formObjectCreateBody = {
               }
 
               // hiding the modal.
-              document.getElementById('createBody').classList.toggle('show-modal');
+              const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('createBody'));
+              $modal.toggle();
+
               window.SELECTED_ANNOTATION = await selectAnnotation(
                 null,
                 document.getElementById('createForm').title,
@@ -228,7 +231,7 @@ export function getFormModel(chosenTemplate) {
           {
             key: 'color',
             readOnly: true,
-            htmlClass: 'is-hidden',
+            htmlClass: 'd-none',
           },
         ],
       };
@@ -270,6 +273,21 @@ export function getFormModel(chosenTemplate) {
           purpose: {
             type: 'string',
             title: 'purpose',
+            enum: [
+              'assessing',
+              'bookmarking',
+              'classifying',
+              'commenting',
+              'describing',
+              'editing',
+              'highlighting',
+              'identifying',
+              'linking',
+              'moderating',
+              'questioning',
+              'replying',
+              'tagging',
+            ],
           },
           value: {
             type: 'string',

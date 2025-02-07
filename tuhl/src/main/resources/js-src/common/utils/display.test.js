@@ -1,6 +1,6 @@
 import {
   encodeAnnoId,
-  setVisibility,
+  setDisplay,
   toggleBoxIcon,
   toggleButtonState,
   toggleExpand,
@@ -60,27 +60,27 @@ describe('showing/hiding an element and activate/deactivate a corresponding butt
     $buttonparent.appendChild($button);
   });
   it('shows an element', () => {
-    $element.classList.add('is-hidden');
+    $element.classList.add('invisible');
     toggleVisibility($element);
-    expect($element.classList.contains('is-hidden')).toBe(false);
+    expect($element.classList.contains('invisible')).toBe(false);
   });
   it('hides an element', () => {
     toggleVisibility($element);
-    expect($element.classList.contains('is-hidden')).toBe(true);
+    expect($element.classList.contains('invisible')).toBe(true);
   });
   it('shows an element and activates a button', () => {
-    $element.classList.add('is-hidden');
+    $element.classList.add('invisible');
     // mocking element.scrollIntoView
     $element.scrollIntoView = jest.fn();
     toggleVisibility($element, $button);
-    expect($element.classList.contains('is-hidden')).toBe(false);
+    expect($element.classList.contains('invisible')).toBe(false);
     expect($buttonparent.classList.contains('active')).toBe(true);
     expect($element.scrollIntoView).toHaveBeenCalled();
   });
   it('hides an element and deactivates a button', () => {
     $button.classList.add('active');
     toggleVisibility($element, $button);
-    expect($element.classList.contains('is-hidden')).toBe(true);
+    expect($element.classList.contains('invisible')).toBe(true);
     expect($buttonparent.classList.contains('active')).toBe(false);
   });
 });
@@ -88,61 +88,61 @@ describe('showing/hiding an element and activate/deactivate a corresponding butt
 describe('adding/removing css class to hide/show an element or a list of elements', () => {
   it('hides an element', () => {
     const $element = document.createElement('div');
-    setVisibility($element, false);
-    expect($element.classList.contains('is-hidden')).toBe(true);
+    setDisplay($element, false);
+    expect($element.classList.contains('d-none')).toBe(true);
   });
   it('shows an element', () => {
     const $element = document.createElement('div');
-    $element.classList.add('is-hidden');
-    setVisibility($element, true);
-    expect($element.classList.contains('is-hidden')).toBe(false);
+    $element.classList.add('d-none');
+    setDisplay($element, true);
+    expect($element.classList.contains('d-none')).toBe(false);
   });
   it('hides multiple elements', () => {
     document.body.innerHTML = `<div id="w.1"></div><div id="w.2"></div><div id="w.3"></div>`;
     const $elements = document.querySelectorAll('div');
-    setVisibility($elements, false);
-    expect($elements[0].classList.contains('is-hidden')).toBe(true);
-    expect($elements[1].classList.contains('is-hidden')).toBe(true);
-    expect($elements[2].classList.contains('is-hidden')).toBe(true);
+    setDisplay($elements, false);
+    expect($elements[0].classList.contains('d-none')).toBe(true);
+    expect($elements[1].classList.contains('d-none')).toBe(true);
+    expect($elements[2].classList.contains('d-none')).toBe(true);
   });
   it('shows multiple elements', () => {
     document.body.innerHTML = `
-      <div class="is-hidden" id="w.1"></div>
-      <div class="is-hidden" id="w.2"></div>
-      <div class="is-hidden" id="w.3"></div>`;
+      <div class="d-none" id="w.1"></div>
+      <div class="d-none" id="w.2"></div>
+      <div class="d-none" id="w.3"></div>`;
     const $elements = document.querySelectorAll('div');
-    setVisibility($elements, true);
-    expect($elements[0].classList.contains('is-hidden')).toBe(false);
-    expect($elements[1].classList.contains('is-hidden')).toBe(false);
-    expect($elements[2].classList.contains('is-hidden')).toBe(false);
+    setDisplay($elements, true);
+    expect($elements[0].classList.contains('d-none')).toBe(false);
+    expect($elements[1].classList.contains('d-none')).toBe(false);
+    expect($elements[2].classList.contains('d-none')).toBe(false);
   });
 });
 
 describe('showing/hiding and enabling/disabling a button', () => {
   it('shows and enables a button', () => {
-    document.body.innerHTML = `<div class="is-hidden" id="w.1"></div>`;
+    document.body.innerHTML = `<div class="d-none" id="w.1"></div>`;
     const $button = document.getElementById('w.1');
     $button.disabled = true;
     toggleButtonState($button);
-    expect($button.classList.contains('is-hidden')).toBe(false);
+    expect($button.classList.contains('d-none')).toBe(false);
     expect($button.disabled).toBe(false);
   });
   it('hides and disables a button', () => {
     document.body.innerHTML = `<div id="w.1"></div>`;
     const $button = document.getElementById('w.1');
     toggleButtonState($button);
-    expect($button.classList.contains('is-hidden')).toBe(true);
+    expect($button.classList.contains('d-none')).toBe(true);
     expect($button.disabled).toBe(true);
   });
 });
 
 describe('showing/hiding an element and the corresponding icon', () => {
   it('shows an element and the "arrow to the left" icon', () => {
-    document.body.innerHTML = `<div class="is-hidden" id="w.a"></div><div id="icon" class="bx-chevron-right"></div>`;
+    document.body.innerHTML = `<div class="collapse" id="w.a"></div><div id="icon" class="bx-chevron-right"></div>`;
     const $element = document.getElementById('w.a');
     const $icon = document.getElementById('icon');
     toggleExpand($element, $icon);
-    expect($element.classList.contains('is-hidden')).toBe(false);
+    expect($element.classList.contains('collapse')).toBe(false);
     expect($icon.classList.contains('bx-chevron-right')).toBe(false);
     expect($icon.classList.contains('bx-chevron-down')).toBe(true);
   });
@@ -151,7 +151,7 @@ describe('showing/hiding an element and the corresponding icon', () => {
     const $element = document.getElementById('w.1');
     const $icon = document.getElementById('icon');
     toggleExpand($element, $icon);
-    expect($element.classList.contains('is-hidden')).toBe(true);
+    expect($element.classList.contains('collapse')).toBe(true);
     expect($icon.classList.contains('bx-chevron-right')).toBe(true);
     expect($icon.classList.contains('bx-chevron-down')).toBe(false);
   });

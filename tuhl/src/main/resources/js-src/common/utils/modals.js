@@ -1,17 +1,18 @@
+import * as bootstrap from 'bootstrap';
 /**
  * shows the loading modal/the spinner
  */
 function showSpinner() {
-  const spinner = document.querySelector('#loading');
-  spinner.classList.add('show-modal');
+  const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('loading'));
+  $modal.show();
 }
 
 /**
  * hides the loading modal/the spinner
  */
 function hideSpinner() {
-  const spinner = document.querySelector('#loading');
-  spinner.classList.remove('show-modal');
+  const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('loading'));
+  $modal.hide();
 }
 
 /**
@@ -44,6 +45,6 @@ export async function fetchWithSpinner(url, config = {}) {
  * fetchWithSpinner().
  */
 export function toggleLoadingModal() {
-  const modal = document.getElementById('loading');
-  modal.classList.toggle('show-modal');
+  const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('loading'));
+  $modal.toggle();
 }

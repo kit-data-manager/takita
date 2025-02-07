@@ -1,4 +1,7 @@
+// external modules
+import * as bootstrap from 'bootstrap';
 import { JSDOM } from 'jsdom';
+// internal modules
 import {
   checkIsNodeOnWorkspace,
   getContentOfSelection,
@@ -12,7 +15,7 @@ import {
 
 const innerHtml =
   '<div class="col-7"><div id="notOnWorkspace"></div>' +
-  '  <div id="textWorkspace" class="is-full-width">' +
+  '  <div id="textWorkspace">' +
   '       <div id="TEI">' +
   '            <tei-text xml:lang="en" lang="en">' +
   '               <tei-body n="Psalms" xml:id="b.426591" id="b.426591">' +
@@ -268,43 +271,62 @@ describe('showing the modal for target modification', () => {
   it(`displays the old and newly selected text, 
     when the element is empty (first call to the function)`, () => {
     document.body.innerHTML = `
-    <div class="modal" id="updateSelection" data-new-target-xml-id="id(&quot;w.101&quot;) | id(&quot;w.102&quot;)">
-        <div class="modal-content">
-            <span class="close-button" id="closeButtonUpdate">×</span>
-			      <div id="oldSelectedText"></div>
-            <div id="newSelectedText"></div>
-            <input class="btn btn-primary" type="submit" value="Update + Save" id="updateTargetButton">
+    <div class="modal" tabindex="-1" role="dialog" id="updateSelection" data-bs-backdrop="static" data-new-target-xml-id="id(&quot;w.101&quot;) | id(&quot;w.102&quot;)">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Seleted Text</h5>
+                    <button type="button" id="dismissTargetUpdate" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="oldSelectedText"></div>
+                    <div id="newSelectedText"></div>
+                    <input class="btn btn-primary" type="submit" value="Update + Save" id="updateTargetButton">
+                </div>
+            </div>
         </div>
-    </div>`;
+    </div>
+    `;
 
-    let modal = document.getElementById('updateSelection');
+    // let $modal = document.getElementById('updateSelection');
+    let $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('updateSelection'));
     const oldSelectedText = 'old';
     const newSelectedText = 'new';
     const xPath = 'id("w.1")';
-    modal = showSaveTargetModal(modal, oldSelectedText, newSelectedText, xPath);
-    expect(modal.querySelector('#oldSelectedText').firstElementChild.innerHTML).toStrictEqual('old');
-    expect(modal.querySelector('#newSelectedText').firstElementChild.innerHTML).toStrictEqual('new');
-    expect(modal.classList.contains('show-modal')).toBe(true);
+    $modal = showSaveTargetModal($modal, oldSelectedText, newSelectedText, xPath);
+    // expect($modal.querySelector('#oldSelectedText').firstElementChild.innerHTML).toStrictEqual('old');
+    // expect($modal.querySelector('#newSelectedText').firstElementChild.innerHTML).toStrictEqual('new');
+    expect($modal._element.querySelector('#oldSelectedText').firstElementChild.innerHTML).toStrictEqual('old');
+    expect($modal._element.querySelector('#newSelectedText').firstElementChild.innerHTML).toStrictEqual('new');
+    expect($modal._element.classList.contains('show')).toBe(true);
   });
   it(`displays the old and newly selected text, 
     when the element was already filled (second call to the function)`, () => {
     document.body.innerHTML = `
-    <div class="modal" id="updateSelection" data-new-target-xml-id="id(&quot;w.101&quot;) | id(&quot;w.102&quot;)">
-        <div class="modal-content">
-            <span class="close-button" id="closeButtonUpdate">×</span>
-			      <div id="oldSelectedText">Current Selection:<div>הַמַּ֨יִם֙ אֲשֶׁר֙</div></div>
-            <div id="newSelectedText">New Selection:<div>וַיַּבְדֵּ֗ל</div></div>
-            <input class="btn btn-primary" type="submit" value="Update + Save" id="updateTargetButton">
+    <div class="modal" tabindex="-1" role="dialog" id="updateSelection" data-bs-backdrop="static" data-new-target-xml-id="id(&quot;w.101&quot;) | id(&quot;w.102&quot;)">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Seleted Text</h5>
+                    <button type="button" id="dismissTargetUpdate" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="oldSelectedText">Current Selection:<div>party</div></div>
+                    <div id="newSelectedText">New Selection:<div>disco</div></div>
+                    <input class="btn btn-primary" type="submit" value="Update + Save" id="updateTargetButton">
+                </div>
+            </div>
         </div>
-    </div>`;
+    </div>
+    `;
 
-    let modal = document.getElementById('updateSelection');
+    let $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('updateSelection'));
     const oldSelectedText = 'old';
     const newSelectedText = 'new';
     const xPath = 'id("w.1")';
-    modal = showSaveTargetModal(modal, oldSelectedText, newSelectedText, xPath);
-    expect(modal.querySelector('#oldSelectedText').firstElementChild.innerHTML).toStrictEqual('old');
-    expect(modal.querySelector('#newSelectedText').firstElementChild.innerHTML).toStrictEqual('new');
-    expect(modal.classList.contains('show-modal')).toBe(true);
+    $modal = showSaveTargetModal($modal, oldSelectedText, newSelectedText, xPath);
+    expect($modal._element.querySelector('#oldSelectedText').firstElementChild.innerHTML).toStrictEqual('old');
+    expect($modal._element.querySelector('#newSelectedText').firstElementChild.innerHTML).toStrictEqual('new');
+    expect($modal._element.classList.contains('show')).toBe(true);
   });
 });

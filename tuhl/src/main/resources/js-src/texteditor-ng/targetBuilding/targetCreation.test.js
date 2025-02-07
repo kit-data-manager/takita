@@ -3,7 +3,7 @@ import { createTargetList, createXPath } from './targetCreation';
 // copied from the browser, don't touch this innerHtml
 const innerHtmlCreationTest =
   '<div class="col-7"><div id="notOnWorkspace"></div>' +
-  '  <div id="textWorkspace" class="is-full-width">' +
+  '  <div id="textWorkspace">' +
   '       <div id="TEI">' +
   '            <tei-text xml:lang="en" lang="en">' +
   '               <tei-body n="Psalms" xml:id="b.426591" id="b.426591">' +
@@ -14,7 +14,7 @@ const innerHtmlCreationTest =
 // see https://git.noc.ruhr-uni-bochum.de/sfb1475-inf/takita/-/issues/61
 const innerHtmlCreationTestWithLinebreaks =
   '<div class="col-7"><div id="notOnWorkspace"></div>' +
-  '  <div id="textWorkspace" class="is-full-width">' +
+  '  <div id="textWorkspace">' +
   '       <div id="TEI">' +
   '            <tei-text xml:lang="en" lang="en">' +
   '               <tei-body n="Psalms" xml:id="b.426591" id="b.426591">' +
@@ -25,7 +25,7 @@ const innerHtmlCreationTestWithLinebreaks =
 // see https://git.noc.ruhr-uni-bochum.de/sfb1475-inf/takita/-/issues/166
 const innerHtmlCreationTestWithChildren =
   '<div class="col-7"><div id="notOnWorkspace"></div>' +
-  '  <div id="textWorkspace" class="is-full-width">' +
+  '  <div id="textWorkspace">' +
   '       <div id="TEI">' +
   '            <tei-text xml:lang="en" lang="en">' +
   '               <tei-body n="Psalms" xml:id="b.426591" id="b.426591">' +

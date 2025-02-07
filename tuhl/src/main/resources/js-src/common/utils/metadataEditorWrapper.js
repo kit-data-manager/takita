@@ -46,7 +46,7 @@ export function fillMetaDataEditorTable(annoJson) {
       headerSort: false,
       cellClick: async function (e, cell) {
         window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(cell.getValue()), hooks);
-        if ($annotationCard.classList.contains('is-hidden')) {
+        if ($annotationCard.classList.contains('invisible')) {
           toggleVisibility($annotationCard);
         }
         // function to select shape on the canvas
@@ -85,7 +85,7 @@ export function fillMetaDataEditorTable(annoJson) {
     //},
     updateOperation: async function (rowColumnvalue) {
       window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(rowColumnvalue.id), hooks);
-      if ($annotationCard.classList.contains('is-hidden')) {
+      if ($annotationCard.classList.contains('invisible')) {
         toggleVisibility($annotationCard);
       }
       // toggling shape selection on the canvas

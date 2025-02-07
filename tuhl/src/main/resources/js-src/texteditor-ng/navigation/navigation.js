@@ -2,7 +2,7 @@
 import { escapeSelector } from 'jquery';
 // internal imports
 // Common utils
-import { createOption, setVisibility, toggleVisibility } from '../../common/utils';
+import { createOption, setDisplay, toggleVisibility } from '../../common/utils';
 import { selectAnnotation } from '../../common/annotationCard';
 import { encodeAnnoId } from '../../common/utils';
 // Texteditor specific utils
@@ -66,7 +66,7 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, hooks 
     $showAllButton.innerHTML = 'Show all ' + divisionLabels + 's'; // yay for English pluralization rules
 
     // Hide all chapters initially
-    setVisibility($divisions, false);
+    setDisplay($divisions, false);
 
     // Fill select element with options
     divisionLabels.map(createOption).forEach((option) => $chapterSelect.appendChild(option));
@@ -150,13 +150,13 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, hooks 
     const onClickShowAll = (_ev) => {
       showAllDivisions = !showAllDivisions;
       if (showAllDivisions) {
-        setVisibility($divisions, true);
+        setDisplay($divisions, true);
         // showing all low-level divisions and hiding the low-level navbar
         if (hasMultiLevelDivision) {
           const $divisionsLow = $text.querySelectorAll('tei-div[type="' + divisionTypeLow + '"]');
           console.log($divisionsLow.length, $divisionsLow);
-          setVisibility($divisionsLow, true);
-          setVisibility($navBarLow, false);
+          setDisplay($divisionsLow, true);
+          setDisplay($navBarLow, false);
         }
       } else {
         selectDivision(currentDivisionLabelTop, $divisions);
@@ -189,7 +189,7 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, hooks 
 
     // After everything is set up, make navbar visible
     //console.log('make navbar visible');
-    $navBarTop.classList.remove('is-hidden');
+    setDisplay($navBarTop, true);
 
     if (preselectedAnnoTarget !== null) {
       const preselectedAnnotationId = getTargetAnnotationId(window.location);
@@ -239,7 +239,7 @@ export async function initializeNavigationLow(
   hooks = {},
 ) {
   // hiding the navBar initially as there might not be more than one division
-  $navBar.classList.add('is-hidden');
+  setDisplay($navBar, false);
   // Local state, closed over and modified by the various button callbacks
   let showAllDivisions = false;
 
@@ -264,7 +264,7 @@ export async function initializeNavigationLow(
       $showAllButton.innerHTML = 'Show all ' + divisionLabels + 's'; // yay for English pluralization rules
 
       // Hide all chapters initially
-      setVisibility($divisions, false);
+      setDisplay($divisions, false);
 
       // Fill select element with options
       // removing old values first
@@ -362,7 +362,7 @@ export async function initializeNavigationLow(
       const onClickShowAll = (_ev) => {
         showAllDivisions = !showAllDivisions;
         if (showAllDivisions) {
-          setVisibility($divisions, true);
+          setDisplay($divisions, true);
         } else {
           selectDivision(currentDivisionLabelLow, $divisions);
         }
@@ -386,7 +386,7 @@ export async function initializeNavigationLow(
 
       // After everything is set up, make navbar visible
       //console.log('make navbar visible');
-      $navBar.classList.remove('is-hidden');
+      setDisplay($navBar, true);
 
       // only navigate to the annotation if necessary
       if (navigateToAnnotation) {
@@ -424,7 +424,7 @@ export async function navigateToAnnotation(targetAnnotationId, hooks = {}) {
   if (targetAnnotationId) {
     window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(targetAnnotationId), hooks);
     const annoCard = document.getElementById('annotationCard');
-    if (annoCard.classList.contains('is-hidden')) {
+    if (annoCard.classList.contains('invisible')) {
       toggleVisibility(annoCard);
     }
   }
@@ -468,11 +468,11 @@ export function getTargetDivision($targetElement, divisionType) {
  */
 export function selectDivision(selectedLabel, $allDivisions) {
   // Hide all text parts initially.
-  setVisibility($allDivisions, false);
+  setDisplay($allDivisions, false);
   // Display selected text parts.
   [...$allDivisions]
     .filter((tp) => getDivisionLabel(tp) === selectedLabel)
-    .forEach((selected) => setVisibility(selected, true));
+    .forEach((selected) => setDisplay(selected, true));
 }
 
 /**

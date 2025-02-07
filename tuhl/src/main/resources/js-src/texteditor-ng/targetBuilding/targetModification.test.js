@@ -1,20 +1,31 @@
+// external modules
+import * as bootstrap from 'bootstrap';
+// internal modules
 import * as annotationCard from '../../common/annotationCard/annotationCard';
 import * as display from '../display/display';
 import { Mode } from '../../common/mode';
 import { modifySelection, saveModification, cancelModification, updateTarget } from './targetModification';
 
 const innerHtml =
-  '<div>' +
-  '<div class="modal" id="updateSelection">' +
-  ' <div class="modal-content">' +
-  '     <span class="close-button" id="closeButtonUpdate">&times;</span>' +
-  '     <div id="oldSelectedText"></div>' +
-  '     <div id="newSelectedText"></div>' +
-  '     <input class="btn btn-primary" type="submit" value="Update + Save" id="updateTargetButton">' +
-  ' </div>' +
-  '</div>' +
+  `
+<div class="modal" tabindex="-1" role="dialog" id="updateSelection" data-bs-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Seleted Text</h5>
+                    <button type="button" id="dismissTargetUpdate" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="oldSelectedText"></div>
+                    <div id="newSelectedText"></div>
+                    <input class="btn btn-primary" type="submit" value="Update + Save" id="updateTargetButton">
+                </div>
+            </div>
+        </div>
+    </div>
+` +
   '<div class="col-7"><div id="notOnWorkspace"></div>' +
-  '  <div id="textWorkspace" class="is-full-width">' +
+  '  <div id="textWorkspace">' +
   '       <div id="TEI">' +
   '            <tei-text xml:lang="en" lang="en">' +
   '               <tei-body n="Psalms" xml:id="b.426591" id="b.426591">' +
@@ -93,7 +104,7 @@ describe('starting the target modification process', () => {
     buttonSaveModification.innerHTML = 'Save Modification';
     buttonSaveModification.id = 'buttonSaveModification';
     buttonSaveModification.disabled = true;
-    buttonSaveModification.classList.add('is-hidden');
+    buttonSaveModification.classList.add('d-none');
 
     var buttonCancelModification = document.createElement('button');
     buttonCancelModification.type = 'submit';
@@ -101,7 +112,7 @@ describe('starting the target modification process', () => {
     buttonCancelModification.id = 'buttonCancelModification';
     buttonCancelModification.style.backgroundColor = '#c82525';
     buttonCancelModification.disabled = true;
-    buttonCancelModification.classList.add('is-hidden');
+    buttonCancelModification.classList.add('d-none');
 
     annotationDiv.append(buttonModifySelection);
     annotationDiv.append(buttonSaveModification);
@@ -120,11 +131,11 @@ describe('starting the target modification process', () => {
     expect(window.MODE).toBe(window.MODE_CLASS.Modify);
     expect(window.SELECTING_TEXT).toBe(true);
     expect($buttonModifySelection.disabled).toBe(true);
-    expect($buttonModifySelection.classList.contains('is-hidden')).toBe(true);
+    expect($buttonModifySelection.classList.contains('d-none')).toBe(true);
     expect($buttonSaveModification.disabled).toBe(false);
-    expect($buttonSaveModification.classList.contains('is-hidden')).toBe(false);
+    expect($buttonSaveModification.classList.contains('d-none')).toBe(false);
     expect($buttonCancelModification.disabled).toBe(false);
-    expect($buttonCancelModification.classList.contains('is-hidden')).toBe(false);
+    expect($buttonCancelModification.classList.contains('d-none')).toBe(false);
   });
 
   it('starts the process of target modification and stops it as no annotation is selected', () => {
@@ -138,11 +149,11 @@ describe('starting the target modification process', () => {
     expect(window.MODE).toBe(window.MODE_CLASS.View);
     expect(window.SELECTING_TEXT).toBe(false);
     expect($buttonModifySelection.disabled).toBe(false);
-    expect($buttonModifySelection.classList.contains('is-hidden')).toBe(false);
+    expect($buttonModifySelection.classList.contains('d-none')).toBe(false);
     expect($buttonSaveModification.disabled).toBe(true);
-    expect($buttonSaveModification.classList.contains('is-hidden')).toBe(true);
+    expect($buttonSaveModification.classList.contains('d-none')).toBe(true);
     expect($buttonCancelModification.disabled).toBe(true);
-    expect($buttonCancelModification.classList.contains('is-hidden')).toBe(true);
+    expect($buttonCancelModification.classList.contains('d-none')).toBe(true);
   });
 });
 
@@ -159,10 +170,10 @@ describe('saving modification process', () => {
     const annotation = fullAnnotation;
 
     const stoppedFunction = saveModification(null, selection, annotation);
-    const modal = document.getElementById('updateSelection');
+    const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('updateSelection'));
     const oldSelectedText = document.getElementById('oldSelectedText').firstElementChild.innerHTML;
     const newSelectedText = document.getElementById('newSelectedText').firstElementChild.innerHTML;
-    const targetXPath = modal.dataset.newTargetXmlId;
+    const targetXPath = $modal._element.dataset.newTargetXmlId;
 
     expect(stoppedFunction).toBe(undefined);
     expect(oldSelectedText).toBe('nor st');
@@ -199,7 +210,7 @@ describe('canceling the target modification process', () => {
     buttonModifySelection.innerHTML = 'Modify Selection';
     buttonModifySelection.id = 'buttonModifySelection';
     buttonModifySelection.disabled = true;
-    buttonModifySelection.classList.add('is-hidden');
+    buttonModifySelection.classList.add('d-none');
 
     var buttonSaveModification = document.createElement('button');
     buttonSaveModification.type = 'submit';
@@ -225,11 +236,11 @@ describe('canceling the target modification process', () => {
     expect(window.MODE).toBe(window.MODE_CLASS.View);
     expect(window.SELECTING_TEXT).toBe(false);
     expect($buttonModifySelection.disabled).toBe(false);
-    expect($buttonModifySelection.classList.contains('is-hidden')).toBe(false);
+    expect($buttonModifySelection.classList.contains('d-none')).toBe(false);
     expect($buttonSaveModification.disabled).toBe(true);
-    expect($buttonSaveModification.classList.contains('is-hidden')).toBe(true);
+    expect($buttonSaveModification.classList.contains('d-none')).toBe(true);
     expect($buttonCancelModification.disabled).toBe(true);
-    expect($buttonCancelModification.classList.contains('is-hidden')).toBe(true);
+    expect($buttonCancelModification.classList.contains('d-none')).toBe(true);
   });
 });
 
@@ -241,8 +252,8 @@ describe('updating target callback for eventListener', () => {
     // mocking functions and dom-state
     document.body.innerHTML = innerHtml;
     jest.spyOn(annotationCard, 'selectAnnotation').mockResolvedValue(true);
-    const $modal = document.getElementById('updateSelection');
-    $modal.classList.toggle('show-modal');
+    const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('updateSelection'));
+    $modal.toggle();
     window.MODE = window.MODE_CLASS.Modify;
     window.SELECTING_TEXT = true;
     const callback = jest.fn();
@@ -251,7 +262,7 @@ describe('updating target callback for eventListener', () => {
     expect(result).toBe(true);
     expect(window.MODE).toBe(window.MODE_CLASS.View);
     expect(window.SELECTING_TEXT).toBe(false);
-    expect($modal.classList.contains('show-modal')).toBe(false);
+    expect($modal._element.classList.contains('show')).toBe(false);
   });
 
   it('updates the target in a textEditor and updates the display', async () => {
@@ -259,8 +270,8 @@ describe('updating target callback for eventListener', () => {
     document.body.innerHTML = innerHtml;
     jest.spyOn(annotationCard, 'selectAnnotation').mockResolvedValue(true);
     const updateDisplayMock = jest.spyOn(display, 'updateDisplay');
-    const $modal = document.getElementById('updateSelection');
-    $modal.classList.toggle('show-modal');
+    const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('updateSelection'));
+    $modal.toggle();
     window.MODE = window.MODE_CLASS.Modify;
     window.SELECTING_TEXT = true;
     window.EDITORTYPE = 'TEXT';
@@ -270,7 +281,7 @@ describe('updating target callback for eventListener', () => {
     expect(result).toBe(true);
     expect(window.MODE).toBe(window.MODE_CLASS.View);
     expect(window.SELECTING_TEXT).toBe(false);
-    expect($modal.classList.contains('show-modal')).toBe(false);
+    expect($modal._element.classList.contains('show')).toBe(false);
     expect(updateDisplayMock).toHaveBeenCalled();
   });
 
@@ -279,8 +290,8 @@ describe('updating target callback for eventListener', () => {
     document.body.innerHTML = innerHtml;
     jest.spyOn(annotationCard, 'selectAnnotation').mockRejectedValue(new Error('Async error message'));
     jest.spyOn(display, 'updateDisplay');
-    const $modal = document.getElementById('updateSelection');
-    $modal.classList.toggle('show-modal');
+    const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('updateSelection'));
+    $modal._element.classList.toggle('show');
     const callback = jest.fn(() => {
       throw new Error();
     });
@@ -289,7 +300,7 @@ describe('updating target callback for eventListener', () => {
     expect(result).toBe(false);
     expect(window.MODE).toBe(window.MODE_CLASS.View);
     expect(window.SELECTING_TEXT).toBe(false);
-    expect($modal.classList.contains('show-modal')).toBe(true);
+    expect($modal._element.classList.contains('show')).toBe(true);
   });
 
   it('fails to retrieve the annotation after successfully updating the target', async () => {
@@ -297,15 +308,15 @@ describe('updating target callback for eventListener', () => {
     document.body.innerHTML = innerHtml;
     const selectAnnotationMock = jest.spyOn(annotationCard, 'selectAnnotation').mockRejectedValue(new Error('Error'));
     jest.spyOn(display, 'updateDisplay');
-    const $modal = document.getElementById('updateSelection');
-    $modal.classList.toggle('show-modal');
+    const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('updateSelection'));
+    $modal.toggle();
     const callback = jest.fn();
 
     const result = await updateTarget(null, callback, {}, 'xpath', 'text', {});
     expect(result).toBe(true);
     expect(window.MODE).toBe(window.MODE_CLASS.View);
     expect(window.SELECTING_TEXT).toBe(false);
-    expect($modal.classList.contains('show-modal')).toBe(false);
+    expect($modal._element.classList.contains('show')).toBe(false);
     expect(selectAnnotationMock).toHaveBeenCalled();
   });
 });

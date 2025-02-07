@@ -11,6 +11,9 @@ import edu.kit.datamanager.takita.model.Color;
 import edu.kit.datamanager.takita.model.body.Body;
 import edu.kit.datamanager.takita.model.body.Tag;
 import edu.kit.datamanager.takita.model.body.TextCard;
+import edu.kit.datamanager.takita.model.target.SVGSelector;
+import edu.kit.datamanager.takita.model.target.Target;
+
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;

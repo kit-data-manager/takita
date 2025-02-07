@@ -6,13 +6,13 @@ import { toggleLoadingModal } from '../utils';
  * Initialize topbar inputs and make sure that users input their pseudonym if
  * they haven't already.
  * @param {Element} $topbar HTML element where the inputs/buttons are located
- * @param {Element} $pseudonymModal HTML element which allows users to input their pseudonym
+ * @param {Element} $pseudonymModal bootstrap modal which allows users to input their pseudonym
  * @param {String} userName available for calling code in `window.TL_VARIABLES.user.name`
  */
 export function initializeTopbar($topbar, $pseudonymModal, userName) {
   /* Show pseudonym modal if userName is not yet set. */
   if (userName === 'default') {
-    $pseudonymModal.classList.add('show-modal');
+    $pseudonymModal.show();
   }
 
   /* Add event handlers for all the buttons and inputs. */

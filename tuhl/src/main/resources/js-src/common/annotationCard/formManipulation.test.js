@@ -14,7 +14,7 @@ describe('modifying a form element created by the external jsonForm library', ()
                     ></span>
                 </div>
             </div>
-            <div class="form-group jsonform-error-purpose is-hidden">
+            <div class="form-group jsonform-error-purpose d-none">
                 <label for="jsonform-14-elt-purpose">purpose</label>
                 <div class="controls">
                     <input type="text" class="form-control" name="purpose"
@@ -43,7 +43,7 @@ describe('modifying a form element created by the external jsonForm library', ()
     const $horizontalForm = document.getElementById('formHorizontal37f50675-02e0-4626-afbc-2e643916b3a5');
     modifyBodyFormHorizontal($horizontalForm, modBody);
     //     const changedForm = `<form id="formHorizontal37f50675-02e0-4626-afbc-2e643916b3a5" class="col horizontalFormForm"><div>
-    //         <div class="form-group jsonform-error-id is-hidden">
+    //         <div class="form-group jsonform-error-id d-none">
     //             <label for="jsonform-14-elt-id">id</label>
     //             <div class="controls">
     //                 <input type="text" class="form-control" name="id"
@@ -52,7 +52,7 @@ describe('modifying a form element created by the external jsonForm library', ()
     //                 <span class="help-block jsonform-errortext" style="display:none;"></span>
     //             </div>
     //         </div>
-    //         <div class="form-group jsonform-error-creators is-hidden">
+    //         <div class="form-group jsonform-error-creators d-none">
     //             <label for="jsonform-14-elt-creators">creators</label>
     //             <div class="controls">
     //                 <div id="jsonform-14-elt-creators">
@@ -97,7 +97,7 @@ describe('modifying a form element created by the external jsonForm library', ()
     //                 <span class="help-block jsonform-errortext" style="display:none;"></span>
     //             </div>
     //         </div>
-    //         <div class="form-group jsonform-error-modified is-hidden">
+    //         <div class="form-group jsonform-error-modified d-none">
     //             <label for="jsonform-14-elt-modified">modified</label>
     //             <div class="controls">
     //                 <input type="text" class="form-control" name="modified"
@@ -114,7 +114,7 @@ describe('modifying a form element created by the external jsonForm library', ()
     //                 <span class="help-block jsonform-errortext" style="display:none;"></span>
     //             </div>
     //         </div>
-    //         <div class="form-group jsonform-error-purpose is-hidden">
+    //         <div class="form-group jsonform-error-purpose d-none">
     //             <label for="jsonform-14-elt-purpose">purpose</label>
     //             <div class="controls">
     //                 <input type="text" class="form-control" name="purpose" value="classifying"
@@ -135,7 +135,7 @@ describe('modifying a form element created by the external jsonForm library', ()
                     <span class="help-block jsonform-errortext" style="display:none;"></span>
                 </div>
             </div>
-            <div class="form-group jsonform-error-purpose is-hidden">
+            <div class="form-group jsonform-error-purpose d-none">
                 <label for="jsonform-14-elt-purpose">purpose</label>
                 <div class="controls">
                     <input type="text" class="form-control" name="purpose" value="classifying" id="jsonform-14-elt-purpose" aria-label="purpose">

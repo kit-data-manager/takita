@@ -280,7 +280,7 @@ export async function createAnnotation(driver) {
 export async function checkIsAnnotationCardVisible(driver) {
   const $annotationCard = await getElementById('annotationCard', driver);
   const annotationCardClasses = await $annotationCard.getAttribute('class');
-  const annotationCardIsVisible = !annotationCardClasses.split(' ').find((entry) => entry === 'is-hidden');
+  const annotationCardIsVisible = !annotationCardClasses.split(' ').find((entry) => entry === 'invisible');
   return annotationCardIsVisible;
 }
 

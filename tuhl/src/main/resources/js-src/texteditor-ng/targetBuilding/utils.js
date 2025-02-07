@@ -190,15 +190,15 @@ export function getSelectedTextOfAnnotation(annotation) {
 /**
  * Store all information needed for the target update in a modal and show it
  *
- * @param {Element} modal to hold the information and to be shown
+ * @param {Element} $modal to hold the information and to be shown
  * @param {String} oldSelectedText
  * @param {String} newSelectedText
  * @param {String} targetXPath
  * @returns {Element} the modal containing the inforamtion from the parameters
  */
-export function showSaveTargetModal(modal, oldSelectedText, newSelectedText, targetXPath) {
-  const $oldSelectedTextContainer = modal.querySelector('#oldSelectedText');
-  const $newSelectedTextContainer = modal.querySelector('#newSelectedText');
+export function showSaveTargetModal($modal, oldSelectedText, newSelectedText, targetXPath) {
+  const $oldSelectedTextContainer = $modal._element.querySelector('#oldSelectedText');
+  const $newSelectedTextContainer = $modal._element.querySelector('#newSelectedText');
 
   // modal stuff should be optimised
   let $oldSelectedTextDiv = document.createElement('div');
@@ -215,9 +215,9 @@ export function showSaveTargetModal(modal, oldSelectedText, newSelectedText, tar
   $newSelectedTextContainer.innerHTML = 'New Selection:';
   $newSelectedTextContainer.append($newSelectedTextDiv);
 
-  modal.classList.toggle('show-modal');
-  modal.dataset.newTargetXmlId = targetXPath;
+  $modal.toggle();
+  $modal._element.dataset.newTargetXmlId = targetXPath;
   //modal.dataset.SelectedAnnotationId = selectedAnnotation.id;
 
-  return modal;
+  return $modal;
 }

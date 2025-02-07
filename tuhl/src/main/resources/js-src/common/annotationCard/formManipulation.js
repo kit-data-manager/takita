@@ -305,8 +305,8 @@ export function getFormBodyDataModelAndUiFormHorizontal(body, omitFields, editab
       // push the key and hide it, when its not the value key
       if (key !== 'value' && omitFields.indexOf(key) === -1) {
         // "type" : "hidden" doesn't work; for some reason this prevents
-        // the form to be submitted. Instead chotas "is-hidden" class is being used
-        uiFormHorizontal.items.push({ key: key, htmlClass: 'is-hidden' });
+        // the form to be submitted. Instead bootstraps "d-none" class is being used
+        uiFormHorizontal.items.push({ key: key, htmlClass: 'd-none' });
         if (key === 'purpose') {
           if (editableFields.includes(body.purpose)) {
             operationHorizontal = 'UPDATE';

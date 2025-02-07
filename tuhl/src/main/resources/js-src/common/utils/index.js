@@ -2,7 +2,7 @@ export {
   // setZeroOpacity,
   toggleOpacity,
   toggleBoxIcon,
-  setVisibility,
+  setDisplay,
   toggleVisibility,
   toggleButtonState,
   toggleExpand,

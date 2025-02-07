@@ -11,6 +11,9 @@ import edu.kit.datamanager.takita.model.page.ImagePage;
 import edu.kit.datamanager.takita.model.page.Page;
 import edu.kit.datamanager.takita.model.page.ResourceType;
 import edu.kit.datamanager.takita.model.page.TextPage;
+import edu.kit.datamanager.takita.model.target.SVGSelector;
+import edu.kit.datamanager.takita.model.target.Target;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

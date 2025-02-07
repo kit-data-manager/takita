@@ -32,7 +32,7 @@ export function initializeAnnotationTable(annoJson, $annotationTable, $annotatio
       headerSort: false,
       cellClick: function (_e, cell) {
         selectAnnotation(null, encodeAnnoId(cell.getRow().getData().id));
-        if ($annotationCard.classList.contains('is-hidden')) {
+        if ($annotationCard.classList.contains('invisible')) {
           toggleVisibility($annotationCard);
         }
       },
@@ -104,11 +104,15 @@ export function initializeAnnotationTable(annoJson, $annotationTable, $annotatio
     columns: columns,
   });
 
-  fixTableStyling($annotationTable);
+  // the fixTableStyling()-function is no longer neccessary as different css is used
+  // since the merge related to the css/bootstrap/modal update
+  //fixTableStyling($annotationTable);
+  $annotationTable.querySelector('.tabulator-footer').style.backgroundColor = 'white';
 
   return $annotationTable;
 }
 
+// TODO: this is no longer used since the merge related to the css/bootstrap/modal update
 /**
  * various changes to the styling of the table to make it look "better" via inline css.
  * Hopefully are not neessary in the future as the root causes might be fixed
