@@ -18,6 +18,8 @@
     </div>      
 
 <script th:inline="javascript">
+    // setting contextpath
+    window.CONTEXTPATH = /*[[@{/}]]*/ "/";
 
     async function clickButton(event){
         /*<![CDATA[*/
@@ -40,7 +42,7 @@
     }
 
     async function setPseudonym(input) {
-        const response = await fetch('../assistance/' + input);
+        const response = await fetch(window.CONTEXTPATH + 'assistance/' + input);
 
         if (response.ok) {
             console.log("Response from succesfull pseudonym update: ", response);
