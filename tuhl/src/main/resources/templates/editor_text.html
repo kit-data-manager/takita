@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en"
-      xmlns:th="http://www.thymeleaf.org">
+      xmlns:th="http://www.thymeleaf.org" style="overflow-x: hidden;">
 <head>
     <meta charset="UTF-8">
     <title th:text="#{label.editor}"> </title>
@@ -25,7 +25,6 @@
     crossorigin="anonymous" referrerpolicy="no-referrer" />
     <!-- internal css-->
     <link rel="stylesheet" th:href="@{/css/editor_sidebar.css}">
-    <link rel="stylesheet" th:href="@{/css/editor_text_bottombar.css}">
     <link rel="stylesheet" th:href="@{/css/editor_text.css}">
     <!-- loading the stylesheet associated with the project -->
     <link rel="stylesheet" th:href="@{'/css/projectSpecific/'+${currentProject}+'.css'}">
@@ -171,66 +170,65 @@
     </div>
 
 	<!-- Part overview for the whole text onclick="window.open(${page.id})" no-wrap> -->
-    <div class="col-auto invisible" id="pages">
+    <div class="row invisible" id="pages">
         <div class="card">
-            <div class="row">
-                <div class="col-auto" style="margin: 0.2em 1em 0.2em" th:each="page : ${currentManuscript.pages}">
-                    <!-- TODO: CUSTOMISE set the boolean at the start of the "th:if"-clause to "true"/"false" to display/hide pictures -->
-                    <div class="row">
-                        <div class="col">
-                            <img th:src="${page.thumbResourceUrl}"
-                                 class="img-thumbnail"
-                                 id="pageThumb"
-                                 th:if="${false and page.id != currentPage.id and page.thumbResourceUrl != null}"
-                                 th:data-field="${page.id}"
-                                 th:attr="onclick=|window.open('${page.id}')|">
-                            <img th:src="@{/images/text_thumb.jpg}"
-                                class="img-thumbnail"
-                                id="pageThumb"
-                                th:if="${false and page.id != currentPage.id and page.thumbResourceUrl == null}"
+            <div style="padding: .2em 1em .2em 1em">
+                <div class="row" style="gap: .2em">
+                    <div class="col-auto" th:each="page : ${currentManuscript.pages}">
+                        <!-- TODO: CUSTOMISE set the boolean at the start of the "th:if"-clause to "true"/"false" to display/hide pictures -->
+                        <div class="row">
+                            <div class="col">
+                                <img th:src="${page.thumbResourceUrl}"
+                                    class="img-thumbnail"
+                                    id="pageThumb"
+                                    th:if="${false and page.id != currentPage.id and page.thumbResourceUrl != null}"
+                                    th:data-field="${page.id}"
+                                    th:attr="onclick=|window.open('${page.id}')|">
+                                <img th:src="@{/images/text_thumb.jpg}"
+                                    class="img-thumbnail"
+                                    id="pageThumb"
+                                    th:if="${false and page.id != currentPage.id and page.thumbResourceUrl == null}"
+                                    th:data-field="${page.id}"
+                                    th:attr="onclick=|window.open('${page.id}')|">
+                                <img th:src="@{/images/text_thumb.jpg}"
+                                    class="img-thumbnail bd-error"
+                                    th:if="${false and page.id == currentPage.id}">
+                            </div>
+                        </div>
+                        <div class="row align-items-center">
+                            <!-- the following classes originally stem from the DO-overview and bootstrap, which is used for
+                                the DO-overview of tAkita, but not for the textEditor, where chota is used -->
+                            <a class="btn btn-sm btn-secondary col-auto"
+                                id="pageThumbs"
+                                th:if="${page.id != currentPage.id}"
                                 th:data-field="${page.id}"
                                 th:attr="onclick=|window.open('${page.id}')|">
-                            <img th:src="@{/images/text_thumb.jpg}"
-                                class="img-thumbnail bd-error"
-                                th:if="${false and page.id == currentPage.id}">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                            <a class="btn btn-sm btn-secondary col-auto disabled"
+                                th:if="${page.id == currentPage.id}">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                            <label class="col-auto" th:text="${page.pageNumber}"
+                                th:if="${page.id != currentPage.id}"
+                                th:attr="onclick=|window.open('${page.id}')|">
+                            </label>
+                            <label class="col-auto bg-light" th:text="${page.pageNumber}"
+                                th:if="${page.id == currentPage.id}">
+                            </label>
                         </div>
-                    </div>
-                    <div class="row align-items-center">
-                        <!-- the following classes originally stem from the DO-overview and bootstrap, which is used for
-                            the DO-overview of tAkita, but not for the textEditor, where chota is used -->
-                        <a class="btn btn-sm btn-secondary col-auto"
-                            id="pageThumbs"
-                            th:if="${page.id != currentPage.id}"
-                            th:data-field="${page.id}"
-                            th:attr="onclick=|window.open('${page.id}')|">
-                            <i class="fa fa-pencil"></i>
-                        </a>
-                        <a class="btn-sm btn-secondary col-auto inactiveBtn"
-                            th:if="${page.id == currentPage.id}">
-                            <i class="fa fa-pencil"></i>
-                        </a>
-                        <label class="col-auto" th:text="${page.pageNumber}"
-                            th:if="${page.id != currentPage.id}"
-                            th:attr="onclick=|window.open('${page.id}')|">
-                        </label>
-                        <label class="col-auto bg-light" th:text="${page.pageNumber}"
-                            th:if="${page.id == currentPage.id}">
-                        </label>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-auto invisible" id="annotationTableBottomDiv">
+    <div class="row invisible" id="annotationTableBottomDiv">
         <div class="card">
-                <div class="boxlist margin-top-30" id="training-box">
-                    <div class="box-header bg-green-blue"></div>
-                    <div class="box-body"><div id="annotationTableBottom"></div>
-
-                    </div>
-                </div>
-         </div>
+            <div style="padding: .2em .2em">
+                <div id="annotationTableBottom"></div>
+            </div>
+        </div>
     </div>
 
 </div>
@@ -352,9 +350,3 @@
 </body>
 
 </html>
-<style>
-
-#editor {
-    margin-left: 7.5rem;
-}
-</style>

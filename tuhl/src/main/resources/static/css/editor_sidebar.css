@@ -14,7 +14,6 @@
   top: 0%;
   transition: all 0.5s ease;
   overflow-y: auto;
-  overflow-x: hidden;
   z-Index: 5;
   max-width: 100%; 
   overflow-x: hidden;
@@ -113,43 +112,8 @@
   opacity: 1;
 }
 
-/* the following css rules for .tooltip
-  produce a tooltip, which isn't working
-  in a scrollable sidebar as the scrollable
-  sidebar hides overflowing elements and the
-  .tooltip-element overflow. The enableTooltips()
-  creates working tooltips and are styled below 
-  at ".hoverTooltip". */
-.tooltip {
-  position: absolute;
-  top: -2.1rem;
-  left: 6.4rem;
-  background-color: white;
-  color: var(--dark-grey-color);
-  border-radius: 0.4rem;
-  padding: 0.5rem 0.9rem;
-  font-size: 1.4rem;
-  transition: 0s;
-  opacity: 0;
-  display: none;
-  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-  pointer-events: none;
-}
-
-.anno-side-bar.annocollapse .features-item:hover .tooltip,
-.logo-name__button:hover .tooltip{
-  top: 50%;
-  transform: translateY(-50%);
-  transition: all 0.5s ease;
-  opacity: 1;
-}
-
 .anno-side-bar.annocollapse {
-  width: 5.5rem;
-}
-
-.anno-side-bar.annocollapse .tooltip {
-  display: block;
+  width: 5rem;
 }
 
 /* styling for the tooltips

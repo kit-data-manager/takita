@@ -1,4 +1,25 @@
 /* ------------------------------------*/
+/* EDITOR CONTAINER */
+/* ------------------------------------*/
+
+/* moving editor to the right to prevent
+   the siderbar from overlapping the editor */
+#editor {
+    margin-left: 7.5rem;
+}
+
+/* fixing overflowing editor content*/
+#editor {
+    position: relative;
+}
+#editor > .row {
+    width: 100%;
+}
+
+/* end of editor container */
+/* ------------------------------------*/
+
+/* ------------------------------------*/
 /* ANNOTATION SPECIFICS */
 /* ------------------------------------*/
 
@@ -186,6 +207,13 @@
 	max-height: 60vh;
 	overflow-y: auto;
 }
+
+/* adding some space around the horizontally 
+   displayed elements */
+#annotationCard > .card {
+	padding: .4rem .4rem;
+}
+  
    
 /* displaying the "quickview" of an annotations
 	body in one line*/
