@@ -55,12 +55,15 @@
       </table>
 
     <script th:inline="javascript">
+        // setting contextpath
+        window.CONTEXTPATH = /*[[@{/}]]*/ "/";
+        
         function getHelp(){
-            location.href = '/assistance/help';
+            location.href = window.CONTEXTPATH + 'assistance/help';
         }
         // returning to table view of repository data
         function goHome() {
-            location.href=window.CONTEXTPATH;
+            location.href = window.CONTEXTPATH;
         };        
     </script>
 </div>
