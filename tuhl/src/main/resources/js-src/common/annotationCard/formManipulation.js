@@ -188,6 +188,10 @@ export function modifyBodyFormHorizontal($horizontalForm, modifiedBody) {
     inputButtonHorizontal.value = 'Save';
     inputButtonHorizontal.disabled = true;
     inputButtonHorizontal.classList.add('horizontalFormInput');
+    if (inputButtonHorizontal.classList.contains('btn-primary')) {
+      inputButtonHorizontal.classList.add('btn-success');
+      inputButtonHorizontal.classList.remove('btn-primary');
+    }
   }
 
   // enabling/diasbling the "Save"-buttons for inputs and textareas of the form
