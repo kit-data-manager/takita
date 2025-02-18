@@ -44,11 +44,25 @@ export function toggleOpacity($selection) {
  * @param {Element | NodeList} $selection affected HTML element(s), (probably some div) which should get toggled
  * @param {Element} [$button] the button element which should appear "active" state if element was made visible
  */
-export function toggleVisibility($selection, $button) {
+export function toggleVisibility($selection) {
   const $elements = $selection instanceof HTMLElement ? [$selection] : $selection;
   $elements.forEach(($element) => {
-    const elementWasHidden = $element.classList.contains('invisible');
     $element.classList.toggle('invisible');
+  });
+}
+
+/**
+ * Toggles the display of an HTML element or NodeList, and optionally
+ * designate the responsible button as active.
+ *
+ * @param {Element | NodeList} $selection affected HTML element(s), (probably some div) which should get toggled
+ * @param {Element} [$button] the button element which should appear "active" state if element was made visible
+ */
+export function toggleDisplay($selection, $button) {
+  const $elements = $selection instanceof HTMLElement ? [$selection] : $selection;
+  $elements.forEach(($element) => {
+    const elementWasHidden = $element.classList.contains('d-none');
+    $element.classList.toggle('d-none');
     if (elementWasHidden) {
       if ($button) {
         $button.parentElement.classList.add('active');
@@ -64,7 +78,8 @@ export function toggleVisibility($selection, $button) {
 }
 
 /**
- * Set visibility of HTML element or NodeList by adding/removing a CSS class.
+ * Set display of HTML element or NodeList by adding/removing a CSS class.
+ *
  * @param {Element | NodeList} $selection affected HTML element(s)
  * @param {Boolean} display whether the element(s) should be visible
  */
