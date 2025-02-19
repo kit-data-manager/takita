@@ -1,4 +1,4 @@
-import { initializeAnnotationTable } from '../../common/annotationTable';
+import { initializeAnnotationTable, textDisplayAnnotationFunction } from '../../common/annotationTable';
 import { possibleHighlightClasses } from '../../projectspecific';
 import { getAllAnnotationsData } from '../data';
 import { removeStyles, drawAnnos } from '../highlighting';
@@ -31,7 +31,7 @@ export async function updateDisplay(hooks = {}) {
     initializeAnnotationTable(
       annoJson,
       document.getElementById('annotationTableBottom'),
-      document.getElementById('annotationCard'),
+      textDisplayAnnotationFunction,
       hooks,
     );
 

@@ -1,18 +1,25 @@
 import Tabulator from 'tabulator-tables';
 import { selectAnnotation } from '../annotationCard';
 import { encodeAnnoId, toggleVisibility } from '../utils';
+import { initializeNavigation } from '../../texteditor-ng/navigation';
 
 /**
  * innitialize the table displaying all annotation of the current editor window.
  * Similar code to what is used for the annotation overview on the main page.
+ * The biggest difference is the way an annotation is displayed. This can be controlled
+ * via injecting a function.
  *
  * @param {[Object]} annoJson containing all annotations
  * @param {Element} $annotationTable the element holding the table
- * @param {Element} $annotationCard the element displaying annoation details
+ * @param {Function} [onCellClick] the function used to display an annotation when clicking on it in the table.
+ * The calling code passes it in.
+ * For the textEditor it should be textDisplayAnnotation (= initializeNavigation()) and passed in by
+ * /texteditor-ng/index or /texteditor-ng/display;
+ * for the imageEditor it should be defaultDisplayAnnotation.
  * @param {Object} [hooks] containing an array for various hooks to be called at preAnnotationTableCreation
  * @returns {Element} $annotationTable the element holding the table
  */
-export function initializeAnnotationTable(annoJson, $annotationTable, $annotationCard, hooks = {}) {
+export function initializeAnnotationTable(annoJson, $annotationTable, onCellClick, hooks = {}) {
   let tableData = annoJson;
 
   tableData.forEach((entry) => {
@@ -31,10 +38,7 @@ export function initializeAnnotationTable(annoJson, $annotationTable, $annotatio
       frozen: true,
       headerSort: false,
       cellClick: function (_e, cell) {
-        selectAnnotation(null, encodeAnnoId(cell.getRow().getData().id));
-        if ($annotationCard.classList.contains('invisible')) {
-          toggleVisibility($annotationCard);
-        }
+        onCellClick(_e, cell, hooks);
       },
     },
     {
@@ -138,4 +142,37 @@ export function fixTableStyling($annotationTable) {
   $annotationTable.querySelector('.tabulator-footer').style.backgroundColor = 'white';
 
   return $annotationTable;
+}
+
+/**
+ * Displays an annotation. Should be used for imageEditor.
+ *
+ * @param {Event} _event
+ * @param {*} cell tabulator cell containing information about the cell and its parent row (annotaiton information)
+ * @param {Object} [hooks] containing an array for various hooks to be passed to initializeNavigation
+ */
+export function defaultDisplayAnnotationFunction(_event, cell, hooks) {
+  const $annotationCard = document.getElementById('annotationCard');
+  selectAnnotation(null, encodeAnnoId(cell.getRow().getData().id), hooks);
+  if ($annotationCard.classList.contains('is-hidden')) {
+    toggleVisibility($annotationCard);
+  }
+}
+
+/**
+ * Displays an annotation and navigates to the correct text division, if necessary. Should be used for textEditor.
+ * Used by /texteditor-ng/index or /texteditor-ng/display
+ *
+ * @param {Event} _event
+ * @param {*} cell tabulator cell containing information about the cell and its parent row (annotaiton information)
+ * @param {Object} [hooks] containing an array for various hooks to be passed to initializeNavigation
+ */
+export function textDisplayAnnotationFunction(_event, cell, hooks) {
+  const $text = document.getElementById('TEI');
+  const $navBarTop = document.getElementById('textNavBar');
+  const $navBarLow = document.getElementById('textNavBarLow');
+  // get the Id of the first word of the target.  It has to be unpacked from 'id("w.123")' to 'w.123'
+  const fragmentId = cell.getRow().getData().svg?.[0].split('id("')[1].split('"')[0];
+  const annotationId = cell.getRow().getData().id;
+  initializeNavigation($navBarTop, $navBarLow, $text, fragmentId, annotationId, hooks);
 }

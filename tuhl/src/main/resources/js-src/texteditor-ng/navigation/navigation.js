@@ -5,8 +5,6 @@ import { escapeSelector } from 'jquery';
 import { createOption, setDisplay, toggleVisibility } from '../../common/utils';
 import { selectAnnotation } from '../../common/annotationCard';
 import { encodeAnnoId } from '../../common/utils';
-// Texteditor specific utils
-import { getTargetAnnotationId, getTargetFragment } from '../utils';
 // projectspecifics
 import { POSSIBLE_DIVISION_TYPES } from '../../projectspecific';
 
@@ -28,7 +26,7 @@ let currentDivisionLabelLow;
  * @param {[Object]} [hooks] to be passed to navigateToAnnotation() and then to selectAnnotation(),
  * where they influence the rendering of the annotationCard
  */
-export async function initializeNavigation($navBarTop, $navBarLow, $text, hooks = {}) {
+export async function initializeNavigation($navBarTop, $navBarLow, $text, fragmentId, annotationId, hooks = {}) {
   // Local state, closed over and modified by the various button callbacks
   let showAllDivisions = false;
 
@@ -45,7 +43,6 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, hooks 
   // Keep track of the label of the currently displayed text part. If an annotation has been
   // pre-selected as part of the URL, find the text part it belongs to and use this as default.
   // If none is selected use the first part as default and display it.
-  const fragmentId = getTargetFragment(window.location);
   const preselectedAnnoTarget = getTargetElement(fragmentId, $text);
   const initialDivision = getTargetDivision(preselectedAnnoTarget, divisionTypeTop);
   currentDivisionLabelTop = initialDivision ? getDivisionLabel(initialDivision) : divisionLabels[0];
@@ -192,12 +189,11 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, hooks 
     setDisplay($navBarTop, true);
 
     if (preselectedAnnoTarget !== null) {
-      const preselectedAnnotationId = getTargetAnnotationId(window.location);
       setTimeout(async () => {
         preselectedAnnoTarget.scrollIntoView(true, {
           behavior: 'smooth',
         });
-        await navigateToAnnotation(preselectedAnnotationId, hooks);
+        await navigateToAnnotation(annotationId, hooks);
       }, 100);
     }
   }
@@ -206,7 +202,16 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, hooks 
     const $currentDivision = [...$divisions].filter((tp) => getDivisionLabel(tp) === currentDivisionLabelTop).pop();
     // Note: as this is the first initialization after a page-load, a pre-selected annotation should be displayed,
     // hence navigateToAnnotation is set to true
-    initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, true, hooks);
+    initializeNavigationLow(
+      $navBarLow,
+      $currentDivision,
+      divisionTypeLow,
+      undefined,
+      true,
+      fragmentId,
+      annotationId,
+      hooks,
+    );
   }
 }
 
@@ -236,6 +241,8 @@ export async function initializeNavigationLow(
   divisionTypeLow,
   previouslyShownDivisionLabel,
   navigateToAnnotation,
+  fragmentId,
+  annotationId,
   hooks = {},
 ) {
   // hiding the navBar initially as there might not be more than one division
@@ -286,7 +293,6 @@ export async function initializeNavigationLow(
       // on page load: show low level division targetted by annotation, if given or the first low level division
       // on press on next top level button: show the first low level division
       // on press on showAllButton to only show one low level division: show the previously shown lower division
-      const fragmentId = getTargetFragment(window.location);
       const preselectedAnnoTarget = getTargetElement(fragmentId, $text);
       const initialDivision = getTargetDivision(preselectedAnnoTarget, divisionTypeLow);
       currentDivisionLabelLow = previouslyShownDivisionLabel
@@ -391,12 +397,11 @@ export async function initializeNavigationLow(
       // only navigate to the annotation if necessary
       if (navigateToAnnotation) {
         if (preselectedAnnoTarget !== null) {
-          const preselectedAnnotationId = getTargetAnnotationId(window.location);
           setTimeout(async () => {
             preselectedAnnoTarget.scrollIntoView(true, {
               behavior: 'smooth',
             });
-            await navigateToAnnotation(preselectedAnnotationId, hooks);
+            await navigateToAnnotation(annotationId, hooks);
           }, 100);
         }
       }
