@@ -28,7 +28,7 @@ export function initializeSidebar($sidebar, $text, $pagesDialog, $tableContainer
   });
   // font manipulation buttons
   $sidebar.querySelector('#fontIncreaseButton').addEventListener('click', function () {
-    toggleSidebar($sidebar);
+    collapseSidebar($sidebar);
     increaseFontSize($text);
   });
   $sidebar.querySelector('#fontIncreaseSpan').addEventListener('click', function () {
