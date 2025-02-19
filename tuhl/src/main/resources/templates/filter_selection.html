@@ -45,11 +45,11 @@
                 th:each="filter,i : ${currentFilters}"
                 th:id="${filter.field}">
                 <div class="row">
-                    <label class="col pl-0" th:text="#{col_name.__${filter.field}__}"> </label>
+                    <label class="col ps-0" th:text="#{col_name.__${filter.field}__}"> </label>
                     <input type="hidden"
                         th:field="*{filterConfigs[__${i.index}__].field}"
                         th:value="${filter.field}">
-                    <span class="badge badge-secondary m-auto"
+                    <span class="badge text-bg-secondary col-auto m-auto"
                         type="button"
                         th:data-field="${filter.field}"
                         onclick="remove(this.getAttribute('data-field'))"
