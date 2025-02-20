@@ -3,6 +3,7 @@ import {
   setDisplay,
   toggleBoxIcon,
   toggleButtonState,
+  toggleDisplay,
   toggleExpand,
   toggleOpacity,
   toggleVisibility,
@@ -48,7 +49,7 @@ describe('adding css class to set the opacity of element(s) to zero', () => {
   });
 });
 
-describe('showing/hiding an element and activate/deactivate a corresponding button by manipulating css classes', () => {
+describe('showing/hiding an element by manipulating css classes', () => {
   let $element;
   let $button;
   let $buttonparent;
@@ -68,19 +69,41 @@ describe('showing/hiding an element and activate/deactivate a corresponding butt
     toggleVisibility($element);
     expect($element.classList.contains('invisible')).toBe(true);
   });
+});
+
+describe('showing/hiding an element and activate/deactivate a corresponding button by manipulating css classes', () => {
+  let $element;
+  let $button;
+  let $buttonparent;
+
+  beforeEach(() => {
+    $element = document.createElement('div');
+    $button = document.createElement('div');
+    $buttonparent = document.createElement('div');
+    $buttonparent.appendChild($button);
+  });
+  it('shows an element', () => {
+    $element.classList.add('d-none');
+    toggleDisplay($element);
+    expect($element.classList.contains('d-none')).toBe(false);
+  });
+  it('hides an element', () => {
+    toggleDisplay($element);
+    expect($element.classList.contains('d-none')).toBe(true);
+  });
   it('shows an element and activates a button', () => {
-    $element.classList.add('invisible');
+    $element.classList.add('d-none');
     // mocking element.scrollIntoView
     $element.scrollIntoView = jest.fn();
-    toggleVisibility($element, $button);
-    expect($element.classList.contains('invisible')).toBe(false);
+    toggleDisplay($element, $button);
+    expect($element.classList.contains('d-none')).toBe(false);
     expect($buttonparent.classList.contains('active')).toBe(true);
     expect($element.scrollIntoView).toHaveBeenCalled();
   });
   it('hides an element and deactivates a button', () => {
     $button.classList.add('active');
-    toggleVisibility($element, $button);
-    expect($element.classList.contains('invisible')).toBe(true);
+    toggleDisplay($element, $button);
+    expect($element.classList.contains('d-none')).toBe(true);
     expect($buttonparent.classList.contains('active')).toBe(false);
   });
 });
