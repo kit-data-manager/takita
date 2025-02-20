@@ -317,7 +317,7 @@
         /*<![CDATA[*/
         return [
             {
-                label: "<i class='fa fa-eye-slash mr-1'> </i>" + [[#{menu.hideCol}]],
+                label: "<i class='fa fa-eye-slash me-1'> </i>" + [[#{menu.hideCol}]],
                 action: function (e, column) {
                     column.hide();
                     document.getElementById('check_' + column.getField()).checked = false;
@@ -391,7 +391,7 @@
             // index needs to be bigger than 1 to ignore the buttons in the first 2 columns
             if(index > 1) {
                 cont = document.createElement("div");
-                cont.className = "form-check ml-1"
+                cont.className = "form-check ms-1"
                 checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
                 checkbox.className = "form-check-input";
@@ -414,7 +414,7 @@
         divider.className = "dropdown-divider";
         container.append(divider);
         let applyBtn = document.createElement("button");
-        applyBtn.className = "btn btn-primary btn-sm ml-1";
+        applyBtn.className = "btn btn-primary btn-sm ms-1";
         applyBtn.type = "submit";
         applyBtn.innerHTML = [[#{buttons.apply}]];
         applyBtn.addEventListener("click", function (e) {
