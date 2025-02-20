@@ -143,7 +143,7 @@ describe('modifying a form element created by the external jsonForm library', ()
                 </div>
             </div>
         
-        <input type="submit" class="btn btn-primary horizontalFormInput" value="Save" disabled="">
+        <input type="submit" class="btn horizontalFormInput btn-success" value="Save" disabled="">
     </div>
 `;
     expect($horizontalForm.innerHTML).toEqual(changedFormInnerHtml);
