@@ -125,7 +125,7 @@
         /*<![CDATA[*/
         return [
             {
-                label: "<i class='fa fa-eye-slash mr-1'> </i>" + [[#{menu.hideCol}]],
+                label: "<i class='fa fa-eye-slash me-1'> </i>" + [[#{menu.hideCol}]],
                 action: function (e, column) {
                     column.hide();
                     document.getElementById('check_' + column.getField()).checked = false;
@@ -418,7 +418,7 @@ function callEditor(manId){
         tbl.forEach(function (col, index) {
             if(col.getField() !== "id" && index > 0) {
                 cont = document.createElement("div");
-                cont.className = "form-check ml-1"
+                cont.className = "form-check ms-1"
                 checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
                 checkbox.className = "form-check-input";
@@ -441,7 +441,7 @@ function callEditor(manId){
         divider.className = "dropdown-divider";
         container.append(divider);
         let applyBtn = document.createElement("button");
-        applyBtn.className = "btn btn-primary btn-sm ml-1";
+        applyBtn.className = "btn btn-primary btn-sm ms-1";
         applyBtn.type = "submit";
         applyBtn.innerHTML = [[#{buttons.apply}]];
         applyBtn.addEventListener("click", function (e) {
