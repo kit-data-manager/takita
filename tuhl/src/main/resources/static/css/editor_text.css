@@ -190,6 +190,14 @@
     left: 30%;
 }
 
+/* overwriting bootstraps modal sizing to prevent
+	the modals from overlapping the editor part
+	and preventing the modals right side to be cut
+	off on small screens */
+.modal-dialog {
+	max-width: 35%;
+}
+
 /* end of modals */
 /* ------------------------------------*/
 
