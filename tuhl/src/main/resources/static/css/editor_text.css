@@ -225,7 +225,13 @@
 #annotationCard > .card {
 	padding: .4rem .4rem;
 }
-  
+
+/* hiding buttons created by jsonForms, if
+	the formDataModel contains an array.
+	The buttons are never used anyways. */
+._jsonform-array-buttons {
+	display: none;
+}
    
 /* displaying the "quickview" of an annotations
 	body in one line*/
