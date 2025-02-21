@@ -129,20 +129,29 @@ function manipulatingData(annotationData) {
  * Can be used to change to influence the look and behavior of the annotationCard as a whole
  * AFTER its creation. You can interact with the finished element/the DOM directly.
  *
+ * @param {Object} annotationData holding all the data for an annotation fetched from tAkita core
  * @param {Element} $annotationDiv holding the annotationCard
+ * @returns {Element} $newAnnotationDiv modified div holding the annotationCard
  */
-function postAnnotationCardCreation($annotationDiv) {}
+function postAnnotationCardCreation(annotationData, $annotationDiv) {
+  // do stuff
+  return $annotationDiv;
+}
 
 /**
  * called at common/annotationCard/annotationCard.js (createAnnotationDiv())
  * Can be used to change to influence the look and behavior of the annotationCard BEFORE
  * the cards for each body gets appended. You can interact with the finished element/the
  * DOM directly.
- * @Laura add the copy button here
  *
+ * @param {Object} annotationData the annotation as JSON
  * @param {Element} $annotationDiv holding the annotationCard
+ * @returns {Element} $newAnnotationDiv modified div holding the annotationCard
  */
-function preAppendingBodies($annotationDiv) {}
+function preAppendingBodies(annotationData, $annotationDiv) {
+  // do stuff
+  return $annotationDiv;
+}
 
 /**
  * called at common/annotationCard/annotationCard.js (createAnnotationDiv())
@@ -155,9 +164,8 @@ function preAppendingBodies($annotationDiv) {}
  * @returns {Element} $newAnnotationDiv modified div holding the annotationCard
  */
 function postAppendingBodies(annotationData, $annotationDiv) {
-  let $newAnnotationDiv;
   // do stuff
-  return $newAnnotationDiv;
+  return $annotationDiv;
 }
 
 /**

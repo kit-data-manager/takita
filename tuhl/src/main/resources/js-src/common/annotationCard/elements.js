@@ -27,9 +27,16 @@ export async function createAnnotationDiv(annotationData, $annotationDiv, hooks 
   const $iconRowTop = createIconRow(true, annotationData.id, hooks);
   $annotationDiv.prepend($iconRowTop);
 
+  // adding a container to add buttons to the top of the annotationcard
+  const $topButtonContainer = document.createElement('div');
+  $topButtonContainer.id = 'topButtonContainer';
+  $annotationDiv.append($topButtonContainer);
+
   // preAppendingBodiesHook
   if (hooks.preAppendingBodies) {
-    hooks.preAppendingBodies.forEach((hook) => hook($annotationDiv));
+    hooks.preAppendingBodies.forEach((hook) => {
+      $annotationDiv = hook(annotationData, $annotationDiv);
+    });
   }
 
   // creating the container for and adding the JSONForms for each body.
@@ -42,6 +49,11 @@ export async function createAnnotationDiv(annotationData, $annotationDiv, hooks 
     $annotationDiv.append($bodyCard);
   });
 
+  // adding a container to add buttons to the bottom of the annotationcard
+  const $bottomButtonContainer = document.createElement('div');
+  $bottomButtonContainer.id = 'bottomButtonContainer';
+  $annotationDiv.append($bottomButtonContainer);
+
   // postAppendingBodiesHook
   if (hooks.postAppendingBodies) {
     hooks.postAppendingBodies.forEach((hook) => {
@@ -52,6 +64,7 @@ export async function createAnnotationDiv(annotationData, $annotationDiv, hooks 
   if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
     appendTextTargetModificationButtons(annotationData, $annotationDiv, hooks);
   }
+
   return $annotationDiv;
 }
 
@@ -335,12 +348,10 @@ function appendTextTargetModificationButtons(annotationData, $annotationDiv, hoo
     $buttonCancelModification.classList.add('btn-danger');
     $buttonCancelModification.addEventListener('mousedown', cancelModification);
 
-    const $buttonContainer = document.createElement('div');
+    const $buttonContainer = $annotationDiv.querySelector('#bottomButtonContainer');
     $buttonContainer.append($buttonModifySelection);
     $buttonContainer.append($buttonSaveModification);
     $buttonContainer.append($buttonCancelModification);
-
-    $annotationDiv.append($buttonContainer);
 
     // strictly speaking this is not part of the annotation card, but it is the
     // last step of the target update for texts and all the other buttons/eventListeners

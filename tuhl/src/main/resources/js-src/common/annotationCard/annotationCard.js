@@ -42,7 +42,7 @@ export async function selectAnnotation(_event, annoId, hooks = {}) {
 
   if (hooks.postAnnotationCardCreation) {
     hooks.postAnnotationCardCreation.forEach((hook) => {
-      hook($annotationDiv);
+      $annotationDiv = hook(annotationData, $annotationDiv);
     });
   }
 
