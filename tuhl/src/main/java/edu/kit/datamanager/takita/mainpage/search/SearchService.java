@@ -165,8 +165,13 @@ public class SearchService implements ISearchService {
     for (SearchHit<Manuscript> manuscript : searchHits.getSearchHits()) {
     	try {
     		List<Page> pages = manuscript.getContent().getPages();
-    		for (Page page: pages) {
+    		for (Page page : pages) {
     			List<Annotation> annotations = page.getAnnotations();
+    			// the title of the manuscript has to be added manually as they are not present in the index
+    			String manuscriptTitle =  manuscript.getContent().getTitle();
+    			for (Annotation annotation : annotations) {
+    				annotation.setManuscriptTitle(manuscriptTitle);
+    			}
     			searchAnnoResults.addAll(annotations);
     		}
     	} catch (Exception e) {
