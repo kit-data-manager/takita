@@ -1,3 +1,6 @@
+//external modules
+import * as bootstrap from 'bootstrap';
+// internal modules
 import { toggleButtonState, encodeAnnoId } from '../../common/utils';
 import { selectAnnotation } from '../../common/annotationCard';
 import { updateDisplay } from '../display';
@@ -64,8 +67,8 @@ export function saveModification(_event, selection, annotation) {
 
     // ask user if the new selection should be saved in a modal
     // create and show the modal used to save the new target
-    const modal = document.getElementById('updateSelection');
-    showSaveTargetModal(modal, oldSelectedText, newSelectedText, newXPath);
+    const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('updateSelection'));
+    showSaveTargetModal($modal, oldSelectedText, newSelectedText, newXPath);
   } else {
     return false;
   }
@@ -95,7 +98,8 @@ export async function updateTarget(_event, targetUpdateCallback, annotation, tar
     targetUpdated = true;
 
     // hide modal
-    document.getElementById('updateSelection').classList.toggle('show-modal');
+    const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('updateSelection'));
+    $modal.toggle();
     window.MODE = window.MODE_CLASS.View;
     window.SELECTING_TEXT = false;
 

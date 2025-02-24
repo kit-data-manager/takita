@@ -1,3 +1,6 @@
+// external modules
+import * as bootstrap from 'bootstrap';
+//internal modules
 import {
   modifySelection,
   saveModification,
@@ -24,9 +27,16 @@ export async function createAnnotationDiv(annotationData, $annotationDiv, hooks 
   const $iconRowTop = createIconRow(true, annotationData.id, hooks);
   $annotationDiv.prepend($iconRowTop);
 
+  // adding a container to add buttons to the top of the annotationcard
+  const $topButtonContainer = document.createElement('div');
+  $topButtonContainer.id = 'topButtonContainer';
+  $annotationDiv.append($topButtonContainer);
+
   // preAppendingBodiesHook
   if (hooks.preAppendingBodies) {
-    hooks.preAppendingBodies.forEach((hook) => hook($annotationDiv));
+    hooks.preAppendingBodies.forEach((hook) => {
+      $annotationDiv = hook(annotationData, $annotationDiv);
+    });
   }
 
   // creating the container for and adding the JSONForms for each body.
@@ -39,6 +49,11 @@ export async function createAnnotationDiv(annotationData, $annotationDiv, hooks 
     $annotationDiv.append($bodyCard);
   });
 
+  // adding a container to add buttons to the bottom of the annotationcard
+  const $bottomButtonContainer = document.createElement('div');
+  $bottomButtonContainer.id = 'bottomButtonContainer';
+  $annotationDiv.append($bottomButtonContainer);
+
   // postAppendingBodiesHook
   if (hooks.postAppendingBodies) {
     hooks.postAppendingBodies.forEach((hook) => {
@@ -49,6 +64,7 @@ export async function createAnnotationDiv(annotationData, $annotationDiv, hooks 
   if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
     appendTextTargetModificationButtons(annotationData, $annotationDiv, hooks);
   }
+
   return $annotationDiv;
 }
 
@@ -92,7 +108,6 @@ export function createBodyCard(annoId, body, index, hooks = {}) {
 function createBodyRowDiv() {
   const $bodyRowDiv = document.createElement('div');
   $bodyRowDiv.classList.add('row');
-  $bodyRowDiv.classList.add('is-full-width');
   return $bodyRowDiv;
 }
 
@@ -109,8 +124,8 @@ function createBodyDiv(body) {
   //bodyDiv.innerText = bodies[body].purpose;
   $bodyDiv.id = body.id;
   $bodyDiv.title = body.annotationId;
-  $bodyDiv.classList.add('is-left');
-  $bodyDiv.classList.add('col');
+  $bodyDiv.classList.add('d-flex');
+  $bodyDiv.classList.add('align-items-center');
   $bodyDiv.classList.add('formBodyDiv');
   return $bodyDiv;
 }
@@ -123,8 +138,7 @@ function createBodyDiv(body) {
 function createFormRowDiv() {
   const $formRowDiv = document.createElement('div');
   $formRowDiv.classList.add('row');
-  $formRowDiv.classList.add('is-full-width');
-  $formRowDiv.classList.add('is-hidden');
+  $formRowDiv.classList.add('collapse');
   return $formRowDiv;
 }
 
@@ -142,7 +156,6 @@ function createBodyForm(body) {
     e.preventDefault();
   });
   //bodyForm.style.paddingLeft = "20rem";
-  //bodyForm.classList.add("is-full-width");
   $bodyForm.classList.add('col');
 
   return $bodyForm;
@@ -161,9 +174,9 @@ function createBodyFormHorizontal(body) {
     e.preventDefault();
   });
   //bodyForm.style.paddingLeft = "20rem";
-  //bodyForm.classList.add("is-full-width");
-  $bodyFormHorizontal.classList.add('col');
   $bodyFormHorizontal.classList.add('horizontalFormForm');
+  $bodyFormHorizontal.classList.add('flex-fill');
+  $bodyFormHorizontal.style.marginLeft = '0.5rem';
   return $bodyFormHorizontal;
 }
 
@@ -224,8 +237,8 @@ export function createAddBodyIcon(annoId) {
     //var modal = document.createElement("div");
     //modal.classList.add("modal");
     //modal.style.display = "block";
-    const modal = document.getElementById('createBody');
-    modal.classList.toggle('show-modal');
+    const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('createBody'));
+    $modal.toggle();
     pickTemplate('', encodeAnnoId(annoId), 'createForm', 'pickBodyTemplateForm', 'bodyTemplate');
   });
   return $addBodyIcon;
@@ -281,8 +294,7 @@ export function createIconRow(isAnnotationRow, annoId, body, bodyIndex, hooks) {
     });
     $iconRow.append($annoDeleteIcon);
     // add stlying
-    $iconRow.classList.add('is-right');
-    $iconRow.classList.add('is-full-width');
+    $iconRow.classList.add('text-end');
   } else {
     // create icon row for body card
     $iconRow.id = 'iconRow' + bodyIndex;
@@ -308,6 +320,8 @@ function appendTextTargetModificationButtons(annotationData, $annotationDiv, hoo
     const $buttonModifySelection = document.createElement('button');
     $buttonModifySelection.innerHTML = 'Modify Selection';
     $buttonModifySelection.id = 'buttonModifySelection';
+    $buttonModifySelection.classList.add('btn');
+    $buttonModifySelection.classList.add('btn-secondary');
     $buttonModifySelection.addEventListener('mousedown', (event) => {
       modifySelection(event, annotationData);
     });
@@ -317,7 +331,9 @@ function appendTextTargetModificationButtons(annotationData, $annotationDiv, hoo
     $buttonSaveModification.innerHTML = 'Save Modification';
     $buttonSaveModification.id = 'buttonSaveModification';
     $buttonSaveModification.disabled = true;
-    $buttonSaveModification.classList.add('is-hidden');
+    $buttonSaveModification.classList.add('d-none');
+    $buttonSaveModification.classList.add('btn');
+    $buttonSaveModification.classList.add('btn-success');
     $buttonSaveModification.addEventListener('mousedown', (event) => {
       saveModification(event, window.getSelection(), annotationData);
     });
@@ -326,14 +342,16 @@ function appendTextTargetModificationButtons(annotationData, $annotationDiv, hoo
     $buttonCancelModification.type = 'submit';
     $buttonCancelModification.innerHTML = 'Cancel Modifcation';
     $buttonCancelModification.id = 'buttonCancelModification';
-    $buttonCancelModification.style.backgroundColor = '#c82525';
     $buttonCancelModification.disabled = true;
-    $buttonCancelModification.classList.add('is-hidden');
+    $buttonCancelModification.classList.add('d-none');
+    $buttonCancelModification.classList.add('btn');
+    $buttonCancelModification.classList.add('btn-danger');
     $buttonCancelModification.addEventListener('mousedown', cancelModification);
 
-    $annotationDiv.append($buttonModifySelection);
-    $annotationDiv.append($buttonSaveModification);
-    $annotationDiv.append($buttonCancelModification);
+    const $buttonContainer = $annotationDiv.querySelector('#bottomButtonContainer');
+    $buttonContainer.append($buttonModifySelection);
+    $buttonContainer.append($buttonSaveModification);
+    $buttonContainer.append($buttonCancelModification);
 
     // strictly speaking this is not part of the annotation card, but it is the
     // last step of the target update for texts and all the other buttons/eventListeners
@@ -372,9 +390,9 @@ function appendTextTargetModificationButtons(annotationData, $annotationDiv, hoo
   // adding the closing functionality to text selection update modal
   // TODO: this attaching of the eventListener has the same problem as the above attechment of
   // the eventListener to "#updateTargetButton", but doesn't have big consequences.
-  // const $closeButtonUpdate = document.getElementById('closeButtonUpdate');
-  // const $closeButtonUpdateClone = $closeButtonUpdate.cloneNode(true);
-  // $closeButtonUpdateClone.addEventListener('click', function (_e) {
+  // const $dismissTargetUpdate = document.getElementById('dismissTargetUpdate');
+  // const $dismissTargetUpdateClone = $dismissTargetUpdate.cloneNode(true);
+  // $dismissTargetUpdateClone.addEventListener('click', function (_e) {
   //   document.getElementById('updateSelection').classList.toggle('show-modal');
   //   // document.getElementById('modifyButton').parentElement.classList.remove('active');
   //   cancelModification();
@@ -383,9 +401,10 @@ function appendTextTargetModificationButtons(annotationData, $annotationDiv, hoo
   //   window.MODE = window.MODE_CLASS.View;
   //   window.SELECTING_TEXT = false;
   // });
-  // $closeButtonUpdate.replaceWith($closeButtonUpdateClone);
-  document.getElementById('closeButtonUpdate').onclick = (_event) => {
-    document.getElementById('updateSelection').classList.toggle('show-modal');
+  // $dismissTargetUpdate.replaceWith($dismissTargetUpdateClone);
+  document.getElementById('dismissTargetUpdate').onclick = (_event) => {
+    const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('updateSelection'));
+    $modal.hide();
     // document.getElementById('modifyButton').parentElement.classList.remove('active');
     cancelModification();
     // disabling the option to create an annotation. needed, because selecting text

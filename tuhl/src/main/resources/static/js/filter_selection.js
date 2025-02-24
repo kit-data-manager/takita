@@ -50,7 +50,7 @@ function addAnnotationFilter(){
         
             let $label = document.createElement("label");
             $label.classList.add("col");
-            $label.classList.add("pl-0");
+            $label.classList.add("ps-0");
             $label.innerHTML = selectedFilterText;
         
             let $labelRowInput = document.createElement("input");
@@ -60,7 +60,8 @@ function addAnnotationFilter(){
         
             let $span = document.createElement("span");
             $span.classList.add("badge");
-            $span.classList.add("badge-secondary");
+            $span.classList.add("text-bg-secondary");
+            $span.classList.add("col-auto");
             $span.classList.add("m-auto");
             $span.dataset.field = selectedFilterText;
             $span.innerHTML = "X";

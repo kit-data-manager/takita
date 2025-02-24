@@ -14,7 +14,7 @@ describe('appending child elements to a given element (the annotationCard) accor
     $child.id = 'annotationCard';
     $child.classList.add('card');
     $child.classList.add('card-body');
-    $child.classList.add('is-full-width');
+    $child.classList.add('row-gap-2');
 
     document.body.appendChild($child);
 
@@ -95,7 +95,7 @@ describe('appending child elements to a given element (the annotationCard) accor
     it('creates an annotationCard', async () => {
       const $annotationCard = await createAnnotationDiv(annoData, $child);
       // eslint-disable-next-line @stylistic/js/max-len, prettier/prettier
-      const filledCard = `<div id="annotationCard" class="card card-body is-full-width"><div id="iconRowTop" title="http://localhost/wap/sfb1475/philipp/takita/43fad442-ee74-4eac-adae-db4e2fef4b6d" class="is-right is-full-width"><i id="addBody" class="bx bx-plus"></i><i id="deleteAnnotation" class="bx bx-trash"></i></div><div class="card"><div class="row is-full-width"><div id="2741aaf0-0fac-4690-81b4-8d0301f40a97" title="http://localhost/wap/sfb1475/philipp/takita/43fad442-ee74-4eac-adae-db4e2fef4b6d" class="is-left col formBodyDiv"><div id="iconRow0"><i id="expandexpand0" class="bx bx-chevron-right"></i><i id="delete0" class="bx bx-trash"></i></div><form id="formHorizontal2741aaf0-0fac-4690-81b4-8d0301f40a97" class="col horizontalFormForm"></form></div></div><div class="row is-full-width is-hidden"><form id="form2741aaf0-0fac-4690-81b4-8d0301f40a97" class="col"></form></div></div><div class="card"><div class="row is-full-width"><div id="a1e9750a-e0ce-4e38-8372-406e5c8d0d94" title="http://localhost/wap/sfb1475/philipp/takita/43fad442-ee74-4eac-adae-db4e2fef4b6d" class="is-left col formBodyDiv"><div id="iconRow1"><i id="expandexpand1" class="bx bx-chevron-right"></i><i id="delete1" class="bx bx-trash"></i></div><form id="formHorizontala1e9750a-e0ce-4e38-8372-406e5c8d0d94" class="col horizontalFormForm"></form></div></div><div class="row is-full-width is-hidden"><form id="forma1e9750a-e0ce-4e38-8372-406e5c8d0d94" class="col"></form></div></div></div>`;
+      const filledCard = `<div id="annotationCard" class="card card-body row-gap-2"><div id="iconRowTop" title="http://localhost/wap/sfb1475/philipp/takita/43fad442-ee74-4eac-adae-db4e2fef4b6d" class="text-end"><i id="addBody" class="bx bx-plus"></i><i id="deleteAnnotation" class="bx bx-trash"></i></div><div id="topButtonContainer"></div><div class="card"><div class="row"><div id="2741aaf0-0fac-4690-81b4-8d0301f40a97" title="http://localhost/wap/sfb1475/philipp/takita/43fad442-ee74-4eac-adae-db4e2fef4b6d" class="d-flex align-items-center formBodyDiv"><div id="iconRow0"><i id="expandexpand0" class="bx bx-chevron-right"></i><i id="delete0" class="bx bx-trash"></i></div><form id="formHorizontal2741aaf0-0fac-4690-81b4-8d0301f40a97" class="horizontalFormForm flex-fill" style="margin-left: 0.5rem;"></form></div></div><div class="row collapse"><form id="form2741aaf0-0fac-4690-81b4-8d0301f40a97" class="col"></form></div></div><div class="card"><div class="row"><div id="a1e9750a-e0ce-4e38-8372-406e5c8d0d94" title="http://localhost/wap/sfb1475/philipp/takita/43fad442-ee74-4eac-adae-db4e2fef4b6d" class="d-flex align-items-center formBodyDiv"><div id="iconRow1"><i id="expandexpand1" class="bx bx-chevron-right"></i><i id="delete1" class="bx bx-trash"></i></div><form id="formHorizontala1e9750a-e0ce-4e38-8372-406e5c8d0d94" class="horizontalFormForm flex-fill" style="margin-left: 0.5rem;"></form></div></div><div class="row collapse"><form id="forma1e9750a-e0ce-4e38-8372-406e5c8d0d94" class="col"></form></div></div><div id="bottomButtonContainer"></div></div>`;
 
       expect($annotationCard.outerHTML.replaceAll(regex, '')).toEqual(filledCard.replaceAll(regex, ''));
     });
@@ -108,18 +108,18 @@ describe('appending child elements to a given element (the annotationCard) accor
       $TEI.id = 'TEI';
       const $updateTargetButton = document.createElement('div');
       $updateTargetButton.id = 'updateTargetButton';
-      const $closeButtonUpdate = document.createElement('div');
-      $closeButtonUpdate.id = 'closeButtonUpdate';
+      const dismissUpdateButton = document.createElement('div');
+      dismissUpdateButton.id = 'dismissTargetUpdate';
 
       document.body.appendChild($TEI);
       document.body.appendChild($updateTargetButton);
-      document.body.appendChild($closeButtonUpdate);
+      document.body.appendChild(dismissUpdateButton);
     });
     it('creates a default annotationCard for the text editor (including the buttons to modify a selection)', async () => {
       document.body.appendChild($child);
       const $annotationCard = await createAnnotationDiv(annoData, $child);
       // eslint-disable-next-line @stylistic/js/max-len, prettier/prettier
-      const filledCard = `<div id="annotationCard" class="card card-body is-full-width"><div id="iconRowTop" title="http://localhost/wap/sfb1475/philipp/takita/43fad442-ee74-4eac-adae-db4e2fef4b6d" class="is-right is-full-width"><i id="addBody" class="bx bx-plus"></i><i id="deleteAnnotation" class="bx bx-trash"></i></div><div class="card"><div class="row is-full-width"><div id="2741aaf0-0fac-4690-81b4-8d0301f40a97" title="http://localhost/wap/sfb1475/philipp/takita/43fad442-ee74-4eac-adae-db4e2fef4b6d" class="is-left col formBodyDiv"><div id="iconRow0"><i id="expandexpand0" class="bx bx-chevron-right"></i><i id="delete0" class="bx bx-trash"></i></div><form id="formHorizontal2741aaf0-0fac-4690-81b4-8d0301f40a97" class="col horizontalFormForm"></form></div></div><div class="row is-full-width is-hidden"><form id="form2741aaf0-0fac-4690-81b4-8d0301f40a97" class="col"></form></div></div><div class="card"><div class="row is-full-width"><div id="a1e9750a-e0ce-4e38-8372-406e5c8d0d94" title="http://localhost/wap/sfb1475/philipp/takita/43fad442-ee74-4eac-adae-db4e2fef4b6d" class="is-left col formBodyDiv"><div id="iconRow1"><i id="expandexpand1" class="bx bx-chevron-right"></i><i id="delete1" class="bx bx-trash"></i></div><form id="formHorizontala1e9750a-e0ce-4e38-8372-406e5c8d0d94" class="col horizontalFormForm"></form></div></div><div class="row is-full-width is-hidden"><form id="forma1e9750a-e0ce-4e38-8372-406e5c8d0d94" class="col"></form></div></div><button id="buttonModifySelection">Modify Selection</button><button type="submit" id="buttonSaveModification" disabled="" class="is-hidden">Save Modification</button><button type="submit" id="buttonCancelModification" style="background-color: rgb(200, 37, 37);" disabled="" class="is-hidden">Cancel Modifcation</button></div>`;
+      const filledCard = `<div id="annotationCard" class="card card-body row-gap-2"><div id="iconRowTop" title="http://localhost/wap/sfb1475/philipp/takita/43fad442-ee74-4eac-adae-db4e2fef4b6d" class="text-end"><i id="addBody" class="bx bx-plus"></i><i id="deleteAnnotation" class="bx bx-trash"></i></div><div id="topButtonContainer"></div><div class="card"><div class="row"><div id="2741aaf0-0fac-4690-81b4-8d0301f40a97" title="http://localhost/wap/sfb1475/philipp/takita/43fad442-ee74-4eac-adae-db4e2fef4b6d" class="d-flex align-items-center formBodyDiv"><div id="iconRow0"><i id="expandexpand0" class="bx bx-chevron-right"></i><i id="delete0" class="bx bx-trash"></i></div><form id="formHorizontal2741aaf0-0fac-4690-81b4-8d0301f40a97" class="horizontalFormForm flex-fill" style="margin-left: 0.5rem;"></form></div></div><div class="row collapse"><form id="form2741aaf0-0fac-4690-81b4-8d0301f40a97" class="col"></form></div></div><div class="card"><div class="row"><div id="a1e9750a-e0ce-4e38-8372-406e5c8d0d94" title="http://localhost/wap/sfb1475/philipp/takita/43fad442-ee74-4eac-adae-db4e2fef4b6d" class="d-flex align-items-center formBodyDiv"><div id="iconRow1"><i id="expandexpand1" class="bx bx-chevron-right"></i><i id="delete1" class="bx bx-trash"></i></div><form id="formHorizontala1e9750a-e0ce-4e38-8372-406e5c8d0d94" class="horizontalFormForm flex-fill" style="margin-left: 0.5rem;"></form></div></div><div class="row collapse"><form id="forma1e9750a-e0ce-4e38-8372-406e5c8d0d94" class="col"></form></div></div><div id="bottomButtonContainer"><button id="buttonModifySelection" class="btn btn-secondary">Modify Selection</button><button type="submit" id="buttonSaveModification" disabled="" class="d-none btn btn-success">Save Modification</button><button type="submit" id="buttonCancelModification" disabled="" class="d-none btn btn-danger">Cancel Modifcation</button></div></div>`;
 
       expect($annotationCard.outerHTML.replaceAll(regex, '')).toEqual(filledCard.replaceAll(regex, ''));
       expect(document.getElementById('buttonModifySelection')).toBeTruthy();
@@ -131,7 +131,7 @@ describe('creating a div for the information of a body (bodyCard)', () => {
   it('', () => {
     const mockBody = { id: 'bodyId', annotationId: 'annotationId' };
     const $bodyCard = createBodyCard('anno', mockBody, 1, null);
-    const $filledBodyCard = `<div class="card"><div class="row is-full-width"><div id="bodyId" title="annotationId" class="is-left col formBodyDiv"><div id="iconRow1"><i id="expandexpand1" class="bx bx-chevron-right"></i><i id="delete1" class="bx bx-trash"></i></div><form id="formHorizontalbodyId" class="col horizontalFormForm"></form></div></div><div class="row is-full-width is-hidden"><form id="formbodyId" class="col"></form></div></div>`;
+    const $filledBodyCard = `<div class="card"><div class="row"><div id="bodyId" title="annotationId" class="d-flex align-items-center formBodyDiv"><div id="iconRow1"><i id="expandexpand1" class="bx bx-chevron-right"></i><i id="delete1" class="bx bx-trash"></i></div><form id="formHorizontalbodyId" class="horizontalFormForm flex-fill" style="margin-left: 0.5rem;"></form></div></div><div class="row collapse"><form id="formbodyId" class="col"></form></div></div>`;
     expect($bodyCard.outerHTML).toStrictEqual($filledBodyCard);
   });
 });

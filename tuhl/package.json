@@ -17,7 +17,7 @@
     "stylis": "^4.3.0"
   },
   "peerDependencies": {
-    "bootstrap": "^4.6.2",
+    "bootstrap": "^5.3.3",
     "CETEIcean": "^1.9.2",
     "jquery": "^3.7.1",
     "jsonform": "^2.2.5",

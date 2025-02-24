@@ -13,38 +13,38 @@ import {
 } from './navigation';
 
 const defaultNavBar = `
-<div id="textNavBar" class="textNavBar row is-full-width is-hidden">
-  <div class="col-1"></div>
-  <div class="col-1"><button type="button" id="prevChaptButton">Previous chapter</button></div>
-  <div class="col-2">
-    <div class="row">
-            <div class="col-7">
-                <button id="goToChaptButton">Go to chapter:</button>
-            </div>
-            <select class="col-5" id="chapterSelect">
-            </select>
+	<div id="textNavBar" class="textNavBar row d-none">
+        <div class="col-1"></div>
+        <div class="col-1"><button type="button" class="btn btn-secondary" id="prevChaptButton">Previous chapter</button></div>
+        <div class="col-2">
+	        <div class="row">
+	                <div class="col-7">
+	                    <button type="button" class="btn btn-secondary" id="goToChaptButton">Go to chapter</button>
+	                </div>
+	                <select class="col-5" id="chapterSelect">
+	                </select>
+	        </div>
+        </div>
+        <div class="col-1"><button type="button" class="btn btn-secondary" id="nextChaptButton">Next chapter</button></div>
+        <div class="col-1"><button type="button" class="btn btn-secondary" id="toggleShowAllButton">Show all</button></div>
+        <div class="col-6"></div>
     </div>
-  </div>
-  <div class="col-1"><button type="button" id="nextChaptButton">Next chapter</button></div>
-  <div class="col-1"><button type="button" id="toggleShowAllButton">Show all</button></div>
-  <div class="col-6"></div>
-</div>
-<div id="textNavBarLow" class="textNavBar row is-full-width is-hidden">
-  <div class="col-1"></div>
-  <div class="col-1"><button type="button" id="prevChaptButtonLow">Previous chapter</button></div>
-  <div class="col-2">
-    <div class="row">
-            <div class="col-7">
-                <button id="goToChaptButtonLow">Go to chapter:</button>
-            </div>
-            <select class="col-5" id="chapterSelectLow">
-            </select>
-    </div>
-  </div>
-  <div class="col-1"><button type="button" id="nextChaptButtonLow">Next chapter</button></div>
-  <div class="col-1"><button type="button" id="toggleShowAllButtonLow">Show all</button></div>
-  <div class="col-6"></div>
-</div>`;
+    <div id="textNavBarLow" class="textNavBar row d-none">
+        <div class="col-1"></div>
+        <div class="col-1"><button type="button" class="btn btn-secondary" id="prevChaptButtonLow">Previous chapter</button></div>
+        <div class="col-2">
+	        <div class="row">
+	                <div class="col-7">
+	                    <button type="button" class="btn btn-secondary" id="goToChaptButtonLow">Go to chapter</button>
+	                </div>
+	                <select class="col-5" id="chapterSelectLow">
+	                </select>
+	        </div>
+        </div>
+        <div class="col-1"><button type="button" class="btn btn-secondary" id="nextChaptButtonLow">Next chapter</button></div>
+        <div class="col-1"><button type="button" class="btn btn-secondary" id="toggleShowAllButtonLow">Show all</button></div>
+        <div class="col-6"></div>
+    </div>`;
 
 const teiWithUnknownDivtype = `
 <tei-text data-xmlns="http://www.tei-c.org/ns/1.0" xml:lang="och" lang="och" type="book" data-origname="text" data-origatts="xmlns xml:lang type" data-processed="">
@@ -54,7 +54,7 @@ const teiWithUnknownDivtype = `
       <tei-w xml:id="w.2721" id="w.2721" data-origname="w" data-origatts="xml:id" data-processed="">術</tei-w>
       <tei-w xml:id="w.2722" id="w.2722" data-origname="w" data-origatts="xml:id" data-processed="">上</tei-w>
     </tei-head>
-    <tei-div type="fantasyDivType" n="1" xml:id="c.10" id="c.10" data-origname="div" data-origatts="type n xml:id" data-processed="" class="is-hidden">
+    <tei-div type="fantasyDivType" n="1" xml:id="c.10" id="c.10" data-origname="div" data-origatts="type n xml:id" data-processed="" class="d-none">
         <tei-p xml:id="p.25" id="p.25" data-origname="p" data-origatts="xml:id" data-processed="">
           <tei-w xml:id="w.2723" id="w.2723" data-origname="w" data-origatts="xml:id" data-processed="">心</tei-w>
           <tei-w xml:id="w.2724" id="w.2724" data-origname="w" data-origatts="xml:id" data-processed="">之</tei-w>
@@ -196,7 +196,7 @@ describe('naviation.initializeNavigation()', () => {
     const $navBarLow = $body.querySelector('#textNavBar');
     const $text = $body.querySelector('tei-text');
     initializeNavigation($navBar, $navBarLow, $text);
-    expect($navBar.classList.contains('is-hidden')).toBe(true);
+    expect($navBar.classList.contains('d-none')).toBe(true);
   });
   it('initializes the navBar for a text with multiple sections as divisions', () => {
     const $body = document.createElement('div');
@@ -210,7 +210,7 @@ describe('naviation.initializeNavigation()', () => {
     const $chapterSelect = $navBar.querySelector('#chapterSelect');
     const $showAllButton = $navBar.querySelector('#toggleShowAllButton');
     initializeNavigation($navBar, $navBarLow, $text);
-    expect($navBar.classList.contains('is-hidden')).toBe(false);
+    expect($navBar.classList.contains('d-none')).toBe(false);
     expect($prevButton.disabled).toBe(true);
     expect($nextButton.disabled).toBe(false);
     expect($gotoButton.innerHTML).toStrictEqual('Go to section');
@@ -240,14 +240,14 @@ describe('naviation.initializeNavigation()', () => {
 
     initializeNavigation($navBar, $navBarLow, $text);
 
-    expect($navBar.classList.contains('is-hidden')).toBe(false);
+    expect($navBar.classList.contains('d-none')).toBe(false);
     expect($prevButton.disabled).toBe(true);
     expect($nextButton.disabled).toBe(false);
     expect($gotoButton.innerHTML).toStrictEqual('Go to section');
     expect($showAllButton.innerHTML).toStrictEqual('Show all sections');
     expect($chapterSelect.children.length).toBe(2);
 
-    expect($navBarLow.classList.contains('is-hidden')).toBe(false);
+    expect($navBarLow.classList.contains('d-none')).toBe(false);
     expect($prevButtonLow.disabled).toBe(true);
     expect($nextButtonLow.disabled).toBe(false);
     expect($gotoButtonLow.innerHTML).toStrictEqual('Go to chapter');
@@ -258,12 +258,12 @@ describe('naviation.initializeNavigation()', () => {
 
 describe('navigation.navigateToAnnotation()', () => {
   it('shows the annotationCard for the preselected annotation', async () => {
-    document.body.innerHTML = `<div id="annotationCard" class="is-hidden"></div>`;
+    document.body.innerHTML = `<div id="annotationCard" class="invisible"></div>`;
     jest.spyOn(annotationCard, 'selectAnnotation').mockReturnValue(true);
     const $annotationCard = document.getElementById('annotationCard');
     await navigateToAnnotation('annoId', null);
     expect(window.SELECTED_ANNOTATION).toBe(true);
-    expect($annotationCard.classList.contains('is-hidden')).toBe(false);
+    expect($annotationCard.classList.contains('invisible')).toBe(false);
   });
 });
 
@@ -396,8 +396,8 @@ describe('navigation.selectDivision()', () => {
     const divisionType = 'section';
     const $divisions = $container.querySelectorAll('tei-div[type="' + divisionType + '"]');
     selectDivision('2', $divisions);
-    expect($divisions[0].classList.contains('is-hidden')).toBe(true);
-    expect($divisions[1].classList.contains('is-hidden')).toBe(false);
+    expect($divisions[0].classList.contains('d-none')).toBe(true);
+    expect($divisions[1].classList.contains('d-none')).toBe(false);
   });
 });
 

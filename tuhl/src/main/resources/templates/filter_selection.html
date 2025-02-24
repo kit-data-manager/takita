@@ -14,7 +14,7 @@
                     th:data-select-all-text="#{buttons.select_all}"
                     th:data-deselect-all-text="#{buttons.deselect_all}"
                     multiple
-                    class="col-8 mr-2 p-0 selectpicker"
+                    class="col-8 me-2 p-0 selectpicker"
                     th:field="*{fields}" id="addFilterSelect">
                 <option th:each="filter : ${possibleFilters.values()}"
                         th:if="${currentFilters.contains(filter)}"
@@ -45,19 +45,19 @@
                 th:each="filter,i : ${currentFilters}"
                 th:id="${filter.field}">
                 <div class="row">
-                    <label class="col pl-0" th:text="#{col_name.__${filter.field}__}"> </label>
+                    <label class="col ps-0" th:text="#{col_name.__${filter.field}__}"> </label>
                     <input type="hidden"
                         th:field="*{filterConfigs[__${i.index}__].field}"
                         th:value="${filter.field}">
-                    <span class="badge badge-secondary m-auto"
+                    <span class="badge text-bg-secondary col-auto m-auto"
                         type="button"
                         th:data-field="${filter.field}"
                         onclick="remove(this.getAttribute('data-field'))"
                         th:text="#{buttons.remove}">
-                </span>
+                    </span>
                 </div>
                 <div class="row" th:id="matchInput"
-                    th:if="${filter.TYPE == T(edu.kit.scc.dem.tuhl.model.filter.FilterType).MATCH}">
+                    th:if="${filter.TYPE == T(edu.kit.datamanager.takita.model.filter.FilterType).MATCH}">
                     <input type="text"
                         class="form-control"
                         th:if="*{filterConfigs[__${i.index}__].values.size() > 0}"
@@ -71,7 +71,7 @@
                         th:placeholder="#{input_label.match_term}">
                 </div>
                 <div class="row" th:id="rangeInput"
-                    th:if="${filter.TYPE == T(edu.kit.scc.dem.tuhl.model.filter.FilterType).RANGE}">
+                    th:if="${filter.TYPE == T(edu.kit.datamanager.takita.model.filter.FilterType).RANGE}">
                     <input type="number"
                         class="form-control"
                         th:if="*{filterConfigs[__${i.index}__].values.size() > 0}"
@@ -84,17 +84,17 @@
                         th:field="*{filterConfigs[__${i.index}__].values[0]}"
                         th:placeholder="#{input_label.range_from}">
 
-                    <input type="number"
-                        class="form-control mt-1"
-                        th:if="*{filterConfigs[__${i.index}__].values.size() > 1}"
-                        th:field="*{filterConfigs[__${i.index}__].values[1]}"
-                        th:value="*{filterConfigs[__${i.index}__].values[1].toString()}"
-                        th:placeholder="#{input_label.range_to}">
-                    <input type="number"
-                        class="form-control mt-1"
-                        th:unless="*{filterConfigs[__${i.index}__].values.size() > 1}"
-                        th:field="*{filterConfigs[__${i.index}__].values[1]}"
-                        th:placeholder="#{input_label.range_to}">
+                        <input type="number"
+                            class="form-control mt-1"
+                            th:if="*{filterConfigs[__${i.index}__].values.size() > 1}"
+                            th:field="*{filterConfigs[__${i.index}__].values[1]}"
+                            th:value="*{filterConfigs[__${i.index}__].values[1].toString()}"
+                            th:placeholder="#{input_label.range_to}">
+                        <input type="number"
+                            class="form-control mt-1"
+                            th:unless="*{filterConfigs[__${i.index}__].values.size() > 1}"
+                            th:field="*{filterConfigs[__${i.index}__].values[1]}"
+                            th:placeholder="#{input_label.range_to}">
                 </div>
             </div>
             <div class="row mt-3 justify-content-center">
@@ -119,7 +119,7 @@
                     th:data-select-all-text="#{buttons.select_all}"
                     th:data-deselect-all-text="#{buttons.deselect_all}"
                     multiple
-                    class="col-8 mr-2 p-0 selectpicker"
+                    class="col-8 me-2 p-0 selectpicker"
                     th:field="*{fields}" id="addAnnotationFilterSelect">
                 <!--<option th:each="filter : ${possibleAnnotationFilters.values()}"
                         th:value="${filter.field}"
@@ -228,10 +228,6 @@
         }
     </script>
 
-    <!-- Selectpicker-->
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet"
-          href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.18/dist/css/bootstrap-select.min.css">
 
     <script th:src="@{js/filter_selection.js}"></script>
 </div>

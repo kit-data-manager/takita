@@ -1,3 +1,6 @@
+// external modules
+import * as bootstrap from 'bootstrap';
+// internal modules
 import { encodeAnnoId, toggleVisibility } from '../../common/utils';
 import { selectAnnotation } from '../../common/annotationCard';
 import { collapseSidebar } from '../sidebar';
@@ -48,9 +51,9 @@ export function initializeTextEditor(_annotations, hooks = {}) {
   });
 
   // adding the closing functionality to annotation creation modal
-  document.getElementById('closeButtonAnno').addEventListener('click', function (_e) {
-    document.getElementById('createAnnotation').classList.toggle('show-modal');
-
+  document.getElementById('dismissAnnotation').addEventListener('click', function (_e) {
+    const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('createAnnotation'));
+    $modal.hide();
     // disabling the option to create an annotation. needed, because selecting text
     // can be done before the mode was set to create by clicking the button after the text selection process
     window.MODE = window.MODE_CLASS.View;
@@ -58,13 +61,15 @@ export function initializeTextEditor(_annotations, hooks = {}) {
   });
 
   // adding the closing functionality to body creation modal
-  document.getElementById('closeButton').addEventListener('click', function (_e) {
-    document.getElementById('createBody').classList.toggle('show-modal');
-    // disabling the option to create an annotation. needed, because selecting text
-    // can be done before the mode was set to create by clicking the button after the text selection process
-    window.MODE = window.MODE_CLASS.View;
-    window.SELECTING_TEXT = false;
-  });
+  // document.getElementById('closeButton').addEventListener('click', function (_e) {
+  //   document.getElementById('createBody').classList.toggle('show-modal');
+  // const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('createBody'));
+  // $modal.toggle();
+  //   // disabling the option to create an annotation. needed, because selecting text
+  //   // can be done before the mode was set to create by clicking the button after the text selection process
+  //   window.MODE = window.MODE_CLASS.View;
+  //   window.SELECTING_TEXT = false;
+  // });
 }
 
 /**
@@ -88,8 +93,8 @@ export function annotateSelectedText(selection, annoJson, hooks = {}) {
 
     // showing the modal/dropdown to select the annotation template, which can be populated
     // by the user
-    const modal = document.getElementById('createAnnotation');
-    modal.classList.toggle('show-modal');
+    const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('createAnnotation'));
+    $modal.toggle();
     pickTemplate(targetXPath, '', 'createAnnotationForm', 'pickAnnotationTemplateForm', 'annotationTemplate');
 
     // resetting parameters, so no new annotation can be created without clicking on
@@ -182,7 +187,7 @@ async function cycleAnnotations(event, annoJson, $annotationCard, currentSelecte
     const selectedAnnotation = await selectAnnotation(null, annoIdEncoded, hooks);
     //alert("asd");
     console.log('New selected annotation: ', selectedAnnotation);
-    if ($annotationCard.classList.contains('is-hidden')) {
+    if ($annotationCard.classList.contains('invisible')) {
       toggleVisibility($annotationCard);
     }
     return selectedAnnotation;

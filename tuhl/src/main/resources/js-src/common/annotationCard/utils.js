@@ -153,7 +153,7 @@ export async function deleteAnnotation(annoId) {
       // eslint-disable-next-line no-unused-vars
       const response = await deleteAnnotationData(annoId);
       const $annotationDiv = document.getElementById('annotationCard');
-      if (!$annotationDiv.classList.contains('is-hidden')) {
+      if (!$annotationDiv.classList.contains('invisible')) {
         toggleVisibility($annotationDiv);
       }
 

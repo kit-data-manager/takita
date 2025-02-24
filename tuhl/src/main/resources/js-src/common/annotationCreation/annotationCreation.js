@@ -1,6 +1,7 @@
 //external modules
 import $ from 'jquery';
 import 'jsonform';
+import * as bootstrap from 'bootstrap';
 //internal modules
 import { toggleVisibility, encodeAnnoId } from '../utils';
 import { updateDisplay } from '../../texteditor-ng/display';
@@ -54,7 +55,6 @@ export function pickTemplate(svgCode, encodedId, createFormId, pickFormId, templ
     document.getElementById(createFormId).title = svgCode;
   }
 
-  //console.log($('#' + pickFormId));
   // creates dropdown from enum objects defined at the top
   if (template === 'bodyTemplate') {
     $('#' + pickFormId).jsonForm(formObjectCreateBody);
@@ -115,13 +115,12 @@ export async function resetFormAndUpdateDisplay(annotation, hooks = {}) {
   // be used while creating annotations and not adding bodies, so it previously just toggled
   // the display of the createAnnotation-modal, but now it only toggles the modal, if it
   // is shown.
-  const $modal = document.getElementById('createAnnotation');
-  if ($modal.classList.contains('show-modal')) {
-    $modal.classList.toggle('show-modal');
-  }
+  const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('createAnnotation'));
+  $modal.toggle();
+
   window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(annotation.id), hooks);
   const $annotationCard = document.getElementById('annotationCard');
-  if ($annotationCard.classList.contains('is-hidden')) {
+  if ($annotationCard.classList.contains('invisible')) {
     toggleVisibility($annotationCard);
   }
 

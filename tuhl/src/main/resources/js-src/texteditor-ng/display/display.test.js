@@ -12,7 +12,7 @@ describe('updating the display by rendering the current annotations', () => {
     document.body.innerHTML = `<div id="table"></div><div id="TEI"><div id="w.1"></div><div id="w.2"></div><div id="w.3"></div>
         <div id="w.4"></div><div id="w.5" class="defaulthighlight"></div></div>
         <div id="annotationTableBottom"></div>
-        <div class="card card-body is-full-width is-hidden" id="annotationCard">`;
+        <div class="card card-body row-gap-2 invisible" id="annotationCard">`;
     const mockAnnoJson = [
       { id: '1', svg: ['id("w.1")', 'id("w.2")'], color: 'none', creator: 'test' },
       { id: '2', svg: ['id("w.3")', 'id("w.4")'], color: 'none', creator: 'test' },

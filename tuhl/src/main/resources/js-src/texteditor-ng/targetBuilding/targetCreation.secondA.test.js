@@ -3,7 +3,7 @@ import { createTargetString } from './targetCreation';
 // copied from the browser, don't touch this innerHtml
 const innerHtmlCreationTest =
   '<div class="col-7"><div id="notOnWorkspace"></div>' +
-  '  <div id="textWorkspace" class="is-full-width">' +
+  '  <div id="textWorkspace">' +
   '       <div id="TEI">' +
   '            <tei-text xml:lang="en" lang="en">' +
   '               <tei-body n="Psalms" xml:id="b.426591" id="b.426591">' +

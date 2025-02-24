@@ -188,6 +188,10 @@ export function modifyBodyFormHorizontal($horizontalForm, modifiedBody) {
     inputButtonHorizontal.value = 'Save';
     inputButtonHorizontal.disabled = true;
     inputButtonHorizontal.classList.add('horizontalFormInput');
+    if (inputButtonHorizontal.classList.contains('btn-primary')) {
+      inputButtonHorizontal.classList.add('btn-success');
+      inputButtonHorizontal.classList.remove('btn-primary');
+    }
   }
 
   // enabling/diasbling the "Save"-buttons for inputs and textareas of the form
@@ -305,8 +309,8 @@ export function getFormBodyDataModelAndUiFormHorizontal(body, omitFields, editab
       // push the key and hide it, when its not the value key
       if (key !== 'value' && omitFields.indexOf(key) === -1) {
         // "type" : "hidden" doesn't work; for some reason this prevents
-        // the form to be submitted. Instead chotas "is-hidden" class is being used
-        uiFormHorizontal.items.push({ key: key, htmlClass: 'is-hidden' });
+        // the form to be submitted. Instead bootstraps "d-none" class is being used
+        uiFormHorizontal.items.push({ key: key, htmlClass: 'd-none' });
         if (key === 'purpose') {
           if (editableFields.includes(body.purpose)) {
             operationHorizontal = 'UPDATE';

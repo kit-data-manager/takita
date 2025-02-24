@@ -2,7 +2,7 @@
 import { escapeSelector } from 'jquery';
 // internal imports
 // Common utils
-import { createOption, setVisibility, toggleVisibility } from '../../common/utils';
+import { createOption, setDisplay, toggleVisibility } from '../../common/utils';
 import { selectAnnotation } from '../../common/annotationCard';
 import { encodeAnnoId } from '../../common/utils';
 // projectspecifics
@@ -23,6 +23,8 @@ let currentDivisionLabelLow;
  * @param {Element} $navBarTop the top-level navigation bar to be initialized
  * @param {Element} $navBarLow the low-level navigation bar to be initialized
  * @param {Element} $text in which the text is stored
+ * @param {String} fragmentId the id of the first word of the annotation target, which should be displayed
+ * @param {String} annotationId the id of the annotation, that should be preselected
  * @param {[Object]} [hooks] to be passed to navigateToAnnotation() and then to selectAnnotation(),
  * where they influence the rendering of the annotationCard
  */
@@ -63,7 +65,7 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, fragme
     $showAllButton.innerHTML = 'Show all ' + divisionLabels + 's'; // yay for English pluralization rules
 
     // Hide all chapters initially
-    setVisibility($divisions, false);
+    setDisplay($divisions, false);
 
     // Fill select element with options
     divisionLabels.map(createOption).forEach((option) => $chapterSelect.appendChild(option));
@@ -97,7 +99,7 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, fragme
       );
       if (hasMultiLevelDivision) {
         const $currentDivision = [...$divisions].filter((tp) => getDivisionLabel(tp) === currentDivisionLabelTop).pop();
-        initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, false, hooks);
+        initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, undefined);
       }
     };
     const onClickPrev = (_ev) => {
@@ -119,7 +121,7 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, fragme
       }
       if (hasMultiLevelDivision) {
         const $currentDivision = [...$divisions].filter((tp) => getDivisionLabel(tp) === currentDivisionLabelTop).pop();
-        initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, false, hooks);
+        initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, undefined);
       }
     };
     const onClickNext = (_ev) => {
@@ -141,19 +143,19 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, fragme
       }
       if (hasMultiLevelDivision) {
         const $currentDivision = [...$divisions].filter((tp) => getDivisionLabel(tp) === currentDivisionLabelTop).pop();
-        initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, false, hooks);
+        initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, undefined);
       }
     };
     const onClickShowAll = (_ev) => {
       showAllDivisions = !showAllDivisions;
       if (showAllDivisions) {
-        setVisibility($divisions, true);
+        setDisplay($divisions, true);
         // showing all low-level divisions and hiding the low-level navbar
         if (hasMultiLevelDivision) {
           const $divisionsLow = $text.querySelectorAll('tei-div[type="' + divisionTypeLow + '"]');
           console.log($divisionsLow.length, $divisionsLow);
-          setVisibility($divisionsLow, true);
-          setVisibility($navBarLow, false);
+          setDisplay($divisionsLow, true);
+          setDisplay($navBarLow, false);
         }
       } else {
         selectDivision(currentDivisionLabelTop, $divisions);
@@ -163,7 +165,7 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, fragme
           const $currentDivision = [...$divisions]
             .filter((tp) => getDivisionLabel(tp) === currentDivisionLabelTop)
             .pop();
-          initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, currentDivisionLabelLow, false, hooks);
+          initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, currentDivisionLabelLow, undefined);
         }
       }
       updateButtons(
@@ -186,32 +188,26 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, fragme
 
     // After everything is set up, make navbar visible
     //console.log('make navbar visible');
-    $navBarTop.classList.remove('is-hidden');
-
-    if (preselectedAnnoTarget !== null) {
-      setTimeout(async () => {
-        preselectedAnnoTarget.scrollIntoView(true, {
-          behavior: 'smooth',
-        });
-        await navigateToAnnotation(annotationId, hooks);
-      }, 100);
-    }
+    setDisplay($navBarTop, true);
   }
 
   if (hasMultiLevelDivision) {
     const $currentDivision = [...$divisions].filter((tp) => getDivisionLabel(tp) === currentDivisionLabelTop).pop();
-    // Note: as this is the first initialization after a page-load, a pre-selected annotation should be displayed,
-    // hence navigateToAnnotation is set to true
-    initializeNavigationLow(
-      $navBarLow,
-      $currentDivision,
-      divisionTypeLow,
-      undefined,
-      true,
-      fragmentId,
-      annotationId,
-      hooks,
-    );
+    // Note: as this is the first initialization of the lower navigation bar, the target of a pre-selected
+    // annotation should be displayed, hence the fragmentId is passed
+    initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, fragmentId);
+  }
+
+  // scroll to the first element targeted by an annotaiton, if an annotation should
+  // be displayed. The element should be visible as both navigation bars are initialized and
+  // during their initializitation the navBars show the necessary chapter.
+  if (preselectedAnnoTarget !== null) {
+    setTimeout(async () => {
+      preselectedAnnoTarget.scrollIntoView(true, {
+        behavior: 'smooth',
+      });
+      await navigateToAnnotation(annotationId, hooks);
+    }, 100);
   }
 }
 
@@ -227,26 +223,17 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, fragme
  * @param {String} previouslyShownDivisionLabel the number/label of the previously shown low-level division;
  * necessary for the $showAllButton of the top-level navigation bar to work properly (i.e. that the
  * right low-level division is shown as well after returning from fully displayed text)
- * @param {Boolean} navigateToAnnotation used to decide if a pre-selected annotation should be shown
- * and navigated to. This should be true on page load for the first initialization of the navbar,
- * and false for every other initialization of the low-level navbar. Otherwise on every change by the
- * top-level navigation it can happen, that the pre-selected annotation will be displayed and navigated
- * to.
- * @param {[Object]} [hooks] to be passed to navigateToAnnotation() and then to selectAnnotation(),
- * where they influence the rendering of the annotationCard
+ * @param {String} fragmentId the id of the first word of the annotation target, which should be displayed
  */
 export async function initializeNavigationLow(
   $navBar,
   $text,
   divisionTypeLow,
   previouslyShownDivisionLabel,
-  navigateToAnnotation,
   fragmentId,
-  annotationId,
-  hooks = {},
 ) {
   // hiding the navBar initially as there might not be more than one division
-  $navBar.classList.add('is-hidden');
+  setDisplay($navBar, false);
   // Local state, closed over and modified by the various button callbacks
   let showAllDivisions = false;
 
@@ -271,7 +258,7 @@ export async function initializeNavigationLow(
       $showAllButton.innerHTML = 'Show all ' + divisionLabels + 's'; // yay for English pluralization rules
 
       // Hide all chapters initially
-      setVisibility($divisions, false);
+      setDisplay($divisions, false);
 
       // Fill select element with options
       // removing old values first
@@ -368,7 +355,7 @@ export async function initializeNavigationLow(
       const onClickShowAll = (_ev) => {
         showAllDivisions = !showAllDivisions;
         if (showAllDivisions) {
-          setVisibility($divisions, true);
+          setDisplay($divisions, true);
         } else {
           selectDivision(currentDivisionLabelLow, $divisions);
         }
@@ -392,19 +379,7 @@ export async function initializeNavigationLow(
 
       // After everything is set up, make navbar visible
       //console.log('make navbar visible');
-      $navBar.classList.remove('is-hidden');
-
-      // only navigate to the annotation if necessary
-      if (navigateToAnnotation) {
-        if (preselectedAnnoTarget !== null) {
-          setTimeout(async () => {
-            preselectedAnnoTarget.scrollIntoView(true, {
-              behavior: 'smooth',
-            });
-            await navigateToAnnotation(annotationId, hooks);
-          }, 100);
-        }
-      }
+      setDisplay($navBar, true);
     }
   }
 }
@@ -429,7 +404,7 @@ export async function navigateToAnnotation(targetAnnotationId, hooks = {}) {
   if (targetAnnotationId) {
     window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(targetAnnotationId), hooks);
     const annoCard = document.getElementById('annotationCard');
-    if (annoCard.classList.contains('is-hidden')) {
+    if (annoCard.classList.contains('invisible')) {
       toggleVisibility(annoCard);
     }
   }
@@ -453,11 +428,20 @@ export function getTargetElement(fragmentId, $text) {
  */
 export function getTargetDivision($targetElement, divisionType) {
   if ($targetElement) {
+    // get the parent of a node. It should be a tei-div-element with a "@type" attribute,
+    // which value is equal to the divisionType function parameter.
+    // The function calls itself recursively until it either gets the correct tei-div or the
+    // container element of the tei document in the DOM (the container is a div with
+    // the ID "TEI")
     const closestDivision = (node) => {
-      if (node?.attributes?.type?.value === divisionType) {
-        return node;
+      if (node.id != 'TEI') {
+        if (node?.attributes?.type?.value === divisionType) {
+          return node;
+        }
+        return closestDivision(node.parentNode);
+      } else {
+        return undefined;
       }
-      return closestDivision(node.parentNode);
     };
 
     const targetDivision = closestDivision($targetElement);
@@ -473,11 +457,11 @@ export function getTargetDivision($targetElement, divisionType) {
  */
 export function selectDivision(selectedLabel, $allDivisions) {
   // Hide all text parts initially.
-  setVisibility($allDivisions, false);
+  setDisplay($allDivisions, false);
   // Display selected text parts.
   [...$allDivisions]
     .filter((tp) => getDivisionLabel(tp) === selectedLabel)
-    .forEach((selected) => setVisibility(selected, true));
+    .forEach((selected) => setDisplay(selected, true));
 }
 
 /**

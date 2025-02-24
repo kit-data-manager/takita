@@ -1,4 +1,37 @@
 /* ------------------------------------*/
+/* EDITOR CONTAINER */
+/* ------------------------------------*/
+
+/* moving editor to the right to prevent
+   the siderbar from overlapping the editor */
+#editor {
+    margin-left: 7.5rem;
+}
+
+/* fixing overflowing editor content*/
+#editor {
+    position: relative;
+}
+#editor > .row {
+    width: 100%;
+}
+
+/* end of editor container */
+/* ------------------------------------*/
+
+/* ------------------------------------*/
+/* NAVIGATION BARS */
+/* ------------------------------------*/
+
+/* adding space below each navigation bar */
+.textNavBar {
+	padding-bottom: .5em;
+}
+
+/* end of navigation bars */
+/* ------------------------------------*/
+
+/* ------------------------------------*/
 /* ANNOTATION SPECIFICS */
 /* ------------------------------------*/
 
@@ -147,6 +180,26 @@
 /* end of annotation specifics */
 /* ------------------------------------*/
 
+/* ------------------------------------*/
+/* MODALS */
+/* ------------------------------------*/
+
+/* needs to be checked on larger screen! */
+.modal-dialog {
+    top: 10%;
+    left: 30%;
+}
+
+/* overwriting bootstraps modal sizing to prevent
+	the modals from overlapping the editor part
+	and preventing the modals right side to be cut
+	off on small screens */
+.modal-dialog {
+	max-width: 35%;
+}
+
+/* end of modals */
+/* ------------------------------------*/
 
 /* ------------------------------------*/
 /* TEXTCARD DISPLAY */
@@ -161,18 +214,29 @@
 	position: relative;
 }
 
-/* stikcy positioning and setting the width */
+/* sticky positioning */
 #viewerHolder {
 	position: sticky;
 	top: 20%;
-	width: 38vw;
-	padding-left: 15px;
 }
 
 /* making textcard display scrollable */
 #annotationCard {
 	max-height: 60vh;
 	overflow-y: auto;
+}
+
+/* adding some space around the horizontally 
+   displayed elements */
+#annotationCard > .card {
+	padding: .4rem .4rem;
+}
+
+/* hiding buttons created by jsonForms, if
+	the formDataModel contains an array.
+	The buttons are never used anyways. */
+._jsonform-array-buttons {
+	display: none;
 }
    
 /* displaying the "quickview" of an annotations

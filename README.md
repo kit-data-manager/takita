@@ -1,4 +1,4 @@
-# Readme
+# tAKITA - Annotation tool for WADM
 
 For some major changes from image-annotation takita to text-annoation check the end of the document.
 
@@ -8,10 +8,7 @@ In order for the program to run properly there are two major requirements:
 * A server with the Elasticsearch image on version 7.6.2, or a compatible higher version must be
  running. 
 
-##### Running an Elasticsearch server using Docker
-In order for this to work, Docker must be installed and running.
-The next step is to open a terminal in the same directory as the configuration file 
-`docker-compose.yml` is located and execute the command `docker-compose up` to run the docker.
+## Note:
 
 #### Program Arguments
 

@@ -1,18 +1,26 @@
 import { Mode } from '../../common/mode';
-import { modifySelection, saveModification, cancelModification } from './targetModification';
+import { saveModification } from './targetModification';
 
 const innerHtml =
-  '<div>' +
-  '<div class="modal" id="updateSelection">' +
-  ' <div class="modal-content">' +
-  '     <span class="close-button" id="closeButtonUpdate">&times;</span>' +
-  '     <div id="oldSelectedText"></div>' +
-  '     <div id="newSelectedText"></div>' +
-  '     <input class="btn btn-primary" type="submit" value="Update + Save" id="updateTargetButton">' +
-  ' </div>' +
-  '</div>' +
+  `
+<div class="modal" tabindex="-1" role="dialog" id="updateSelection" data-bs-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Seleted Text</h5>
+                    <button type="button" id="dismissTargetUpdate" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="oldSelectedText"></div>
+                    <div id="newSelectedText"></div>
+                    <input class="btn btn-primary" type="submit" value="Update + Save" id="updateTargetButton">
+                </div>
+            </div>
+        </div>
+    </div>
+` +
   '<div class="col-7"><div id="notOnWorkspace"></div>' +
-  '  <div id="textWorkspace" class="is-full-width">' +
+  '  <div id="textWorkspace">' +
   '       <div id="TEI">' +
   '            <tei-text xml:lang="en" lang="en">' +
   '               <tei-body n="Psalms" xml:id="b.426591" id="b.426591">' +

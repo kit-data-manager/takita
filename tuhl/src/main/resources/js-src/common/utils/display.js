@@ -44,11 +44,25 @@ export function toggleOpacity($selection) {
  * @param {Element | NodeList} $selection affected HTML element(s), (probably some div) which should get toggled
  * @param {Element} [$button] the button element which should appear "active" state if element was made visible
  */
-export function toggleVisibility($selection, $button) {
+export function toggleVisibility($selection) {
   const $elements = $selection instanceof HTMLElement ? [$selection] : $selection;
   $elements.forEach(($element) => {
-    const elementWasHidden = $element.classList.contains('is-hidden');
-    $element.classList.toggle('is-hidden');
+    $element.classList.toggle('invisible');
+  });
+}
+
+/**
+ * Toggles the display of an HTML element or NodeList, and optionally
+ * designate the responsible button as active.
+ *
+ * @param {Element | NodeList} $selection affected HTML element(s), (probably some div) which should get toggled
+ * @param {Element} [$button] the button element which should appear "active" state if element was made visible
+ */
+export function toggleDisplay($selection, $button) {
+  const $elements = $selection instanceof HTMLElement ? [$selection] : $selection;
+  $elements.forEach(($element) => {
+    const elementWasHidden = $element.classList.contains('d-none');
+    $element.classList.toggle('d-none');
     if (elementWasHidden) {
       if ($button) {
         $button.parentElement.classList.add('active');
@@ -64,16 +78,17 @@ export function toggleVisibility($selection, $button) {
 }
 
 /**
- * Set visibility of HTML element or NodeList by adding/removing a CSS class.
+ * Set display of HTML element or NodeList by adding/removing a CSS class.
+ *
  * @param {Element | NodeList} $selection affected HTML element(s)
- * @param {Boolean} isVisible whether the element(s) should be visible
+ * @param {Boolean} display whether the element(s) should be visible
  */
-export function setVisibility($selection, isVisible) {
+export function setDisplay($selection, display) {
   const $elements = $selection instanceof HTMLElement ? [$selection] : $selection;
-  if (isVisible) {
-    $elements.forEach((element) => element.classList.remove('is-hidden'));
+  if (display) {
+    $elements.forEach((element) => element.classList.remove('d-none'));
   } else {
-    $elements.forEach((element) => element.classList.add('is-hidden'));
+    $elements.forEach((element) => element.classList.add('d-none'));
   }
 }
 
@@ -83,7 +98,12 @@ export function setVisibility($selection, isVisible) {
  * @param {Element} $button
  */
 export function toggleButtonState($button) {
-  toggleVisibility($button);
+  const buttonWasDisplayed = !$button.classList.contains('d-none');
+  if (buttonWasDisplayed) {
+    $button.classList.add('d-none');
+  } else {
+    $button.classList.remove('d-none');
+  }
   const buttonWasDisabled = $button.disabled;
   if (buttonWasDisabled) {
     $button.disabled = false;
@@ -100,6 +120,7 @@ export function toggleButtonState($button) {
  * @param {Element} $boxIcon affected HTML element containing the boxIcons
  */
 export function toggleExpand($element, $boxIcon) {
-  toggleVisibility($element);
+  // TODO: this might need to toggle the 'collapse' class and no longer use toggleVisibility
+  $element.classList.toggle('collapse');
   toggleBoxIcon($boxIcon, 'bx-chevron-down', 'bx-chevron-right');
 }

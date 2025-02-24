@@ -3,21 +3,18 @@ import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
 import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
 import static org.junit.jupiter.api.Assertions.*;
 
-import edu.kit.scc.dem.tuhl.NoSuchIndexEntryException;
-import edu.kit.scc.dem.tuhl.TuhlApplication;
-import edu.kit.scc.dem.tuhl.assistance.IAssistanceService;
-import edu.kit.scc.dem.tuhl.dataaccess.IAnnotationStoreAccessService;
-import edu.kit.scc.dem.tuhl.dataaccess.IRepositoryAccessService;
-import edu.kit.scc.dem.tuhl.editor.EditorService;
-import edu.kit.scc.dem.tuhl.editor.IEditorService;
-import edu.kit.scc.dem.tuhl.editor.RestController;
-import edu.kit.scc.dem.tuhl.mainpage.search.ISearchIndexService;
-import edu.kit.scc.dem.tuhl.model.Annotation;
-import edu.kit.scc.dem.tuhl.model.Manuscript;
+import edu.kit.datamanager.takita.NoSuchIndexEntryException;
+import edu.kit.datamanager.takita.TakitaApplication;
+import edu.kit.datamanager.takita.assistance.IAssistanceService;
+import edu.kit.datamanager.takita.dataaccess.IAnnotationStoreAccessService;
+import edu.kit.datamanager.takita.dataaccess.IRepositoryAccessService;
+import edu.kit.datamanager.takita.editor.IEditorService;
+import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
+import edu.kit.datamanager.takita.model.Annotation;
+import edu.kit.datamanager.takita.model.Manuscript;
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit.core.model.RequestFieldMatcher;
-import io.specto.hoverfly.junit.dsl.HttpBodyConverter;
 import io.specto.hoverfly.junit5.HoverflyExtension;
 import io.specto.hoverfly.junit5.api.HoverflyCore;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,10 +33,8 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.unbescape.html.HtmlEscape;
 
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
@@ -50,7 +45,7 @@ import java.util.List;
  * NOTE: the tests in this class have to be run in order and are depending on each other
  * External REST API responses are provided via hoverfly. Please make sure to keep this test up-to-date with upgrades on repo and wap server dependencies
  */
-@SpringBootTest(classes= TuhlApplication.class, properties = "spring.config.name=application-integration")
+@SpringBootTest(classes= TakitaApplication.class, properties = "spring.config.name=application-integration")
 @ExtendWith(HoverflyExtension.class)
 @HoverflyCore(mode= HoverflyMode.SIMULATE)
 @Testcontainers

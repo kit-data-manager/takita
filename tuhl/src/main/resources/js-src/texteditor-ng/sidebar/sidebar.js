@@ -1,4 +1,4 @@
-import { enableTooltips, toggleVisibility } from '../../common/utils';
+import { enableTooltips, toggleDisplay } from '../../common/utils';
 
 import { getTextLanguage } from '../textloader/textloader';
 import { decreaseFontSize, increaseFontSize, resetFontSize } from '../utils/fontsize';
@@ -28,7 +28,7 @@ export function initializeSidebar($sidebar, $text, $pagesDialog, $tableContainer
   });
   // font manipulation buttons
   $sidebar.querySelector('#fontIncreaseButton').addEventListener('click', function () {
-    toggleSidebar($sidebar);
+    collapseSidebar($sidebar);
     increaseFontSize($text);
   });
   $sidebar.querySelector('#fontIncreaseSpan').addEventListener('click', function () {
@@ -54,21 +54,21 @@ export function initializeSidebar($sidebar, $text, $pagesDialog, $tableContainer
   // show parts navigation
   $sidebar.querySelector('#pagesButton').addEventListener('click', function () {
     collapseSidebar($sidebar);
-    toggleVisibility($pagesDialog, $pagesButton);
+    toggleDisplay($pagesDialog, $pagesButton);
   });
   $sidebar.querySelector('#pagesSpan').addEventListener('click', function () {
     collapseSidebar($sidebar);
-    toggleVisibility($pagesDialog, $pagesButton);
+    toggleDisplay($pagesDialog, $pagesButton);
   });
 
   // shows the annotation table
   $sidebar.querySelector('#annotationTableBottomButton').addEventListener('click', function () {
     collapseSidebar($sidebar);
-    toggleVisibility($tableContainer, $annotationTableButton);
+    toggleDisplay($tableContainer, $annotationTableButton);
   });
   $sidebar.querySelector('#annotationTableBottomSpan').addEventListener('click', function () {
     collapseSidebar($sidebar);
-    toggleVisibility($tableContainer, $annotationTableButton);
+    toggleDisplay($tableContainer, $annotationTableButton);
   });
 
   if (hooks.postSidebarCreation) {

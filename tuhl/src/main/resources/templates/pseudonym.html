@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Header</title>
+</head>
+<body>
+<div class="col-4 input-group w-auto" th:fragment="pseudonym">
+    <input class="form-control"
+        th:placeholder="#{label.pseudonym}"
+        id="pseudonymInput"
+        th:value="${user.getName()}"
+        disabled>
+    <div class="input-group-append">
+        <button id="editButton"
+            class="btn btn-outline-secondary"
+            onclick="clickButton(event)"
+            th:text="#{buttons.edit}"> </button>
+    </div>      
+
+<script th:inline="javascript">
+    // setting contextpath
+    window.CONTEXTPATH = /*[[@{/}]]*/ "/";
+
+    async function clickButton(event){
+        /*<![CDATA[*/
+        event.preventDefault();
+        let button = document.getElementById('editButton');
+        let input = document.getElementById('pseudonymInput');
+        let edit = [[#{buttons.edit}]];
+            let ok = [[#{buttons.ok}]];
+        if (button.innerText === edit){
+            button.innerText = ok;
+            button.className = 'btn btn-info';
+            input.disabled = false;
+        } else {
+            button.innerText = edit;
+            button.className = 'btn btn-outline-secondary';
+            input.disabled = true;
+            await setPseudonym(document.getElementById('pseudonymInput').value);
+        }
+        /*]]>*/
+    }
+
+    async function setPseudonym(input) {
+        const response = await fetch(window.CONTEXTPATH + 'assistance/' + input);
+
+        if (response.ok) {
+            console.log("Response from succesfull pseudonym update: ", response);
+            // reload the page with the new pseudonym
+            // location.reload();
+
+            document.getElementById('pseudonymInput').value = input;
+
+            let pseudonym = document.getElementById("pseudonymInputModal");
+            if (pseudonym.classList.contains('show')) {
+                bootstrap.Modal.getOrCreateInstance(pseudonym).toggle();
+            };
+            
+            // emitting event in case of successful pseudonym update
+            // can be used to reload the page where necessary
+            document.dispatchEvent(new Event('pseudonymUpdate'))
+        } else {
+            console.error("Response from failed pseudonym update: ",response)
+        }
+    }
+</script>
+</div>
+
+<div class="modal" role="dialog" id="pseudonymInputModal" data-bs-keyboard="false" data-bs-backdrop="static" th:fragment="pseudonym_modal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" th:text="#{label.pseudonym}"> </h5>
+            </div>
+            <form>
+                <div class="modal-body form-group">
+                    <label for="pseudonymInitInput" th:text="#{prompt.pseudonym}"> </label>
+                    <input type="text"
+                            class="form-control"
+                            id="pseudonymInitInput"
+                            th:placeholder="#{label.pseudonym}"
+                            required>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary" th:text="#{buttons.submit}">
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+
+        // maybe the "load"-event might be necessary here
+        document.addEventListener("DOMContentLoaded", (event) => {
+            let userName = /*[[${user.getName()}]]*/ "default";
+            if (userName === 'default') {
+                let pseudonym = document.getElementById("pseudonymInputModal");
+                bootstrap.Modal.getOrCreateInstance(pseudonym).toggle();
+            }
+        });
+
+        document.getElementById('pseudonymInputModal').addEventListener('submit', async function(event) {
+            event.preventDefault();
+            let input =  document.getElementById("pseudonymInitInput").value;
+            await setPseudonym(input);
+        });
+    </script>
+
+</div>
+</body>
+</html>
