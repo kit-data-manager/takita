@@ -41,8 +41,8 @@ const targetUpdateCallback = updateTargetData;
 // can navigate chapters and subchapters, if available.
 // NOTE: this has to be a json-object, so that it can be mocked by jest for testing
 const POSSIBLE_DIVISION_TYPES = {
-  top: ['chapter', 'section'],
-  low: ['subchapter'],
+  top: ['chapter', 'section', 'book'],
+  low: ['chapter', 'subchapter', 'section', 'subsection'],
 };
 
 /**

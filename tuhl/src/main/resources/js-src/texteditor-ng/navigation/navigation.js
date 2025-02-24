@@ -99,7 +99,6 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, fragme
       );
       if (hasMultiLevelDivision) {
         const $currentDivision = [...$divisions].filter((tp) => getDivisionLabel(tp) === currentDivisionLabelTop).pop();
-        //initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, false, hooks);
         initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, undefined);
       }
     };
@@ -122,7 +121,6 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, fragme
       }
       if (hasMultiLevelDivision) {
         const $currentDivision = [...$divisions].filter((tp) => getDivisionLabel(tp) === currentDivisionLabelTop).pop();
-        //initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, false, hooks);
         initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, undefined);
       }
     };
@@ -145,7 +143,6 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, fragme
       }
       if (hasMultiLevelDivision) {
         const $currentDivision = [...$divisions].filter((tp) => getDivisionLabel(tp) === currentDivisionLabelTop).pop();
-        //initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, false, hooks);
         initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, undefined);
       }
     };
@@ -168,7 +165,6 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, fragme
           const $currentDivision = [...$divisions]
             .filter((tp) => getDivisionLabel(tp) === currentDivisionLabelTop)
             .pop();
-          //initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, currentDivisionLabelLow, false, hooks);
           initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, currentDivisionLabelLow, undefined);
         }
       }
