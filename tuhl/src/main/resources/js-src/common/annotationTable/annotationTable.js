@@ -154,7 +154,7 @@ export function fixTableStyling($annotationTable) {
 export function defaultDisplayAnnotationFunction(_event, cell, hooks) {
   const $annotationCard = document.getElementById('annotationCard');
   selectAnnotation(null, encodeAnnoId(cell.getRow().getData().id), hooks);
-  if ($annotationCard.classList.contains('is-hidden')) {
+  if ($annotationCard.classList.contains('invisible')) {
     toggleVisibility($annotationCard);
   }
 }
