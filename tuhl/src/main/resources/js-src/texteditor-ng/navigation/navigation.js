@@ -23,6 +23,8 @@ let currentDivisionLabelLow;
  * @param {Element} $navBarTop the top-level navigation bar to be initialized
  * @param {Element} $navBarLow the low-level navigation bar to be initialized
  * @param {Element} $text in which the text is stored
+ * @param {String} fragmentId the id of the first word of the annotation target, which should be displayed
+ * @param {String} annotationId the id of the annotation, that should be preselected
  * @param {[Object]} [hooks] to be passed to navigateToAnnotation() and then to selectAnnotation(),
  * where they influence the rendering of the annotationCard
  */
@@ -97,7 +99,8 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, fragme
       );
       if (hasMultiLevelDivision) {
         const $currentDivision = [...$divisions].filter((tp) => getDivisionLabel(tp) === currentDivisionLabelTop).pop();
-        initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, false, hooks);
+        //initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, false, hooks);
+        initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, undefined);
       }
     };
     const onClickPrev = (_ev) => {
@@ -119,7 +122,8 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, fragme
       }
       if (hasMultiLevelDivision) {
         const $currentDivision = [...$divisions].filter((tp) => getDivisionLabel(tp) === currentDivisionLabelTop).pop();
-        initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, false, hooks);
+        //initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, false, hooks);
+        initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, undefined);
       }
     };
     const onClickNext = (_ev) => {
@@ -141,7 +145,8 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, fragme
       }
       if (hasMultiLevelDivision) {
         const $currentDivision = [...$divisions].filter((tp) => getDivisionLabel(tp) === currentDivisionLabelTop).pop();
-        initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, false, hooks);
+        //initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, false, hooks);
+        initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, undefined);
       }
     };
     const onClickShowAll = (_ev) => {
@@ -163,7 +168,8 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, fragme
           const $currentDivision = [...$divisions]
             .filter((tp) => getDivisionLabel(tp) === currentDivisionLabelTop)
             .pop();
-          initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, currentDivisionLabelLow, false, hooks);
+          //initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, currentDivisionLabelLow, false, hooks);
+          initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, currentDivisionLabelLow, undefined);
         }
       }
       updateButtons(
@@ -187,31 +193,25 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, fragme
     // After everything is set up, make navbar visible
     //console.log('make navbar visible');
     setDisplay($navBarTop, true);
-
-    if (preselectedAnnoTarget !== null) {
-      setTimeout(async () => {
-        preselectedAnnoTarget.scrollIntoView(true, {
-          behavior: 'smooth',
-        });
-        await navigateToAnnotation(annotationId, hooks);
-      }, 100);
-    }
   }
 
   if (hasMultiLevelDivision) {
     const $currentDivision = [...$divisions].filter((tp) => getDivisionLabel(tp) === currentDivisionLabelTop).pop();
-    // Note: as this is the first initialization after a page-load, a pre-selected annotation should be displayed,
-    // hence navigateToAnnotation is set to true
-    initializeNavigationLow(
-      $navBarLow,
-      $currentDivision,
-      divisionTypeLow,
-      undefined,
-      true,
-      fragmentId,
-      annotationId,
-      hooks,
-    );
+    // Note: as this is the first initialization of the lower navigation bar, the target of a pre-selected
+    // annotation should be displayed, hence the fragmentId is passed
+    initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, fragmentId);
+  }
+
+  // scroll to the first element targeted by an annotaiton, if an annotation should
+  // be displayed. The element should be visible as both navigation bars are initialized and
+  // during their initializitation the navBars show the necessary chapter.
+  if (preselectedAnnoTarget !== null) {
+    setTimeout(async () => {
+      preselectedAnnoTarget.scrollIntoView(true, {
+        behavior: 'smooth',
+      });
+      await navigateToAnnotation(annotationId, hooks);
+    }, 100);
   }
 }
 
@@ -227,23 +227,14 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, fragme
  * @param {String} previouslyShownDivisionLabel the number/label of the previously shown low-level division;
  * necessary for the $showAllButton of the top-level navigation bar to work properly (i.e. that the
  * right low-level division is shown as well after returning from fully displayed text)
- * @param {Boolean} navigateToAnnotation used to decide if a pre-selected annotation should be shown
- * and navigated to. This should be true on page load for the first initialization of the navbar,
- * and false for every other initialization of the low-level navbar. Otherwise on every change by the
- * top-level navigation it can happen, that the pre-selected annotation will be displayed and navigated
- * to.
- * @param {[Object]} [hooks] to be passed to navigateToAnnotation() and then to selectAnnotation(),
- * where they influence the rendering of the annotationCard
+ * @param {String} fragmentId the id of the first word of the annotation target, which should be displayed
  */
 export async function initializeNavigationLow(
   $navBar,
   $text,
   divisionTypeLow,
   previouslyShownDivisionLabel,
-  navigateToAnnotation,
   fragmentId,
-  annotationId,
-  hooks = {},
 ) {
   // hiding the navBar initially as there might not be more than one division
   setDisplay($navBar, false);
@@ -393,18 +384,6 @@ export async function initializeNavigationLow(
       // After everything is set up, make navbar visible
       //console.log('make navbar visible');
       setDisplay($navBar, true);
-
-      // only navigate to the annotation if necessary
-      if (navigateToAnnotation) {
-        if (preselectedAnnoTarget !== null) {
-          setTimeout(async () => {
-            preselectedAnnoTarget.scrollIntoView(true, {
-              behavior: 'smooth',
-            });
-            await navigateToAnnotation(annotationId, hooks);
-          }, 100);
-        }
-      }
     }
   }
 }
@@ -453,11 +432,20 @@ export function getTargetElement(fragmentId, $text) {
  */
 export function getTargetDivision($targetElement, divisionType) {
   if ($targetElement) {
+    // get the parent of a node. It should be a tei-div-element with a "@type" attribute,
+    // which value is equal to the divisionType function parameter.
+    // The function calls itself recursively until it either gets the correct tei-div or the
+    // container element of the tei document in the DOM (the container is a div with
+    // the ID "TEI")
     const closestDivision = (node) => {
-      if (node?.attributes?.type?.value === divisionType) {
-        return node;
+      if (node.id != 'TEI') {
+        if (node?.attributes?.type?.value === divisionType) {
+          return node;
+        }
+        return closestDivision(node.parentNode);
+      } else {
+        return undefined;
       }
-      return closestDivision(node.parentNode);
     };
 
     const targetDivision = closestDivision($targetElement);
