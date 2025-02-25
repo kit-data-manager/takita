@@ -198,6 +198,22 @@
 	max-width: 35%;
 }
 
+/* adding some space on the left and right side for
+	checkboxes present in the modal displayed to create
+	annotations */
+#createAnnotationForm .form-group input[type="checkbox"] {
+	margin-left: .75em;
+	margin-right: .4em;
+}
+
+/* adding some space on the left and right side for
+	checkboxes present in the modal displayed to add
+	a body to an annotation */
+#createForm .form-group input[type="checkbox"] {
+	margin-left: .75em;
+	margin-right: .4em;
+}
+
 /* end of modals */
 /* ------------------------------------*/
 
