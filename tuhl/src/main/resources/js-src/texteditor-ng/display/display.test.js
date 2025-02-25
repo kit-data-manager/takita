@@ -29,11 +29,11 @@ describe('updating the display by rendering the current annotations', () => {
     expect(document.getElementById('w.4').classList.contains('defaulthighlight')).toBe(true);
     expect(document.getElementById('w.5').classList.contains('defaulthighlight')).toBe(false);
   });
-  it('fails on updating the display', () => {
+  it('fails on updating the display', async () => {
     // mocking an inner funciton call, which does a network request, to be called unsuccessfully
     // and to throw an error, which gets handled
     jest.spyOn(data, 'getAllAnnotationsData').mockReturnValue(new Error());
-    updateDisplay({});
+    await updateDisplay({});
     expect(window.ANNOJSON).toStrictEqual(undefined);
   });
 });

@@ -280,7 +280,7 @@ export function createExpandIcon(bodyIndex) {
  * @param {Object} [hooks] containing an array for the hooks to be passed to "selectAnnotation()"
  * @returns {Element} $iconRow that was created
  */
-export function createIconRow(isAnnotationRow, annoId, body, bodyIndex, hooks) {
+export function createIconRow(isAnnotationRow, annoId, body, bodyIndex, hooks = {}) {
   const $iconRow = document.createElement('div');
   if (isAnnotationRow) {
     // create icon row for annotation card
@@ -290,7 +290,7 @@ export function createIconRow(isAnnotationRow, annoId, body, bodyIndex, hooks) {
     const $addBodyIcon = createAddBodyIcon(annoId);
     $iconRow.append($addBodyIcon);
     const $annoDeleteIcon = createDeleteIcon('deleteAnnotation', async (_event) => {
-      await deleteAnnotation(annoId);
+      await deleteAnnotation(annoId, hooks);
     });
     $iconRow.append($annoDeleteIcon);
     // add stlying

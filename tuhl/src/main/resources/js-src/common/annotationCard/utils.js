@@ -100,7 +100,7 @@ export async function updateBody(annoId, value, hooks = {}) {
     // but not for image annotation
     if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
       // redraw
-      updateDisplay();
+      await updateDisplay(hooks);
     }
   } catch (exception) {
     console.error(exception);
@@ -128,7 +128,7 @@ export async function deleteBody(annoId, body, hooks = {}) {
       window.SELECTED_ANNOTATION = await selectAnnotation(null, annoId, hooks);
       if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
         // redraw
-        updateDisplay();
+        await updateDisplay(hooks);
       }
     } catch (exception) {
       console.error(exception);
@@ -145,7 +145,7 @@ export async function deleteBody(annoId, body, hooks = {}) {
  * @returns {Boolean} true, if the annotation was succesfully deleted, false, if the user
  * canceled the process or deletion failed
  */
-export async function deleteAnnotation(annoId) {
+export async function deleteAnnotation(annoId, hooks = {}) {
   let confirmation = confirm('Are you sure to delete this annotation?');
 
   if (confirmation) {
@@ -185,7 +185,7 @@ export async function deleteAnnotation(annoId) {
       // but not for image annotation
       if (document.getElementById('TEI') != null) {
         // redrawing all annotations
-        updateDisplay();
+        await updateDisplay(hooks);
         // removing the highlighting of the now deleted annotation
         removeStyles(document.getElementById('TEI'), ['selected']);
       }

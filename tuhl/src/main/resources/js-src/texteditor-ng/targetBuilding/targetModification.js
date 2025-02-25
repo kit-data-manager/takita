@@ -111,7 +111,7 @@ export async function updateTarget(_event, targetUpdateCallback, annotation, tar
     // but not for image annotation
     if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
       // redraw
-      updateDisplay();
+      await updateDisplay(hooks);
     }
   } catch (exception) {
     console.error(exception);

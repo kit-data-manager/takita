@@ -129,7 +129,7 @@ export async function resetFormAndUpdateDisplay(annotation, hooks = {}) {
   // but not for image annotation
   if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
     // redraw
-    await updateDisplay();
+    await updateDisplay(hooks);
   }
 
   // TODO: previuosly fillMetaDataEditorTable() was used. When modularizing the imageEditor
