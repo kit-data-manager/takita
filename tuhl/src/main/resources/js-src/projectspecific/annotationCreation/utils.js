@@ -23,8 +23,8 @@ export function makeAnnotationData(formvalue) {
     motivation: 'describing',
     bodies: bodies,
   };
-  if (document.getElementById('createAnnotationForm').title !== '') {
-    annotationData.svgCode = document.getElementById('createAnnotationForm').title;
+  if (document.getElementById('createAnnotationForm').getAttribute('data-annotation-targetcode') !== '') {
+    annotationData.svgCode = document.getElementById('createAnnotationForm').getAttribute('data-annotation-targetcode');
   }
   console.log('finished annotation data', annotationData);
 

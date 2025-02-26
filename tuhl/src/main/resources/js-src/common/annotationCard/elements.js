@@ -123,7 +123,6 @@ function createBodyDiv(body) {
   // horizontal form
   //bodyDiv.innerText = bodies[body].purpose;
   $bodyDiv.id = body.id;
-  $bodyDiv.title = body.annotationId;
   $bodyDiv.classList.add('d-flex');
   $bodyDiv.classList.add('align-items-center');
   $bodyDiv.classList.add('formBodyDiv');
@@ -285,7 +284,6 @@ export function createIconRow(isAnnotationRow, annoId, body, bodyIndex, hooks = 
   if (isAnnotationRow) {
     // create icon row for annotation card
     $iconRow.id = 'iconRowTop';
-    $iconRow.title = annoId;
     // create and append child elements
     const $addBodyIcon = createAddBodyIcon(annoId);
     $iconRow.append($addBodyIcon);

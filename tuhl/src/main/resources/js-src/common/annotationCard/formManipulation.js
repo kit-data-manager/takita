@@ -123,7 +123,7 @@ export async function createAndAppendBodyForms(
 export function createAndAppendBodyForm(formBodyDataModel, uiForm, body) {
   const options = { operation: 'UPDATE', dataModel: formBodyDataModel, uiForm: uiForm, resource: body };
   $('#form' + body.id).metadataeditorForm(options, async function onSubmitValid(value) {
-    const annoId = document.getElementById('iconRowTop').title;
+    const annoId = document.getElementById('annotationCard').getAttribute('data-annotation-id');
     await updateBody(annoId, value);
   });
 }
@@ -151,7 +151,7 @@ export function createAndAppendBodyFormHorizontal(
     resource: modifiedBody,
   };
   $('#formHorizontal' + modifiedBody.id).metadataeditorForm(optionsHorizontal, async function onSubmitValid(value) {
-    const annoId = document.getElementById('iconRowTop').title;
+    const annoId = document.getElementById('annotationCard').getAttribute('data-annotation-id');
     await updateBody(annoId, value);
   });
 

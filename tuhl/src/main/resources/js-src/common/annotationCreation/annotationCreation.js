@@ -43,16 +43,14 @@ export function pickTemplate(svgCode, encodedId, createFormId, pickFormId, templ
   //   }
   // }
 
-  // stores annotation id in title in case of body creation
-  // TODO: find better solution for this
+  // stores annotation id in data attribute in case of body creation
   if (encodedId !== '') {
-    document.getElementById(createFormId).title = encodedId;
+    document.getElementById(createFormId).setAttribute('data-annotation-id', encodedId);
   }
 
-  // stores svg code in title in case of annotation creation for shape
-  // TODO: find better solution for this
+  // stores targetcode in data attribute in case of annotation creation for shape
   if (svgCode !== '') {
-    document.getElementById(createFormId).title = svgCode;
+    document.getElementById(createFormId).setAttribute('data-annotation-targetcode', svgCode);
   }
 
   // creates dropdown from enum objects defined at the top
@@ -143,5 +141,5 @@ export async function resetFormAndUpdateDisplay(annotation, hooks = {}) {
   // );
   //document.getElementById('createRectangleButton').parentElement.classList.remove('active');
   //document.getElementById('createPolygonButton').parentElement.classList.remove('active');
-  document.getElementById('createAnnotationForm').removeAttribute('title');
+  document.getElementById('createAnnotationForm').removeAttribute('data-annotation-id');
 }

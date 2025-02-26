@@ -52,7 +52,7 @@ describe('creating various forms based on chosen template', () => {
     const $pickForm = document.getElementById('pickAnnotationTemplateForm');
 
     expect($form.children.length).toBe(0);
-    expect($form.title).toStrictEqual('svgCode/xPath');
+    expect($form.getAttribute('data-annotation-targetcode')).toStrictEqual('svgCode/xPath');
     expect($pickForm.querySelectorAll('option').length).toBe(3);
     expect($pickForm.querySelectorAll('option')[1].value).toStrictEqual('One');
   });
@@ -68,7 +68,7 @@ describe('creating various forms based on chosen template', () => {
     const $pickForm = document.getElementById('pickBodyTemplateForm');
 
     expect($form.children.length).toBe(0);
-    expect($form.title).toStrictEqual('encodedId');
+    expect($form.getAttribute('data-annotation-id')).toStrictEqual('encodedId');
     expect($pickForm.querySelectorAll('option').length).toBe(3);
     expect($pickForm.querySelectorAll('option')[1].value).toStrictEqual('One');
   });
@@ -82,7 +82,7 @@ describe.skip('reseting the form and updating the display', () => {
     // mocking dom-state and functions
     document.getElementById('annotationCard').classList.add('invisible');
     document.getElementById('createAnnotation').classList.add('show');
-    document.getElementById('createAnnotationForm').title = 'removeMe';
+    document.getElementById('createAnnotationForm').setAttribute('data-annotation-targetcode', 'removeMe');
     window.EDITORTYPE = 'TEXT';
     jest.spyOn(display, 'updateDisplay').mockReturnValue(true);
     jest.spyOn(annotationCard, 'selectAnnotation').mockReturnValue(true);
@@ -97,7 +97,7 @@ describe.skip('reseting the form and updating the display', () => {
     expect($modal.classList.contains('show')).toBe(false);
     expect(window.SELECTED_ANNOTATION).toBe(true);
     expect($annotationCard.classList.contains('invisible')).toBe(false);
-    expect($form.title).toBe('');
+    expect($form.getAttribute('data-annotation-targetcode')).toBe('');
   });
 
   it('in an imageEditor', async () => {
@@ -105,7 +105,7 @@ describe.skip('reseting the form and updating the display', () => {
     // mocking dom-state and functions
     document.getElementById('annotationCard').classList.add('invisible');
     document.getElementById('createAnnotation').classList.add('show');
-    document.getElementById('createAnnotationForm').title = 'removeMe';
+    document.getElementById('createAnnotationForm').setAttribute('data-annotation-targetcode', 'removeMe');
     jest.spyOn(annotationCard, 'selectAnnotation').mockReturnValue(true);
     // jest.spyOn(metadataEditorWrapper, 'fillMetaDataEditorTable').mockReturnValue(true);
 
@@ -117,6 +117,6 @@ describe.skip('reseting the form and updating the display', () => {
 
     expect($modal.classList.contains('show')).toBe(false);
     expect($annotationCard.classList.contains('invisible')).toBe(false);
-    expect($form.title).toBe('');
+    expect($form.getAttribute('data-annotation-targetcode')).toBe('');
   });
 });

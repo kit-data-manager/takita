@@ -127,7 +127,7 @@ export const formObjectCreateBody = {
 
         $('#createForm').metadataeditorForm(options, async function onSubmitValid(value) {
           let jsonObject = JSON.parse(value);
-          const annotationId = document.getElementById('createForm').title;
+          const annotationId = document.getElementById('annotationCard').getAttribute('data-annotation-id');
           //console.log(value);
           //console.log(jsonObject);
 
@@ -154,11 +154,7 @@ export const formObjectCreateBody = {
               const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('createBody'));
               $modal.toggle();
 
-              window.SELECTED_ANNOTATION = await selectAnnotation(
-                null,
-                document.getElementById('createForm').title,
-                hooks,
-              );
+              window.SELECTED_ANNOTATION = await selectAnnotation(null, annotationId, hooks);
             } catch (exception) {
               console.error('Adding another body failed with: ', exception);
             }
