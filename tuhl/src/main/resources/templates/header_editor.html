@@ -6,8 +6,8 @@
 <body>
 <div th:fragment="header_editor">
 
-    <table class="table table-borderless">
-        <thead class="table-light align-middle">
+    <table id="header_editor" class="table table-borderless">
+        <thead class="table-secondary align-middle">
             <th width="10%"></th>
             <th width="20%"><i class="bx bx-home" onclick="goHome();"></i></th>
             <th width="20%" th:text="${currentManuscript.title}"></th>
@@ -34,7 +34,7 @@
                 </div>
             </th>
         </thead>
-        <tbody>
+        <tbody class="table-light">
             <tr>
                 <td width="10%"></td>
                 <td width="20%" th:text="#{col_name.noPages}"></td>

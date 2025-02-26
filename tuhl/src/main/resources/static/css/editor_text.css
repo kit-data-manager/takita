@@ -20,6 +20,20 @@
 /* ------------------------------------*/
 
 /* ------------------------------------*/
+/* TABLES */
+/* ------------------------------------*/
+
+/* removing the margin below the thymeleaf fragment (header_editor.html)
+	that the table from the fragment and the table to display
+	metadata from the tei-files have no whitespace in between*/
+#header_editor {
+	margin-bottom: 0em;
+}
+
+/* end of tables */
+/* ------------------------------------*/
+
+/* ------------------------------------*/
 /* NAVIGATION BARS */
 /* ------------------------------------*/
 
