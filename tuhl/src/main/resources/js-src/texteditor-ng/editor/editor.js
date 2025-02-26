@@ -161,13 +161,19 @@ async function cycleAnnotations(event, annoJson, $annotationCard, currentSelecte
       //console.log('first annotationsOntarget ', annotationsOnTarget[0]);
       annoIdEncoded = encodeAnnoId(annotationsOnTarget[0].id);
     } else {
-      // check if the next index would be out off bounds, if yes select the first annotaiton in the list
-      // to start at the beginning of the list again and cycle through
+      // check if the next index would be out off bounds, if yes hide the annotation card and return undefined.
+      // On the next call of this function "currentSelectedAnnotation" will be undefined and
+      // the cycling will start at the beginning of the list again.
       if (
         annotationsOnTarget.findIndex((annotation) => annotation.id === window.SELECTED_ANNOTATION.id) + 1 >
         annotationsOnTarget.length - 1
       ) {
-        annoIdEncoded = encodeAnnoId(annotationsOnTarget[0].id);
+        console.log('Cycled through all annotations on the target; hiding annotation card.');
+        // hiding the annotation card if users click on words, that are not highlighted
+        if (!$annotationCard.classList.contains('invisible')) {
+          toggleVisibility($annotationCard);
+        }
+        return undefined;
         //console.log('first annotationsOntarget 2 ', annotationsOnTarget[0]);
       } else {
         annoIdEncoded = encodeAnnoId(
@@ -185,13 +191,16 @@ async function cycleAnnotations(event, annoJson, $annotationCard, currentSelecte
     }
 
     const selectedAnnotation = await selectAnnotation(null, annoIdEncoded, hooks);
-    //alert("asd");
     console.log('New selected annotation: ', selectedAnnotation);
     if ($annotationCard.classList.contains('invisible')) {
       toggleVisibility($annotationCard);
     }
     return selectedAnnotation;
   } else {
+    // hiding the annotation card if users click on words, that are not highlighted
+    if (!$annotationCard.classList.contains('invisible')) {
+      toggleVisibility($annotationCard);
+    }
     return undefined;
   }
 }
