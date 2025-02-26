@@ -198,6 +198,7 @@ export function createDeleteIcon(elementId, callback) {
     //delete body id
     deleteBody.id = 'delete' + body;
     */
+  $deleteIcon.title = 'Delete';
   $deleteIcon.classList.add('bx');
   $deleteIcon.classList.add('bx-trash');
 
@@ -229,6 +230,7 @@ export function createDeleteIcon(elementId, callback) {
 export function createAddBodyIcon(annoId) {
   var $addBodyIcon = document.createElement('i');
   $addBodyIcon.id = 'addBody';
+  $addBodyIcon.title = 'Add another body to the annotation';
   $addBodyIcon.classList.add('bx');
   $addBodyIcon.classList.add('bx-plus');
   $addBodyIcon.addEventListener('click', () => {
@@ -252,6 +254,7 @@ export function createAddBodyIcon(annoId) {
 export function createExpandIcon(bodyIndex) {
   const $expandIcon = document.createElement('i');
   $expandIcon.id = 'expand' + bodyIndex;
+  $expandIcon.title = 'Expand';
   $expandIcon.classList.add('bx');
   $expandIcon.classList.add('bx-chevron-right');
   //expand.style.color = "#b5b5be";
