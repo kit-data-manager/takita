@@ -250,6 +250,17 @@
 	top: 5%;
 }
 
+/* keeping the sticky position of the annotation card
+	if bootstrap modals are displayed. This prevents
+	the annotation card from jumping around.
+	When opening a bootstrap modal the body gets
+	the "modal-open" class and inline css set "overflow: hidden";
+	this behaviour is overwritten to keep the annotation
+	card at its position. */
+body.modal-open {
+	overflow: visible !important;
+}
+
 /* making textcard display scrollable */
 #annotationCard {
 	max-height: 70vh;
