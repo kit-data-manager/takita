@@ -65,12 +65,13 @@ export function defaultHighlighting(annotation) {
  * @param {Element} $text the element holding the text, that can be annotated and highlighted
  */
 export function highlightSelectedAnnotationsTarget(selectedAnnotation, $text) {
-  // highlight words targetted by the currently selected annotation
-  // remove old highlights (TODO: include this in removeStyles(el) in editor_xml.js)
-  $text.querySelectorAll('.selected').forEach((element) => element.classList.remove('selected'));
-  // add a class to all the targets of the selected annotation
-  selectedAnnotation.targets.forEach((target) => {
-    const targetId = target.selector.xPath.split('"')[1];
-    $text.querySelector('#' + escapeSelector(targetId)).classList.add('selected');
-  });
+  // remove old highlights
+  removeStyles($text, ['selected']);
+  // add a class to all the targets of the selected annotation, if an annotation is selected
+  if (selectedAnnotation) {
+    selectedAnnotation.targets.forEach((target) => {
+      const targetId = target.selector.xPath.split('"')[1];
+      $text.querySelector('#' + escapeSelector(targetId)).classList.add('selected');
+    });
+  }
 }
