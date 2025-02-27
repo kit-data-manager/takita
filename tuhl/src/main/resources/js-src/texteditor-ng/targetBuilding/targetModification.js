@@ -103,9 +103,6 @@ export async function updateTarget(_event, targetUpdateCallback, annotation, tar
     window.MODE = window.MODE_CLASS.View;
     window.SELECTING_TEXT = false;
 
-    // show the updated annotation
-    window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(annotation.id), hooks);
-
     // updating the display for text annotation
     // checking if TEI-element is null. it is defined for text annotation,
     // but not for image annotation
@@ -113,6 +110,9 @@ export async function updateTarget(_event, targetUpdateCallback, annotation, tar
       // redraw
       await updateDisplay(hooks);
     }
+
+    // show the updated annotation
+    window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(annotation.id), hooks);
   } catch (exception) {
     console.error(exception);
   }

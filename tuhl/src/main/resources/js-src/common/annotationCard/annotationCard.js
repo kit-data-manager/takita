@@ -10,6 +10,10 @@ import { headerFieldsArray, omitFieldsArray, editableFieldsArray } from '../../p
  * Main entry point to handle a user interaction to select an annotation
  * by clicking on it. It will get the annotations data, create the annotationCard
  * and highlight the selected words (if a text is present).
+ * NOTE: if updateDisplay() is called as well, call it before selectAnnotation()
+ * as updateDisplay() will assign the ".selected" class to all elements that are
+ * targeted by an annotation and selectAnnotation() refines the assignment to only
+ * assign the class to the currently selected annotation.
  *
  * @param {Event} _event the event trgiggered by a user. It is not used and can be "null" as well
  * @param {String} annoId single encoded ID of the annotation, that was selected

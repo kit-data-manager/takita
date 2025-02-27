@@ -55,6 +55,7 @@ export function defaultHighlighting(annotation) {
     const targetXmlId = target.split('"')[1];
     const targetElement = document.getElementById(targetXmlId);
     targetElement.classList.add('defaulthighlight');
+    targetElement.classList.add('selected');
   });
 }
 

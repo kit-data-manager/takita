@@ -8,7 +8,10 @@ import { checkIsTargetCompatible, makeTargetsCompatible } from '../utils';
  * main entry point, which fetches all annotations of a page and then
  * - removes old highlighting and applies new highlighting
  * - updates the annotation table
- *
+ * NOTE: if selectAnnotation() is called as well, call it after updateDisplay()
+ * as updateDisplay() will assign the ".selected" class to all elements that are
+ * targeted by an annotation and selectAnnotation() refines the assignment to only
+ * assign the class to the currently selected annotation.
  * @param {[Object]} hooks not called anywhere currently
  * @returns {[Object]} the most recent annoJson (all annotations of a page)
  */
@@ -37,6 +40,7 @@ export async function updateDisplay(hooks = {}) {
 
     // remove all styling/highlighting
     removeStyles(document.getElementById('TEI'), possibleHighlightClasses);
+    removeStyles(document.getElementById('TEI'), ['selected']);
     // highlight all annotated words
     drawAnnos(annoJson);
 

@@ -7,7 +7,7 @@ import { collapseSidebar } from '../sidebar';
 import { createTargetString } from '../targetBuilding';
 import { pickTemplate } from '../../common/annotationCreation';
 import { possibleHighlightClasses } from '../../projectspecific';
-import { removeStyles } from '../highlighting';
+import { drawAnnos, removeStyles } from '../highlighting';
 
 /**
  * Initialize the textEditor with given annotations; currently the annotations
@@ -44,7 +44,10 @@ export function initializeTextEditor(_annotations, hooks = {}) {
       $annotationCard.classList.remove('invisible');
     } else {
       window.SELECTED_ANNOTATION = undefined;
-      removeStyles($text, ['selected']);
+      // remove all styling/highlighting
+      removeStyles(document.getElementById('TEI'), possibleHighlightClasses);
+      // highlight all annotated words
+      drawAnnos(window.ANNOJSON);
       $annotationCard.classList.add('invisible');
     }
   });

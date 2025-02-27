@@ -94,7 +94,6 @@ export async function updateBody(annoId, value, hooks = {}) {
     // eslint-disable-next-line no-unused-vars
     const response = await updateBodyData(annoId, body);
     bodyUpdated = true;
-    window.SELECTED_ANNOTATION = await selectAnnotation(null, annoId, hooks);
     // updating the display for text annotation
     // checking if TEI-element is null. it is defined for text annotation,
     // but not for image annotation
@@ -102,6 +101,7 @@ export async function updateBody(annoId, value, hooks = {}) {
       // redraw
       await updateDisplay(hooks);
     }
+    window.SELECTED_ANNOTATION = await selectAnnotation(null, annoId, hooks);
   } catch (exception) {
     console.error(exception);
   }
@@ -125,11 +125,11 @@ export async function deleteBody(annoId, body, hooks = {}) {
     try {
       // eslint-disable-next-line no-unused-vars
       const response = await deleteBodyData(annoId, body);
-      window.SELECTED_ANNOTATION = await selectAnnotation(null, annoId, hooks);
       if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
         // redraw
         await updateDisplay(hooks);
       }
+      window.SELECTED_ANNOTATION = await selectAnnotation(null, annoId, hooks);
     } catch (exception) {
       console.error(exception);
       confirmation = false;
@@ -187,8 +187,6 @@ export async function deleteAnnotation(annoId, hooks = {}) {
       if (document.getElementById('TEI') != null) {
         // redrawing all annotations
         await updateDisplay(hooks);
-        // removing the highlighting of the now deleted annotation
-        removeStyles(document.getElementById('TEI'), ['selected']);
       }
 
       // maybe move it within the if clause?

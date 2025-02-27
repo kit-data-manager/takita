@@ -105,7 +105,7 @@ export function crc1475Highlighting(annotation) {
   annotation.svg.forEach((target, index) => {
     const targetXmlId = target.split('"')[1];
     const targetElement = document.getElementById(targetXmlId);
-
+    targetElement.classList.add('selected');
     // if color is available assign css class
     if (annotation.color) {
       assignStyle(targetElement, annotation, index, alreadyHighlighted);

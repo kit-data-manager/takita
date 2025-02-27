@@ -116,18 +116,18 @@ export async function resetFormAndUpdateDisplay(annotation, hooks = {}) {
   const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('createAnnotation'));
   $modal.toggle();
 
-  window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(annotation.id), hooks);
-  const $annotationCard = document.getElementById('annotationCard');
-  if ($annotationCard.classList.contains('invisible')) {
-    toggleVisibility($annotationCard);
-  }
-
   // updating the display for text annotation
   // checking if TEI-element is null. it is defined for text annotation,
   // but not for image annotation
   if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
     // redraw
     await updateDisplay(hooks);
+  }
+
+  window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(annotation.id), hooks);
+  const $annotationCard = document.getElementById('annotationCard');
+  if ($annotationCard.classList.contains('invisible')) {
+    toggleVisibility($annotationCard);
   }
 
   // TODO: previuosly fillMetaDataEditorTable() was used. When modularizing the imageEditor
