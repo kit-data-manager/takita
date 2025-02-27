@@ -1,12 +1,13 @@
 // external modules
 import * as bootstrap from 'bootstrap';
 // internal modules
-import { encodeAnnoId, toggleVisibility } from '../../common/utils';
+import { encodeAnnoId } from '../../common/utils';
 import { selectAnnotation } from '../../common/annotationCard';
 import { collapseSidebar } from '../sidebar';
 import { createTargetString } from '../targetBuilding';
 import { pickTemplate } from '../../common/annotationCreation';
 import { possibleHighlightClasses } from '../../projectspecific';
+import { removeStyles } from '../highlighting';
 
 /**
  * Initialize the textEditor with given annotations; currently the annotations
@@ -18,26 +19,39 @@ import { possibleHighlightClasses } from '../../projectspecific';
  * @param {Object} [hooks] containing an array for various hooks
  */
 export function initializeTextEditor(_annotations, hooks = {}) {
+  const $text = document.getElementById('TEI');
   // bind eventHandlers to clicks and buttons
   // open textcard if rightclicking on a word that is highlighted due to it
   // having a css class, i.e. has an annotation
-  document.getElementById('TEI').addEventListener('contextmenu', async function (event) {
+  $text.addEventListener('contextmenu', async function (event) {
     event.preventDefault();
     const $annotationCard = document.getElementById('annotationCard');
     const currentSelectedAnnotation = window.SELECTED_ANNOTATION;
-    const newSelectedAnnotation = await cycleAnnotations(
+    const newSelectedAnnotationID = cycleAnnotations(
       event,
+      event.target,
       window.ANNOJSON,
-      $annotationCard,
       currentSelectedAnnotation,
       hooks,
     );
-    window.SELECTED_ANNOTATION = newSelectedAnnotation;
+
+    // based on the presence of an annotationId
+    // - hiding/showing annotation card
+    // - selecting/unslecting an annotation and its targets
+    if (newSelectedAnnotationID) {
+      window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(newSelectedAnnotationID), hooks);
+      console.log('New selected annotation: ', window.SELECTED_ANNOTATION);
+      $annotationCard.classList.remove('invisible');
+    } else {
+      window.SELECTED_ANNOTATION = undefined;
+      removeStyles($text, ['selected']);
+      $annotationCard.classList.add('invisible');
+    }
   });
 
   // adding eventhandler for text selection, if a user presses the button first
   // and then selects text
-  document.getElementById('TEI').addEventListener('mousedown', (_event) => {
+  $text.addEventListener('mousedown', (_event) => {
     // only get a selection, if a user actually wants to select text
     if (window.MODE === window.MODE_CLASS.Create && window.SELECTING_TEXT) {
       annotateSelectedText(window.getSelection(), window.ANNOJSON, hooks);
@@ -127,24 +141,24 @@ function onclickSelectText(_event, selection, annoJson, hooks = {}) {
  * select the first annotation targetting the element and store that, when called first.
  * On subsequent calls on the same element, it will select the consequent annotations (second, third, ...)
  *
- * @param {Event} event triggered by a user by clicking (right or left click) on a highlighted word
+ * @param {Event} _event triggered by a user by clicking (right or left click) on a highlighted word
+ * @param {Element} $element clicked on by a user (right or left click on a highlighted word)
  * @param {[Object]} annoJson containing all annotations
- * @param {Element} $annotationCard the div-element displaying an annotation on the right side of the screen
  * @param {Object} currentSelectedAnnotation the currently selected annotation, might be none
- * @param {Object} [hooks] containing an array for the hooks to be passed to "selectAnnotation()"
- * @returns
+ * @returns {String} the id of the next annotation on target or undefined, if there isn't
+ * another annotation on the target
  */
-async function cycleAnnotations(event, annoJson, $annotationCard, currentSelectedAnnotation, hooks = {}) {
+function cycleAnnotations(_event, $element, annoJson, currentSelectedAnnotation) {
   let annotationsOnTarget = [];
-  let annoIdEncoded;
+  let newAnnoId;
 
   // check if the targeted element has a class specified in possibleHighlightClasses, which is imported
   // from the projectspecific module
-  if (possibleHighlightClasses.some((cls) => event.target.classList.contains(cls))) {
+  if (possibleHighlightClasses.some((cls) => $element.classList.contains(cls))) {
     // add all the annotations targeting the selected word to an array
     annoJson.forEach((item) => {
       item.svg.forEach((target) => {
-        if (event.target.id == target.split('"')[1]) {
+        if ($element.id == target.split('"')[1]) {
           annotationsOnTarget.push(item);
         }
       });
@@ -159,7 +173,7 @@ async function cycleAnnotations(event, annoJson, $annotationCard, currentSelecte
       annotationsOnTarget.find((annotation) => annotation.id === window.SELECTED_ANNOTATION.id) === undefined
     ) {
       //console.log('first annotationsOntarget ', annotationsOnTarget[0]);
-      annoIdEncoded = encodeAnnoId(annotationsOnTarget[0].id);
+      newAnnoId = annotationsOnTarget[0].id;
     } else {
       // check if the next index would be out off bounds, if yes hide the annotation card and return undefined.
       // On the next call of this function "currentSelectedAnnotation" will be undefined and
@@ -168,19 +182,14 @@ async function cycleAnnotations(event, annoJson, $annotationCard, currentSelecte
         annotationsOnTarget.findIndex((annotation) => annotation.id === window.SELECTED_ANNOTATION.id) + 1 >
         annotationsOnTarget.length - 1
       ) {
-        console.log('Cycled through all annotations on the target; hiding annotation card.');
-        // hiding the annotation card if users click on words, that are not highlighted
-        if (!$annotationCard.classList.contains('invisible')) {
-          toggleVisibility($annotationCard);
-        }
+        console.log('Cycled through all annotations on the target.');
         return undefined;
         //console.log('first annotationsOntarget 2 ', annotationsOnTarget[0]);
       } else {
-        annoIdEncoded = encodeAnnoId(
+        newAnnoId =
           annotationsOnTarget[
             annotationsOnTarget.findIndex((annotation) => annotation.id === currentSelectedAnnotation.id) + 1
-          ].id,
-        );
+          ].id;
         // console.log(
         //   '2-n annotationsOntarget ',
         //   annotationsOnTarget[
@@ -189,18 +198,8 @@ async function cycleAnnotations(event, annoJson, $annotationCard, currentSelecte
         // );
       }
     }
-
-    const selectedAnnotation = await selectAnnotation(null, annoIdEncoded, hooks);
-    console.log('New selected annotation: ', selectedAnnotation);
-    if ($annotationCard.classList.contains('invisible')) {
-      toggleVisibility($annotationCard);
-    }
-    return selectedAnnotation;
+    return newAnnoId;
   } else {
-    // hiding the annotation card if users click on words, that are not highlighted
-    if (!$annotationCard.classList.contains('invisible')) {
-      toggleVisibility($annotationCard);
-    }
     return undefined;
   }
 }
