@@ -522,18 +522,37 @@ tei-ab {
 	margin-bottom: .5em;
 }
 
-/* setting the backgrund color of line- and pagebeginnings
+/* setting the backgrund color and box-shadow
+	of line- and pagebeginnings
 	so they always stay white */
 tei-pb {
+	background-color: white;
+}
+tei-cb {
 	background-color: white;
 }
 tei-lb {
 	background-color: white;
 }
-
-tei-cb {
-	background-color: white;
+.underline tei-pb {
+	box-shadow: 0em 0.2em white;
 }
+.underlineSecond tei-pb {
+	box-shadow: 0em 0.4em white;
+}
+.underline tei-cb {
+	box-shadow: 0em 0.2em white;
+}
+.underlineSecond tei-cb {
+	box-shadow: 0em 0.4em white;
+}
+.underline tei-lb {
+	box-shadow: 0em 0.2em white;
+}
+.underlineSecond tei-lb {
+	box-shadow: 0em 0.4em white;
+}
+
 /* linebreak before the start of a new line */
 tei-lb::before {
     content: "\00000a";
