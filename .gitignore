@@ -15,6 +15,12 @@ esdata
 .gitattributes
 .idea
 
+# No longer include bundled versions and source maps for JS components
+# developed in tuhl/src/main/resources/js-src/.
+# Run `npm run build` to create these static files.
+tuhl/src/main/resources/static/js/texteditor-ng.js*
+
+
 # Ignore Gradle project-specific cache directory
 .gradle
 
