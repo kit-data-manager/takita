@@ -1,7 +1,6 @@
-// external modules
-// import * as bootstrap from 'bootstrap';
 // internal modules
 import { Mode } from '../common/mode';
+import { enableTooltips } from '../common/utils';
 import { initializeTopbar } from '../common/topbar';
 import { hooks } from '../projectspecific';
 import { initializeTextEditor } from './editor';
@@ -18,6 +17,10 @@ window.textEditor = {
 };
 
 async function initializeTextEditorComponent(linkToResource, annotationsString, thymeleafVariables) {
+  // enable tooltips using bootstrap
+  const $tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+  enableTooltips($tooltipTriggerList);
+
   // initializing the state
   const annoJson = initializeState(annotationsString);
 
