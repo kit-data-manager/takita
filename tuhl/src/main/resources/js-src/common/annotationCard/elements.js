@@ -247,7 +247,7 @@ export function createAddBodyIcon(annoId) {
   $addBodyIcon.setAttribute('data-bs-toggle', 'tooltip');
   $addBodyIcon.setAttribute(
     'data-bs-title',
-    window?.TL_VARIABLES?.tooltips?.add_body ? window?.TL_VARIABLES?.tooltips?.add_body : 'Add body',
+    window?.TL_VARIABLES?.tooltips?.add_body ? window.TL_VARIABLES.tooltips.add_body : 'Add body',
   );
   $addBodyIcon.addEventListener('click', () => {
     //console.log("create");
@@ -278,7 +278,7 @@ export function createExpandIcon(bodyIndex) {
   $expandIcon.setAttribute('data-bs-toggle', 'tooltip');
   $expandIcon.setAttribute(
     'data-bs-title',
-    window?.TL_VARIABLES?.tooltips?.expand_body ? window?.TL_VARIABLES?.tooltips?.expand_body : 'Expand body',
+    window?.TL_VARIABLES?.tooltips?.expand_body ? window.TL_VARIABLES.tooltips.expand_body : 'Expand body',
   );
   $expandIcon.addEventListener('click', () => {
     //console.log(this.id);
@@ -318,7 +318,7 @@ export function createIconRow(isAnnotationRow, annoId, body, bodyIndex, hooks = 
         await deleteAnnotation(annoId, hooks);
       },
       window?.TL_VARIABLES?.tooltips?.delete_annotation
-        ? window?.TL_VARIABLES?.tooltips?.delete_annotation
+        ? window.TL_VARIABLES.tooltips.delete_annotation
         : 'Delete annotation',
     );
     $iconRow.append($annoDeleteIcon);
@@ -335,7 +335,7 @@ export function createIconRow(isAnnotationRow, annoId, body, bodyIndex, hooks = 
       async (_event) => {
         await deleteBody(annoId, body, hooks);
       },
-      window?.TL_VARIABLES?.tooltips?.delete_body ? window?.TL_VARIABLES?.tooltips?.delete_body : 'Delete body',
+      window?.TL_VARIABLES?.tooltips?.delete_body ? window.TL_VARIABLES.tooltips.delete_body : 'Delete body',
     );
     $iconRow.append($bodyDeleteIcon);
   }
