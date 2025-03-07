@@ -209,7 +209,9 @@
                                 id="pageThumbs"
                                 th:if="${page.id != currentPage.id}"
                                 th:data-field="${page.id}"
-                                th:attr="onclick=|window.open('${page.id}')|">
+                                th:attr="onclick=|window.open('${page.id}')|"
+                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                th:data-bs-title="#{tooltips.pages_list.open}">
                                 <i class="fa fa-pencil"></i>
                             </a>
                             <a class="btn btn-sm btn-secondary col-auto disabled"
@@ -340,6 +342,9 @@
                 "delete_annotation":[[#{tooltips.delete_annotation}]],
                 "expand_body":[[#{tooltips.expand_body}]],
                 "delete_body":[[#{tooltips.delete_body}]],
+                "annotation_table": {
+                    "display_annotation":[[#{tooltips.annotation_table.display_annotation}]],
+                }
             }
         }
         /*]]>*/
