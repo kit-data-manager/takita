@@ -8,7 +8,7 @@ import {
   cancelModification,
 } from '../../texteditor-ng/targetBuilding';
 import { pickTemplate } from '../annotationCreation';
-import { encodeAnnoId, toggleExpand } from '../utils';
+import { enableTooltips, encodeAnnoId, toggleExpand } from '../utils';
 import { deleteAnnotation, deleteBody } from './utils';
 // projectspecific
 import { targetUpdateCallback } from '../../projectspecific';
@@ -64,6 +64,10 @@ export async function createAnnotationDiv(annotationData, $annotationDiv, hooks 
   if (window.EDITORTYPE == 'TEXT' && document.getElementById('TEI') != null) {
     appendTextTargetModificationButtons(annotationData, $annotationDiv, hooks);
   }
+
+  // enabling tooltips for the annotation card
+  const $tooltipTriggerList = document.querySelectorAll('#annotationCard [data-bs-toggle="tooltip"]');
+  enableTooltips($tooltipTriggerList);
 
   return $annotationDiv;
 }
@@ -188,8 +192,11 @@ function createBodyFormHorizontal(body) {
  * @param {Function} callback to be added to the delete icon for the onClick event.
  * Note: This callback should be async and deleteAnnotation/deleteBody depending on what you
  * want to delete and match the corresponding elementId
+ * @param {String} tooltipValue of the delete icon
+ * Note: This should match 'Delete annotation' or 'Delete body' depending on what
+ * you want to delete and match the corresponding callback
  */
-export function createDeleteIcon(elementId, callback) {
+export function createDeleteIcon(elementId, callback, tooltipValue) {
   const $deleteIcon = document.createElement('i');
   $deleteIcon.id = elementId;
   /*
@@ -201,6 +208,9 @@ export function createDeleteIcon(elementId, callback) {
   $deleteIcon.title = 'Delete';
   $deleteIcon.classList.add('bx');
   $deleteIcon.classList.add('bx-trash');
+  // add attributes for bootstrap tooltips
+  $deleteIcon.setAttribute('data-bs-toggle', 'tooltip');
+  $deleteIcon.setAttribute('data-bs-title', tooltipValue);
 
   $deleteIcon.addEventListener('click', callback);
   /*
@@ -233,6 +243,12 @@ export function createAddBodyIcon(annoId) {
   $addBodyIcon.title = 'Add another body to the annotation';
   $addBodyIcon.classList.add('bx');
   $addBodyIcon.classList.add('bx-plus');
+  // add attributes for bootstrap tooltips
+  $addBodyIcon.setAttribute('data-bs-toggle', 'tooltip');
+  $addBodyIcon.setAttribute(
+    'data-bs-title',
+    window?.TL_VARIABLES?.tooltips?.add_body ? window.TL_VARIABLES.tooltips.add_body : 'Add body',
+  );
   $addBodyIcon.addEventListener('click', () => {
     //console.log("create");
     //var modal = document.createElement("div");
@@ -258,6 +274,12 @@ export function createExpandIcon(bodyIndex) {
   $expandIcon.classList.add('bx');
   $expandIcon.classList.add('bx-chevron-right');
   //expand.style.color = "#b5b5be";
+  // add attributes for bootstrap tooltips
+  $expandIcon.setAttribute('data-bs-toggle', 'tooltip');
+  $expandIcon.setAttribute(
+    'data-bs-title',
+    window?.TL_VARIABLES?.tooltips?.expand_body ? window.TL_VARIABLES.tooltips.expand_body : 'Expand body',
+  );
   $expandIcon.addEventListener('click', () => {
     //console.log(this.id);
     const $ancestorDiv = $expandIcon.parentNode.parentNode.parentNode.nextElementSibling;
@@ -290,9 +312,15 @@ export function createIconRow(isAnnotationRow, annoId, body, bodyIndex, hooks = 
     // create and append child elements
     const $addBodyIcon = createAddBodyIcon(annoId);
     $iconRow.append($addBodyIcon);
-    const $annoDeleteIcon = createDeleteIcon('deleteAnnotation', async (_event) => {
-      await deleteAnnotation(annoId, hooks);
-    });
+    const $annoDeleteIcon = createDeleteIcon(
+      'deleteAnnotation',
+      async (_event) => {
+        await deleteAnnotation(annoId, hooks);
+      },
+      window?.TL_VARIABLES?.tooltips?.delete_annotation
+        ? window.TL_VARIABLES.tooltips.delete_annotation
+        : 'Delete annotation',
+    );
     $iconRow.append($annoDeleteIcon);
     // add stlying
     $iconRow.classList.add('text-end');
@@ -302,9 +330,13 @@ export function createIconRow(isAnnotationRow, annoId, body, bodyIndex, hooks = 
     // create and append child elements
     const $expandIcon = createExpandIcon('expand' + bodyIndex);
     $iconRow.append($expandIcon);
-    const $bodyDeleteIcon = createDeleteIcon('delete' + bodyIndex, async (_event) => {
-      await deleteBody(annoId, body, hooks);
-    });
+    const $bodyDeleteIcon = createDeleteIcon(
+      'delete' + bodyIndex,
+      async (_event) => {
+        await deleteBody(annoId, body, hooks);
+      },
+      window?.TL_VARIABLES?.tooltips?.delete_body ? window.TL_VARIABLES.tooltips.delete_body : 'Delete body',
+    );
     $iconRow.append($bodyDeleteIcon);
   }
   return $iconRow;

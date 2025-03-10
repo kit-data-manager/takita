@@ -14,7 +14,9 @@
         <button id="editButton"
             class="btn btn-outline-secondary"
             onclick="clickButton(event)"
-            th:text="#{buttons.edit}"> </button>
+            th:text="#{buttons.edit}"
+            data-bs-toggle="tooltip" data-bs-placement="bottom"
+            th:data-bs-title="#{tooltips.pseudonym}"> </button>
     </div>      
 
 <script th:inline="javascript">

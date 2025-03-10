@@ -117,8 +117,8 @@
 }
 
 /* styling for the tooltips
-   created by enableTooltips() */
-.hoverTooltip {
+   created by deprecatedEnableTooltips() */
+/* .hoverTooltip {
   background: rgba(0,0,0,.8);
   color: #fff;
   display: none;
@@ -127,7 +127,7 @@
   border-radius: 0.4rem;
   padding: 0.5rem 0.9rem;
   font-size: 1.4rem;
-}
+} */
 
 .anno-side-bar.annocollapse .logo-name,
 .anno-side-bar.annocollapse .category-header,

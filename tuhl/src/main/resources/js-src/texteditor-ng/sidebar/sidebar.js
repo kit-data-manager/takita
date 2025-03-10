@@ -1,5 +1,4 @@
-import { enableTooltips, toggleDisplay } from '../../common/utils';
-
+import { toggleDisplay } from '../../common/utils';
 import { getTextLanguage } from '../textloader/textloader';
 import { decreaseFontSize, increaseFontSize, resetFontSize } from '../utils/fontsize';
 import { Variant } from '../../projectspecific';
@@ -74,12 +73,6 @@ export function initializeSidebar($sidebar, $text, $pagesDialog, $tableContainer
   if (hooks.postSidebarCreation) {
     hooks.postSidebarCreation.forEach((hook) => hook($sidebar, variant));
   }
-
-  /**
-   * Create tooltips for sidebar items.
-   */
-  const $featuresItems = $sidebar.querySelectorAll('.features-item');
-  enableTooltips($featuresItems, undefined);
 }
 
 /**

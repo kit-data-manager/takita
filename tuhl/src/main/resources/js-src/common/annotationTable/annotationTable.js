@@ -1,6 +1,6 @@
 import Tabulator from 'tabulator-tables';
 import { selectAnnotation } from '../annotationCard';
-import { encodeAnnoId, toggleVisibility } from '../utils';
+import { enableTooltips, encodeAnnoId, toggleVisibility } from '../utils';
 import { initializeNavigation } from '../../texteditor-ng/navigation';
 
 /**
@@ -27,10 +27,16 @@ export function initializeAnnotationTable(annoJson, $annotationTable, onCellClic
     entry.creator = entry.creator.replace('[', '').replace(']', '');
   });
 
+  const tooltipDisplayAnnotation = window?.TL_VARIABLES?.tooltips?.annotation_table?.display_annotation
+    ? window.TL_VARIABLES.tooltips.annotation_table.display_annotation
+    : 'Display Annotation';
+
   let columns = [
     {
       formatter: function (_cell, _formatterParams, _onRendered) {
-        return "<i class='fa fa-eye'></i>";
+        return `<i class='fa fa-eye' 
+                  data-bs-toggle="tooltip" data-bs-placement="top"
+                  data-bs-title="${tooltipDisplayAnnotation}"></i>`;
       },
       hozAlign: 'center',
       resizable: false,
@@ -104,6 +110,14 @@ export function initializeAnnotationTable(annoJson, $annotationTable, onCellClic
       } else {
         document.getElementById('holder' + id).remove();
       }
+    },
+    rowFormatter: function (row) {
+      // enabling tooltips for the annotation table using bootstrap
+      // inspiration from: https://stackoverflow.com/questions/71755490/bootstrap-tooltips-with-tabulator
+      // this might be replaced/improved in the future, but for now bootstrap is creating
+      // all tooltips
+      const $tooltipTriggerList = row.getElement().querySelectorAll('[data-bs-toggle="tooltip"]');
+      enableTooltips($tooltipTriggerList);
     },
     columns: columns,
   });

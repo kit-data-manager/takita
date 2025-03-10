@@ -36,44 +36,55 @@
         <div class="logo-name">
           <span class="logo-name__name">tAkita 1.0</span>
         </div>
-        <div class="logo-name__button">
+        <div class="logo-name__button"
+            data-bs-toggle="tooltip" data-bs-placement="right"
+            th:data-bs-title="#{tooltips.expand_sidebar}">
           <i
             class="bx bx-arrow-from-left logo-name__icon annocollapse"
             id="logo-name__icon"
           ></i>
-          <span class="tooltip">Expand</span>
         </div>
       </div>
 
   <div class="features-list">
       <div class="category-header d-none">View Mode</div>
-    <li class="features-item draft">
+    <li class="features-item draft"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.increase_fontSize}">
       <i id="fontIncreaseButton" class="bx bx-zoom-in features-item-icon"></i>
-      <span id="fontIncreaseSpan" class="features-item-text annocollapse">Increase Font Size</span>
-      <span class="tooltip">Increase Font Size</span>
+      <span id="fontIncreaseSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.increase_fontSize}">Increase Font Size</span>
     </li>
-    <li class="features-item draft">
+    <li class="features-item draft"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.decrease_fontSize}">
       <i id="fontDecreaseButton" class="bx bx-zoom-out features-item-icon"></i>
-      <span id="fontDecreaseSpan" class="features-item-text annocollapse">Decrease Font Size</span>
-      <span class="tooltip">Decrease Font Size</span>
+      <span id="fontDecreaseSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.decrease_fontSize}">Decrease Font Size</span>
     </li>
-    <li class="features-item draft">
+    <li class="features-item draft"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.reset_fontSize}">
       <i id="resetFontButton" class="bx bx-font-size features-item-icon"></i>
-      <span id="resetFontSpan" class="features-item-text annocollapse">Reset Font Size</span>
-      <span class="tooltip">Reset Font Size</span>
+      <span id="resetFontSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.reset_fontSize}">Reset Font Size</span>
     </li>
-    <li id="toggleViews" class="features-item draft d-none">
+    <li id="toggleViews" class="features-item draft d-none"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.toggle_views}">
       <i id="toggleViewsButton" class="bx bx-toggle-left features-item-icon"></i>
-      <span id="toggleViewsSpan" class="features-item-text annocollapse">Toggle Views</span>
-      <span class="tooltip">Toggle Views</span>
+      <span id="toggleViewsSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.toggle_views}">Toggle Views</span>
     </li>
   </div>
   <div class="features-list">
       <div class="category-header d-none">Create Mode</div>
-	<li id="selectTextListItem" class="features-item draft">
+	<li id="selectTextListItem" class="features-item draft"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.annotate}">
       <i id="selectTextButton" class="bx bx-highlight features-item-icon"></i>
-      <span class="features-item-text annocollapse">Select Text</span>
-      <span class="tooltip">Select Text</span>
+      <span class="features-item-text annocollapse"
+        th:text="#{tooltips.annotate}">Select Text</span>
     </li>
    </div>
    <!--<div class="features-list">
@@ -90,15 +101,19 @@
     </li>
   </div>-->
     <div class="features-list">
-    <li class="features-item star">
+    <li class="features-item star"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.pages_list}">
       <i id="pagesButton" class="bx bx-book-open features-item-icon"></i>
-      <span id="pagesSpan" class="features-item-text annocollapse">Show Parts</span>
-      <span class="tooltip">Show Parts</span>
+      <span id="pagesSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.pages_list}">Show Parts</span>
     </li>
-    <li class="features-item star">
+        <li class="features-item star"
+            data-bs-toggle="tooltip" data-bs-placement="right"
+            th:data-bs-title="#{tooltips.annotation_table}">
         <i id="annotationTableBottomButton" class="bx bx-list-ul features-item-icon"></i>
-        <span id="annotationTableBottomSpan" class="features-item-text annocollapse">Show Annotations</span>
-        <span class="tooltip">Show Annotations</span>
+        <span id="annotationTableBottomSpan" class="features-item-text annocollapse"
+            th:text="#{tooltips.annotation_table}">Show Annotations</span>
     </li>
   </div>
 </div>
@@ -194,7 +209,9 @@
                                 id="pageThumbs"
                                 th:if="${page.id != currentPage.id}"
                                 th:data-field="${page.id}"
-                                th:attr="onclick=|window.open('${page.id}')|">
+                                th:attr="onclick=|window.open('${page.id}')|"
+                                data-bs-toggle="tooltip" data-bs-placement="top"
+                                th:data-bs-title="#{tooltips.pages_list.open}">
                                 <i class="fa fa-pencil"></i>
                             </a>
                             <a class="btn btn-sm btn-secondary col-auto disabled"
@@ -319,6 +336,15 @@
             "buttons" : {
                 "edit" :[[#{buttons.edit}]],
                 "ok" : [[#{buttons.ok}]]
+            },
+            "tooltips": {
+                "add_body":[[#{tooltips.add_body}]],
+                "delete_annotation":[[#{tooltips.delete_annotation}]],
+                "expand_body":[[#{tooltips.expand_body}]],
+                "delete_body":[[#{tooltips.delete_body}]],
+                "annotation_table": {
+                    "display_annotation":[[#{tooltips.annotation_table.display_annotation}]],
+                }
             }
         }
         /*]]>*/
