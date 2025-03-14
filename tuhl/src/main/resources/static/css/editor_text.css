@@ -79,22 +79,22 @@
 }
 
 /* STEP 2: define your rules */
-/* default: highlight words annotated as anything not specified in purple */
+/* default: highlight words annotated as anything not specified using first color */
 .defaulthighlight {
 	background: var(--tak-hlg-color-i);
 }
 
-/* highlight words annotated as mrws in purple */
+/* highlight words annotated using second color */
 .backgroundOne {
 	background: var(--tak-hlg-color-ii);
 }
 
-/* highlight words annotated as mflags in purple */
+/* highlight words annotated using third color */
 .backgroundTwo {
 	background: var(--tak-hlg-color-iii);
 }
 
-/* possible combinations of the rules from above */
+/* possible combinations of the rules from above to assign multiple background colors as a gradient */
 .backgroundOne.backgroundTwo {
 	background: linear-gradient( to bottom, var(--tak-hlg-color-iii) 50%, var(--tak-hlg-color-ii) 50% 100% )
 }
@@ -212,22 +212,22 @@ tei-text[dir="rtl"] .underline.underlineSecond.whitespaceAfter {
 
 /* lighter section */
 /* STEP 3: duplicate your rules and add "not:(.selected)" */
-/* default: highlight words annotated as anything not specified in purple */
+/* default: highlight words annotated as anything not specified using first color */
 .defaulthighlight:not(.selected) {
 	background: var(--tak-hlg-color-i-lighter);
 }
 
-/* highlight words annotated as mrws in purple */
+/* highlight words annotated using second color */
 .backgroundOne:not(.selected) {
 	background: var(--tak-hlg-color-ii-lighter);
 }
 
-/* highlight words annotated as mflags in purple */
+/* highlight words annotated using third color */
 .backgroundTwo:not(.selected) {
 	background: var(--tak-hlg-color-iii-lighter);
 }
 
-/* possible combinations of the rules from above */
+/* possible combinations of the rules from above to assign multiple background colors as a gradient */
 .backgroundOne.backgroundTwo:not(.selected) {
 	background: linear-gradient( to bottom, var(--tak-hlg-color-iii-lighter) 50%, var(--tak-hlg-color-ii-lighter) 50% 100% )
 }
