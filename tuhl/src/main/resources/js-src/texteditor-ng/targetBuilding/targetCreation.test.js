@@ -44,6 +44,8 @@ describe('creating a list of targets', () => {
     let dom;
     beforeEach(() => {
       dom = new JSDOM(innerHtmlCreationTest);
+      // using the "normal" document as well, because 'targetBuilding/utils/isSelectable' requires it to be set up
+      document.body.innerHTML = innerHtmlCreationTest;
     });
 
     it('creates a list of targets for multiple selected words', () => {
@@ -57,6 +59,24 @@ describe('creating a list of targets', () => {
       expect(result[0].targetList.length).toBe(2);
       expect(result[0].targetList[0].id).toBe('w.133');
       expect(result[0].targetList[1].id).toBe('w.134');
+      expect(result[0].startOffset).toBe(0);
+      expect(result[0].endOffset).toBe(2);
+    });
+
+    it('creates a list of targets for multiple selected words, but one should not be selectable', () => {
+      // adding the 'user-select: none' property to an element, so it should be excluded from the result.
+      // outside the test-environment the element should not even be part of the selection object, but
+      // webkit browsers still includes it in the selection object, so it has to be removed again.
+      document.getElementById('w.133').style.setProperty('user-select', 'none');
+      const selection = dom.window.getSelection();
+      const range = dom.window.document.createRange();
+      range.setStart(dom.window.document.getElementById('w.133'), 0);
+      range.setEnd(dom.window.document.getElementById('w.134').childNodes[0], 2);
+      selection.addRange(range);
+      const result = createTargetList(selection);
+      expect(result.length).toBe(1);
+      expect(result[0].targetList.length).toBe(1);
+      expect(result[0].targetList[0].id).toBe('w.134');
       expect(result[0].startOffset).toBe(0);
       expect(result[0].endOffset).toBe(2);
     });
@@ -159,6 +179,8 @@ describe('creating a list of targets', () => {
     let dom;
     beforeEach(() => {
       dom = new JSDOM(innerHtmlCreationTestWithLinebreaks);
+      // using the "normal" document as well, because 'targetBuilding/utils/isSelectable' requires it to be set up
+      document.body.innerHTML = innerHtmlCreationTestWithLinebreaks;
     });
 
     // see https://git.noc.ruhr-uni-bochum.de/sfb1475-inf/takita/-/issues/61
@@ -201,6 +223,8 @@ describe('creating a list of targets', () => {
     let dom;
     beforeEach(() => {
       dom = new JSDOM(innerHtmlCreationTestWithChildren);
+      // using the "normal" document as well, because 'targetBuilding/utils/isSelectable' requires it to be set up
+      document.body.innerHTML = innerHtmlCreationTestWithChildren;
     });
 
     // see https://git.noc.ruhr-uni-bochum.de/sfb1475-inf/takita/-/issues/166

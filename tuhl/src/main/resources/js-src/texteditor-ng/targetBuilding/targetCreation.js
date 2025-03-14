@@ -4,6 +4,7 @@ import {
   getNextSibling,
   checkIsNodeOnWorkspace,
   getContentOfSelection,
+  isSelectable,
 } from './utils';
 
 /**
@@ -113,6 +114,11 @@ export function createTargetList(selection) {
         targetList.shift();
       }
     }
+
+    // removing all elements, that should not be selectable
+    // this is necessary as webkit browsers can include elements in the selection, even
+    // if their 'user-select' css property is set to 'none'
+    targetList = targetList.filter((entry) => isSelectable(entry));
     // add the start/end offsets/character positions of the text
     // create the json object containing all information
     let rangeItem = {

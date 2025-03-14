@@ -188,6 +188,29 @@ export function getSelectedTextOfAnnotation(annotation) {
 }
 
 /**
+ * check if a node can be selected by users (has a css property, that would exclude it from a selection)
+ *
+ * @param {Node} node to be checked
+ * @returns {Boolean} depending, if the node is selectable or not
+ */
+export function isSelectable(node) {
+  // get the styling of the element in the DOM. The node passed as a parameter
+  // doesn't have any styling, so the proper node from the DOM has to be
+  // retrieved
+  const computedStyle = getComputedStyle(document.getElementById(node.id));
+  if (
+    computedStyle.getPropertyValue('user-select') === 'none' ||
+    computedStyle.getPropertyValue('-moz-user-select') === 'none' ||
+    computedStyle.getPropertyValue('-webkit-user-select') === 'none' ||
+    computedStyle.getPropertyValue('-ms-user-select') === 'none'
+  ) {
+    return false;
+  } else {
+    return true;
+  }
+}
+
+/**
  * Store all information needed for the target update in a modal and show it
  *
  * @param {Element} $modal to hold the information and to be shown
