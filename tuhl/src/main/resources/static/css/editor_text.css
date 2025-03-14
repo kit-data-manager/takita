@@ -135,7 +135,7 @@
 		0em 0.2em var(--tak-hlg-color-iv);
 }
 
-#TEI[dir="rtl"] .underline.whitespaceAfter {
+tei-text[dir="rtl"] .underline.whitespaceAfter {
 	box-shadow: 
 		-0.29em 0em white, 
 		0em 0em white, 
@@ -164,7 +164,7 @@
 	line-height: 1.75em;
 }
 
-#TEI[dir="rtl"] .underlineSecond.whitespaceAfter {
+tei-text[dir="rtl"] .underlineSecond.whitespaceAfter {
 	box-shadow: 
 		-0.29em 0.2em white, 
 		0em 0.2em white, 
@@ -199,7 +199,7 @@
 	line-height: 1.75em;
 }
 
-#TEI[dir="rtl"] .underline.underlineSecond.whitespaceAfter {
+tei-text[dir="rtl"] .underline.underlineSecond.whitespaceAfter {
 	box-shadow: 
 		-0.29em 0em white, 
 		0em 0em white, 
@@ -268,7 +268,7 @@
 		0em 0.2em var(--tak-hlg-color-iv-lighter);
 }
 
-#TEI[dir="rtl"] .underline.whitespaceAfter:not(.selected) {
+tei-text[dir="rtl"] .underline.whitespaceAfter:not(.selected) {
 	box-shadow: 
 		-0.29em 0em white, 
 		0em 0em white, 
@@ -297,7 +297,7 @@
 	line-height: 1.75em;
 }
 
-#TEI[dir="rtl"] .underlineSecond.whitespaceAfter:not(.selected) {
+tei-text[dir="rtl"] .underlineSecond.whitespaceAfter:not(.selected) {
 	box-shadow: 
 		-0.29em 0.2em white, 
 		0em 0.2em white, 
@@ -332,7 +332,7 @@
 	line-height: 1.75em;
 }
 
-#TEI[dir="rtl"] .underline.underlineSecond.whitespaceAfter:not(.selected) {
+tei-text[dir="rtl"] .underline.underlineSecond.whitespaceAfter:not(.selected) {
 	box-shadow: 
 		-0.29em 0em white, 
 		0em 0em white, 
