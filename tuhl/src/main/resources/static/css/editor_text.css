@@ -71,7 +71,7 @@
 	--tak-hlg-color-ii: #daa3ff;
 	--tak-hlg-color-ii-lighter: hsl(from var(--tak-hlg-color-ii) h s calc(l + 15));
 	--tak-hlg-color-iii: yellow;
-	--tak-hlg-color-iii-lighter: hsl(from var(--tak-hlg-color-iii) h s calc(l + 15));
+	--tak-hlg-color-iii-lighter: hsl(from var(--tak-hlg-color-iii) h s calc(l + 40));
 	--tak-hlg-color-iv: #2196F3;
 	--tak-hlg-color-iv-lighter: hsl(from var(--tak-hlg-color-iv) h s calc(l + 35));
 	--tak-hlg-color-v: purple;
