@@ -89,6 +89,17 @@ const annotationWithoutDescBody = {
   ],
   etag: '"xtgitxsdbialejklodai"',
 };
+
+// Silence console.xxx() for the duration of these tests, so it does
+// not spam our console
+beforeEach(() => {
+  console.error = jest.fn(() => {});
+  console.log = jest.fn(() => {});
+});
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 describe('starting the target modification process', () => {
   beforeEach(() => {
     // setup the document they way it looks during the modification process

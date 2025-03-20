@@ -1,6 +1,16 @@
 import { updateDisplay } from '.';
 import * as data from '../data/annotations';
 
+// Silence console.xxx() for the duration of these tests, so it does
+// not spam our console
+beforeEach(() => {
+  console.error = jest.fn(() => {});
+  console.log = jest.fn(() => {});
+});
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 describe('updating the display by rendering the current annotations', () => {
   beforeEach(() => {
     window.ANNOJSON = undefined;

@@ -52,6 +52,16 @@ const annotationWithoutDescBody = {
   etag: '"xtgitxsdbialejklodai"',
 };
 
+// Silence console.xxx() for the duration of these tests, so it does
+// not spam our console
+beforeEach(() => {
+  console.error = jest.fn(() => {});
+  console.log = jest.fn(() => {});
+});
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 // The tested function (saveModification()) calls createTargetString(), which
 // calls createXPath() and createTargetList(). There are problems with
 // testing these function anyways as the dom is only set up once per test-suite, so only the first

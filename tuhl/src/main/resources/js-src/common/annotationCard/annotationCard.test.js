@@ -73,6 +73,16 @@ const annoData = {
   etag: '"tlphuwxqjjbeovceyeul"',
 };
 
+// Silence console.xxx() for the duration of these tests, so it does
+// not spam our console
+beforeEach(() => {
+  console.error = jest.fn(() => {});
+  console.log = jest.fn(() => {});
+});
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 describe('selecting an annotation', () => {
   // regex to match "jsonform-NUMBER" as the jsonForm library enumerates the forms dynamically
   // making testing hard. So the enumeration has to be removed

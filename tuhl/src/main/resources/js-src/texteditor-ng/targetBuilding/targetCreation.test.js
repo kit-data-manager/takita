@@ -38,6 +38,16 @@ const innerHtml =
   // eslint-disable-next-line @stylistic/js/max-len
   '<tei-l><tei-w xml:id="w.166" id="w.166">And</tei-w> <tei-w xml:id="w.167" id="w.167">he</tei-w> <tei-w xml:id="w.168" id="w.168">shall</tei-w> <tei-w xml:id="w.169" id="w.169">be</tei-w> <tei-w xml:id="w.170" id="w.170">like</tei-w> <tei-w xml:id="w.171" id="w.171">a</tei-w> <tei-w xml:id="w.172" id="w.172">tree</tei-w> <tei-w xml:id="w.173" id="w.173">planted</tei-w> <tei-w xml:id="w.174" id="w.174">by</tei-w> <tei-w xml:id="w.175" id="w.175">the</tei-w><tei-w xml:id="w.176" id="w.176">rivers</tei-w> <tei-w xml:id="w.177" id="w.177">of</tei-w> <tei-w xml:id="w.178" id="w.178">water</tei-w><tei-pc xml:id="pc.5" id="pc.5">,</tei-pc></tei-l>';
 
+// Silence console.xxx() for the duration of these tests, so it does
+// not spam our console
+beforeEach(() => {
+  console.error = jest.fn(() => {});
+  console.log = jest.fn(() => {});
+});
+afterEach(() => {
+  jest.clearAllMocks();
+});
+
 describe('creating a list of targets', () => {
   describe('for standard html', () => {
     // setup the document
