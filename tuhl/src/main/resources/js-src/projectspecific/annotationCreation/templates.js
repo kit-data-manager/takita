@@ -34,137 +34,141 @@ const bodyTemplate = {
 // template for jsonForm object to create new annotation
 // upon choosing the corresponding MetadataEditor CREATE form is built
 // create button sends the information to the REST controller
-export const formObjectCreateAnnotation = {
-  // adding blank first option, to allow the functionalities on change
-  schema: {
-    template: {
-      type: 'string',
-      enum: [''].concat(Object.keys(annotationTemplate)),
-    },
-  },
-  form: [
-    {
-      key: 'template',
-      title: 'Choose your template',
-      onChange: function (e) {
-        let value = $(e.target).val();
-
-        // clearing the modal
-        let createFormElement = document.getElementById('createAnnotationForm');
-        while (createFormElement.firstChild) {
-          createFormElement.firstChild.remove();
-        }
-
-        if (!value) {
-          return;
-        }
-        let formModel = getFormModel(value);
-
-        let options = { operation: 'CREATE', dataModel: formModel[0], uiForm: formModel[1] };
-
-        // preventing form submission to allow customized handling
-        createFormElement.addEventListener('submit', function (e) {
-          e.preventDefault();
-        });
-
-        // if no template is chosen, this will create a 'blank' annotation
-        // otherwise create annotation with bodies according to template values
-        $('#createAnnotationForm').metadataeditorForm(options, async function onSubmitValid(formvalue) {
-          // formvalue contains all the information from the jsonForm as a string
-          const annotationData = makeAnnotationData(formvalue);
-          // eslint-disable-next-line no-unused-vars
-          const annotation = await createAnnotation(annotationData, hooks);
-        });
+export function getFormObjectCreateAnnotation() {
+  return {
+    // adding blank first option, to allow the functionalities on change
+    schema: {
+      template: {
+        type: 'string',
+        enum: [''].concat(Object.keys(annotationTemplate)),
       },
-      titleMap: {},
     },
-  ],
-};
+    form: [
+      {
+        key: 'template',
+        title: 'Choose your template',
+        onChange: function (e) {
+          let value = $(e.target).val();
+
+          // clearing the modal
+          let createFormElement = document.getElementById('createAnnotationForm');
+          while (createFormElement.firstChild) {
+            createFormElement.firstChild.remove();
+          }
+
+          if (!value) {
+            return;
+          }
+          let formModel = getFormModel(value);
+
+          let options = { operation: 'CREATE', dataModel: formModel[0], uiForm: formModel[1] };
+
+          // preventing form submission to allow customized handling
+          createFormElement.addEventListener('submit', function (e) {
+            e.preventDefault();
+          });
+
+          // if no template is chosen, this will create a 'blank' annotation
+          // otherwise create annotation with bodies according to template values
+          $('#createAnnotationForm').metadataeditorForm(options, async function onSubmitValid(formvalue) {
+            // formvalue contains all the information from the jsonForm as a string
+            const annotationData = makeAnnotationData(formvalue);
+            // eslint-disable-next-line no-unused-vars
+            const annotation = await createAnnotation(annotationData, hooks);
+          });
+        },
+        titleMap: {},
+      },
+    ],
+  };
+}
 
 // template for jsonForm object to create new body
 // upon choosing the corresponding MetadataEditor CREATE form is built
 // create button sends the information to the REST controller (bodies/tags)
 // depending on the chosen template
-export const formObjectCreateBody = {
-  // adding blank first option, to allow the functionalities on change
-  schema: {
-    template: {
-      type: 'string',
-      enum: [''].concat(Object.keys(bodyTemplate)),
-    },
-  },
-  form: [
-    {
-      key: 'template',
-      title: 'Choose your template',
-      onChange: function (e) {
-        let value = $(e.target).val();
-
-        // clearing the modal
-        let createFormElement = document.getElementById('createForm');
-        while (createFormElement.firstChild) {
-          createFormElement.firstChild.remove();
-        }
-
-        if (!value) {
-          return;
-        }
-        let formModel = getFormModel(value);
-        //console.log(formModel);
-        // if no uiForm is given in getFormModel() for a body template, a wildcard is used.
-        // previously a wildcard was always used, but the change in this commit changed the
-        // following options variable
-        if (formModel[1] === undefined) {
-          formModel[1] = '*';
-        }
-
-        let options = { operation: 'CREATE', dataModel: formModel[0], uiForm: formModel[1] };
-
-        // preventing form submission to allow customized handling
-        createFormElement.addEventListener('submit', function (e) {
-          e.preventDefault();
-        });
-
-        $('#createForm').metadataeditorForm(options, async function onSubmitValid(value) {
-          let jsonObject = JSON.parse(value);
-          const annotationId = document.getElementById('annotationCard').getAttribute('data-annotation-id');
-          //console.log(value);
-          //console.log(jsonObject);
-
-          console.log(jsonObject);
-          if (jsonObject !== undefined && !isEmpty(jsonObject)) {
-            try {
-              if (jsonObject.purpose) {
-                // preventing creation of a body without a value
-                if (jsonObject.value) {
-                  await createBodyData(annotationId, jsonObject);
-                } else {
-                  throw new Error('No value given in: ', jsonObject);
-                }
-              } else {
-                const bodies = makeBodiesData(jsonObject);
-                // trigger the body creation according to the template for each body
-                for (let body of bodies) {
-                  // eslint-disable-next-line no-unused-vars
-                  const newBody = await createBodyData(annotationId, body);
-                }
-              }
-
-              // hiding the modal.
-              const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('createBody'));
-              $modal.toggle();
-
-              window.SELECTED_ANNOTATION = await selectAnnotation(null, annotationId, hooks);
-            } catch (exception) {
-              console.error('Adding another body failed with: ', exception);
-            }
-          }
-        });
+export function getFormObjectCreateBody() {
+  return {
+    // adding blank first option, to allow the functionalities on change
+    schema: {
+      template: {
+        type: 'string',
+        enum: [''].concat(Object.keys(bodyTemplate)),
       },
-      titleMap: {},
     },
-  ],
-};
+    form: [
+      {
+        key: 'template',
+        title: 'Choose your template',
+        onChange: function (e) {
+          let value = $(e.target).val();
+
+          // clearing the modal
+          let createFormElement = document.getElementById('createForm');
+          while (createFormElement.firstChild) {
+            createFormElement.firstChild.remove();
+          }
+
+          if (!value) {
+            return;
+          }
+          let formModel = getFormModel(value);
+          //console.log(formModel);
+          // if no uiForm is given in getFormModel() for a body template, a wildcard is used.
+          // previously a wildcard was always used, but the change in this commit changed the
+          // following options variable
+          if (formModel[1] === undefined) {
+            formModel[1] = '*';
+          }
+
+          let options = { operation: 'CREATE', dataModel: formModel[0], uiForm: formModel[1] };
+
+          // preventing form submission to allow customized handling
+          createFormElement.addEventListener('submit', function (e) {
+            e.preventDefault();
+          });
+
+          $('#createForm').metadataeditorForm(options, async function onSubmitValid(value) {
+            let jsonObject = JSON.parse(value);
+            const annotationId = document.getElementById('annotationCard').getAttribute('data-annotation-id');
+            //console.log(value);
+            //console.log(jsonObject);
+
+            console.log(jsonObject);
+            if (jsonObject !== undefined && !isEmpty(jsonObject)) {
+              try {
+                if (jsonObject.purpose) {
+                  // preventing creation of a body without a value
+                  if (jsonObject.value) {
+                    await createBodyData(annotationId, jsonObject);
+                  } else {
+                    throw new Error('No value given in: ', jsonObject);
+                  }
+                } else {
+                  const bodies = makeBodiesData(jsonObject);
+                  // trigger the body creation according to the template for each body
+                  for (let body of bodies) {
+                    // eslint-disable-next-line no-unused-vars
+                    const newBody = await createBodyData(annotationId, body);
+                  }
+                }
+
+                // hiding the modal.
+                const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('createBody'));
+                $modal.toggle();
+
+                window.SELECTED_ANNOTATION = await selectAnnotation(null, annotationId, hooks);
+              } catch (exception) {
+                console.error('Adding another body failed with: ', exception);
+              }
+            }
+          });
+        },
+        titleMap: {},
+      },
+    ],
+  };
+}
 
 // assigns data model needed for MetadataEditor to specific template
 // the actual thing where templating is done

@@ -123,7 +123,7 @@ _preliminary remarks:_
 
 * colors get assigned in the `templates` and are used for highlighting the targets of an annotation. You have to keep the various representations the same. A couple of changes are necessary
   * js
-    * `annotationCreation/templates/formObjectCreateAnnotation`: initial assignment of colors (hex value)
+    * `annotationCreation/templates/getFormObjectCreateAnnotation()`: initial assignment of colors (hex value)
     * `highlight`: can use the color to assign a css class (hex value)
     * `utils/getColorNameFromEnumEntry`: provides the name of a color (string) during the update of the target of an annotation in `/data/annotations/updateTargetData`
   * java
@@ -135,9 +135,9 @@ mandatory stuff is usually a "setting/variable/function" to be changed. optional
 
 * `annotationCreation`: templates and conversion of template form values into data to be sent to tAkita, which then creates the annotation
   * `templates`: necessary for the creation of
-    * a new annotation: `formObjectCreateAnnotation` is passed to the jsonForm library, which renders the according form
+    * a new annotation: `getFormObjectCreateAnnotation()` is passed to the jsonForm library, which renders the according form
       * you should add colors to the templates as they are used for highlighting
-    * a new body: `formObjectCreateBody` is passed to the jsonForm library, which renders the according form
+    * a new body: `getFormObjectCreateBody()` is passed to the jsonForm library, which renders the according form
     * `annotationTemplate` and `bodyTemplate` serve as enums to provide values for the dropdowns to select the according template
   * `utils`: functionality to convert the form values into data to be sent to tAkita, which then creates the annotation
     * `makeAnnotationData` and `makeBodiesData`/`makeBodyData` (inlcudes the assignment of purposes to the bodies via `assignPurpose`)

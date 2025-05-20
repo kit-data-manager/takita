@@ -23,7 +23,7 @@ import { getSpecificClasses } from './highlight';
 // mandatory exports (optional exports can be found further down)
 export { targetUpdateCallback, POSSIBLE_DIVISION_TYPES, highlightAnnotationFunction, possibleHighlightClasses };
 export { hooks } from './hooks';
-export { formObjectCreateAnnotation, formObjectCreateBody } from './annotationCreation';
+export { getFormObjectCreateAnnotation, getFormObjectCreateBody } from './annotationCreation';
 export { headerFieldsArray, omitFieldsArray, editableFieldsArray } from './annotationCard';
 export { Variant } from './textloader';
 export { getColorHexFromEnumEntry, getColorNameFromEnumEntry } from './utils';
