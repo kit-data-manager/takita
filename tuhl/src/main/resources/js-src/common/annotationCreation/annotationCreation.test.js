@@ -39,13 +39,27 @@ const innerHTML = `
         </div>
     </div>`;
 
+// function to manipulate the return of getFormObjectCreateAnnotation(). It replaces the
+// projectspecifc annotation creation templates with dummy ones
+function getFormObjectCreateAnnotationMock() {
+  const object = templates.getFormObjectCreateAnnotation();
+  object.schema.template.enum = ['', 'One', 'Two'];
+  return object;
+}
+// function to manipulate the return of getFormObjectCreateBody(). It replaces the
+// projectspecifc body creation templates with dummy ones
+function getFormObjectCreateBodyMock() {
+  const object = templates.getFormObjectCreateBody();
+  object.schema.template.enum = ['', 'One', 'Two'];
+  return object;
+}
+
 describe('creating various forms based on chosen template', () => {
   it('creates a form used for the creation of an annotation', () => {
     document.body.innerHTML = innerHTML;
-    // mocking the projectspecific formObjectCreateAnnotation so the test works independetly
+    // mocking the projectspecific getFormObjectCreateAnnotation() so the test works independetly
     // from project setups
-    jest.replaceProperty(templates.formObjectCreateAnnotation.schema.template, 'enum', ['', 'One', 'Two']);
-
+    jest.spyOn(templates, 'getFormObjectCreateAnnotation').mockReturnValue(getFormObjectCreateAnnotationMock());
     pickTemplate('svgCode/xPath', '', 'createAnnotationForm', 'pickAnnotationTemplateForm', 'annotationTemplate');
 
     const $form = document.getElementById('createAnnotationForm');
@@ -58,9 +72,9 @@ describe('creating various forms based on chosen template', () => {
   });
   it('creates a form used for the creation of another body', () => {
     document.body.innerHTML = innerHTML;
-    // mocking the projectspecific formObjectCreateAnnotation so the test works independetly
+    // mocking the projectspecific getFormObjectCreateAnnotation() so the test works independetly
     // from project setups
-    jest.replaceProperty(templates.formObjectCreateBody.schema.template, 'enum', ['', 'One', 'Two']);
+    jest.spyOn(templates, 'getFormObjectCreateBody').mockReturnValue(getFormObjectCreateBodyMock());
 
     pickTemplate('', 'encodedId', 'createForm', 'pickBodyTemplateForm', 'bodyTemplate');
 

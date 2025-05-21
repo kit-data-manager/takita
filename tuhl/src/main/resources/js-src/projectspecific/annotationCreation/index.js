@@ -1,1 +1,1 @@
-export { formObjectCreateAnnotation, formObjectCreateBody } from './templates';
+export { getFormObjectCreateAnnotation, getFormObjectCreateBody } from './templates';

@@ -7,7 +7,7 @@ import { toggleVisibility, encodeAnnoId } from '../utils';
 import { updateDisplay } from '../../texteditor-ng/display';
 import { selectAnnotation } from '../annotationCard';
 import { createBodyData, createAnnotationData, getAnnotationData } from '../../texteditor-ng/data/annotations';
-import { formObjectCreateAnnotation, formObjectCreateBody } from '../../projectspecific';
+import { getFormObjectCreateAnnotation, getFormObjectCreateBody } from '../../projectspecific';
 
 /**
  * creates the JSONForm and shows the modal to create an annotation based on
@@ -33,13 +33,13 @@ export function pickTemplate(svgCode, encodedId, createFormId, pickFormId, templ
   // Philipp doesn't understand why this is necessary. Everything works without it.
   // The titleMap only contains the words (annotationTemplate or bodyTemplate)
   // split into a titleMap (index: letter -> 0:a, 1:n ...). The actual values used in
-  // the dropdown selection are taken from formObjectCreateAnnotation.schema.template.enum.
+  // the dropdown selection are taken from getFormObjectCreateAnnotation().schema.template.enum.
   // creates title map needed for the dropdown selection
   // for (const tName in Object.keys(template)) {
   //   if (template === 'bodyTemplate') {
-  //     formObjectCreateBody.form[0].titleMap[Object.keys(template)[tName]] = Object.values(template)[tName];
+  //     getFormObjectCreateBody().form[0].titleMap[Object.keys(template)[tName]] = Object.values(template)[tName];
   //   } else {
-  //     formObjectCreateAnnotation.form[0].titleMap[Object.keys(template)[tName]] = Object.values(template)[tName];
+  //     getFormObjectCreateAnnotation().form[0].titleMap[Object.keys(template)[tName]] = Object.values(template)[tName];
   //   }
   // }
 
@@ -55,9 +55,9 @@ export function pickTemplate(svgCode, encodedId, createFormId, pickFormId, templ
 
   // creates dropdown from enum objects defined at the top
   if (template === 'bodyTemplate') {
-    $('#' + pickFormId).jsonForm(formObjectCreateBody);
+    $('#' + pickFormId).jsonForm(getFormObjectCreateBody());
   } else {
-    $('#' + pickFormId).jsonForm(formObjectCreateAnnotation);
+    $('#' + pickFormId).jsonForm(getFormObjectCreateAnnotation());
   }
 }
 
