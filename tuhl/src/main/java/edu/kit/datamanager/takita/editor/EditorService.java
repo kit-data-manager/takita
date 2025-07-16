@@ -4,6 +4,7 @@ import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 import edu.kit.datamanager.takita.assistance.IAssistanceService;
 import edu.kit.datamanager.takita.dataaccess.AnnotationConverter;
 import edu.kit.datamanager.takita.dataaccess.IAnnotationStoreAccessService;
+import edu.kit.datamanager.takita.dataaccess.IExistAccessService;
 import edu.kit.datamanager.takita.dataaccess.IRepositoryAccessService;
 import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import edu.kit.datamanager.takita.model.Annotation;
@@ -23,6 +24,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +36,8 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.SessionScope;
+import org.w3c.dom.DOMException;
+import org.xml.sax.SAXException;
 
 /**
  * Implements the Interface IEditorService, handles methods needed by the EditorController.
@@ -45,6 +53,7 @@ public class EditorService implements IEditorService {
   private final ISearchIndexService searchIndexService;
   private final IAnnotationStoreAccessService accessService;
   private final IRepositoryAccessService repositoryAccessService;
+  private final IExistAccessService existAccessService;
   private final AnnotationConverter annotationConverter;
 
   private static final Logger logger = LoggerFactory.getLogger(EditorService.class);
@@ -59,11 +68,13 @@ public class EditorService implements IEditorService {
   public EditorService(IAssistanceService assistanceService,
                            ISearchIndexService searchIndexService,
                            IAnnotationStoreAccessService accessService,
-                           IRepositoryAccessService repositoryAccessService) {
+                           IRepositoryAccessService repositoryAccessService,
+                           IExistAccessService existAccessService) {
     this.assistanceService = assistanceService;
     this.searchIndexService = searchIndexService;
     this.accessService = accessService;
     this.repositoryAccessService = repositoryAccessService;
+    this.existAccessService = existAccessService;
     this.annotationConverter = new AnnotationConverter(accessService, repositoryAccessService);
   }
 
@@ -597,7 +608,14 @@ public class EditorService implements IEditorService {
   public String getPageContentXml(String pageId, String fileName) throws IOException, InterruptedException {
 	    return searchIndexService.getRawPageContentXml(pageId, fileName);
   }
+  
+  public String getXMLDocument(String documentId, String fileName) throws IOException, InterruptedException {
+	  return existAccessService.getXMLDocument(documentId, fileName);
+  }
 
+  public String getXMLDocumentFragment(String documentId, String fileName, String xPath, Boolean trimmed) throws IOException, InterruptedException, TransformerConfigurationException, ParserConfigurationException, SAXException, TransformerException, XPathExpressionException, DOMException {
+	  return existAccessService.getXMLDocumentFragment(documentId, fileName, xPath, trimmed);
+  }
   /**
    * Gets the raw JSON of a page.
    *

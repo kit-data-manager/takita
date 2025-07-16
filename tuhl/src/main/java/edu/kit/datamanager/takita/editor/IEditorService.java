@@ -10,9 +10,16 @@ import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 import java.io.IOException;
 import java.util.List;
 
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
+
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.DOMException;
+import org.xml.sax.SAXException;
 
 /**
  * Interface for an Editor Service that should handle the requests from the Editor controller.
@@ -234,7 +241,41 @@ public interface IEditorService {
    * @throws InterruptedException when the http request to database is interrupted
    */
   String getPageContentXml(String pageId, String fileName) throws IOException, InterruptedException;
+  
+  /**
+   * Gets the raw XML of a document from exist-db.
+   *
+   * @param documentId of the manuscript to which the raw XML should be gotten
+   * @param fileName identifies the file associated to a page
+   * @return page as XML as String
+   * @throws IOException when the http request to database was faulty
+   * @throws InterruptedException when the http request to database is interrupted
+   */
+  String getXMLDocument(String documentId, String fileName) throws IOException, InterruptedException;
 
+  /**
+   * 
+   * 
+   * Gets a fragment/node of a document that is given in the TEI standard.
+	 *
+   * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
+   * @param fileName identifies the file associated to a page
+   * @param xPath (encoded) identifies the document fragment
+   * @param trimmed decides if the resolved xPath should have its content trimmed
+   *   according to the substring() function in the xPath.
+   *   - "true" will lead to text contents of elements to be trimmed according to the substring-function
+   *   - "false" will leave the text contents of elements untouched (ignoring the substring-function)
+   * @return the xml as a String
+   * @throws IOException
+   * @throws InterruptedException
+   * @throws TransformerException 
+   * @throws SAXException 
+   * @throws ParserConfigurationException 
+   * @throws TransformerConfigurationException 
+   * @throws DOMException 
+   * @throws XPathExpressionException 
+   */
+  String getXMLDocumentFragment(String documentId, String fileName, String xPath, Boolean trimmed) throws IOException, InterruptedException, TransformerConfigurationException, ParserConfigurationException, SAXException, TransformerException, XPathExpressionException, DOMException;
   /**
    * Gets the raw JSON of an annotation.
    *

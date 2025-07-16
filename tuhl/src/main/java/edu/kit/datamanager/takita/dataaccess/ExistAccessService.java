@@ -1,0 +1,379 @@
+package edu.kit.datamanager.takita.dataaccess;
+
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.DOMException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+
+import edu.kit.datamanager.takita.MissingPropertyException;
+import jakarta.annotation.PostConstruct;
+
+@Service
+public class ExistAccessService implements IExistAccessService {
+
+	private static final Logger logger = LoggerFactory.getLogger(ExistAccessService.class);
+
+	private static final String SEARCH_URL = "?_query=";
+
+	@Value("${exist.baseUrl:#{null}}")
+	private String baseUrl;
+	@Value("${exist.staticPath}")
+	private String staticPath;
+	@Value("${exist.idPrefix:#{null}}")
+	private String idPrefix;
+
+	private final HttpRequestHelper httpRequestHelper;
+	// private static final String existQueryUrl = baseUrl + staticPath +
+	// SEARCH_URL;
+
+	/**
+	 * Implements IRepositoryAccessService, contains logic for accessing the
+	 * repository.
+	 */
+	public ExistAccessService() {
+		httpRequestHelper = new HttpRequestHelper();
+	}
+
+	@PostConstruct
+	public void checkProperty() {
+		if (baseUrl == null || baseUrl.equals("")) {
+			throw new MissingPropertyException("exist.baseUrl");
+		}
+	}
+
+	/**
+	 * Gets the content of a page that is given in the TEI standard from eXist-db.
+	 *
+	 * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
+	 * @param fileName identifies the file associated to a page
+	 * @return the xml as a String
+	 * @throws IOException if an error occurs while sending or receiving
+	 * @throws InterruptedException if the get request is interrupted
+	 */
+	@Override
+	public String getXMLDocument(String documentId, String fileName) throws IOException, InterruptedException {
+		// xml:ids are not valid, if they start with a number, so depending on the
+		// ids used by a project the ids have to be prefixed with at least one
+		// letter. The letter can be changed in the application.properties. If a prefix
+		// is given use it.
+		if (idPrefix != null) {
+			documentId = idPrefix + documentId;
+		}
+		
+		// the context for the xPath should only be a tei-body with the pageId
+		String query = "//id('" + documentId + "')";
+		String encodedQuery = URLEncoder.encode(query, "UTF-8");
+
+		return httpRequestHelper.get(baseUrl + staticPath + SEARCH_URL + encodedQuery).body();
+	}
+	
+	/**
+	 * Gets one division of a page that is given in the TEI standard from eXist-db.
+	 *
+	 * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
+	 * @param fileName identifies the file associated to a page (not used currently)
+	 * @param xPath (encoded) identifies the document fragment
+	 * @param trimmed decides if the resolved xPath should have its content trimmed
+	 * according to the substring() function in the xPath. 
+	 * - "true" will lead to text contents of elements to be trimmed according to the substring-function
+	 * - "false" will leave the text contents of elements untouched (ignoring the substring-function)
+	 * @return the xml as a String
+	 * 1. if called with an xPath holding only one id ("pageId/filename/id("e.id")/false")
+	 * consisting of one element and its descendants like a division or a word
+	 * 2. a) if called with an xPath holding only multiple ids ("pageId/filename/id("e.id")|id("e.id2")/false")
+	 * consisting of the closest parent of the first and last element given in the xPath. The whole parent is
+	 * included if the "trimmed" variable is false
+	 *    b) if called with an xPath holding only multiple ids ("pageId/filename/id("e.id")|id("e.id2")/false")
+	 * consisting of the closest parent of the first and last element given in the xPath. Only the elemts, whos
+	 * ids are present in the xPath are included in the result, the others are getting removed, if the
+	 * "trimmed" variable is false
+	 * @throws IOException if an error occurs while sending or receiving
+	 * @throws InterruptedException if the get request is interrupted
+	 * @throws ParserConfigurationException 
+	 * @throws SAXException 
+	 * @throws TransformerException 
+	 * @throws TransformerConfigurationException 
+	 * @throws DOMException 
+	 * @throws XPathExpressionException 
+	 */
+	@Override
+	public String getXMLDocumentFragment(String documentId, String fileName, String xPath, Boolean trimmed)
+			throws IOException, InterruptedException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException, XPathExpressionException, DOMException {
+		logger.info(String.format("Trying to resolve xPath: %s, for document: %s", xPath, documentId));
+		String query = constructQueryForXPath(documentId, xPath);
+		String encodedQuery = URLEncoder.encode(query, "UTF-8");
+		// instead of "get()" you might have to use "getFromExistDbWithAuth()" to use the credentials
+		// for the exist-db user specified in the application.properties.
+		String teiString = httpRequestHelper
+				.get(baseUrl + staticPath + SEARCH_URL + encodedQuery).body();
+		// .getFromExistDbWithAuth(baseUrl + staticPath + pageId + "/" + fileName + SEARCH_URL + encodedQuery).body();
+		// parsing the string into a document
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setNamespaceAware(true);
+		DocumentBuilder builder;
+		builder = factory.newDocumentBuilder();
+		Document teiDocument = builder.parse(new InputSource(new StringReader(teiString)));
+
+		if (trimmed) {
+			// defining the namespaces to be used by the following code see:
+			// https://stackoverflow.com/questions/13702637/xpath-with-namespace-in-java
+			// and
+			// https://web.archive.org/web/20070328212209/http://blog.davber.com/2006/09/17/xpath-with-namespaces-in-java/
+			// We map the prefixes to URIs
+			// the "xml"-namespace is necessary as we access the "@xml:id" and the "exist"-namespace
+			// as the return of the exist database is using it
+			NamespaceContext namespaceContext = new NamespaceContext() {
+				public String getNamespaceURI(String prefix) {
+					String uri;
+					if (prefix.equals("tei")) {
+						uri = "http://www.tei-c.org/ns/1.0";
+					} else if (prefix.equals("xi")) {
+						uri = "http://www.w3.org/2001/XInclude";
+					} else if (prefix.equals("xml")) {
+						uri = "http://www.w3.org/XML/1998/namespace";
+					} else if (prefix.equals("exist")) {
+						uri = "http://exist.sourceforge.net/NS/exist";
+					} else {
+						uri = null;
+					}
+					return uri;
+				}
+
+				// Dummy implementation - not used!
+				public Iterator getPrefixes(String val) {
+					return null;
+				}
+
+				// Dummy implemenation - not used!
+				public String getPrefix(String uri) {
+					return null;
+				}
+			};
+
+			// creating the xPath object
+			XPath xPathInstance = XPathFactory.newInstance().newXPath();
+			xPathInstance.setNamespaceContext(namespaceContext);
+
+			List<String> ids = extractIDsFromXPath(xPath);
+			iterateNodeList(teiDocument.getDocumentElement().getChildNodes(), ids, xPathInstance);
+			String docString = documentToString(teiDocument);
+			logger.info(String.format("Successfully resolved xPath: %s, for document: %s with trimmed content:\n%s", xPath, documentId, docString));
+		    return docString;
+		} else {
+			String docString = documentToString(teiDocument);
+			logger.info(String.format("Successfully resolved xPath: %s, for document: %s with untrimmed content:\n%s", xPath, documentId, docString));
+		    return docString;
+		}
+			
+	}
+
+	/**
+	 * extract ids from xPath and construct a query to be send to the exist-db, which will
+	 * return the closest common ancestor of the first and last element given in the xPath
+	 * 
+	 * @param document id of the document fragment of a file in exist-db (this should be the id of the
+	 * page DO from the base-repo)
+	 * @param xPath which is encoded and holding all the ids
+	 * @return query string
+	 * @throws UnsupportedEncodingException
+	 */
+	private String constructQueryForXPath(String documentId, String xPath) throws UnsupportedEncodingException {
+		// xml:ids are not valid, if they start with a number, so depending on the
+		// ids used by a project the ids have to be prefixed with at least one
+		// letter. The letter can be changed in the application.properties. If a prefix
+		// is given use it.
+		if (idPrefix != null) {
+			documentId = idPrefix + documentId;
+		}
+		
+		// the context for the xPath should only be a tei-body with the pageId
+		String contextNodeForQuery = "//id('" + documentId + "')//";
+		String query = "";
+		List<String> parts = extractIDsFromXPath(xPath);
+		
+		if (parts.size() == 1) {
+			// A long query should look like: //id('testFileId')//id("w.122")
+			query = contextNodeForQuery + "id(\"" + parts.get(0) + "\")";
+		} else if (parts.size() > 1) {
+			String firstElementID =  parts.get(0);
+			String lastElementID = parts.get(parts.size()-1);
+			// A long query should look like: //id('testFileId')//((id("w.122")/ancestor::* intersect id("w.133")/ancestor::*)[last()])
+			// the query does the following
+			// 1. get the correct document via its id "//id('" + pageId + "')" (this is done by the
+			//	  contextNodeForQuery variable)
+			// 2. set the document as the context for the next part of the xpath by appending "//"
+			//	  id('" + pageId + "')//" (this is done by the contextNodeForQuery variable)
+			// 3. get the ancestors of the first and last targeted element
+			//	  "(" + firstElementID + "/ancestor::* intersect " + lastElementID + "/ancestor::*)"
+			// 4. pick the first ancestor, that is shared by both elements
+			// Note: the "()" around the second part ("((id("w. ... last()])") of the query are necessary
+			// on order for the second part of the query to be executed as a subquery
+			query = contextNodeForQuery + "((id(\"" + firstElementID + "\")/ancestor::* intersect id(\"" + lastElementID + "\")/ancestor::*)[last()])";
+			
+		}
+		return query;
+	}
+	
+
+	
+	/**
+	 * extract ids from a string using string-magic (splitting)
+	 * 
+	 * @param xPath the full encoded xPath. contains a substring like:
+	 * 'concat(substring(id("w.1_6-1"), 2, 7), " ", id("w.1_6-2"), " ", id("w.1_6-3"))'
+	 * or not like:
+	 * 'id("w.1") | id("w.2") | id("w.3"'
+	 * @return an array holding all ids present in the xPath like:
+	 * ["w.1_6-1", "w.1_6-2", "w.1_6-3"]
+	 * or:
+	 * ["w.1", "w.2", "w.3"]
+	 * @throws UnsupportedEncodingException
+	 */
+	private List<String> extractIDsFromXPath(String xPath) throws UnsupportedEncodingException {
+		String decodedXPath =URLDecoder.decode(xPath, "UTF-8");
+		
+		if(decodedXPath.contains("concat(")) {
+			// if the xPath contains substrings, e.g.
+			// 'concat(substring(id("w.1_6-1"), 2, 7), " ", id("w.1_6-2"), " ", id("w.1_6-3"))'
+			String[] parts = decodedXPath.split("id\\(");
+
+			List<String> ids= new ArrayList(parts.length-1);
+			// add all ids to the ids array, but skip the first entry of the parts array
+			// as it is "cpncat("
+			for (int i = 1; i < parts.length; i++) {
+				ids.add(parts[i].split("\"")[1]);
+			}
+			return ids;
+		} else {
+			// if the xPath doesn't contain a substring, e.g.
+			// 'id("w.1") | id("w.2") | id("w.3"'
+			String[] parts = URLDecoder.decode(xPath, "UTF-8").split("\\|");
+
+			List<String> ids= new ArrayList(parts.length);
+			for (String part :parts) {
+				ids.add(part.split("\"")[1]);
+			}
+			return ids;
+			
+		}
+	}
+	
+	/**
+	 * recursively iterate a nodelist to access every node regardless of its position
+	 * in the hierarchy. Start with a node and checks its children, so the way to traverse
+	 * the tree is downwards. Deletes nodes and its children, if the nodes or its children's id
+	 * are not present in the id list. The decision to delete a node/its children is based on the
+	 * result of an xPath, which is checking for the presence of ids in a node.
+	 * 
+	 * @param nodeList holding elements or document fragments
+	 * @param ids list of ids to check, wether they are present in the nodelists entries
+	 * @param xPathInstance used to check the presence of ids and injected into the function
+	 * performing the check
+	 * @throws DOMException 
+	 * @throws XPathExpressionException 
+	 */
+	private void iterateNodeList(NodeList nodeList, List<String> ids, XPath xPathInstance) throws XPathExpressionException, DOMException {
+
+		// going through the list backwards as we want to delete items from it and we don't want to
+		// mess up the iteration
+		for (int i = nodeList.getLength()-1; i >= 0; i--) {
+			// if node is  element or document fragment, check if its included in the given xPath.
+			// textNodes etc. will be ignored.
+			if (nodeList.item(i).getNodeType() == 1 || nodeList.item(i).getNodeType() == 11) {
+				if (!isIncludedInIDList(nodeList.item(i), ids, xPathInstance)) {
+					nodeList.item(i).getParentNode().removeChild(nodeList.item(i));
+					continue;
+				}
+			}
+			
+			// recursively call this function to access every (child)node in the document
+			if (nodeList.item(i).hasChildNodes()) {
+				iterateNodeList(nodeList.item(i).getChildNodes(), ids, xPathInstance);
+			}
+		}
+	}
+
+	/**
+	 * check, if the nodes or its children's id is present in the list of ids. The decision is based on the
+	 * result of an xPath, which is checking for the presence of ids in a node.
+	 * 
+	 * @param node to be checked
+	 * @param ids list of ids
+	 * @param xPathInstance used to evaluate an xPath, which is checking for the presence of an id
+	 * @return boolean, true: if the node or any of its children have any id from the nodelist;
+	 * false (default return): if the neither the node nor any of its children have any id from the nodelist
+	 * @throws XPathExpressionException
+	 */
+	private Boolean isIncludedInIDList(Node node, List<String> ids, XPath xPathInstance) throws XPathExpressionException {
+		// i think i have to clone or stuff is getting weird.
+		// i think its because somehow the node still has connections to its parents
+		// and then the xpaths are acting up
+		Node clone = node.cloneNode(true);
+		
+		// check for every id, if it is present in the node. This is done via xPath and via the attributes
+		// of the nodes in some cases (see below)
+		for (String id : ids) {
+			if ((Boolean) xPathInstance.compile("//*[@xml:id='"+ id +"']").evaluate(clone, XPathConstants.BOOLEAN)) {
+				return true;
+			} else {
+				// this else is necessary as for some reason using the xPath "//*[@xml:id='w.121']" on 
+				// the xml "<w xml:id="w.121">Blessed</w>" is returning nothing in java (in oxygen it correctly
+				// returns the node). so we have to check for some nodes (i think only for the
+				// "smallest" descendant) via the attributes as well.
+				for (int i = 0; i < node.getAttributes().getLength(); i++) {
+					if (node.getAttributes().item(i).getNodeValue().contentEquals(id)) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * turn xml document into a string
+	 * 
+	 * @param document
+	 * @return the xml document as string
+	 * @throws TransformerConfigurationException
+	 * @throws TransformerException
+	 */
+	private String documentToString(Document document) throws TransformerConfigurationException, TransformerException {
+	    TransformerFactory transformerFactory = TransformerFactory.newInstance();
+	    Transformer transformer = transformerFactory.newTransformer();
+	    StringWriter stringWriter = new StringWriter();
+	    transformer.transform(new DOMSource(document), new StreamResult(stringWriter));
+	    return stringWriter.toString();
+	}
+
+}

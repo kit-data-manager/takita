@@ -1,0 +1,49 @@
+package edu.kit.datamanager.takita.dataaccess;
+
+import java.io.IOException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
+
+import org.w3c.dom.DOMException;
+import org.xml.sax.SAXException;
+
+public interface IExistAccessService {
+
+	/**
+	 * Gets the content of a page that is given in the TEI standard from eXist.
+	 *
+	 * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
+	 * @param fileName identifies the file associated to a page
+	 * @return the xml as a String
+	 * @throws IOException if an error occurs while sending or receiving
+	 * @throws InterruptedException if the get request is interrupted
+	 */
+	String getXMLDocument(String documentId, String fileName) throws IOException, InterruptedException;
+	
+
+	/**
+	 * Gets a fragment/node of a document that is given in the TEI standard.
+	 *
+	 * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
+	 * @param fileName identifies the file associated to a page
+	 * @param xPath (encoded) identifies the document fragment
+	 * @param trimmed decides if the resolved xPath should have its content trimmed
+	 * according to the substring() function in the xPath. 
+	 * - "true" will lead to text contents of elements to be trimmed according to the substring-function
+	 * - "false" will leave the text contents of elements untouched (ignoring the substring-function)
+	 * @return the xml as a String
+	 * @throws IOException if an error occurs while sending or receiving
+	 * @throws InterruptedException if the get request is interrupted
+	 * @throws ParserConfigurationException 
+	 * @throws SAXException 
+	 * @throws TransformerException 
+	 * @throws TransformerConfigurationException 
+	 * @throws DOMException 
+	 * @throws XPathExpressionException 
+	 */
+	String getXMLDocumentFragment(String documentId, String fileName, String xPath, Boolean trimmed) throws IOException, InterruptedException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException, XPathExpressionException, DOMException;
+	
+}

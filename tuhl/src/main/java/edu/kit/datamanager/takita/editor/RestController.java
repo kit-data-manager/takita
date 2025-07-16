@@ -12,6 +12,12 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
+
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -25,6 +31,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.context.request.WebRequest;
+import org.w3c.dom.DOMException;
+import org.xml.sax.SAXException;
 
 /**
  * Controls the interaction with the user interface concerning the interaction with
@@ -749,16 +757,80 @@ public class RestController {
     @RequestMapping(value = "/content/{pageId}/{fileName}", method = RequestMethod.GET, produces = "application/xml")
     @ResponseBody
     public ResponseEntity getPageContentXml(@PathVariable("pageId") String pageId, @PathVariable("fileName") String fileName, final WebRequest request, final HttpServletResponse response) {
-    String rawXml;
-    try {
-        rawXml = editorService.getPageContentXml(pageId, fileName);
-        } catch (IOException e) {
-            return ResponseEntity.status(500).body(e.getMessage());
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return ResponseEntity.status(500).body(e.getMessage());
-        }
-    return ResponseEntity.ok().body(rawXml);
+	    String rawXml;
+	    try {
+	        rawXml = editorService.getPageContentXml(pageId, fileName);
+	        } catch (IOException e) {
+	            return ResponseEntity.status(500).body(e.getMessage());
+	        } catch (InterruptedException e) {
+	            Thread.currentThread().interrupt();
+	            return ResponseEntity.status(500).body(e.getMessage());
+	        }
+	    return ResponseEntity.ok().body(rawXml);
+    }
+    
+    /**
+     * 
+     * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
+     * @param fileName
+     * @param request
+     * @param response
+     * @return
+     */
+    @RequestMapping(value = "/content/exist/{documentId}/{fileName}", method = RequestMethod.GET, produces = "application/xml")
+    @ResponseBody
+    public ResponseEntity getXMLDocument(@PathVariable("documentId") String pageId, 
+    		@PathVariable("fileName") String fileName, final WebRequest request, final HttpServletResponse response) {
+	    String rawXml;
+	    try {
+	        rawXml = editorService.getXMLDocument(pageId, fileName);
+	        } catch (IOException e) {
+	            return ResponseEntity.status(500).body(e.getMessage());
+	        } catch (InterruptedException e) {
+	            Thread.currentThread().interrupt();
+	            return ResponseEntity.status(500).body(e.getMessage());
+	        }
+	    return ResponseEntity.ok().body(rawXml);
+    }
+    
+     /**
+      * 
+      * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
+      * @param fileName
+      * @param xPath
+      * @param trimmed
+      * @param request
+      * @param response
+      * @return
+      */
+    @RequestMapping(value = "/content/exist/{documentId}/{fileName}/{xPath}/{trimmed}", method = RequestMethod.GET, produces = "application/xml")
+    @ResponseBody
+    public ResponseEntity getXMLDocumentFragment(@PathVariable("documentId") String documentId,
+    		@PathVariable("fileName") String fileName, @PathVariable("xPath") String xPath,
+    		@PathVariable("trimmed") String trimmed,
+    		final WebRequest request, final HttpServletResponse response) {
+	    String rawXml = null;
+	    try {
+	        rawXml = editorService.getXMLDocumentFragment(documentId, fileName, xPath, Boolean.valueOf(trimmed));
+	        } catch (IOException e) {
+	            return ResponseEntity.status(500).body(e.getMessage());
+	        } catch (InterruptedException e) {
+	            Thread.currentThread().interrupt();
+	            return ResponseEntity.status(500).body(e.getMessage());
+	        } catch (TransformerConfigurationException e) {
+	        	return ResponseEntity.status(500).body(e.getMessage());
+			} catch (TransformerException e) {
+				return ResponseEntity.status(500).body(e.getMessage());
+			} catch (ParserConfigurationException e) {
+				return ResponseEntity.status(500).body(e.getMessage());
+			} catch (SAXException e) {
+				return ResponseEntity.status(500).body(e.getMessage());
+			} catch (XPathExpressionException e) {
+				return ResponseEntity.status(500).body(e.getMessage());
+			} catch (DOMException e) {
+				return ResponseEntity.status(500).body(e.getMessage());
+			} 
+	    return ResponseEntity.ok().body(rawXml);
     }
 
     private String decodeURL(String url) throws UnsupportedEncodingException {
