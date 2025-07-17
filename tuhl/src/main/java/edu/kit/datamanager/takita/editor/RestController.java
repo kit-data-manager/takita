@@ -770,12 +770,14 @@ public class RestController {
     }
     
     /**
+     * Delegates the task to get the raw XML content of a page from an exist-db to IEditorStubService.
      * 
      * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
      * @param fileName
-     * @param request
-     * @param response
-     * @return
+     * @param request to access the headers from the HTTP request
+     * @param response to access the headers for the HTTP response
+     * @return HTTP entity sent back, either ok for a success including the
+     *    XML or 500 for an internal error
      */
     @RequestMapping(value = "/content/exist/{documentId}/{fileName}", method = RequestMethod.GET, produces = "application/xml")
     @ResponseBody
@@ -794,14 +796,19 @@ public class RestController {
     }
     
      /**
+      * Delegates the task to get the raw XML fragment of a page from an exist-db to IEditorStubService.
       * 
-      * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
-      * @param fileName
-      * @param xPath
-      * @param trimmed
-      * @param request
-      * @param response
-      * @return
+	  * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
+	  * @param fileName identifies the file associated to a page
+	  * @param xPath (encoded) identifies the document fragment
+	  * @param trimmed decides if the resolved xPath should have its content trimmed
+	  * according to the substring() function in the xPath. 
+	  * - "true" will lead to text contents of elements to be trimmed according to the substring-function
+	  * - "false" will leave the text contents of elements untouched (ignoring the substring-function)
+      * @param request to access the headers from the HTTP request
+      * @param response to access the headers for the HTTP response
+      * @return HTTP entity sent back, either ok for a success including the
+      *    XML or 500 for an internal error
       */
     @RequestMapping(value = "/content/exist/{documentId}/{fileName}/{xPath}/{trimmed}", method = RequestMethod.GET, produces = "application/xml")
     @ResponseBody
@@ -812,7 +819,9 @@ public class RestController {
 	    String rawXml = null;
 	    try {
 	        rawXml = editorService.getXMLDocumentFragment(documentId, fileName, xPath, Boolean.valueOf(trimmed));
-	        } catch (IOException e) {
+	        } catch (UnsupportedEncodingException e) {
+				return ResponseEntity.status(500).body(e.getMessage());
+			} catch (IOException e) {
 	            return ResponseEntity.status(500).body(e.getMessage());
 	        } catch (InterruptedException e) {
 	            Thread.currentThread().interrupt();

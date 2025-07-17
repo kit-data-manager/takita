@@ -1,6 +1,7 @@
 package edu.kit.datamanager.takita.dataaccess;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerConfigurationException;
@@ -43,7 +44,8 @@ public interface IExistAccessService {
 	 * @throws TransformerConfigurationException 
 	 * @throws DOMException 
 	 * @throws XPathExpressionException 
+     * @throws UnsupportedEncodingException
 	 */
-	String getXMLDocumentFragment(String documentId, String fileName, String xPath, Boolean trimmed) throws IOException, InterruptedException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException, XPathExpressionException, DOMException;
+	String getXMLDocumentFragment(String documentId, String fileName, String xPath, Boolean trimmed) throws IOException, InterruptedException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException, XPathExpressionException, DOMException, UnsupportedEncodingException;
 	
 }

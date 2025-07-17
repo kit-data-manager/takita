@@ -8,6 +8,7 @@ import edu.kit.datamanager.takita.model.page.Page;
 import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -273,9 +274,10 @@ public interface IEditorService {
    * @throws ParserConfigurationException 
    * @throws TransformerConfigurationException 
    * @throws DOMException 
-   * @throws XPathExpressionException 
+   * @throws XPathExpressionException
+   * @throws UnsupportedEncodingException 
    */
-  String getXMLDocumentFragment(String documentId, String fileName, String xPath, Boolean trimmed) throws IOException, InterruptedException, TransformerConfigurationException, ParserConfigurationException, SAXException, TransformerException, XPathExpressionException, DOMException;
+  String getXMLDocumentFragment(String documentId, String fileName, String xPath, Boolean trimmed) throws IOException, InterruptedException, TransformerConfigurationException, ParserConfigurationException, SAXException, TransformerException, XPathExpressionException, DOMException, UnsupportedEncodingException;
   /**
    * Gets the raw JSON of an annotation.
    *

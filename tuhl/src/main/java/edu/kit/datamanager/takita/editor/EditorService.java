@@ -18,6 +18,7 @@ import edu.kit.datamanager.takita.model.target.Target;
 import edu.kit.datamanager.takita.model.target.XPathSelector;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -609,13 +610,55 @@ public class EditorService implements IEditorService {
 	    return searchIndexService.getRawPageContentXml(pageId, fileName);
   }
   
+   /**
+	* Gets the content of a page that is given in the TEI standard from eXist-db.
+	*
+	* @param documentId the id of the document (usually the id of the pageDo in the base-repo)
+	* @param fileName identifies the file associated to a page
+	* @return the xml as a String
+	* @throws IOException if an error occurs while sending or receiving
+	* @throws InterruptedException if the get request is interrupted
+	*/
+  @Override
   public String getXMLDocument(String documentId, String fileName) throws IOException, InterruptedException {
 	  return existAccessService.getXMLDocument(documentId, fileName);
   }
 
-  public String getXMLDocumentFragment(String documentId, String fileName, String xPath, Boolean trimmed) throws IOException, InterruptedException, TransformerConfigurationException, ParserConfigurationException, SAXException, TransformerException, XPathExpressionException, DOMException {
+   /**
+    * Gets one fragment of a page that is given in the TEI standard from eXist-db.
+	*
+	* @param documentId the id of the document (usually the id of the pageDo in the base-repo)
+	* @param fileName identifies the file associated to a page (not used currently)
+	* @param xPath (encoded) identifies the document fragment
+	* @param trimmed decides if the resolved xPath should have its content trimmed
+	* according to the substring() function in the xPath. 
+	* - "true" will lead to text contents of elements to be trimmed according to the substring-function
+	* - "false" will leave the text contents of elements untouched (ignoring the substring-function)
+	* @return the xml as a String
+	* 1. if called with an xPath holding only one id ("pageId/filename/id("e.id")/false")
+	* consisting of one element and its descendants like a division or a word
+	* 2. a) if called with an xPath holding only multiple ids ("pageId/filename/id("e.id")|id("e.id2")/false")
+	* consisting of the closest parent of the first and last element given in the xPath. The whole parent is
+	* included if the "trimmed" variable is false
+	*    b) if called with an xPath holding only multiple ids ("pageId/filename/id("e.id")|id("e.id2")/false")
+	* consisting of the closest parent of the first and last element given in the xPath. Only the elemts, whos
+	* ids are present in the xPath are included in the result, the others are getting removed, if the
+	* "trimmed" variable is false
+	* @throws IOException if an error occurs while sending or receiving
+	* @throws InterruptedException if the get request is interrupted
+	* @throws ParserConfigurationException 
+	* @throws SAXException 
+	* @throws TransformerException 
+	* @throws TransformerConfigurationException 
+	* @throws DOMException 
+	* @throws XPathExpressionException
+	* @throws UnsupportedEncodingException 
+	*/
+  @Override
+  public String getXMLDocumentFragment(String documentId, String fileName, String xPath, Boolean trimmed) throws IOException, InterruptedException, TransformerConfigurationException, ParserConfigurationException, SAXException, TransformerException, XPathExpressionException, DOMException, UnsupportedEncodingException {
 	  return existAccessService.getXMLDocumentFragment(documentId, fileName, xPath, trimmed);
   }
+  
   /**
    * Gets the raw JSON of a page.
    *

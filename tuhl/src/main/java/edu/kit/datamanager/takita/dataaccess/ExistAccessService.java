@@ -93,12 +93,13 @@ public class ExistAccessService implements IExistAccessService {
 		// the context for the xPath should only be a tei-body with the pageId
 		String query = "//id('" + documentId + "')";
 		String encodedQuery = URLEncoder.encode(query, "UTF-8");
+		logger.info(String.format("Trying to get content for document: %s", documentId));
 
 		return httpRequestHelper.get(baseUrl + staticPath + SEARCH_URL + encodedQuery).body();
 	}
 	
 	/**
-	 * Gets one division of a page that is given in the TEI standard from eXist-db.
+	 * Gets one fragment of a page that is given in the TEI standard from eXist-db.
 	 *
 	 * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
 	 * @param fileName identifies the file associated to a page (not used currently)
@@ -124,11 +125,12 @@ public class ExistAccessService implements IExistAccessService {
 	 * @throws TransformerException 
 	 * @throws TransformerConfigurationException 
 	 * @throws DOMException 
-	 * @throws XPathExpressionException 
+	 * @throws XPathExpressionException
+     * @throws UnsupportedEncodingException 
 	 */
 	@Override
 	public String getXMLDocumentFragment(String documentId, String fileName, String xPath, Boolean trimmed)
-			throws IOException, InterruptedException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException, XPathExpressionException, DOMException {
+			throws IOException, InterruptedException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException, XPathExpressionException, DOMException, UnsupportedEncodingException {
 		logger.info(String.format("Trying to resolve xPath: %s, for document: %s", xPath, documentId));
 		String query = constructQueryForXPath(documentId, xPath);
 		String encodedQuery = URLEncoder.encode(query, "UTF-8");
