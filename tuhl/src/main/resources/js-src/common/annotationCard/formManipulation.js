@@ -205,7 +205,7 @@ export function modifyBodyFormHorizontal($horizontalForm, modifiedBody) {
     }
   }
 
-  // enabling/diasbling the "Save"-buttons for inputs and textareas of the form
+  // enabling/diasbling the "Save"-buttons for inputs, textareas, dropdowns (selects) of the form
   // the form contains multiple inputs elements. Apart from the one with "name === 'value'" all are hidden.
   $horizontalForm.querySelectorAll('input[type="text"]').forEach((input) => {
     if (input.name === 'value') {
@@ -227,6 +227,20 @@ export function modifyBodyFormHorizontal($horizontalForm, modifiedBody) {
       // from the original body value
       textarea.addEventListener('input', (_event) => {
         if (textarea.value !== modifiedBody.value) {
+          inputButtonHorizontal.disabled = false;
+        } else {
+          inputButtonHorizontal.disabled = true;
+        }
+      });
+    }
+  });
+
+  $horizontalForm.querySelectorAll('select[class="form-control"]').forEach((select) => {
+    if (select.name === 'value') {
+      // enable the input submit button if the value of the input field changes
+      // from the original body value
+      select.addEventListener('input', (_event) => {
+        if (select.value !== modifiedBody.value) {
           inputButtonHorizontal.disabled = false;
         } else {
           inputButtonHorizontal.disabled = true;
