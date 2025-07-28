@@ -44,6 +44,7 @@ public class ExistAccessService implements IExistAccessService {
 	private static final Logger logger = LoggerFactory.getLogger(ExistAccessService.class);
 
 	private static final String SEARCH_URL = "?_query=";
+	private static final String NO_INDENT_FLAG = "&_indent=no";
 
 	@Value("${exist.baseUrl:#{null}}")
 	private String baseUrl;
@@ -94,8 +95,8 @@ public class ExistAccessService implements IExistAccessService {
 		String query = "//id('" + documentId + "')";
 		String encodedQuery = URLEncoder.encode(query, "UTF-8");
 		logger.info(String.format("Trying to get content for document: %s", documentId));
-
-		return httpRequestHelper.get(baseUrl + staticPath + SEARCH_URL + encodedQuery).body();
+		// using the falg to not indent the result to keep original document format
+		return httpRequestHelper.get(baseUrl + staticPath + SEARCH_URL + encodedQuery + NO_INDENT_FLAG).body();
 	}
 	
 	/**
@@ -136,9 +137,10 @@ public class ExistAccessService implements IExistAccessService {
 		String encodedQuery = URLEncoder.encode(query, "UTF-8");
 		// instead of "get()" you might have to use "getFromExistDbWithAuth()" to use the credentials
 		// for the exist-db user specified in the application.properties.
+		// using the falg to not indent the result to keep original document format
 		String teiString = httpRequestHelper
-				.get(baseUrl + staticPath + SEARCH_URL + encodedQuery).body();
-		// .getFromExistDbWithAuth(baseUrl + staticPath + pageId + "/" + fileName + SEARCH_URL + encodedQuery).body();
+				.get(baseUrl + staticPath + SEARCH_URL + encodedQuery + NO_INDENT_FLAG).body();
+		// .getFromExistDbWithAuth(baseUrl + staticPath + pageId + "/" + fileName + SEARCH_URL + encodedQuery + NO_INDENT_FLAG).body();
 		// parsing the string into a document
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setNamespaceAware(true);
