@@ -184,7 +184,7 @@ describe('saving modification process', () => {
     const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('updateSelection'));
     const oldSelectedText = document.getElementById('oldSelectedText').firstElementChild.innerHTML;
     const newSelectedText = document.getElementById('newSelectedText').firstElementChild.innerHTML;
-    const targetXPath = $modal._element.dataset.newTargetXmlId;
+    const targetXPath = $modal._element.dataset.newTargetCode;
 
     expect(stoppedFunction).toBe(undefined);
     expect(oldSelectedText).toBe('nor st');

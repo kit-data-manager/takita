@@ -83,7 +83,7 @@ describe('saving modification process', () => {
     const modal = document.getElementById('updateSelection');
     const oldSelectedText = document.getElementById('oldSelectedText').firstElementChild.innerHTML;
     const newSelectedText = document.getElementById('newSelectedText').firstElementChild.innerHTML;
-    const targetXPath = modal.dataset.newTargetXmlId;
+    const targetXPath = modal.dataset.newTargetCode;
 
     expect(stoppedFunction).toBe(undefined);
     expect(oldSelectedText).toBe('nor standeth');
