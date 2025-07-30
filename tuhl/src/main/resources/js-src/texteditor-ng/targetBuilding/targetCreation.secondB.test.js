@@ -1,5 +1,5 @@
 import { Mode } from '../../common/mode';
-import { createTargetString } from './targetCreation';
+import { createTextSelectors } from './targetCreation';
 
 // copied from the browser, don't touch this innerHtml
 const innerHtmlCreationTest =
@@ -22,7 +22,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-// this test is not really necessary as createTargetString() only calls createTargetList() and
+// this test is not really necessary as createTextSelectors() only calls createTargetList() and
 // then calls createXPath() with the return of createTargetList(). There are problems with
 // testing this function anyways as the dom is only set up once per test-suite, so only the first
 // test will succeed; subsequent test will fail, because of things being undefined as the tested functions
@@ -39,7 +39,7 @@ describe('creating a string containing all the xPaths of a target', () => {
     range.setStart(document.getElementById('w.134'), 0);
     range.setEnd(document.getElementById('w.134'), 1);
     selection.addRange(range);
-    const result = createTargetString(selection);
-    expect(result).toBe('');
+    const result = createTextSelectors(selection);
+    expect(result).toBe(null);
   });
 });

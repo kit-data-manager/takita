@@ -4,7 +4,7 @@ import * as bootstrap from 'bootstrap';
 import { encodeAnnoId } from '../../common/utils';
 import { selectAnnotation } from '../../common/annotationCard';
 import { collapseSidebar } from '../sidebar';
-import { createTargetString } from '../targetBuilding';
+import { createTextSelectors } from '../targetBuilding';
 import { pickTemplate } from '../../common/annotationCreation';
 import { possibleHighlightClasses } from '../../projectspecific';
 import { drawAnnos, removeStyles } from '../highlighting';
@@ -97,9 +97,9 @@ export function initializeTextEditor(_annotations, hooks = {}) {
  * @returns nothing. The return statement only cancels the function
  */
 export function annotateSelectedText(selection, annoJson, hooks = {}) {
-  const targetXPath = createTargetString(selection);
+  const targetXPath = createTextSelectors(selection);
 
-  // newXPath will be an empty string/a "falsy" variable, if the target could
+  // newXPath will be null/a "falsy" variable, if the target could
   // not be created and therefore this saveModification function will return
   if (targetXPath) {
     if (hooks.postTargetCreation) {
@@ -112,7 +112,13 @@ export function annotateSelectedText(selection, annoJson, hooks = {}) {
     // by the user
     const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('createAnnotation'));
     $modal.toggle();
-    pickTemplate(targetXPath, '', 'createAnnotationForm', 'pickAnnotationTemplateForm', 'annotationTemplate');
+    pickTemplate(
+      JSON.stringify(targetXPath),
+      '',
+      'createAnnotationForm',
+      'pickAnnotationTemplateForm',
+      'annotationTemplate',
+    );
 
     // resetting parameters, so no new annotation can be created without clicking on
     // the button at the sidebar, that enables annotation

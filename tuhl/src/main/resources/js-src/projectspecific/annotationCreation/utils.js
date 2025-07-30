@@ -24,7 +24,9 @@ export function makeAnnotationData(formvalue) {
     bodies: bodies,
   };
   if (document.getElementById('createAnnotationForm').getAttribute('data-annotation-targetcode') !== '') {
-    annotationData.svgCode = document.getElementById('createAnnotationForm').getAttribute('data-annotation-targetcode');
+    annotationData.selectors = JSON.parse(
+      document.getElementById('createAnnotationForm').getAttribute('data-annotation-targetcode'),
+    );
   }
   console.log('finished annotation data', annotationData);
 

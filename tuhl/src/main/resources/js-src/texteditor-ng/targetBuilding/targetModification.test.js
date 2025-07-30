@@ -189,11 +189,11 @@ describe('saving modification process', () => {
     expect(stoppedFunction).toBe(undefined);
     expect(oldSelectedText).toBe('nor st');
     expect(newSelectedText).toBe('nor stan');
-    // the test result should be 'concat(id("w.133"), " ", substring(id("w.134"), 1, 4))',
+    // the test results `value` should be 'concat(id("w.133"), " ", substring(id("w.134"), 1, 4))',
     // as the functions called by saveModificaiton() are tested and working properly.
     // But for in a test-environment the targetbuilding behaves differently as
     // the nodes don't have the proper 'innerText' propertiy
-    expect(targetXPath).toBe('id("w.133") | id("w.134")');
+    expect(targetXPath).toStrictEqual(JSON.stringify([{ type: 'XPathSelector', value: 'id("w.133") | id("w.134")' }]));
   });
 
   it('stops the modification process for an annotation when no text (only whitespace) is selected', () => {

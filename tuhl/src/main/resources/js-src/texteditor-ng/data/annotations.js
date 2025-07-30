@@ -133,7 +133,7 @@ export async function updateTargetData(anno, newTarget) {
 
   // update the target of an annotation (and the "purpose:describing" body, if it exists) by sending a put request
   const colorName = getColorNameFromEnumEntry(anno.color);
-  const annotationDataJson = { color: colorName, motivation: 'describing', svgCode: newTarget };
+  const annotationDataJson = { color: colorName, motivation: 'describing', selectors: newTarget };
 
   const url = window.CONTEXTPATH + 'editor_rest/annotations/' + idOfAnnotationToUpdate;
 

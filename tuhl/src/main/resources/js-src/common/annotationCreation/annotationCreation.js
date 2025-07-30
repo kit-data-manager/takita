@@ -13,13 +13,13 @@ import { getFormObjectCreateAnnotation, getFormObjectCreateBody } from '../../pr
  * creates the JSONForm and shows the modal to create an annotation based on
  * the given template
  *
- * @param {String} svgCode containing the target string (svgCode or xPath)
+ * @param {String} selectors containing the target string (svgCode or xPath)
  * @param {String} encodedId of the annotation
  * @param {String} createFormId
  * @param {String} pickFormId
  * @param {String} template for body or annotation creation
  */
-export function pickTemplate(svgCode, encodedId, createFormId, pickFormId, template) {
+export function pickTemplate(selectors, encodedId, createFormId, pickFormId, template) {
   // clear out forms and content from former submissions
   let pickContent = document.getElementById(pickFormId);
   while (pickContent.firstChild) {
@@ -49,8 +49,8 @@ export function pickTemplate(svgCode, encodedId, createFormId, pickFormId, templ
   }
 
   // stores targetcode in data attribute in case of annotation creation for shape
-  if (svgCode !== '') {
-    document.getElementById(createFormId).setAttribute('data-annotation-targetcode', svgCode);
+  if (selectors !== '') {
+    document.getElementById(createFormId).setAttribute('data-annotation-targetcode', selectors);
   }
 
   // creates dropdown from enum objects defined at the top
@@ -76,7 +76,7 @@ export async function createAnnotation(annotationData, hooks = {}) {
       pageId: annotationData.pageId,
       color: annotationData.color,
       motivation: annotationData.motivation,
-      svgCode: annotationData.svgCode,
+      selectors: annotationData.selectors,
     };
 
     const newAnnotation = await createAnnotationData(annotationCreationData);

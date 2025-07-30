@@ -286,10 +286,10 @@ export function createXPath(targetRangeList) {
  * get the xPath from a user selection
  *
  * @param {Selection} selection the text selected by the user as a selection object
- * @returns {String} the new xPath of the selection or an empty string (which is a "falsy" variable),
+ * @returns {JSONArray||null} the new xPath of the selection or null (which is a "falsy" variable),
  * if no text was selected
  */
-export function createTargetString(selection) {
+export function createTextSelectors(selection) {
   // check
   // - if the string is filled, because on a double click the first onmouseup
   // will have no selection and therefore no string. `selection.toString()` returns
@@ -310,7 +310,7 @@ export function createTargetString(selection) {
       window.MODE = window.MODE_CLASS.View;
       window.SELECTING_TEXT = false;
       console.log('No text selected, therefore early return.');
-      return '';
+      return null;
     } else {
       // targetRangeList holds all the nodes from the selection, that are <w> elements
       let targetRangeList = createTargetList(selection);
@@ -320,7 +320,8 @@ export function createTargetString(selection) {
       let targetXPath = createXPath(targetRangeList);
       console.log('Target/XPath of the selection: ', targetXPath);
 
-      return targetXPath;
+      const selectors = [{ type: 'XPathSelector', value: targetXPath }];
+      return selectors;
     }
   }
 }

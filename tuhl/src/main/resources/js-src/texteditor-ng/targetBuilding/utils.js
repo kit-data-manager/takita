@@ -239,7 +239,7 @@ export function showSaveTargetModal($modal, oldSelectedText, newSelectedText, ta
   $newSelectedTextContainer.append($newSelectedTextDiv);
 
   $modal.toggle();
-  $modal._element.dataset.newTargetXmlId = targetXPath;
+  $modal._element.dataset.newTargetXmlId = JSON.stringify(targetXPath);
   //modal.dataset.SelectedAnnotationId = selectedAnnotation.id;
 
   return $modal;

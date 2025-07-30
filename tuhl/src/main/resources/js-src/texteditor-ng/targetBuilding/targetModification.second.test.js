@@ -62,7 +62,7 @@ afterEach(() => {
   jest.clearAllMocks();
 });
 
-// The tested function (saveModification()) calls createTargetString(), which
+// The tested function (saveModification()) calls createTextSelectors(), which
 // calls createXPath() and createTargetList(). There are problems with
 // testing these function anyways as the dom is only set up once per test-suite, so only the first
 // test will succeed; subsequent test will fail, because of things being undefined as the tested functions
@@ -92,6 +92,6 @@ describe('saving modification process', () => {
     // as the functions called by saveModificaiton() are tested and working properly.
     // But for in a test-environment the targetbuilding behaves differently as
     // the nodes don't have the proper 'innerText' propertiy
-    expect(targetXPath).toBe('id("w.133") | id("w.134")');
+    expect(targetXPath).toStrictEqual(JSON.stringify([{ type: 'XPathSelector', value: 'id("w.133") | id("w.134")' }]));
   });
 });

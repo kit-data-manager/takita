@@ -4,7 +4,7 @@ import * as bootstrap from 'bootstrap';
 import { toggleButtonState, encodeAnnoId } from '../../common/utils';
 import { selectAnnotation } from '../../common/annotationCard';
 import { updateDisplay } from '../display';
-import { createTargetString } from './targetCreation';
+import { createTextSelectors } from './targetCreation';
 import {
   reduceWhitespaceInString,
   getContentOfSelection,
@@ -55,9 +55,9 @@ export function modifySelection(_event, annotation) {
  */
 export function saveModification(_event, selection, annotation) {
   // create new xPath
-  const newXPath = createTargetString(selection);
+  const newXPath = createTextSelectors(selection);
 
-  // newXPath will be an empty string/a "falsy" variable, if the target could
+  // newXPath will be null/a "falsy" variable, if the target could
   // not be created and therefore this saveModification function will return
   if (newXPath) {
     // store the selected text
