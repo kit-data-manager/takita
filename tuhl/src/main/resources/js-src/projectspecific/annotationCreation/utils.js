@@ -3,9 +3,10 @@
  * get content from the form and turn it into the data necessary for annotation creation (incl. target and bodies)
  *
  * @param {String} formvalue value of the JSONForm after a user submitted it/started the annotation creation process
+ * @param {[Object]} selectors array holding all the selectors
  * @returns {Object} the data for the annotation creation
  */
-export function makeAnnotationData(formvalue) {
+export function makeAnnotationData(formvalue, selectors) {
   // formvalue contains all the information from the jsonForm as a string
   console.log('value of the jsonForm/annotation creation modal', formvalue);
   let formDataJson = JSON.parse(formvalue);
@@ -23,10 +24,8 @@ export function makeAnnotationData(formvalue) {
     motivation: 'describing',
     bodies: bodies,
   };
-  if (document.getElementById('createAnnotationForm').getAttribute('data-annotation-targetcode') !== '') {
-    annotationData.selectors = JSON.parse(
-      document.getElementById('createAnnotationForm').getAttribute('data-annotation-targetcode'),
-    );
+  if (selectors) {
+    annotationData.selectors = selectors;
   }
   console.log('finished annotation data', annotationData);
 

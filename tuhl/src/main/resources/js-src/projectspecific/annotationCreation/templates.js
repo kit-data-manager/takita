@@ -31,10 +31,15 @@ const bodyTemplate = {
   TEXTBODY: 'textbody',
 };
 
-// template for jsonForm object to create new annotation
-// upon choosing the corresponding MetadataEditor CREATE form is built
-// create button sends the information to the REST controller
-export function getFormObjectCreateAnnotation() {
+/**
+ * returns the ui form for the jsonForm object to create new annotation.
+ * Upon choosing the corresponding MetadataEditor CREATE form is built
+ * create button sends the information to the REST controller
+ *
+ * @param {[Object]} selectors array holding all the selectors
+ * @returns {JSON} the ui form
+ */
+export function getFormObjectCreateAnnotation(selectors) {
   return {
     // adding blank first option, to allow the functionalities on change
     schema: {
@@ -72,7 +77,7 @@ export function getFormObjectCreateAnnotation() {
           // otherwise create annotation with bodies according to template values
           $('#createAnnotationForm').metadataeditorForm(options, async function onSubmitValid(formvalue) {
             // formvalue contains all the information from the jsonForm as a string
-            const annotationData = makeAnnotationData(formvalue);
+            const annotationData = makeAnnotationData(formvalue, selectors);
             // eslint-disable-next-line no-unused-vars
             const annotation = await createAnnotation(annotationData, hooks);
           });
@@ -83,11 +88,16 @@ export function getFormObjectCreateAnnotation() {
   };
 }
 
-// template for jsonForm object to create new body
-// upon choosing the corresponding MetadataEditor CREATE form is built
-// create button sends the information to the REST controller (bodies/tags)
-// depending on the chosen template
-export function getFormObjectCreateBody() {
+/**
+ * returns ui form for the jsonForm  object to create new body
+ * upon choosing the corresponding MetadataEditor CREATE form is built
+ * create button sends the information to the REST controller (bodies/tags)
+ * depending on the chosen template
+ *
+ * @param {String} encodedAnnoId encoded id of the annotation
+ * @returns {JSON} the ui form
+ */
+export function getFormObjectCreateBody(encodedAnnoId) {
   return {
     // adding blank first option, to allow the functionalities on change
     schema: {
@@ -130,7 +140,6 @@ export function getFormObjectCreateBody() {
 
           $('#createForm').metadataeditorForm(options, async function onSubmitValid(value) {
             let jsonObject = JSON.parse(value);
-            const annotationId = document.getElementById('annotationCard').getAttribute('data-annotation-id');
             //console.log(value);
             //console.log(jsonObject);
 
@@ -140,7 +149,7 @@ export function getFormObjectCreateBody() {
                 if (jsonObject.purpose) {
                   // preventing creation of a body without a value
                   if (jsonObject.value) {
-                    await createBodyData(annotationId, jsonObject);
+                    await createBodyData(encodedAnnoId, jsonObject);
                   } else {
                     throw new Error('No value given in: ', jsonObject);
                   }
@@ -149,7 +158,7 @@ export function getFormObjectCreateBody() {
                   // trigger the body creation according to the template for each body
                   for (let body of bodies) {
                     // eslint-disable-next-line no-unused-vars
-                    const newBody = await createBodyData(annotationId, body);
+                    const newBody = await createBodyData(encodedAnnoId, body);
                   }
                 }
 
@@ -157,7 +166,7 @@ export function getFormObjectCreateBody() {
                 const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('createBody'));
                 $modal.toggle();
 
-                window.SELECTED_ANNOTATION = await selectAnnotation(null, annotationId, hooks);
+                window.SELECTED_ANNOTATION = await selectAnnotation(null, encodedAnnoId, hooks);
               } catch (exception) {
                 console.error('Adding another body failed with: ', exception);
               }

@@ -13,13 +13,13 @@ import { getFormObjectCreateAnnotation, getFormObjectCreateBody } from '../../pr
  * creates the JSONForm and shows the modal to create an annotation based on
  * the given template
  *
- * @param {String} selectors containing the target string (svgCode or xPath)
- * @param {String} encodedId of the annotation
+ * @param {[Object]} selectors array containing the selector objects
+ * @param {String} encodedAnnoId encoded id of the annotation
  * @param {String} createFormId
  * @param {String} pickFormId
  * @param {String} template for body or annotation creation
  */
-export function pickTemplate(selectors, encodedId, createFormId, pickFormId, template) {
+export function pickTemplate(selectors, encodedAnnoId, createFormId, pickFormId, template) {
   // clear out forms and content from former submissions
   let pickContent = document.getElementById(pickFormId);
   while (pickContent.firstChild) {
@@ -43,21 +43,11 @@ export function pickTemplate(selectors, encodedId, createFormId, pickFormId, tem
   //   }
   // }
 
-  // stores annotation id in data attribute in case of body creation
-  if (encodedId !== '') {
-    document.getElementById(createFormId).setAttribute('data-annotation-id', encodedId);
-  }
-
-  // stores targetcode in data attribute in case of annotation creation for shape
-  if (selectors !== '') {
-    document.getElementById(createFormId).setAttribute('data-annotation-targetcode', selectors);
-  }
-
   // creates dropdown from enum objects defined at the top
   if (template === 'bodyTemplate') {
-    $('#' + pickFormId).jsonForm(getFormObjectCreateBody());
+    $('#' + pickFormId).jsonForm(getFormObjectCreateBody(encodedAnnoId));
   } else {
-    $('#' + pickFormId).jsonForm(getFormObjectCreateAnnotation());
+    $('#' + pickFormId).jsonForm(getFormObjectCreateAnnotation(selectors));
   }
 }
 
@@ -141,5 +131,4 @@ export async function resetFormAndUpdateDisplay(annotation, hooks = {}) {
   // );
   //document.getElementById('createRectangleButton').parentElement.classList.remove('active');
   //document.getElementById('createPolygonButton').parentElement.classList.remove('active');
-  document.getElementById('createAnnotationForm').removeAttribute('data-annotation-id');
 }

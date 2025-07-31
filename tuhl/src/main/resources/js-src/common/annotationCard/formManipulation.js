@@ -69,7 +69,7 @@ export function createAndAppendAnnotationForm($annotationDiv, annotationData, he
  * @param {Array} omitFields holds fields that should not be rendered
  * @param {Array} editableFields holds fields that should not be editeable
  * @param {Object} formDataModel used while creating the annotation form
- * @param {String} annotationId id of the annotation
+ * @param {String} encodedAnnoId encoded id of the annotation
  * @param {Object} [hooks] containing an array for the hook to be called at "preHorizontalCreation" and
  * at "selectAnnotation" after a body update.
  */
@@ -78,7 +78,7 @@ export async function createAndAppendBodyForms(
   omitFields,
   editableFields,
   formDataModel,
-  annotationId,
+  encodedAnnoId,
   hooks = {},
 ) {
   // create the two JSONForms and append them
@@ -86,7 +86,7 @@ export async function createAndAppendBodyForms(
   // using Destructuring assignment here, see:
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
   const [formBodyDataModel, uiForm] = getFormBodyDataModelAndUiForm(body, omitFields, formDataModel);
-  createAndAppendBodyForm(formBodyDataModel, uiForm, body, hooks);
+  createAndAppendBodyForm(formBodyDataModel, uiForm, body, encodedAnnoId, hooks);
   // create the hoirzontal ("quick view") JSONForm
   let [operationHorizontal, formBodyDataModelHorizontal, uiFormHorizontal] = getFormBodyDataModelAndUiFormHorizontal(
     body,
@@ -105,7 +105,7 @@ export async function createAndAppendBodyForms(
         operationHorizontal,
         formBodyDataModelHorizontal,
         uiFormHorizontal,
-        annotationId,
+        encodedAnnoId,
         body,
       );
     }
@@ -116,6 +116,7 @@ export async function createAndAppendBodyForms(
     formBodyDataModelHorizontal,
     uiFormHorizontal,
     modifiedBody,
+    encodedAnnoId,
     hooks,
   );
 }
@@ -127,13 +128,13 @@ export async function createAndAppendBodyForms(
  * @param {Object} formBodyDataModel the dataModel used by JSONForms
  * @param {Object} uiForm the uiForm used by JSONForms
  * @param {Object} body the body as JSON
+ * @param {String} encodedAnnoId encoded id of the annotation
  * @param {Object} [hooks] containing an array for the hook to be called at "selectAnnotation" after a body update.
  */
-export function createAndAppendBodyForm(formBodyDataModel, uiForm, body, hooks = {}) {
+export function createAndAppendBodyForm(formBodyDataModel, uiForm, body, encodedAnnoId, hooks = {}) {
   const options = { operation: 'UPDATE', dataModel: formBodyDataModel, uiForm: uiForm, resource: body };
   $('#form' + body.id).metadataeditorForm(options, async function onSubmitValid(value) {
-    const annoId = document.getElementById('annotationCard').getAttribute('data-annotation-id');
-    await updateBody(annoId, value, hooks);
+    await updateBody(encodedAnnoId, value, hooks);
   });
 }
 
@@ -145,6 +146,7 @@ export function createAndAppendBodyForm(formBodyDataModel, uiForm, body, hooks =
  * @param {Object} formBodyDataModelHorizontal the dataModel used by JSONForms
  * @param {Object} uiFormHorizontal the uiForm used by JSONForms
  * @param {Object} modifiedBody the body as JSON
+ * @param {String} encodedAnnoId encoded id of the annotation
  * @param {Object} [hooks] containing an array for the hook to be called at "selectAnnotation" after a body update.
  * @returns {Element} the horizontal form
  */
@@ -153,6 +155,7 @@ export function createAndAppendBodyFormHorizontal(
   formBodyDataModelHorizontal,
   uiFormHorizontal,
   modifiedBody,
+  encodedAnnoId,
   hooks = {},
 ) {
   const optionsHorizontal = {
@@ -162,8 +165,7 @@ export function createAndAppendBodyFormHorizontal(
     resource: modifiedBody,
   };
   $('#formHorizontal' + modifiedBody.id).metadataeditorForm(optionsHorizontal, async function onSubmitValid(value) {
-    const annoId = document.getElementById('annotationCard').getAttribute('data-annotation-id');
-    await updateBody(annoId, value, hooks);
+    await updateBody(encodedAnnoId, value, hooks);
   });
 
   let $horizontalForm = document.getElementById('formHorizontal' + modifiedBody.id);

@@ -97,11 +97,11 @@ export function initializeTextEditor(_annotations, hooks = {}) {
  * @returns nothing. The return statement only cancels the function
  */
 export function annotateSelectedText(selection, annoJson, hooks = {}) {
-  const targetXPath = createTextSelectors(selection);
+  const selectors = createTextSelectors(selection);
 
   // newXPath will be null/a "falsy" variable, if the target could
   // not be created and therefore this saveModification function will return
-  if (targetXPath) {
+  if (selectors) {
     if (hooks.postTargetCreation) {
       hooks.postTargetCreation.forEach((hook) => {
         hook(selection, annoJson);
@@ -112,13 +112,7 @@ export function annotateSelectedText(selection, annoJson, hooks = {}) {
     // by the user
     const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('createAnnotation'));
     $modal.toggle();
-    pickTemplate(
-      JSON.stringify(targetXPath),
-      '',
-      'createAnnotationForm',
-      'pickAnnotationTemplateForm',
-      'annotationTemplate',
-    );
+    pickTemplate(selectors, '', 'createAnnotationForm', 'pickAnnotationTemplateForm', 'annotationTemplate');
 
     // resetting parameters, so no new annotation can be created without clicking on
     // the button at the sidebar, that enables annotation
