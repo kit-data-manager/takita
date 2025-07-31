@@ -311,15 +311,23 @@ public class ExistAccessService implements IExistAccessService {
 		// going through the list backwards as we want to delete items from it and we don't want to
 		// mess up the iteration
 		for (int i = nodeList.getLength()-1; i >= 0; i--) {
-			// if node is  element or document fragment, check if its included in the given xPath.
+			// if node is element or document fragment, check whether itself or its descendants
+			// have an id which is present in the list of ids.
 			// textNodes etc. will be ignored.
 			if (nodeList.item(i).getNodeType() == 1 || nodeList.item(i).getNodeType() == 11) {
-				if (!isIncludedInIDList(nodeList.item(i), ids, xPathInstance)) {
+				// check if the node itself is included in the given xPath. If it is included
+				// continue with the next sibling to prevent child nodes to be deleted
+				if (selfIsIncludedInIDList(nodeList.item(i), ids)) {
+					continue;
+				}
+				// check if the nodes descendants are included in the given xPath.
+				// If not the node is deleted.
+				if (!descendantsAreIncludedInIDList(nodeList.item(i), ids, xPathInstance)) {
 					nodeList.item(i).getParentNode().removeChild(nodeList.item(i));
 					continue;
 				}
 			}
-			
+						
 			// recursively call this function to access every (child)node in the document
 			if (nodeList.item(i).hasChildNodes()) {
 				iterateNodeList(nodeList.item(i).getChildNodes(), ids, xPathInstance);
@@ -328,37 +336,58 @@ public class ExistAccessService implements IExistAccessService {
 	}
 
 	/**
-	 * check, if the nodes or its children's id is present in the list of ids. The decision is based on the
+	 * check, if the nodes id is present in the list of ids. The decision is based on the
+	 * presence of ids from the id-list in a node.
+	 * 
+	 * @param node to be checked
+	 * @param ids list of ids
+	 * @return boolean, true: if the node has any id from the nodelist;
+	 * false (default return): if the the node does not have any id from the nodelist
+	 */
+	private Boolean selfIsIncludedInIDList(Node node, List<String> ids) {
+		// i think i have to clone or stuff is getting weird.
+		// i think its because somehow the node still has connections to its parents
+		// and then the xpaths are acting up
+		Node clone = node.cloneNode(true);
+		
+		// check for every id, if it is present in the node. This is solely via the attributes
+		// of the node
+		for (String id : ids) {
+			// here we don't use xPath as we are only interested in one node. And can't even use
+			// xPath as for some reason using the xPath "//*[@xml:id='w.121']" on 
+			// the xml "<w xml:id="w.121">Blessed</w>" is returning nothing in java (in oxygen it correctly
+			// returns the node). so we have to check for some nodes (i think only for the
+			// "smallest" descendant) via the attributes as well.
+			for (int i = 0; i < node.getAttributes().getLength(); i++) {
+				if (node.getAttributes().item(i).getNodeValue().contentEquals(id)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * check, if the nodes children's id is present in the list of ids. The decision is based on the
 	 * result of an xPath, which is checking for the presence of ids in a node.
 	 * 
 	 * @param node to be checked
 	 * @param ids list of ids
 	 * @param xPathInstance used to evaluate an xPath, which is checking for the presence of an id
 	 * @return boolean, true: if the node or any of its children have any id from the nodelist;
-	 * false (default return): if the neither the node nor any of its children have any id from the nodelist
+	 * false (default return): if neither the node nor any of its children have any id from the nodelist
 	 * @throws XPathExpressionException
 	 */
-	private Boolean isIncludedInIDList(Node node, List<String> ids, XPath xPathInstance) throws XPathExpressionException {
+	private Boolean descendantsAreIncludedInIDList(Node node, List<String> ids, XPath xPathInstance) throws XPathExpressionException {
 		// i think i have to clone or stuff is getting weird.
 		// i think its because somehow the node still has connections to its parents
 		// and then the xpaths are acting up
 		Node clone = node.cloneNode(true);
 		
-		// check for every id, if it is present in the node. This is done via xPath and via the attributes
-		// of the nodes in some cases (see below)
+		// check for every id, if it is present in the node. This is done via xPath.
 		for (String id : ids) {
 			if ((Boolean) xPathInstance.compile("//*[@xml:id='"+ id +"']").evaluate(clone, XPathConstants.BOOLEAN)) {
 				return true;
-			} else {
-				// this else is necessary as for some reason using the xPath "//*[@xml:id='w.121']" on 
-				// the xml "<w xml:id="w.121">Blessed</w>" is returning nothing in java (in oxygen it correctly
-				// returns the node). so we have to check for some nodes (i think only for the
-				// "smallest" descendant) via the attributes as well.
-				for (int i = 0; i < node.getAttributes().getLength(); i++) {
-					if (node.getAttributes().item(i).getNodeValue().contentEquals(id)) {
-						return true;
-					}
-				}
 			}
 		}
 		return false;
