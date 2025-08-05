@@ -5,7 +5,12 @@ const annoData = [
     id: 'http://localhost/wap/sfb1475/philipp/takita/001e4e8b-632f-40cf-bb05-d8241878e02c',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F001e4e8b-632f-40cf-bb05-d8241878e02c',
-    svg: ['id("w.153")'],
+    svg: [
+      {
+        type: 'XPathSelector',
+        value: ['id("w.153")'],
+      },
+    ],
     visible: true,
     created: '2024-06-07T12:13:59Z',
     creator: 'dgss',
@@ -18,7 +23,12 @@ const annoData = [
     id: 'http://localhost/wap/sfb1475/philipp/takita/cf890431-414e-4323-869b-b66737a5f07e',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252Fcf890431-414e-4323-869b-b66737a5f07e',
-    svg: ['id("w.127")'],
+    svg: [
+      {
+        type: 'XPathSelector',
+        value: ['id("w.127")'],
+      },
+    ],
     visible: true,
     created: '2024-06-07T12:27:03Z',
     creator: 'asd',
@@ -31,7 +41,12 @@ const annoData = [
     id: 'http://localhost/wap/sfb1475/philipp/takita/33e435ac-4925-42b2-8507-8deddcfd2607',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F33e435ac-4925-42b2-8507-8deddcfd2607',
-    svg: ['id("w.127")'],
+    svg: [
+      {
+        type: 'XPathSelector',
+        value: ['id("w.127")'],
+      },
+    ],
     visible: true,
     created: '2024-06-07T12:27:42Z',
     creator: 'asd',
@@ -44,7 +59,12 @@ const annoData = [
     id: 'http://localhost/wap/sfb1475/philipp/takita/9616d37d-b4d5-4d7e-95b1-162d59768924',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F9616d37d-b4d5-4d7e-95b1-162d59768924',
-    svg: ['id("w.126")'],
+    svg: [
+      {
+        type: 'XPathSelector',
+        value: ['id("w.126")'],
+      },
+    ],
     visible: true,
     created: '2024-06-07T12:28:39Z',
     creator: 'asd',
@@ -57,7 +77,12 @@ const annoData = [
     id: 'http://localhost/wap/sfb1475/philipp/takita/02218c0d-7ee9-47d8-ba30-45c0cae6ffa6',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F02218c0d-7ee9-47d8-ba30-45c0cae6ffa6',
-    svg: ['id("w.125")'],
+    svg: [
+      {
+        type: 'XPathSelector',
+        value: ['id("w.125")'],
+      },
+    ],
     visible: true,
     created: '2024-06-07T12:29:54Z',
     creator: 'asd',
@@ -70,7 +95,12 @@ const annoData = [
     id: 'http://localhost/wap/sfb1475/philipp/takita/2c3861fb-ea4c-415d-8d74-cb9990174641',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F2c3861fb-ea4c-415d-8d74-cb9990174641',
-    svg: ['id("w.149")'],
+    svg: [
+      {
+        type: 'XPathSelector',
+        value: ['id("w.149")'],
+      },
+    ],
     visible: true,
     created: '2024-06-07T12:42:53Z',
     creator: 'asd',
@@ -83,7 +113,12 @@ const annoData = [
     id: 'http://localhost/wap/sfb1475/philipp/takita/631a742f-cf52-45cb-b546-d884c3736893',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F631a742f-cf52-45cb-b546-d884c3736893',
-    svg: ['id("w.159")'],
+    svg: [
+      {
+        type: 'XPathSelector',
+        value: ['id("w.159")'],
+      },
+    ],
     visible: true,
     created: '2024-06-07T12:43:57Z',
     creator: 'asd',
@@ -96,7 +131,12 @@ const annoData = [
     id: 'http://localhost/wap/sfb1475/philipp/takita/35bc0255-49a4-444c-8613-f3b183f64668',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F35bc0255-49a4-444c-8613-f3b183f64668',
-    svg: ['id("w.156")'],
+    svg: [
+      {
+        type: 'XPathSelector',
+        value: ['id("w.156")'],
+      },
+    ],
     visible: true,
     created: '2024-06-07T12:14:27Z',
     creator: 'dgss',
@@ -109,7 +149,12 @@ const annoData = [
     id: 'http://localhost/wap/sfb1475/philipp/takita/8ea4228b-a11b-4fcd-8dfa-96c5a167bbf4',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F8ea4228b-a11b-4fcd-8dfa-96c5a167bbf4',
-    svg: ['id("w.173")'],
+    svg: [
+      {
+        type: 'XPathSelector',
+        value: ['id("w.176")'],
+      },
+    ],
     visible: true,
     created: '2024-06-07T12:17:10Z',
     creator: 'asd',
@@ -122,7 +167,12 @@ const annoData = [
     id: 'http://localhost/wap/sfb1475/philipp/takita/7e8ea38c-3af3-4922-bcdb-baf75d1a5c0e',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F7e8ea38c-3af3-4922-bcdb-baf75d1a5c0e',
-    svg: ['id("w.130")'],
+    svg: [
+      {
+        type: 'XPathSelector',
+        value: ['id("w.130")'],
+      },
+    ],
     visible: true,
     created: '2024-06-07T12:26:02Z',
     creator: 'asd',
@@ -135,7 +185,12 @@ const annoData = [
     id: 'http://localhost/wap/sfb1475/philipp/takita/130c7a9c-5b2f-4967-a9fc-84d916286c98',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F130c7a9c-5b2f-4967-a9fc-84d916286c98',
-    svg: ['id("w.176")'],
+    svg: [
+      {
+        type: 'XPathSelector',
+        value: ['id("w.176")'],
+      },
+    ],
     visible: true,
     created: '2024-07-15T08:41:18Z',
     creator: 'asdasasd',
@@ -151,7 +206,12 @@ const annoData = [
     id: 'http://localhost/wap/sfb1475/philipp/takita/559bc4ab-193f-4bb6-a408-ac74ed72a820',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F559bc4ab-193f-4bb6-a408-ac74ed72a820',
-    svg: ['id("w.143")'],
+    svg: [
+      {
+        type: 'XPathSelector',
+        value: ['id("w.143")'],
+      },
+    ],
     color: '#ff8d00',
     visible: true,
     created: '2024-03-12T11:37:43Z',
@@ -168,7 +228,12 @@ const annoData = [
     id: 'http://localhost/wap/sfb1475/philipp/takita/9e6db9e5-edb7-452d-8bb1-c890a3ff99ad',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F9e6db9e5-edb7-452d-8bb1-c890a3ff99ad',
-    svg: ['substring(id("w.178"), 2, 1)'],
+    svg: [
+      {
+        type: 'XPathSelector',
+        value: ['substring(id("w.178"), 2, 1)'],
+      },
+    ],
     visible: true,
     created: '2024-10-09T12:10:50.908Z',
     creator: 'gf',
@@ -181,7 +246,12 @@ const annoData = [
     id: 'http://localhost/wap/sfb1475/philipp/takita/344ae33d-7c5a-403a-af7d-add5ea9df784',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F344ae33d-7c5a-403a-af7d-add5ea9df784',
-    svg: ['substring(id("w.166"),  3,  1)', 'id("w.167")', 'id("w.168")', 'substring(id("w.169"),  1,  1)'],
+    svg: [
+      {
+        type: 'XPathSelector',
+        value: ['substring(id("w.166"),  3,  1)', 'id("w.167")', 'id("w.168")', 'substring(id("w.169"),  1,  1)'],
+      },
+    ],
     color: '#ff8d00',
     visible: true,
     created: '2024-10-09T13:20:36.492Z',
@@ -195,7 +265,12 @@ const annoData = [
     id: 'http://localhost/wap/sfb1475/philipp/takita/920ea72c-f3c1-4245-ade3-8e99fa326d62',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F920ea72c-f3c1-4245-ade3-8e99fa326d62',
-    svg: ['id("w.194")'],
+    svg: [
+      {
+        type: 'XPathSelector',
+        value: ['id("w.194")'],
+      },
+    ],
     color: '#ff8d00',
     visible: true,
     created: '2024-10-09T13:49:58.305Z',

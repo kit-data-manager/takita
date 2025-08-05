@@ -83,7 +83,7 @@ describe('saving modification process', () => {
     const modal = document.getElementById('updateSelection');
     const oldSelectedText = document.getElementById('oldSelectedText').firstElementChild.innerHTML;
     const newSelectedText = document.getElementById('newSelectedText').firstElementChild.innerHTML;
-    const targetXPath = modal.dataset.newTargetCode;
+    const newSelectors = modal.dataset.newTargetCode;
 
     expect(stoppedFunction).toBe(undefined);
     expect(oldSelectedText).toBe('nor standeth');
@@ -92,6 +92,16 @@ describe('saving modification process', () => {
     // as the functions called by saveModificaiton() are tested and working properly.
     // But for in a test-environment the targetbuilding behaves differently as
     // the nodes don't have the proper 'innerText' propertiy
-    expect(targetXPath).toStrictEqual(JSON.stringify([{ type: 'XPathSelector', value: 'id("w.133") | id("w.134")' }]));
+    expect(newSelectors).toStrictEqual(
+      JSON.stringify([
+        { type: 'XPathSelector', value: 'id("w.133") | id("w.134")' },
+        {
+          type: 'TextQuoteSelector',
+          exact: 'nor stan',
+          prefix: '                                                  ',
+          suffix: ' standeth in the            sinners, nor sitteth i',
+        },
+      ]),
+    );
   });
 });

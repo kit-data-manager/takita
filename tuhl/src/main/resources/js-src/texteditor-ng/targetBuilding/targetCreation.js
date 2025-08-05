@@ -5,6 +5,11 @@ import {
   checkIsNodeOnWorkspace,
   getContentOfSelection,
   isSelectable,
+  getLeadingString,
+  getTrailingString,
+  getUniqueStringForElement,
+  insertDelimiterElements,
+  removeDelimiterElements,
 } from './utils';
 
 /**
@@ -312,16 +317,80 @@ export function createTextSelectors(selection) {
       console.log('No text selected, therefore early return.');
       return null;
     } else {
+      // create an array to store the selectors
+      const selectors = [];
+      // create xPath
       // targetRangeList holds all the nodes from the selection, that are <w> elements
       let targetRangeList = createTargetList(selection);
       console.log('Filled targetRangeList: ', targetRangeList);
-
       // targetXPath hold the xPath resolving to the elements in targeRangetList
       let targetXPath = createXPath(targetRangeList);
       console.log('Target/XPath of the selection: ', targetXPath);
+      const xPathselector = { type: 'XPathSelector', value: targetXPath };
+      selectors.push(xPathselector);
 
-      const selectors = [{ type: 'XPathSelector', value: targetXPath }];
+      // create textQuote
+      const textQuoteSelector = createTextQuoteSelector(
+        selection,
+        selectionRangeContents,
+        document.getElementById('textWorkspace'),
+      );
+      console.log(textQuoteSelector);
+      selectors.push(textQuoteSelector);
+
       return selectors;
     }
   }
+}
+
+/**
+ * takes a selection created by a user and extracts the exact String selected by the user
+ * and the leading (prefix) and trailing (suffix) characters to that exact String.
+ * **Important Note**: this interacts with the DOM by inserting nodes and replacing entire
+ * parts as well as altering the selection. Therefore, this should be handled with care and should
+ * always be calles LAST to prevent the sideeffects to affect the following code.
+ *
+ * @param {Selection} selection the selection that got created by a user, used to create the
+ * TextQuoteSelector
+ * @param {*} selectionRangeContents contents of all the ranges of the selection used to get
+ * the text content of the selection as this functions alters the DOM and the selection and
+ * thereby this text content is no longer available
+ * @param {Element} $text the element (usualy the "#TEI"-element), which holds all the text
+ * @returns {Object} holding all necessary information to create a TextQuoteSelector
+ */
+function createTextQuoteSelector(selection, selectionRangeContents, $text) {
+  // Strings to act as delimiters to mark the start and end of the selection.
+  // Both have to be unique so the content of $text can be split at the right positions
+  const leadingDelimiter = getUniqueStringForElement('1!-2§-3$', $text);
+  const trailingDelimiter = getUniqueStringForElement('2!-3§-4$', $text);
+  // desireed lenght of the leading String (prefix)
+  const leadingThreshold = 50;
+  // desireed lenght of the trailing String (suffix)
+  const trailingThreshold = 50;
+  // storing the original DOM fragment to restore it later
+  const originalText = $text.innerHTML;
+  console.log(selection, ' ;bf insert: ', selection.getRangeAt(0).cloneContents().textContent);
+
+  // inserting elements to at the beginning and at the end of the selection created by a user
+  // to split the text content of the $text element at these elements. This allows to get
+  // the leading and trailing characters to the users selection
+  const [$leading, $trailing] = insertDelimiterElements(
+    $text,
+    selection,
+    selectionRangeContents,
+    leadingDelimiter,
+    trailingDelimiter,
+  );
+  const leadingString = getLeadingString($text.textContent, leadingDelimiter, leadingThreshold);
+  const trailingString = getTrailingString($text.textContent, trailingDelimiter, trailingThreshold);
+  console.log(selection, ' ;bf remove: ', selection.getRangeAt(0).cloneContents().textContent);
+  // removing the inserted elements/reinstating the original DOM fragment
+  removeDelimiterElements($leading, $trailing, $text, originalText);
+  console.log(selection, ' ;af remove: ', selection.getRangeAt(0).cloneContents().textContent);
+  return {
+    type: 'TextQuoteSelector',
+    exact: selectionRangeContents.textContent,
+    prefix: leadingString,
+    suffix: trailingString,
+  };
 }

@@ -235,6 +235,13 @@ describe('get string containing the selected text/target of an annotation', () =
           purpose: 'describing',
         },
       ],
+      targets: [
+        {
+          selector: {
+            xPath: 'id("w.133") | id("w.134") | id("w.135")',
+          },
+        },
+      ],
     };
     const result = getSelectedTextOfAnnotation(annotation);
     expect(result).toStrictEqual(annotation.textCards[0].value);

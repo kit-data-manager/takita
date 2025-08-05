@@ -14,6 +14,7 @@ import edu.kit.datamanager.takita.model.body.TextCard;
 import edu.kit.datamanager.takita.model.page.Page;
 import edu.kit.datamanager.takita.model.target.SVGSelector;
 import edu.kit.datamanager.takita.model.target.Target;
+import edu.kit.datamanager.takita.model.target.TextQuoteSelector;
 import edu.kit.datamanager.takita.model.target.XPathSelector;
 
 import java.io.IOException;
@@ -118,6 +119,19 @@ public class EditorService implements IEditorService {
 		        	newTarget2.setSelector(newSVGSelector);
 		        	newAnnotation.addTarget(newTarget2);
 					break;
+				case "TextQuoteSelector":
+					Target newTarget3 = new Target();
+					String exactString = selectors.getJSONObject(i).getString("exact");
+					TextQuoteSelector newTextQuoteSelector = new TextQuoteSelector(exactString);
+					if (selectors.getJSONObject(i).getString("prefix") != null) {
+						newTextQuoteSelector.setPrefix(selectors.getJSONObject(i).getString("prefix"));
+					}
+					if (selectors.getJSONObject(i).getString("suffix") != null) {
+						newTextQuoteSelector.setSuffix(selectors.getJSONObject(i).getString("suffix"));
+					}
+		    		newTarget3.setType("TEXT");
+		        	newTarget3.setSelector(newTextQuoteSelector);
+		        	newAnnotation.addTarget(newTarget3);
 			}
     	}
     } else {
@@ -210,6 +224,20 @@ public class EditorService implements IEditorService {
 		    		newTarget2.setType("IMAGE");
 		        	newTarget2.setSelector(newSVGSelector);
 		        	newTargets.add(newTarget2);
+					break;
+				case "TextQuoteSelector":
+					Target newTarget3 = new Target(linkToResource);
+					String exactString = selectors.getJSONObject(i).getString("exact");
+					TextQuoteSelector newTextQuoteSelector = new TextQuoteSelector(exactString);
+					if (selectors.getJSONObject(i).getString("prefix") != null) {
+						newTextQuoteSelector.setPrefix(selectors.getJSONObject(i).getString("prefix"));
+					}
+					if (selectors.getJSONObject(i).getString("suffix") != null) {
+						newTextQuoteSelector.setSuffix(selectors.getJSONObject(i).getString("suffix"));
+					}
+		    		newTarget3.setType("TEXT");
+		        	newTarget3.setSelector(newTextQuoteSelector);
+		        	newTargets.add(newTarget3);
 					break;
 			}
     	}

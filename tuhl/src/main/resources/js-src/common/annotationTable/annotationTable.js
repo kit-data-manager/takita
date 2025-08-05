@@ -182,11 +182,17 @@ export function defaultDisplayAnnotationFunction(_event, cell, hooks) {
  * @param {Object} [hooks] containing an array for various hooks to be passed to initializeNavigation
  */
 export function textDisplayAnnotationFunction(_event, cell, hooks) {
+  const rowData = cell.getRow().getData();
   const $text = document.getElementById('TEI');
   const $navBarTop = document.getElementById('textNavBar');
   const $navBarLow = document.getElementById('textNavBarLow');
-  // get the Id of the first word of the target.  It has to be unpacked from 'id("w.123")' to 'w.123'
-  const fragmentId = cell.getRow().getData().svg?.[0].split('id("')[1].split('"')[0];
-  const annotationId = cell.getRow().getData().id;
+  // get the Id of the first word of the target. First find the xPathSelector and then
+  // unpack its value from 'id("w.123")' to 'w.123'
+  const xPathselector = rowData.svg?.filter((selectors) => selectors.type === 'XPathSelector')[0];
+  const fragmentId =
+    xPathselector.value instanceof Array
+      ? xPathselector.value[0].split('id("')[1].split('"')[0]
+      : xPathselector.value.split('id("')[1].split('"')[0];
+  const annotationId = rowData.id;
   initializeNavigation($navBarTop, $navBarLow, $text, fragmentId, annotationId, hooks);
 }

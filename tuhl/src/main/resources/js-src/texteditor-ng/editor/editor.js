@@ -99,8 +99,8 @@ export function initializeTextEditor(_annotations, hooks = {}) {
 export function annotateSelectedText(selection, annoJson, hooks = {}) {
   const selectors = createTextSelectors(selection);
 
-  // newXPath will be null/a "falsy" variable, if the target could
-  // not be created and therefore this saveModification function will return
+  // selectors will be null/a "falsy" variable, if the target could
+  // not be created and therefore this function will return
   if (selectors) {
     if (hooks.postTargetCreation) {
       hooks.postTargetCreation.forEach((hook) => {
@@ -161,8 +161,14 @@ function cycleAnnotations(_event, $element, annoJson, currentSelectedAnnotation)
     // add all the annotations targeting the selected word to an array
     annoJson.forEach((item) => {
       item.svg.forEach((target) => {
-        if ($element.id == target.split('"')[1]) {
-          annotationsOnTarget.push(item);
+        if (target.type === 'XPathSelector') {
+          if (
+            target.value instanceof Array
+              ? target.value.some((val) => val.split('"')[1] === $element.id)
+              : target.value.split('"')[1] === $element.id
+          ) {
+            annotationsOnTarget.push(item);
+          }
         }
       });
     });

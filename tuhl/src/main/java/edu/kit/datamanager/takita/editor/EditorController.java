@@ -150,7 +150,7 @@ public class EditorController {
         	// this check is necessary for "page"-annotations, which don't have a selector, i.e. which
         	// target the whole document/image
         	if (target.getSelector() != null) {
-        		targets.put(target.getSelector().toString());
+        		targets.put(target.getSelector().getWADMSerialization());
         	}
         }
         thisAnno.put("svg", targets);

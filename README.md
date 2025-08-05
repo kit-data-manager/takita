@@ -70,6 +70,10 @@ Set a custom source url for user repository. The default source url is `jdbc:h2:
 
 ## Changes from image annotation
 
+### Breaking changes for textEditor
+
+- the selector rework (using proper Objects instead of Strings starting from e2d895c16f747c61145b74e08bf7aa78d624ba7d), requires annotations to be updated, if they have more than one target
+
 Chronologically ordered from oldest to latest changes:
 
 - tAkita now distinguishes between manuscript and page DO´s by its "resourceType"/"value" instead of "resourceType"/"typeGeneral" (see [084d25f9b9ee34efc7849bdd0198d873be1ab0dc](https://git.scc.kit.edu/sfb980/takita/-/commit/084d25f9b9ee34efc7849bdd0198d873be1ab0dc))

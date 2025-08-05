@@ -29,6 +29,10 @@ public enum AnnotationStoreStrings {
   SELECTOR("selector"),
   SVG_SELECTOR("SvgSelector"),
   XPATH_SELECTOR("XPathSelector"),
+  TEXTQUOTESELECTOR_SELECTOR("TextQuoteSelector"),
+  EXACT("exact"),
+  PREFIX("prefix"),
+  SUFFIX("suffix"),
   SOURCE("source"),
   MOTIVATION("motivation"),
 

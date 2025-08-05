@@ -51,11 +51,23 @@ export function drawAnnos(annoJson) {
  * 
  */
 export function defaultHighlighting(annotation) {
-  annotation.svg.forEach((target) => {
-    const targetXmlId = target.split('"')[1];
-    const targetElement = document.getElementById(targetXmlId);
-    targetElement.classList.add('defaulthighlight');
-    targetElement.classList.add('selected');
+  annotation.svg.forEach((selector) => {
+    switch (selector.type) {
+      case 'XPathSelector': {
+        const values = selector.value instanceof Array ? selector.value : [selector.value];
+        values.forEach((value) => {
+          const targetXmlId = value.split('"')[1];
+          const targetElement = document.getElementById(targetXmlId);
+          targetElement.classList.add('defaulthighlight');
+          targetElement.classList.add('selected');
+        });
+
+        break;
+      }
+      case 'TextQuoteSelector':
+        console.warn('Implement textQuoteSelector highlighting pls');
+        break;
+    }
   });
 }
 
@@ -71,8 +83,12 @@ export function highlightSelectedAnnotationsTarget(selectedAnnotation, $text) {
   // add a class to all the targets of the selected annotation, if an annotation is selected
   if (selectedAnnotation) {
     selectedAnnotation.targets.forEach((target) => {
-      const targetId = target.selector.xPath.split('"')[1];
-      $text.querySelector('#' + escapeSelector(targetId)).classList.add('selected');
+      if (target.selector?.exact) {
+        console.warn('Implement textQuoteSelector highlighting for selectedAnnotaiton pls');
+      } else {
+        const targetId = target.selector.xPath.split('"')[1];
+        $text.querySelector('#' + escapeSelector(targetId)).classList.add('selected');
+      }
     });
   }
 }

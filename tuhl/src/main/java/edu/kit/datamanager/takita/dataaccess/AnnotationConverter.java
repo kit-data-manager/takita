@@ -7,6 +7,7 @@ import edu.kit.datamanager.takita.model.body.Tag;
 import edu.kit.datamanager.takita.model.body.TextCard;
 import edu.kit.datamanager.takita.model.target.SVGSelector;
 import edu.kit.datamanager.takita.model.target.Target;
+import edu.kit.datamanager.takita.model.target.TextQuoteSelector;
 import edu.kit.datamanager.takita.model.target.XPathSelector;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -307,21 +308,34 @@ public class AnnotationConverter {
 		  Target target = new Target(linkToResource);
 		  
 		  if (targetJson.has(AnnotationStoreStrings.SELECTOR.getName())
-				  && targetJson.getJSONObject(AnnotationStoreStrings.SELECTOR.getName()).has(AnnotationStoreStrings.TYPE.getName())) {
-			  if (targetJson.getJSONObject(AnnotationStoreStrings.SELECTOR.getName()).
-					  getString(AnnotationStoreStrings.TYPE.getName()).
+				  && targetJson.getJSONObject(AnnotationStoreStrings.SELECTOR.getName()).
+				  has(AnnotationStoreStrings.TYPE.getName())) {
+			  JSONObject selector = targetJson.getJSONObject(AnnotationStoreStrings.SELECTOR.getName());
+			  if (selector.getString(AnnotationStoreStrings.TYPE.getName()).
 					  equals(AnnotationStoreStrings.XPATH_SELECTOR.getName())) {
-				  XPathSelector xPathSelector = new XPathSelector(targetJson.
-						  getJSONObject(AnnotationStoreStrings.SELECTOR.getName()).
+				  XPathSelector xPathSelector = new XPathSelector(selector.
 						  getString(AnnotationStoreStrings.VALUE.getName()));
 				  target.setSelector(xPathSelector);
 				  target.setType("TEXT");
 			  }
-			  if (targetJson.getJSONObject(AnnotationStoreStrings.SELECTOR.getName()).
-					  getString(AnnotationStoreStrings.TYPE.getName()).
+			  if (selector.getString(AnnotationStoreStrings.TYPE.getName()).
+					  equals(AnnotationStoreStrings.TEXTQUOTESELECTOR_SELECTOR.getName())) {
+				  TextQuoteSelector textQuoteSelector = new TextQuoteSelector(selector.
+						  getString(AnnotationStoreStrings.EXACT.getName()));
+					if (selector.has(AnnotationStoreStrings.PREFIX.getName())) {
+						textQuoteSelector.setPrefix(selector.
+								  getString(AnnotationStoreStrings.PREFIX.getName()));
+					}
+					if (selector.has(AnnotationStoreStrings.SUFFIX.getName())) {
+						textQuoteSelector.setSuffix(selector.
+								  getString(AnnotationStoreStrings.SUFFIX.getName()));
+					}
+				  target.setSelector(textQuoteSelector);
+				  target.setType("TEXT");
+			  }
+			  if (selector.getString(AnnotationStoreStrings.TYPE.getName()).
 					  equals(AnnotationStoreStrings.SVG_SELECTOR.getName())) {
-				  SVGSelector svgSelector = new SVGSelector(targetJson.
-						  getJSONObject(AnnotationStoreStrings.SELECTOR.getName()).
+				  SVGSelector svgSelector = new SVGSelector(selector.
 						  getString(AnnotationStoreStrings.VALUE.getName()));
 				  target.setSelector(svgSelector);
 				  target.setType("IMAGE");
@@ -596,7 +610,7 @@ public class AnnotationConverter {
 				break;
 			default:
 				// TODO: this should throw an exception
-				System.out.println("Target is neither an image or a text file.");
+				logger.error("Target is neither an image or a text file.");
 				break;
 		}
 //		if (target.getType().equals("TEXT")){

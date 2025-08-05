@@ -46,7 +46,7 @@ export function modifySelection(_event, annotation) {
 
 /**
  * function called by an eventHandler attached to `document.getElementById('buttonSaveModification')`
- * to get store the new/old selected text and create the new Xpath during the process of updating
+ * to get and store the new/old selected text and create the new selectors during the process of updating
  * the target of an annotation
  *
  * @param {Event} _event
@@ -54,21 +54,25 @@ export function modifySelection(_event, annotation) {
  * @param {JSONObject} annotation the curretnly selected annotation, which will have its target updated
  */
 export function saveModification(_event, selection, annotation) {
-  // create new xPath
-  const newXPath = createTextSelectors(selection);
+  // TODO: this should be inside the if-clause, but somehow the selection gets alters
+  // by the creation of the textQuoteSelector
+  const selectionRangeContents = getContentOfSelection(selection);
+  const newSelectedText = reduceWhitespaceInString(selectionRangeContents.textContent);
 
-  // newXPath will be null/a "falsy" variable, if the target could
+  // create new selectors
+  const newSelectors = createTextSelectors(selection);
+  // selectors will empty, if the target could
   // not be created and therefore this saveModification function will return
-  if (newXPath) {
+  if (newSelectors?.length > 0) {
     // store the selected text
     const oldSelectedText = getSelectedTextOfAnnotation(annotation);
-    const selectionRangeContents = getContentOfSelection(selection);
-    const newSelectedText = reduceWhitespaceInString(selectionRangeContents.textContent);
+    // const selectionRangeContents = getContentOfSelection(selection);
+    // const newSelectedText = reduceWhitespaceInString(selectionRangeContents.textContent);
 
     // ask user if the new selection should be saved in a modal
     // create and show the modal used to save the new target
     const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('updateSelection'));
-    showSaveTargetModal($modal, oldSelectedText, newSelectedText, newXPath);
+    showSaveTargetModal($modal, oldSelectedText, newSelectedText, newSelectors);
   } else {
     return false;
   }
@@ -83,18 +87,25 @@ export function saveModification(_event, selection, annotation) {
  * @param {Function} targetUpdateCallback the callback to be executed. It is either updateTargetAndBodyData
  * or updateTargetData.
  * @param {JSONObject} annotation the curretnly selected annotation, which will have its target updated
- * @param {String} targetXPath the new xPath
+ * @param {[JSONObject]} newSelectors the new selectors (might be xPath and/or textQuote)
  * @param {String} newSelectedText the new selected text
  * @param {Object} [hooks] containing an array for the hooks to be passed to "selectAnnotation()"
  * @returns {Boolean} true, if the body was succesfully updated, false, if the update failed
  */
-export async function updateTarget(_event, targetUpdateCallback, annotation, targetXPath, newSelectedText, hooks = {}) {
+export async function updateTarget(
+  _event,
+  targetUpdateCallback,
+  annotation,
+  newSelectors,
+  newSelectedText,
+  hooks = {},
+) {
   // update the target (and body depending on the callback)
   let targetUpdated = false;
   try {
     // update the target (and body depending on the callback)
     // eslint-disable-next-line no-unused-vars
-    const response = await targetUpdateCallback(annotation, targetXPath, newSelectedText);
+    const response = await targetUpdateCallback(annotation, newSelectors, newSelectedText);
     targetUpdated = true;
 
     // hide modal

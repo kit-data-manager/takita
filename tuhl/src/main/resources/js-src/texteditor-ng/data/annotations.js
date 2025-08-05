@@ -124,16 +124,16 @@ export async function updateBodyData(annoId, newBody) {
  * Helper/facade for network/annotation.js for the fetch call to update a target
  *
  * @param {Object} anno the annotation to be updated
- * @param {String} newTarget containing the new target (svg code or xPath)
- * @throws {Exception} if the tsrget wasn't updated
+ * @param {[JSONObject]} newSelectors the new selectors (might be xPath and/or textQuote)
+ * @throws {Exception} if the target wasn't updated
  * @returns {Response} of the update request
  */
-export async function updateTargetData(anno, newTarget) {
+export async function updateTargetData(anno, newSelectors) {
   const idOfAnnotationToUpdate = encodeAnnoId(anno.id);
 
   // update the target of an annotation (and the "purpose:describing" body, if it exists) by sending a put request
   const colorName = getColorNameFromEnumEntry(anno.color);
-  const annotationDataJson = { color: colorName, motivation: 'describing', selectors: newTarget };
+  const annotationDataJson = { color: colorName, motivation: 'describing', selectors: newSelectors };
 
   const url = window.CONTEXTPATH + 'editor_rest/annotations/' + idOfAnnotationToUpdate;
 

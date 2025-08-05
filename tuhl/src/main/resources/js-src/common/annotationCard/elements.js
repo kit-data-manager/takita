@@ -411,9 +411,9 @@ function appendTextTargetModificationButtons(annotationData, $annotationDiv, hoo
       // and the newly selected text stored in the 'newSelectedText' element
       // TODO: fix, when it goes into production, bc then the innerHTML will only be
       // the selected text without any "|"s
-      const newXPath = JSON.parse(document.getElementById('updateSelection').dataset.newTargetCode);
+      const newSelectors = JSON.parse(document.getElementById('updateSelection').dataset.newTargetCode);
       const newSelectedText = document.getElementById('newSelectedText').children[0].innerHTML.split('|')[0];
-      updateTarget(event, targetUpdateCallback, annotationData, newXPath, newSelectedText, hooks);
+      updateTarget(event, targetUpdateCallback, annotationData, newSelectors, newSelectedText, hooks);
     };
   }
 
