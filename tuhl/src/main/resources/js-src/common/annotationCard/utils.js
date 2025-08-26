@@ -2,6 +2,7 @@ import { getAnnotationData, deleteAnnotationData, deleteBodyData, updateBodyData
 import { makeTargetsCompatible, checkIsTargetCompatible } from '../../texteditor-ng/utils';
 import { removeStyles } from '../../texteditor-ng/highlighting';
 import { updateDisplay } from '../../texteditor-ng/display';
+import { initializeAnnotationTable } from '../annotationTable';
 import { toggleVisibility } from '../utils';
 import { selectAnnotation } from './annotationCard';
 // data manipulation
@@ -162,9 +163,9 @@ export async function deleteAnnotation(annoId, hooks = {}) {
       // checking if paper is defined. it is defined for image annotation,
       // but not for text annotation
       // eslint-disable-next-line no-undef
-      if (window.PAPER != undefined) {
+      if (window.paper != undefined) {
         // eslint-disable-next-line no-undef
-        window.PAPER.forEach(function (element) {
+        window.paper.forEach(function (element) {
           if (element.annoId === annoId) {
             element.remove();
           }
@@ -191,15 +192,17 @@ export async function deleteAnnotation(annoId, hooks = {}) {
 
       // maybe move it within the if clause?
       //console.log(annoJson);
-      // TODO: previuosly fillMetaDataEditorTable() was used. When modularizing the imageEditor
-      // uncomment the next line and import the corresponding function. The textEditor doesn't
-      // need it, as the function is included in updateDisplay()
-      // initializeAnnotationTable(
-      //   window.ANNOJSON,
-      //   document.getElementById('annotationTableBottom'),
-      //   document.getElementById('annotationCard'),
-      //   hooks,
-      // );
+      if (window.EDITORTYPE == 'IMAGE') {
+        // The textEditor doesn't need the following, as the function is included in updateDisplay()
+        initializeAnnotationTable(
+          window.ANNOJSON,
+          document.getElementById('annotationTableBottom'),
+          document.getElementById('annotationCard'),
+          hooks,
+        );
+        document.getElementById('createRectangleButton').parentElement.classList.remove('active');
+        document.getElementById('createPolygonButton').parentElement.classList.remove('active');
+      }
     } catch (exception) {
       console.error(exception);
       confirmation = false;

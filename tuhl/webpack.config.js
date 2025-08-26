@@ -22,6 +22,7 @@ module.exports = {
     //'js/texteditor.js': path.resolve(srcPath, './texteditor/index.js'),
     // jquery/jsonForm test module:'js/jQueryPluginTest.js': path.resolve(srcPath, './jQueryPluginTest/index.js'),
     'js/texteditor-ng.js': path.resolve(srcPath, './texteditor-ng/index.js'),
+    'js/imageeditor-ng.js': path.resolve(srcPath, './imageeditor-ng/index.js'),
   },
   output: {
     path: path.resolve(dstPath),

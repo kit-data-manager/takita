@@ -8,7 +8,7 @@ import { updateDisplay } from '../../texteditor-ng/display';
 import { selectAnnotation } from '../annotationCard';
 import { createBodyData, createAnnotationData, getAnnotationData } from '../../texteditor-ng/data/annotations';
 import { getFormObjectCreateAnnotation, getFormObjectCreateBody } from '../../projectspecific';
-
+import { initializeAnnotationTable } from '../annotationTable';
 /**
  * creates the JSONForm and shows the modal to create an annotation based on
  * the given template
@@ -120,15 +120,15 @@ export async function resetFormAndUpdateDisplay(annotation, hooks = {}) {
     toggleVisibility($annotationCard);
   }
 
-  // TODO: previuosly fillMetaDataEditorTable() was used. When modularizing the imageEditor
-  // uncomment the next line and import the corresponding function. The textEditor doesn't
-  // need it, as the function is included in updateDisplay()
-  // initializeAnnotationTable(
-  //   window.ANNOJSON,
-  //   document.getElementById('annotationTableBottom'),
-  //   document.getElementById('annotationCard'),
-  //   hooks,
-  // );
-  //document.getElementById('createRectangleButton').parentElement.classList.remove('active');
-  //document.getElementById('createPolygonButton').parentElement.classList.remove('active');
+  if (window.EDITORTYPE == 'IMAGE') {
+    // The textEditor doesn't need the following, as the function is included in updateDisplay()
+    initializeAnnotationTable(
+      window.ANNOJSON,
+      document.getElementById('annotationTableBottom'),
+      document.getElementById('annotationCard'),
+      hooks,
+    );
+    document.getElementById('createRectangleButton').parentElement.classList.remove('active');
+    document.getElementById('createPolygonButton').parentElement.classList.remove('active');
+  }
 }
