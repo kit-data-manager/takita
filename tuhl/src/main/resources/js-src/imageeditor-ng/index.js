@@ -24,7 +24,7 @@ window.movingImage = false;
 window.paper;
 window.MODE_CLASS = Mode;
 window.MODE = window.MODE_CLASS.View;
-window.EDITORTYPE == 'IMAGE';
+window.EDITORTYPE = 'IMAGE';
 window.ANNOJSON;
 
 // local state
