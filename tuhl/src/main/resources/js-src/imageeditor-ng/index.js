@@ -42,7 +42,7 @@ window.imageEditor = {
   initializeImageEditorComponent,
 };
 
-function initializeImageEditorComponent(annotations) {
+function initializeImageEditorComponent(annotations, thymeleafVariables) {
   // enable tooltips using bootstrap
   const $tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
   enableTooltips($tooltipTriggerList);

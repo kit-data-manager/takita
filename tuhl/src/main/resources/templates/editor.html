@@ -54,65 +54,104 @@
 
   <div class="features-list">
       <div class="category-header">View Mode</div>
-    <li class="features-item draft">
-      <i id="zoomInButton" title="Zoom In" class="bx bx-zoom-in features-item-icon"></i>
-      <span id="zoomInSpan" class="features-item-text annocollapse">Zoom In</span>
+    <li class="features-item draft"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.increase_imageSize}">
+      <i id="zoomInButton" class="bx bx-zoom-in features-item-icon"></i>
+      <span id="zoomInSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.increase_imageSize}">Zoom In</span>
     </li>
-    <li class="features-item draft">
-      <i id="zoomOutButton" title="Zoom Out" class="bx bx-zoom-out features-item-icon"></i>
-      <span id="zoomOutSpan" class="features-item-text annocollapse">Zoom Out</span>
+    <li class="features-item draft"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.decrease_imageSize}">
+      <i id="zoomOutButton" class="bx bx-zoom-out features-item-icon"></i>
+      <span id="zoomOutSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.decrease_imageSize}">Zoom Out</span>
     </li>
-    <li class="features-item draft">
-      <i id="moveImageButton" title="Move Image" class="bx bx-move features-item-icon"></i>
-      <span id="moveImageSpan" class="features-item-text annocollapse">Move Image</span>
+    <li class="features-item draft"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.move_image}">
+      <i id="moveImageButton" class="bx bx-move features-item-icon"></i>
+      <span id="moveImageSpan" class="features-item-text annocollapse"
+         th:text="#{tooltips.move_image}">Move Image</span>
     </li>
-    <li class="features-item draft">
-      <i id="hideShapeButton" title="Hide Shape" class="bx bx-low-vision features-item-icon"></i>
-      <span id="hideShapeSpan" class="features-item-text annocollapse">Hide Shape</span>
+    <li class="features-item draft"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.hide_shape}">
+      <i id="hideShapeButton" class="bx bx-low-vision features-item-icon"></i>
+      <span id="hideShapeSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.hide_shape}">Hide Shape</span>
     </li>
-    <li class="features-item draft">
-      <i id="resetViewButton" title="Reset View" class="bx bx-reset features-item-icon"></i>
-      <span id="resetViewSpan" class="features-item-text annocollapse">Reset View</span>
+    <li class="features-item draft"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.reset_view}">
+      <i id="resetViewButton" class="bx bx-reset features-item-icon"></i>
+      <span id="resetViewSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.reset_view}">Reset View</span>
     </li>
 </div>
   <div class="features-list">
       <div class="category-header">Create Mode</div>
-    <li class="features-item draft">
-      <i id="createRectangleButton" title="Create Square" class="bx bx-shape-square features-item-icon"></i>
-      <span id="createRectangleSpan" class="features-item-text annocollapse">Create Square</span>
+    <li class="features-item draft"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.create_square}">
+      <i id="createRectangleButton" class="bx bx-shape-square features-item-icon"></i>
+      <span id="createRectangleSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.create_square}">Create Square</span>
     </li>
-    <li class="features-item draft">
-      <i id="createPolygonButton" title="Create Polygon" class="bx bx-shape-polygon features-item-icon"></i>
-      <span id="createPolygonSpan" class="features-item-text annocollapse">Create Polygon</span>
+    <li class="features-item draft"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.create_polygon}">
+      <i id="createPolygonButton" class="bx bx-shape-polygon features-item-icon"></i>
+      <span id="createPolygonSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.create_polygon}">Create Polygon</span>
     </li>
-    <li class="features-item draft">
-      <i id="createPageAnnoButton" title="Create Annotation" class="bx bx-note features-item-icon"></i>
-      <span id="createPageAnnoSpan" class="features-item-text annocollapse">Create Annotation</span>
+    <li class="features-item draft"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.create_pageAnnotation}">
+      <i id="createPageAnnoButton" class="bx bx-note features-item-icon"></i>
+      <span id="createPageAnnoSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.create_pageAnnotation}">Create Annotation</span>
     </li>
 </div>
    <div class="features-list">
        <div class="category-header">Modify Mode</div>
-    <li class="features-item star">
-      <i id="modifyButton" title="Modify Shape" class="bx bx-edit features-item-icon"></i>
-      <span id="modifySpan" class="features-item-text annocollapse">Modify Shape</span>
+    <li class="features-item star"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.modify_shape}">
+      <i id="modifyButton" class="bx bx-edit features-item-icon"></i>
+      <span id="modifySpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.modify_shape}">Modify Shape</span>
     </li>
-    <li class="features-item star">
-      <i id="undoButton" title="Undo" class="bx bx-undo features-item-icon"></i>
-      <span id="undoSpan" class="features-item-text annocollapse">Undo</span>
+    <li class="features-item star"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.undo}">
+      <i id="undoButton" class="bx bx-undo features-item-icon"></i>
+      <span id="undoSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.undo}">Undo</span>
     </li>
-    <li class="features-item star">
-      <i id="saveButton" title="Save" class="bx bx-save features-item-icon"></i>
-      <span id="saveSpan" class="features-item-text annocollapse">Save</span>
+    <li class="features-item star"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.save}">
+      <i id="saveButton" class="bx bx-save features-item-icon"></i>
+      <span id="saveSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.save}">Save</span>
     </li>
 </div>
     <div class="features-list">
-    <li class="features-item star">
-      <i id="pagesButton" title="Show Book" class="bx bx-book-open features-item-icon"></i>
-      <span id="pagesSpan" class="features-item-text annocollapse">Show Book</span>
+    <li class="features-item star"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.pages_list}">
+      <i id="pagesButton" class="bx bx-book-open features-item-icon"></i>
+      <span id="pagesSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.pages_list}">Show Book</span>
     </li>
-    <li class="features-item star">
-      <i id="annotationTableBottomButton" title="Show Annotations" class="bx bx-list-ul features-item-icon"></i>
-      <span id="annotationTableBottomSpan" class="features-item-text annocollapse">Show Annotations</span>
+    <li class="features-item star"
+            data-bs-toggle="tooltip" data-bs-placement="right"
+            th:data-bs-title="#{tooltips.annotation_table}">
+      <i id="annotationTableBottomButton" class="bx bx-list-ul features-item-icon"></i>
+      <span id="annotationTableBottomSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.annotation_table}">Show Annotations</span>
     </li>
 </div>
 </div>
@@ -267,13 +306,34 @@
     <script th:src="@{/js/imageeditor-ng.js}" type="module"></script>
     
     <script th:inline="javascript">
+        // thymeleaf template variables
+        /*<![CDATA[*/
+        window.TL_VARIABLES = {
+            "user" : {
+                "name" : /*[[${user.getName()}]]*/ 'default'
+            },
+            "buttons" : {
+                "edit" :[[#{buttons.edit}]],
+                "ok" : [[#{buttons.ok}]]
+            },
+            "tooltips": {
+                "add_body":[[#{tooltips.add_body}]],
+                "delete_annotation":[[#{tooltips.delete_annotation}]],
+                "expand_body":[[#{tooltips.expand_body}]],
+                "delete_body":[[#{tooltips.delete_body}]],
+                "annotation_table": {
+                    "display_annotation":[[#{tooltips.annotation_table.display_annotation}]],
+                }
+            }
+        }
+        /*]]>*/
         // storing currentPageUrl as its needed for the target creation
         window.CURRENTPAGEURL = /*[[${currentPage.getResourceUrl()}]]*/ "default.url";
         // storing currentPageId as its needed for getting the updated annoJson
         window.CURRENTPAGEID = /*[[${currentPage.getId()}]]*/ "default.id";
         document.addEventListener("DOMContentLoaded", (_event) => {
             const annotationsString = document.body.getAttribute('data-field');
-            window.imageEditor.initializeImageEditorComponent(annotationsString);
+            window.imageEditor.initializeImageEditorComponent(annotationsString, window.TL_VARIABLES);
         });
     </script>
 
