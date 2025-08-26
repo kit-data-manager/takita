@@ -25,7 +25,10 @@
     integrity="sha512-pXZ8FsuOBAyDmJ3OWob4V2UgZWQ8zs8f99MrNv0sBG8VLzuucajpzJ3BIiVNzTpfIYgzWGUq0QPJ3Y/9Gr4h7Q=="
     crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    <link rel="stylesheet" th:href="@{/css/editor_sidebar.css}"/>
+    <!-- internal css-->
+    <link rel="stylesheet" th:href="@{/css/editor_sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/editor_shared.css}">
+    <link rel="stylesheet" th:href="@{/css/editor_image.css}">
 
     <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" 
@@ -146,71 +149,73 @@
                 </div>
             </div>
         </div>
-    </div>
 
-	<!-- Part overview for the whole text onclick="window.open(${page.id})" no-wrap> -->
-    <div class="row d-none" id="pages">
-        <div class="card">
-            <div style="padding: .2em 1em .2em 1em">
-                <div class="row" style="gap: .2em">
-                    <div class="col-auto" th:each="page : ${currentManuscript.pages}">
-                        <!-- TODO: CUSTOMISE set the boolean at the start of the "th:if"-clause to "true"/"false" to display/hide pictures -->
-                        <div class="row">
-                            <div class="col">
-                                <img th:src="${page.thumbResourceUrl}"
-                                    class="img-thumbnail"
-                                    id="pageThumb"
-                                    th:if="${false and page.id != currentPage.id and page.thumbResourceUrl != null}"
-                                    th:data-field="${page.id}"
-                                    th:attr="onclick=|window.open('${page.id}')|">
-                                <img th:src="@{/images/text_thumb.jpg}"
-                                    class="img-thumbnail"
-                                    id="pageThumb"
-                                    th:if="${false and page.id != currentPage.id and page.thumbResourceUrl == null}"
-                                    th:data-field="${page.id}"
-                                    th:attr="onclick=|window.open('${page.id}')|">
-                                <img th:src="@{/images/text_thumb.jpg}"
-                                    class="img-thumbnail bd-error"
-                                    th:if="${false and page.id == currentPage.id}">
+        <!-- Part overview for the whole text onclick="window.open(${page.id})" no-wrap> -->
+        <div class="row d-none" id="pages">
+            <div class="card">
+                <div style="padding: .2em 1em .2em 1em">
+                    <div class="row" style="gap: .2em">
+                        <div class="col-auto" th:each="page : ${currentManuscript.pages}">
+                            <!-- TODO: CUSTOMISE set the boolean at the start of the "th:if"-clause to "true"/"false" to display/hide pictures -->
+                            <div class="row">
+                                <div class="col">
+                                    <img th:src="${page.thumbResourceUrl}"
+                                        class="img-thumbnail"
+                                        id="pageThumb"
+                                        th:if="${false and page.id != currentPage.id and page.thumbResourceUrl != null}"
+                                        th:data-field="${page.id}"
+                                        th:attr="onclick=|window.open('${page.id}')|">
+                                    <img th:src="@{/images/text_thumb.jpg}"
+                                        class="img-thumbnail"
+                                        id="pageThumb"
+                                        th:if="${false and page.id != currentPage.id and page.thumbResourceUrl == null}"
+                                        th:data-field="${page.id}"
+                                        th:attr="onclick=|window.open('${page.id}')|">
+                                    <img th:src="@{/images/text_thumb.jpg}"
+                                        class="img-thumbnail bd-error"
+                                        th:if="${false and page.id == currentPage.id}">
+                                </div>
                             </div>
-                        </div>
-                        <div class="row align-items-center">
-                            <!-- the following classes originally stem from the DO-overview and bootstrap, which is used for
-                                the DO-overview of tAkita, but not for the textEditor, where chota is used -->
-                            <a class="btn btn-sm btn-secondary col-auto"
-                                id="pageThumbs"
-                                th:if="${page.id != currentPage.id}"
-                                th:data-field="${page.id}"
-                                th:attr="onclick=|window.open('${page.id}')|"
-                                data-bs-toggle="tooltip" data-bs-placement="top"
-                                th:data-bs-title="#{tooltips.pages_list.open}">
-                                <i class="fa fa-pencil"></i>
-                            </a>
-                            <a class="btn btn-sm btn-secondary col-auto disabled"
-                                th:if="${page.id == currentPage.id}">
-                                <i class="fa fa-pencil"></i>
-                            </a>
-                            <label class="col-auto" th:text="${page.pageNumber}"
-                                th:if="${page.id != currentPage.id}"
-                                th:attr="onclick=|window.open('${page.id}')|">
-                            </label>
-                            <label class="col-auto bg-light" th:text="${page.pageNumber}"
-                                th:if="${page.id == currentPage.id}">
-                            </label>
+                            <div class="row align-items-center">
+                                <!-- the following classes originally stem from the DO-overview and bootstrap, which is used for
+                                    the DO-overview of tAkita, but not for the textEditor, where chota is used -->
+                                <a class="btn btn-sm btn-secondary col-auto"
+                                    id="pageThumbs"
+                                    th:if="${page.id != currentPage.id}"
+                                    th:data-field="${page.id}"
+                                    th:attr="onclick=|window.open('${page.id}')|"
+                                    data-bs-toggle="tooltip" data-bs-placement="top"
+                                    th:data-bs-title="#{tooltips.pages_list.open}">
+                                    <i class="fa fa-pencil"></i>
+                                </a>
+                                <a class="btn btn-sm btn-secondary col-auto disabled"
+                                    th:if="${page.id == currentPage.id}">
+                                    <i class="fa fa-pencil"></i>
+                                </a>
+                                <label class="col-auto" th:text="${page.pageNumber}"
+                                    th:if="${page.id != currentPage.id}"
+                                    th:attr="onclick=|window.open('${page.id}')|">
+                                </label>
+                                <label class="col-auto bg-light" th:text="${page.pageNumber}"
+                                    th:if="${page.id == currentPage.id}">
+                                </label>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="row d-none" id="annotationTableBottomDiv">
-        <div class="card">
-            <div style="padding: .2em .2em">
-                <div id="annotationTableBottom"></div>
+        <div class="row d-none" id="annotationTableBottomDiv">
+            <div class="card">
+                <div style="padding: .2em .2em">
+                    <div id="annotationTableBottom"></div>
+                </div>
             </div>
         </div>
     </div>
+
+
 
 </div>
 
@@ -274,52 +279,5 @@
     </script>
 
 </body>
-<style>
-
-#imageWorkspace {
-    position: relative;
-    display: inline-block;  /*shrinks container to image size */
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-}
-
-#imageWorkspace img {
-    position: absolute;
-    top: 0;
-    left: 0;
-    max-width: none;
-}
-
-#canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-}
-
-#editor {
-    margin-left: 7.5rem;
-}
-
-/* needs to be checked on larger screen! */
-.modal-dialog {
-    top: 10%;
-    left: 30%;
-}
-
-/*
-   Optional. Prevent the accidential selection of the image (or other elements).
-   Old, but still works at least in Firefox, might be better to find a new method for this.
-   Very old source: https://stackoverflow.com/questions/5915023/preventing-images-and-text-to-be-selected
-*/
-.unselectable {
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -o-user-select: none;
-    user-select: none;
-}
-
-</style>
 </html>
 
