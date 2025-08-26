@@ -163,36 +163,24 @@ export async function deleteAnnotation(annoId, hooks = {}) {
       // checking if paper is defined. it is defined for image annotation,
       // but not for text annotation
       // eslint-disable-next-line no-undef
-      if (window.paper != undefined) {
+      if (window.paper != undefined && window.EDITORTYPE == 'IMAGE') {
         // eslint-disable-next-line no-undef
         window.paper.forEach(function (element) {
           if (element.annoId === annoId) {
             element.remove();
           }
         });
-      }
 
-      // this for-loop is unnecessary for the textEditor
-      // as the updateDisplay()-function updates the annoJson as well
-      // the imageEditor still needs the for-loop
-      for (let anno in window.ANNOJSON) {
-        if (window.ANNOJSON[anno].id === annoId) {
-          //console.log(annoId + " this must go!")
-          window.ANNOJSON.splice(anno, 1);
+        // this for-loop is unnecessary for the textEditor
+        // as the updateDisplay()-function updates the annoJson as well
+        // the imageEditor still needs the for-loop
+        for (let anno in window.ANNOJSON) {
+          if (window.ANNOJSON[anno].id === annoId) {
+            //console.log(annoId + " this must go!")
+            window.ANNOJSON.splice(anno, 1);
+          }
         }
-      }
 
-      // updating the display for text annotation
-      // checking if TEI-element is null. it is defined for text annotation,
-      // but not for image annotation
-      if (document.getElementById('TEI') != null) {
-        // redrawing all annotations
-        await updateDisplay(hooks);
-      }
-
-      // maybe move it within the if clause?
-      //console.log(annoJson);
-      if (window.EDITORTYPE == 'IMAGE') {
         // The textEditor doesn't need the following, as the function is included in updateDisplay()
         initializeAnnotationTable(
           window.ANNOJSON,
@@ -202,6 +190,17 @@ export async function deleteAnnotation(annoId, hooks = {}) {
         document.getElementById('createRectangleButton').parentElement.classList.remove('active');
         document.getElementById('createPolygonButton').parentElement.classList.remove('active');
       }
+
+      // updating the display for text annotation
+      // checking if TEI-element is null. it is defined for text annotation,
+      // but not for image annotation
+      if (document.getElementById('TEI') != null && window.EDITORTYPE == 'TEXT') {
+        // redrawing all annotations
+        await updateDisplay(hooks);
+      }
+
+      // maybe move it within the if clause?
+      //console.log(annoJson);
     } catch (exception) {
       console.error(exception);
       confirmation = false;
