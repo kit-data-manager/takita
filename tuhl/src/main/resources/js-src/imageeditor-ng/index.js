@@ -27,6 +27,7 @@ window.paper;
 window.MODE_CLASS = Mode;
 window.MODE = window.MODE_CLASS.View;
 window.EDITORTYPE == 'IMAGE';
+window.ANNOJSON;
 
 // local state
 let mouseDownX;
@@ -311,11 +312,11 @@ function initializeImageEditorComponent(annotations) {
   };
 
   // Drawing anno svgs on first opening of page
-  const annoJson = JSON.parse(annotations);
-  drawAnnos(annoJson);
+  window.ANNOJSON = JSON.parse(annotations);
+  drawAnnos(window.ANNOJSON);
 
   initializeAnnotationTable(
-    annoJson,
+    window.ANNOJSON,
     document.getElementById('annotationTableBottom'),
     document.getElementById('annotationCard'),
   );

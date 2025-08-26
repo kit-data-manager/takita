@@ -115,7 +115,7 @@ export function undo() {
   }
 }
 
-export function saveShape(annoJson) {
+export function saveShape() {
   if (window.drawingHistory) {
     // for now all entries have the same id - needs to be adjusted if the
     // design of the modification mode is altered
@@ -166,15 +166,15 @@ export function saveShape(annoJson) {
       },
 
       success: function (responseData) {
-        for (let anno in annoJson) {
-          if (annoJson[anno].id === modifiedShape.annoId) {
-            annoJson[anno].svg = svgString;
+        for (let anno in window.ANNOJSON) {
+          if (window.ANNOJSON[anno].id === modifiedShape.annoId) {
+            window.ANNOJSON[anno].svg = svgString;
 
-            if (annoJson[anno].type === 'Rectangle') {
-              annoJson[anno].x = modifiedShape.attrs.x;
-              annoJson[anno].y = modifiedShape.attrs.y;
-              annoJson[anno].width = modifiedShape.attrs.width;
-              annoJson[anno].height = modifiedShape.attrs.height;
+            if (window.ANNOJSON[anno].type === 'Rectangle') {
+              window.ANNOJSON[anno].x = modifiedShape.attrs.x;
+              window.ANNOJSON[anno].y = modifiedShape.attrs.y;
+              window.ANNOJSON[anno].width = modifiedShape.attrs.width;
+              window.ANNOJSON[anno].height = modifiedShape.attrs.height;
             } else {
               let polygonPoints = [];
               for (let point in modifiedShape.points) {
@@ -187,8 +187,8 @@ export function saveShape(annoJson) {
               }
               polygonTempPath = polygonTempPath + 'Z';
 
-              annoJson[anno].path = polygonTempPath;
-              annoJson[anno].points = polygonPoints;
+              window.ANNOJSON[anno].path = polygonTempPath;
+              window.ANNOJSON[anno].points = polygonPoints;
             }
           }
         }
@@ -211,7 +211,7 @@ export function confirmDiscardChanges() {
   }
 
   if (!document.getElementById('annotationCard').classList.contains('invisible')) {
-    toggleVisibility('annotationCard');
+    toggleVisibility(document.getElementById('annotationCard'));
   }
 
   if (window.drawingHistory.length > 0) {
