@@ -272,7 +272,6 @@
         // storing currentPageId as its needed for getting the updated annoJson
         window.CURRENTPAGEID = /*[[${currentPage.getId()}]]*/ "default.id";
         document.addEventListener("DOMContentLoaded", (_event) => {
-            console.log("buu")
             const annotationsString = document.body.getAttribute('data-field');
             window.imageEditor.initializeImageEditorComponent(annotationsString);
         });

@@ -155,7 +155,6 @@ function extractInformationFromSvg(svgString, annoJson) {
 }
 
 export function drawAnnos(annoJson) {
-  console.log(annoJson);
   for (let anno in annoJson) {
     // check if there is a value for svg as page-annotations will not have a value
     // and should print an error on the console

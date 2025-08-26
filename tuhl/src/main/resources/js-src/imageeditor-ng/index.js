@@ -16,8 +16,6 @@ import { getScalingRatios } from './targetBuilding/utils';
 import { drawRectangle, drawPolygon, drawAnnos } from './highlighting';
 import { dragCircleMove, dragCircleEnd, dragCircleStart } from './targetBuilding/utils';
 
-console.log('hi');
-
 // global state
 window.addingRectangle = false;
 window.addingPolygon = false;
@@ -45,7 +43,6 @@ window.imageEditor = {
 };
 
 function initializeImageEditorComponent(annotations) {
-  console.log('initit', JSON.parse(annotations));
   // enable tooltips using bootstrap
   const $tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
   enableTooltips($tooltipTriggerList);
