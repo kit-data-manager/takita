@@ -8,7 +8,7 @@ import { updateDisplay } from '../../texteditor-ng/display';
 import { selectAnnotation } from '../annotationCard';
 import { createBodyData, createAnnotationData, getAnnotationData } from '../../texteditor-ng/data/annotations';
 import { getFormObjectCreateAnnotation, getFormObjectCreateBody } from '../../projectspecific';
-import { initializeAnnotationTable } from '../annotationTable';
+import { initializeAnnotationTable, defaultDisplayAnnotationFunction } from '../annotationTable';
 /**
  * creates the JSONForm and shows the modal to create an annotation based on
  * the given template
@@ -125,8 +125,7 @@ export async function resetFormAndUpdateDisplay(annotation, hooks = {}) {
     initializeAnnotationTable(
       window.ANNOJSON,
       document.getElementById('annotationTableBottom'),
-      document.getElementById('annotationCard'),
-      hooks,
+      defaultDisplayAnnotationFunction,
     );
     document.getElementById('createRectangleButton').parentElement.classList.remove('active');
     document.getElementById('createPolygonButton').parentElement.classList.remove('active');

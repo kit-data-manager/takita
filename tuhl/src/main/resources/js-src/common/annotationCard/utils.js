@@ -2,7 +2,7 @@ import { getAnnotationData, deleteAnnotationData, deleteBodyData, updateBodyData
 import { makeTargetsCompatible, checkIsTargetCompatible } from '../../texteditor-ng/utils';
 import { removeStyles } from '../../texteditor-ng/highlighting';
 import { updateDisplay } from '../../texteditor-ng/display';
-import { initializeAnnotationTable } from '../annotationTable';
+import { initializeAnnotationTable, defaultDisplayAnnotationFunction } from '../annotationTable';
 import { toggleVisibility } from '../utils';
 import { selectAnnotation } from './annotationCard';
 // data manipulation
@@ -197,8 +197,7 @@ export async function deleteAnnotation(annoId, hooks = {}) {
         initializeAnnotationTable(
           window.ANNOJSON,
           document.getElementById('annotationTableBottom'),
-          document.getElementById('annotationCard'),
-          hooks,
+          defaultDisplayAnnotationFunction,
         );
         document.getElementById('createRectangleButton').parentElement.classList.remove('active');
         document.getElementById('createPolygonButton').parentElement.classList.remove('active');

@@ -9,7 +9,7 @@ import { encodeAnnoId, enableTooltips, toggleVisibility } from '../common/utils'
 
 import { imageZoomIn, imageZoomOut } from './sidebar/sidebar';
 import { initializeSidebar } from './sidebar';
-import { initializeAnnotationTable } from '../common/annotationTable';
+import { initializeAnnotationTable, defaultDisplayAnnotationFunction } from '../common/annotationTable';
 import { toggleShapeSelect } from './highlighting';
 import { getRelativeCoordinates } from './utils';
 import { getScalingRatios } from './targetBuilding/utils';
@@ -45,6 +45,7 @@ window.imageEditor = {
 };
 
 function initializeImageEditorComponent(annotations) {
+  console.log('initit', JSON.parse(annotations));
   // enable tooltips using bootstrap
   const $tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
   enableTooltips($tooltipTriggerList);
@@ -318,7 +319,7 @@ function initializeImageEditorComponent(annotations) {
   initializeAnnotationTable(
     window.ANNOJSON,
     document.getElementById('annotationTableBottom'),
-    document.getElementById('annotationCard'),
+    defaultDisplayAnnotationFunction,
   );
 
   // Showing the annotation and highlighting the shape on first opening of page
