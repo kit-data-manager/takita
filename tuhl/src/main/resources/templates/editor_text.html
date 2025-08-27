@@ -184,28 +184,39 @@
                 <div class="row" style="gap: .2em">
                     <div class="col-auto" th:each="page : ${currentManuscript.pages}">
                         <!-- TODO: CUSTOMISE set the boolean at the start of the "th:if"-clause to "true"/"false" to display/hide pictures -->
-                        <div class="row">
+                        <div class="row align-items-center justify-content-center">
                             <div class="col">
+                                <!-- 1. set boolean to true for the following to use the thumbnail image of a page -->
                                 <img th:src="${page.thumbResourceUrl}"
                                     class="img-thumbnail"
-                                    id="pageThumb"
                                     th:if="${false and page.id != currentPage.id and page.thumbResourceUrl != null}"
                                     th:data-field="${page.id}"
                                     th:attr="onclick=|window.open('${page.id}')|">
+                                <img th:src="${page.thumbResourceUrl}"
+                                    class="img-thumbnail border border-danger-subtle"
+                                    th:if="${false and page.id == currentPage.id and page.thumbResourceUrl != null}">
+                                <!-- 2. set boolean to true for the following to use a default image, if there is no
+                                        thumbnail image of a page available -->
                                 <img th:src="@{/images/text_thumb.jpg}"
                                     class="img-thumbnail"
-                                    id="pageThumb"
                                     th:if="${false and page.id != currentPage.id and page.thumbResourceUrl == null}"
                                     th:data-field="${page.id}"
                                     th:attr="onclick=|window.open('${page.id}')|">
                                 <img th:src="@{/images/text_thumb.jpg}"
-                                    class="img-thumbnail bd-error"
+                                    class="img-thumbnail border border-danger-subtle"
+                                    th:if="${false and page.id == currentPage.id and page.thumbResourceUrl == null}">
+                                <!-- 3. set boolean to true for the following to always use a default image -->
+                                <img th:src="@{/images/text_thumb.jpg}"
+                                    class="img-thumbnail"
+                                    th:if="${false and page.id != currentPage.id}"
+                                    th:data-field="${page.id}"
+                                    th:attr="onclick=|window.open('${page.id}')|">
+                                <img th:src="@{/images/text_thumb.jpg}"
+                                    class="img-thumbnail border border-danger-subtle"
                                     th:if="${false and page.id == currentPage.id}">
                             </div>
                         </div>
-                        <div class="row align-items-center">
-                            <!-- the following classes originally stem from the DO-overview and bootstrap, which is used for
-                                the DO-overview of tAkita, but not for the textEditor, where chota is used -->
+                        <div class="row align-items-center justify-content-center">
                             <a class="btn btn-sm btn-secondary col-auto"
                                 id="pageThumbs"
                                 th:if="${page.id != currentPage.id}"
