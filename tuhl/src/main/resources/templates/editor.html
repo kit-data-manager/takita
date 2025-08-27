@@ -331,7 +331,7 @@
         window.CURRENTPAGEURL = /*[[${currentPage.getResourceUrl()}]]*/ "default.url";
         // storing currentPageId as its needed for getting the updated annoJson
         window.CURRENTPAGEID = /*[[${currentPage.getId()}]]*/ "default.id";
-        document.addEventListener("DOMContentLoaded", (_event) => {
+        window.addEventListener("load", (_event) => {
             const annotationsString = document.body.getAttribute('data-field');
             window.imageEditor.initializeImageEditorComponent(annotationsString, window.TL_VARIABLES);
         });
