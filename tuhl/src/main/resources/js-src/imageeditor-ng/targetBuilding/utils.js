@@ -158,8 +158,8 @@ export function dragRectangleEnd() {
   this.dragging = false;
 }
 
-export function dragPolygonEnd(firstPolygonPoint) {
-  if (!firstPolygonPoint) {
+export function dragPolygonEnd() {
+  if (!window.firstPolygonPoint) {
     let undoInformation = [];
     for (let point in this.opoints) {
       undoInformation.push({
@@ -180,8 +180,8 @@ export function dragPolygonEnd(firstPolygonPoint) {
     this.opoints[circle].remove();
   }
 }
-export function dragCircleEnd(firstPolygonPoint) {
-  if (!firstPolygonPoint) {
+export function dragCircleEnd() {
+  if (!window.firstPolygonPoint) {
     window.drawingHistory.push({ id: this.id, attr: { cx: this.ox, cy: this.oy }, pathId: this.path.id });
   }
 }

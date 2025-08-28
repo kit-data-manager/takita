@@ -20,6 +20,7 @@ window.addingRectangle = false;
 window.addingPolygon = false;
 window.drawingHistory = [];
 window.movingImage = false;
+window.firstPolygonPoint;
 window.paper;
 window.MODE_CLASS = Mode;
 window.MODE = window.MODE_CLASS.View;
@@ -31,7 +32,6 @@ let mouseDownX;
 let mouseDownY;
 let newRectangle;
 let polygonPoint;
-let firstPolygonPoint;
 let invisiblePolygonPoint;
 let polygonPath;
 
@@ -73,7 +73,7 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
       }
       polygonPath.remove();
       window.MODE = Mode.View;
-      firstPolygonPoint = undefined;
+      window.firstPolygonPoint = undefined;
       polygonPath = undefined;
       polygonPoint = undefined;
       invisiblePolygonPoint = undefined;
@@ -116,13 +116,13 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
       let scaledX = Math.round(relativeCoordinates[0] / scalingRatios[0] + window.paper.currentX);
       let scaledY = Math.round(relativeCoordinates[1] / scalingRatios[1] + window.paper.currentY);
 
-      if (!firstPolygonPoint) {
-        firstPolygonPoint = { x: scaledX, y: scaledY };
+      if (!window.firstPolygonPoint) {
+        window.firstPolygonPoint = { x: scaledX, y: scaledY };
         polygonPath = drawPolygon('M' + scaledX + ' ' + scaledY, '#ff8d00', null);
       }
 
-      let dx = Math.abs(scaledX - firstPolygonPoint.x);
-      let dy = Math.abs(scaledY - firstPolygonPoint.y);
+      let dx = Math.abs(scaledX - window.firstPolygonPoint.x);
+      let dy = Math.abs(scaledY - window.firstPolygonPoint.y);
 
       if ((dx > 0 && dx < 50 && dy < 50) || (dy > 0 && dx < 50 && dy < 50)) {
         polygonPath.attr({
@@ -151,7 +151,7 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
         const selectors = [{ type: 'SvgSelector', value: svgString }];
         pickTemplate(selectors, '', 'createAnnotationForm', 'pickAnnotationTemplateForm', 'annotationTemplate');
 
-        firstPolygonPoint = undefined;
+        window.firstPolygonPoint = undefined;
         //polygonPath = undefined;
         polygonPoint = undefined;
         invisiblePolygonPoint = undefined;
