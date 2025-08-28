@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import * as bootstrap from 'bootstrap';
 import * as Raphael from 'raphael';
 
@@ -46,17 +45,6 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
   // enable tooltips using bootstrap
   const $tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
   enableTooltips($tooltipTriggerList);
-
-  // show the animated book as loading icon whenever an ajax call is running
-  $(document)
-    .ajaxStart(function () {
-      let loadingModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('loading'));
-      loadingModal.toggle();
-    })
-    .ajaxStop(function () {
-      let loadingModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('loading'));
-      loadingModal.toggle();
-    });
 
   let image = document.getElementById('pageImage');
   image.style.width = document.getElementById('imageWorkspace').clientWidth + 'px';

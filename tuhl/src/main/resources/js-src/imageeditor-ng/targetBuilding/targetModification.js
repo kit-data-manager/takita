@@ -13,6 +13,7 @@ import {
   changeCursor,
   createPolygonPath,
 } from './utils';
+import { updateTarget } from '../../texteditor-ng/network';
 
 export function enableRectangleModification(shape) {
   // Raphael event for rectangle movement
@@ -115,7 +116,7 @@ export function undo() {
   }
 }
 
-export function saveShape() {
+export async function saveShape() {
   if (window.drawingHistory) {
     // for now all entries have the same id - needs to be adjusted if the
     // design of the modification mode is altered
@@ -157,48 +158,43 @@ export function saveShape() {
     const selectors = [{ type: 'SvgSelector', value: svgString }];
     let annotationDataJson = { color: modifiedShape.attrs.fill, motivation: 'describing', selectors: selectors };
 
-    $.ajax({
-      type: 'PUT',
-      url: window.CONTEXTPATH + 'editor_rest/annotations/' + modifiedShape.annoIdEncoded,
-      data: JSON.stringify(annotationDataJson),
-      headers: {
-        'Content-Type': 'application/json',
-      },
+    // this should use data/updateTargetData, but the color here is given as a hex value and not as normal String,
+    // so we use network/updateTarget directly
+    const response = await updateTarget(
+      window.CONTEXTPATH + 'editor_rest/annotations/' + modifiedShape.annoIdEncoded,
+      annotationDataJson,
+    );
+    if (response.status == 200) {
+      for (let anno in window.ANNOJSON) {
+        if (window.ANNOJSON[anno].id === modifiedShape.annoId) {
+          window.ANNOJSON[anno].svg = svgString;
 
-      success: function (responseData) {
-        for (let anno in window.ANNOJSON) {
-          if (window.ANNOJSON[anno].id === modifiedShape.annoId) {
-            window.ANNOJSON[anno].svg = svgString;
-
-            if (window.ANNOJSON[anno].type === 'Rectangle') {
-              window.ANNOJSON[anno].x = modifiedShape.attrs.x;
-              window.ANNOJSON[anno].y = modifiedShape.attrs.y;
-              window.ANNOJSON[anno].width = modifiedShape.attrs.width;
-              window.ANNOJSON[anno].height = modifiedShape.attrs.height;
-            } else {
-              let polygonPoints = [];
-              for (let point in modifiedShape.points) {
-                polygonPoints.push(modifiedShape.points[point].attrs.cx + ',' + modifiedShape.points[point].attrs.cy);
-              }
-
-              let polygonTempPath = 'M' + polygonPoints[0];
-              for (let i = 1; i < polygonPoints.length; i++) {
-                polygonTempPath = polygonTempPath + 'L' + polygonPoints[i];
-              }
-              polygonTempPath = polygonTempPath + 'Z';
-
-              window.ANNOJSON[anno].path = polygonTempPath;
-              window.ANNOJSON[anno].points = polygonPoints;
+          if (window.ANNOJSON[anno].type === 'Rectangle') {
+            window.ANNOJSON[anno].x = modifiedShape.attrs.x;
+            window.ANNOJSON[anno].y = modifiedShape.attrs.y;
+            window.ANNOJSON[anno].width = modifiedShape.attrs.width;
+            window.ANNOJSON[anno].height = modifiedShape.attrs.height;
+          } else {
+            let polygonPoints = [];
+            for (let point in modifiedShape.points) {
+              polygonPoints.push(modifiedShape.points[point].attrs.cx + ',' + modifiedShape.points[point].attrs.cy);
             }
+
+            let polygonTempPath = 'M' + polygonPoints[0];
+            for (let i = 1; i < polygonPoints.length; i++) {
+              polygonTempPath = polygonTempPath + 'L' + polygonPoints[i];
+            }
+            polygonTempPath = polygonTempPath + 'Z';
+
+            window.ANNOJSON[anno].path = polygonTempPath;
+            window.ANNOJSON[anno].points = polygonPoints;
           }
         }
-        endModification(modifiedShape);
-      },
-
-      error: function (errorData) {
-        console.log(errorData);
-      },
-    });
+      }
+      endModification(modifiedShape);
+    } else {
+      console.error('Target update failed with response: ', response);
+    }
   }
 }
 
