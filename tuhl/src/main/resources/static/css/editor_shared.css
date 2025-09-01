@@ -187,3 +187,26 @@ body.modal-open {
 
 /* end of textcard display */
 /* ------------------------------------*/
+
+/* ------------------------------------*/
+/* PART OVERVIEW */
+/* ------------------------------------*/
+
+/* setting image size for images being lazy loaded
+	as recommended by specs:
+	https://html.spec.whatwg.org/multipage/embedded-content.html#attr-img-loading
+	and fitting the image to the contaniner w/o
+	changing its scaling. To display the image entirely
+	(but scaled down) change the object-fit value
+	to "contain".
+	height has to be "!important" to override the
+	styling done by bootstrap
+	*/
+.img-thumbnail {
+	height: 10rem !important;
+  	width: 10rem;
+  	object-fit: cover;
+}	
+
+/* end of part overview */
+/* ------------------------------------*/
