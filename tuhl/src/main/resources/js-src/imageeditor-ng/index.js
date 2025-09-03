@@ -405,7 +405,7 @@ function selectAnnotationOnLoad(editorURL) {
   if (targetShape) {
     // display the annotation with the id stored in the url
     selectAnnotation(null, encodeAnnoId(annotationId));
-    if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
+    if (document.getElementById('annotationCard').classList.contains('invisible')) {
       toggleVisibility(document.getElementById('annotationCard'));
     }
     // highlight the shape on the canvas
