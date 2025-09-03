@@ -256,6 +256,7 @@
                 // stringifying the bodies to make them searchable
                 entry.tags = JSON.stringify(entry.tags);
                 entry.textcards = JSON.stringify(entry.textcards);
+                entry.targetSelectors = JSON.stringify(entry.targetSelectors);
             });
             return response; //return the response data to tabulator
         },
