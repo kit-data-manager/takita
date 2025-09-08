@@ -31,10 +31,12 @@ function buildAnnoUrl(annoId) {
 export async function getAnnotationData(annoId) {
   const url = buildAnnoUrl(annoId);
   const response = await getAnnotation(url);
-  if (response.status == 200) {
+  if (response.status != 200) {
     return await response.json();
   } else {
-    throw new Error('Getting the annotation failed with response: ', response);
+    // throw new Error('Getting the annotation failed with response: ', { cause: response });
+    console.warn(`Getting the annotation failed with response code: ${response.status}`);
+    throw response;
   }
 }
 
@@ -52,7 +54,8 @@ export async function getAllAnnotationsData() {
   if (response.status == 200) {
     return await response.json();
   } else {
-    throw new Error('Getting all annotations failed with response: ', response);
+    console.warn(`Getting all annotations failed with response code: ${response.status}`);
+    throw response;
   }
 }
 
@@ -70,7 +73,8 @@ export async function createAnnotationData(annotationData) {
   if (response.status == 200) {
     return await response.json();
   } else {
-    throw new Error('Annotation creation failed with response: ', response);
+    console.warn(`Annotation creation failed with response code: ${response.status}`);
+    throw response;
   }
 }
 
@@ -92,7 +96,8 @@ export async function createBodyData(annoId, bodyData) {
   if (response.status == 200) {
     return await response.json();
   } else {
-    throw new Error('Body creation failed with response: ', response);
+    console.warn(`Body creation failed with response code: ${response.status}`);
+    throw response;
   }
 }
 
@@ -116,7 +121,8 @@ export async function updateBodyData(annoId, newBody) {
   if (response.status == 200) {
     return await response.json();
   } else {
-    throw new Error('Body update failed with response: ', response);
+    console.warn(`Body update failed with response code: ${response.status}`);
+    throw response;
   }
 }
 
@@ -141,7 +147,8 @@ export async function updateTargetData(anno, newSelectors) {
   if (response.status == 200) {
     return await response.json();
   } else {
-    throw new Error('Target update failed with response: ', response);
+    console.warn(`Target update failed with response code: ${response.status}`);
+    throw response;
   }
 }
 
@@ -161,7 +168,8 @@ export async function deleteAnnotationData(annoId) {
   if (response.status == 204) {
     return response;
   } else {
-    throw new Error('Annotation deletion failed with response: ', response);
+    console.warn(`Annotation deletion failed with response code: ${response.status}`);
+    throw response;
   }
 }
 
@@ -257,6 +265,7 @@ export async function deleteBodyData(annoId, body) {
   if (response.status == 204) {
     return response;
   } else {
-    throw new Error('Body deletion failed with response: ', response);
+    console.warn(`Body deletion failed with response code: ${response.status}`);
+    throw response;
   }
 }
