@@ -8,6 +8,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.annotation.SessionScope;
@@ -20,7 +23,10 @@ import org.springframework.web.context.annotation.SessionScope;
 @SessionScope
 @Service
 public class AssistanceService implements IAssistanceService {
-  
+
+  @Value("${takita.security.enabled}")
+  private String securityEnabled;
+
   private final UserRepository userRepository;
   private User currentUser;
   private final IFilterService filterService;
@@ -42,7 +48,13 @@ public class AssistanceService implements IAssistanceService {
     this.userRepository = repo;
     this.filterService = filterService;
     this.mainPageService = mainPageService;
-    this.currentUser = new User("default");
+//    if (securityEnabled.equals("true")) {
+    if (true) {
+      OAuth2User user = ((OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+      this.currentUser = new User(user.getAttribute("name"));
+    } else {
+      this.currentUser = new User("default");
+    }
     updateUser();
   }
   

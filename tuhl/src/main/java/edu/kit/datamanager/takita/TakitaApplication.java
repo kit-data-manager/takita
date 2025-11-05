@@ -1,8 +1,5 @@
 package edu.kit.datamanager.takita;
 
-import edu.kit.datamanager.security.filter.KeycloakJwtProperties;
-import edu.kit.datamanager.security.filter.KeycloakTokenFilter;
-import edu.kit.datamanager.security.filter.KeycloakTokenValidator;
 import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import java.io.IOException;
 import java.util.Arrays;
@@ -15,7 +12,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.context.annotation.Bean;
@@ -143,23 +139,23 @@ public class TakitaApplication implements ApplicationRunner, WebMvcConfigurer {
     registry.addInterceptor(localeChangeInterceptor());
   }
 
-  @Bean
-  public KeycloakJwtProperties keycloakProperties() {
-    return new KeycloakJwtProperties();
-  }
+//  @Bean
+//  public KeycloakJwtProperties keycloakProperties() {
+//    return new KeycloakJwtProperties();
+//  }
 
-  @Bean
-  @ConditionalOnProperty(
-          value = "repo.auth.enabled",
-          havingValue = "true",
-          matchIfMissing = false)
-  public KeycloakTokenFilter keycloaktokenFilterBean() throws Exception {
-    return new KeycloakTokenFilter(KeycloakTokenValidator.builder()
-            .readTimeout(keycloakProperties().getReadTimeoutms())
-            .connectTimeout(keycloakProperties().getConnectTimeoutms())
-            .sizeLimit(keycloakProperties().getSizeLimit())
-            .jwtLocalSecret(jwtSecret)
-            .build(keycloakProperties().getJwkUrl(), keycloakProperties().getResource(), keycloakProperties().getJwtClaim()));
-  }
+//  @Bean
+//  @ConditionalOnProperty(
+//          value = "repo.auth.enabled",
+//          havingValue = "true",
+//          matchIfMissing = false)
+//  public KeycloakTokenFilter keycloaktokenFilterBean() throws Exception {
+//    return new KeycloakTokenFilter(KeycloakTokenValidator.builder()
+//            .readTimeout(keycloakProperties().getReadTimeoutms())
+//            .connectTimeout(keycloakProperties().getConnectTimeoutms())
+//            .sizeLimit(keycloakProperties().getSizeLimit())
+//            .jwtLocalSecret(jwtSecret)
+//            .build(keycloakProperties().getJwkUrl(), keycloakProperties().getResource(), keycloakProperties().getJwtClaim()));
+//  }
 
 }
