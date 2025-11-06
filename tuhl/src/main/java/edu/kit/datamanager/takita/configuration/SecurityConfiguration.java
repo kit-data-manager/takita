@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInit
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.csrf.HttpSessionCsrfTokenRepository;
 import org.springframework.security.web.firewall.StrictHttpFirewall;
 
 @Configuration
@@ -39,8 +40,7 @@ public class SecurityConfiguration {
                         .requestMatchers("/unauthenticated", "/oauth2/**", "/login/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                // disabling csrf protection for now to fix "Invalid CSRF token found"
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf.csrfTokenRepository(new HttpSessionCsrfTokenRepository()))
                 // logout taken from: https://www.baeldung.com/spring-boot-keycloak
                 .logout((logout) -> {
                     var logoutSuccessHandler =
@@ -54,9 +54,15 @@ public class SecurityConfiguration {
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        // overriding firewall to fix "Rejecting request due to: The request was rejected because the URL contained a potentially malicious String "%25""
+        // overriding firewall to fix issues ("Rejecting request due to: The request was rejected because the URL contained a potentially malicious String")
+        // with encoded URL parts:
+        // - "%2F" -> /
+        // - "%2F%2F" -> //
+        // - "%25" -> %
         // see https://stackoverflow.com/questions/74146917/spring-security-the-request-was-rejected-because-the-url-contained-a-potential
         StrictHttpFirewall firewall = new StrictHttpFirewall();
+        firewall.setAllowUrlEncodedSlash(true);
+        firewall.setAllowUrlEncodedDoubleSlash(true);
         firewall.setAllowUrlEncodedPercent(true);
         return (web) -> web.httpFirewall(firewall);
     }

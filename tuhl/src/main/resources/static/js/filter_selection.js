@@ -1,10 +1,11 @@
-function remove(field) {
+function remove(field, csrfToken) {
     $ .ajax({
         type: 'POST',
         url: window.CONTEXTPATH + 'filter/remove',
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': csrfToken
         },
         dataType: 'text',
         data: field,

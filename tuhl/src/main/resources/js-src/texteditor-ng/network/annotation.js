@@ -1,5 +1,9 @@
 import { fetchWithSpinner } from '../../common/utils';
 
+// storing CSRF token, it is available from editor(_text).html at
+// "document.querySelector("meta[name='_csrf']").getAttribute('content')"
+const csrfToken = document.querySelector("meta[name='_csrf']").getAttribute('content');
+
 /**
  * get an annotation
  *
@@ -32,7 +36,7 @@ export async function getAllAnnotations(url) {
 export async function createAnnotation(url, annotationDataJson) {
   return await fetchWithSpinner(url, {
     body: JSON.stringify(annotationDataJson),
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
     method: 'POST',
   });
 }
@@ -45,7 +49,10 @@ export async function createAnnotation(url, annotationDataJson) {
  * @returns {Response} containing takita's response
  */
 export async function deleteAnnotation(url) {
-  return await fetchWithSpinner(url, { method: 'DELETE' });
+  return await fetchWithSpinner(url, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+  });
 }
 
 /**
@@ -60,7 +67,7 @@ export async function deleteAnnotation(url) {
 export async function createBody(url, bodyDataJson) {
   return await fetchWithSpinner(url, {
     body: JSON.stringify(bodyDataJson),
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
     method: 'POST',
   });
 }
@@ -74,7 +81,10 @@ export async function createBody(url, bodyDataJson) {
  * @returns {Response} containing takita's response
  */
 export async function deleteBody(url) {
-  return await fetchWithSpinner(url, { method: 'DELETE' });
+  return await fetchWithSpinner(url, {
+    method: 'DELETE',
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
+  });
 }
 
 /**
@@ -89,7 +99,7 @@ export async function deleteBody(url) {
 export async function updateBody(url, annoBodyData) {
   return await fetchWithSpinner(url, {
     body: JSON.stringify(annoBodyData),
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
     method: 'PUT',
   });
 }
@@ -106,7 +116,7 @@ export async function updateBody(url, annoBodyData) {
 export async function updateTarget(url, modifiedAnnotation) {
   return await fetchWithSpinner(url, {
     body: JSON.stringify(modifiedAnnotation),
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken },
     method: 'PUT',
   });
 }

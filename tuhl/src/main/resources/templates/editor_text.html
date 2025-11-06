@@ -3,6 +3,9 @@
       xmlns:th="http://www.thymeleaf.org" style="overflow-x: hidden;">
 <head>
     <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+	<!-- default header name is X-CSRF-TOKEN 
+	<meta name="_csrf_header" content="${_csrf.headerName}"/> -->
     <title th:text="#{label.editor}"> </title>
     <!-- define common scripts in head fragment to include here; the text editor can not use the head:baseContent fragment
         as the jQuery instance imported there will override the jQuery instance used in the modularised code
