@@ -1,5 +1,6 @@
 package edu.kit.datamanager.takita.assistance;
 
+import edu.kit.datamanager.takita.configuration.SecurityConfiguration;
 import edu.kit.datamanager.takita.mainpage.IMainPageService;
 import edu.kit.datamanager.takita.mainpage.search.IFilterService;
 import edu.kit.datamanager.takita.model.filter.Filter;
@@ -24,8 +25,6 @@ import org.springframework.web.context.annotation.SessionScope;
 @Service
 public class AssistanceService implements IAssistanceService {
 
-  @Value("${takita.security.enabled}")
-  private String securityEnabled;
 
   private final UserRepository userRepository;
   private User currentUser;
@@ -44,12 +43,11 @@ public class AssistanceService implements IAssistanceService {
    */
   @Autowired
   public AssistanceService(UserRepository repo, IFilterService filterService,
-                           IMainPageService mainPageService) {
+                           IMainPageService mainPageService, SecurityConfiguration securityConfiguration) {
     this.userRepository = repo;
     this.filterService = filterService;
     this.mainPageService = mainPageService;
-//    if (securityEnabled.equals("true")) {
-    if (true) {
+    if (securityConfiguration.securityEnabled) {
       OAuth2User user = ((OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
       this.currentUser = new User(user.getAttribute("name"));
     } else {
@@ -69,7 +67,8 @@ public class AssistanceService implements IAssistanceService {
     Optional<User> user = userRepository.findById(pseudonym);
     return user.orElseGet(() -> createNewUser(pseudonym));
   }
-  
+
+
   /**
    * Gets Pseudonym of current User.
    *

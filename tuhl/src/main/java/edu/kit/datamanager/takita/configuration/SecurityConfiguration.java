@@ -1,6 +1,7 @@
 package edu.kit.datamanager.takita.configuration;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -18,6 +19,7 @@ import org.springframework.security.web.firewall.StrictHttpFirewall;
 @EnableWebSecurity
 public class SecurityConfiguration {
 
+    // adapted from https://medium.com/@linkonahad10/integrating-keycloak-with-spring-boot-3-and-thymeleaf-a-comprehensive-guide-27191a511010
     @Value("${takita.security.success-url}")
     private String successUrl;
 
@@ -27,7 +29,14 @@ public class SecurityConfiguration {
     @Value("${takita.security.redirect-uri}")
     private String redirectUri;
 
+    @Value("${takita.security.enabled:false}")
+    public Boolean securityEnabled;
+
     @Bean
+    @ConditionalOnProperty(
+            value = "takita.security.enabled",
+            havingValue = "true",
+            matchIfMissing = false)
     public SecurityFilterChain securityFilterChain(HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository) throws Exception {
         http
                 .oauth2Login(oauth2Login -> oauth2Login
@@ -45,10 +54,10 @@ public class SecurityConfiguration {
                 .logout((logout) -> {
                     var logoutSuccessHandler =
                             new OidcClientInitiatedLogoutSuccessHandler(clientRegistrationRepository);
+                    // check: https://www.keycloak.org/docs/latest/upgrading/index.html#openid-connect-logout
                     logoutSuccessHandler.setPostLogoutRedirectUri(redirectUri);
                     logout.logoutSuccessHandler(logoutSuccessHandler);
                 });
-
         return http.build();
     }
 
