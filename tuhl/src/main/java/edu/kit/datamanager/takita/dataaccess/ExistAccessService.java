@@ -242,7 +242,11 @@ public class ExistAccessService implements IExistAccessService {
 			// 4. pick the first ancestor, that is shared by both elements
 			// Note: the "()" around the second part ("((id("w. ... last()])") of the query are necessary
 			// on order for the second part of the query to be executed as a subquery
-			query = contextNodeForQuery + "((id(\"" + firstElementID + "\")/ancestor::* intersect id(\"" + lastElementID + "\")/ancestor::*)[last()])";
+			// Note: For some reason "[last()]" does not work with exist-db v6.4.0 as the whole xPath
+			// won't return anything. Changing it to "[last()-1]" fixes the issue. If you encounter
+			// problems with the xPath/the results are not what you expected or you use another version
+			// of exist-db, you can try to remove the "-1".
+			query = contextNodeForQuery + "((id(\"" + firstElementID + "\")/ancestor::* intersect id(\"" + lastElementID + "\")/ancestor::*)[last()-1])";
 			
 		}
 		return query;
