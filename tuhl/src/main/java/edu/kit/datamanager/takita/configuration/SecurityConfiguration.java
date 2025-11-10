@@ -26,9 +26,6 @@ public class SecurityConfiguration {
     @Value("${takita.security.success-url:none}")
     private String successUrl;
 
-    @Value("${takita.security.logout-url:none}")
-    private String logoutUrl;
-
     @Value("${takita.security.redirect-uri:none}")
     private String redirectUri;
 
