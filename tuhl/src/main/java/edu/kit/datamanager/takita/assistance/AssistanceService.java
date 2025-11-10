@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -30,6 +29,7 @@ public class AssistanceService implements IAssistanceService {
   private User currentUser;
   private final IFilterService filterService;
   private final IMainPageService mainPageService;
+  private final SecurityConfiguration securityConfiguration;
   
   /**
    * Constructor for the Assistance Service to autowire required instances.
@@ -47,7 +47,8 @@ public class AssistanceService implements IAssistanceService {
     this.userRepository = repo;
     this.filterService = filterService;
     this.mainPageService = mainPageService;
-    if (securityConfiguration.securityEnabled) {
+    this.securityConfiguration = securityConfiguration;
+    if (this.securityConfiguration.securityEnabled) {
       OAuth2User user = ((OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
       this.currentUser = new User(user.getAttribute("name"));
     } else {
@@ -164,7 +165,12 @@ public class AssistanceService implements IAssistanceService {
    * @param model the holder for model attributes, used to pass attributes back to the view
    */
   public void updateModel(Model model) {
-    model.addAttribute("user", getCurrentUser());
+      // necessary to tell thymeleaf and the frontend if security (and thereby csrf protection) is en/disabled.
+      // "securityEnabled" is used to let thymeleaf decide whether, the main_page
+      // template should store the csrf token (which is only available, if security is enabled)
+      // or a default value in the "<meta name="_csrf">"-element.
+      model.addAttribute("securityEnabled", securityConfiguration.securityEnabled);
+      model.addAttribute("user", getCurrentUser());
   }
   
   private User createNewUser(String pseudonym) {

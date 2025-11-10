@@ -2,6 +2,7 @@ package edu.kit.datamanager.takita.editor;
 
 import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 import edu.kit.datamanager.takita.assistance.IAssistanceService;
+import edu.kit.datamanager.takita.configuration.SecurityConfiguration;
 import edu.kit.datamanager.takita.model.Annotation;
 import edu.kit.datamanager.takita.model.Color;
 import edu.kit.datamanager.takita.model.body.Tag;
@@ -43,7 +44,7 @@ import org.springframework.web.context.request.WebRequest;
 public class EditorController {
   private final IEditorService editorService;
   private final IAssistanceService assistanceService;
-
+  private final SecurityConfiguration securityConfiguration;
   //private static final String NOT_IMPLEMENTED = "not implemented";
   private static final String REDIRECT_ERROR = "redirect:/error/";
 
@@ -57,9 +58,10 @@ public class EditorController {
    * @param assistanceService instance of IAssistanceService
    */
   @Autowired
-  public EditorController(IEditorService editorService, IAssistanceService assistanceService) {
+  public EditorController(IEditorService editorService, IAssistanceService assistanceService, SecurityConfiguration securityConfiguration) {
     this.editorService = editorService;
     this.assistanceService = assistanceService;
+    this.securityConfiguration = securityConfiguration;
   }
   
   /**
@@ -84,6 +86,11 @@ public class EditorController {
   public String selectPage(@PathVariable ("pageId") String pageId, Model model) {
     try {
       editorService.selectPage(pageId);
+      // necessary to tell thymeleaf and the frontend if security (and thereby csrf protection) is en/disabled.
+      // "securityEnabled" is used to let thymleaf decide whether, the editor
+      // templates should store the csrf token (which is only available, if security is enabled)
+      // or a default value in the "<meta name="_csrf">"-element.
+      model.addAttribute("securityEnabled", securityConfiguration.securityEnabled);
       model.addAttribute("currentPage", editorService.getCurrentPage());
       model.addAttribute("currentManuscript", editorService.getCurrentManuscript());
       // TODO: use the project abbreviation instead of the publisher. This can be done

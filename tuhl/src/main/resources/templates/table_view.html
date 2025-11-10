@@ -44,11 +44,11 @@
 <div id="searchresults"></div>
 
 <script th:inline="javascript">
-    // setting contextpath and storing it
-    window.CONTEXTPATH = /*[[@{/}]]*/ "";
-    // storing CSRF token, it is also available from main_page.html at
-    // "document.querySelector("meta[name='_csrf']").getAttribute('content')"
-    const csrfTokenTV = /*[[${_csrf.token}]]*/ 'default';
+    /*<![CDATA[*/
+    // setting contextpath
+    window.CONTEXTPATH = /*[[@{/}]]*/ "/";
+    const csrfTokenTV = document.querySelector("meta[name='_csrf']").getAttribute('content');
+    /*]]>*/
 </script>
 <script th:src="@{js/table_view.js}"></script>
 <script th:inline="javascript">

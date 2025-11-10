@@ -1,5 +1,7 @@
 package edu.kit.datamanager.takita.configuration;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -7,6 +9,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.oidc.web.logout.OidcClientInitiatedLogoutSuccessHandler;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
@@ -18,19 +21,35 @@ import org.springframework.security.web.firewall.StrictHttpFirewall;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfiguration {
-
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfiguration.class);
     // adapted from https://medium.com/@linkonahad10/integrating-keycloak-with-spring-boot-3-and-thymeleaf-a-comprehensive-guide-27191a511010
-    @Value("${takita.security.success-url}")
+    @Value("${takita.security.success-url:none}")
     private String successUrl;
 
-    @Value("${takita.security.logout-url}")
+    @Value("${takita.security.logout-url:none}")
     private String logoutUrl;
 
-    @Value("${takita.security.redirect-uri}")
+    @Value("${takita.security.redirect-uri:none}")
     private String redirectUri;
 
     @Value("${takita.security.enabled:false}")
     public Boolean securityEnabled;
+
+
+    @Bean
+    @ConditionalOnProperty(
+            value = "takita.security.enabled",
+            havingValue = "false",
+            matchIfMissing = true)
+    // default filterChain to be used when the application.property to enable authentication is
+    // set to "false". The filterChain does nothing/disables AAI. It had to be implemented as
+    // otherwise SpringBoot just used the default filterChain (o.s.s.web.DefaultSecurityFilterChain).
+    public SecurityFilterChain securityFilterChainDefault(HttpSecurity http) throws Exception {
+        logger.info("Security disabled as property 'takita.security.enabled' is: {}", securityEnabled);
+        logger.info("CSRF disabled!");
+        http.csrf(AbstractHttpConfigurer::disable);
+        return http.build();
+    }
 
     @Bean
     @ConditionalOnProperty(
@@ -38,6 +57,7 @@ public class SecurityConfiguration {
             havingValue = "true",
             matchIfMissing = false)
     public SecurityFilterChain securityFilterChain(HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository) throws Exception {
+        logger.info("Security enabled as property 'takita.security.enabled' is: {}", securityEnabled);
         http
                 .oauth2Login(oauth2Login -> oauth2Login
                         .successHandler(new SimpleUrlAuthenticationSuccessHandler(successUrl))

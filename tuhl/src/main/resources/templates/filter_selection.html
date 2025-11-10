@@ -158,9 +158,10 @@
     </div>
 
     <script th:inline="javascript">
-        // storing CSRF token, it is also available from main_page.html at
-        // "document.querySelector("meta[name='_csrf']").getAttribute('content')"
-        const csrfTokenFS = /*[[${_csrf.token}]]*/ 'default';
+ 
+        /*<![CDATA[*/
+        const csrfTokenFS = document.querySelector("meta[name='_csrf']").getAttribute('content');
+        /*]]>*/
 
         function add() {
             //Check if there is something to add
