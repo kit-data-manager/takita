@@ -40,6 +40,8 @@ public class AssistanceService implements IAssistanceService {
    *                      injection system indicated by @autowired annotation.
    * @param mainPageService instance of the logic for mainPage. Injected with Springs dependency
    *                        injection system indicated by @autowired annotation.
+   * @param securityConfiguration configuration holding security related properties. Injected with
+   *                        Springs dependency injection system indicated by @autowired annotation.
    */
   @Autowired
   public AssistanceService(UserRepository repo, IFilterService filterService,
@@ -48,6 +50,7 @@ public class AssistanceService implements IAssistanceService {
     this.filterService = filterService;
     this.mainPageService = mainPageService;
     this.securityConfiguration = securityConfiguration;
+    // if security is enabled use the "name" of the user as provided by the identity provider (eg. keycloak)
     if (this.securityConfiguration.securityEnabled) {
       OAuth2User user = ((OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
       this.currentUser = new User(user.getAttribute("name"));

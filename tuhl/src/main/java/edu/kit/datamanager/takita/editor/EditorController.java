@@ -56,6 +56,8 @@ public class EditorController {
    *
    * @param editorService instance of IEditorService
    * @param assistanceService instance of IAssistanceService
+   * @param securityConfiguration configuration holding security related properties. Injected with
+   *                        Springs dependency injection system indicated by @autowired annotation.
    */
   @Autowired
   public EditorController(IEditorService editorService, IAssistanceService assistanceService, SecurityConfiguration securityConfiguration) {
