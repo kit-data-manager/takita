@@ -26,9 +26,9 @@ import org.springframework.security.web.firewall.StrictHttpFirewall;
 public class SecurityConfiguration {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfiguration.class);
-    @Value("${takita.security.success-url:none}")
+    @Value("${takita.security.success-url:http://localhost}")
     private String successUrl;
-    @Value("${takita.security.redirect-uri:none}")
+    @Value("${takita.security.redirect-uri:http://localhost}")
     private String redirectUri;
     @Value("${takita.security.enabled:false}")
     public Boolean securityEnabled;
