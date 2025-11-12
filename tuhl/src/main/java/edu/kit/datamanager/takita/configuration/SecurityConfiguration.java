@@ -79,6 +79,7 @@ public class SecurityConfiguration {
                 )
                 .authorizeHttpRequests(authz -> authz
                         .requestMatchers("/unauthenticated", "/oauth2/**", "/login/**").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
                         .anyRequest().authenticated()
                 )
                 .csrf(csrf -> csrf.csrfTokenRepository(new HttpSessionCsrfTokenRepository()))
