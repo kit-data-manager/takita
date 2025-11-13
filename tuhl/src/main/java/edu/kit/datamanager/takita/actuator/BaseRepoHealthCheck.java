@@ -24,9 +24,16 @@ public class BaseRepoHealthCheck implements HealthIndicator {
         this.httpClient = HttpClient.newHttpClient();
     }
 
+    /**
+     * check whether the base-repo is available and responding using the health actuator endpoint
+     *
+     * @return - "UP", if base-repo is working;
+     *         - "DOWN" + StatusCode, if the actuator didn't return 200;
+     *         - StatusCode, if an exception (IO/Interrupted) occurred
+     */
     @Override
     public Health health() {
-        Health.Builder builder;
+        Health.Builder builder = new Health.Builder();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(this.baseUrl + this.actuatorPath))
                 .build();
@@ -34,12 +41,13 @@ public class BaseRepoHealthCheck implements HealthIndicator {
             HttpResponse<String> response = this.httpClient.send(request,
                     HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                builder = Health.up();
+                builder.up();
             } else {
-                builder = Health.down().status(String.valueOf(response.statusCode()));
+                builder.down()
+                        .withDetail("Response code from service", String.valueOf(response.statusCode()));
             }
         } catch (IOException | InterruptedException e) {
-            builder = Health.status("503");
+            builder.status("503");
         }
         return builder.build();
     }
