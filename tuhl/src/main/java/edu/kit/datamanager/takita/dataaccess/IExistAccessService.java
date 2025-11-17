@@ -17,19 +17,17 @@ public interface IExistAccessService {
 	 * Gets the content of a page that is given in the TEI standard from eXist.
 	 *
 	 * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
-	 * @param fileName identifies the file associated to a page
 	 * @return the xml as a String
 	 * @throws IOException if an error occurs while sending or receiving
 	 * @throws InterruptedException if the get request is interrupted
 	 */
-	String getXMLDocument(String documentId, String fileName) throws IOException, InterruptedException;
+	String getXMLDocument(String documentId) throws IOException, InterruptedException;
 	
 
 	/**
 	 * Gets a fragment/node of a document that is given in the TEI standard.
 	 *
 	 * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
-	 * @param fileName identifies the file associated to a page
 	 * @param xPath (encoded) identifies the document fragment
 	 * @param trimmed decides if the resolved xPath should have its content trimmed
 	 * according to the substring() function in the xPath. 
@@ -46,6 +44,6 @@ public interface IExistAccessService {
 	 * @throws XPathExpressionException 
      * @throws UnsupportedEncodingException
 	 */
-	String getXMLDocumentFragment(String documentId, String fileName, String xPath, Boolean trimmed) throws IOException, InterruptedException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException, XPathExpressionException, DOMException, UnsupportedEncodingException;
+	String getXMLDocumentFragment(String documentId, String xPath, Boolean trimmed) throws IOException, InterruptedException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException, XPathExpressionException, DOMException, UnsupportedEncodingException;
 	
 }

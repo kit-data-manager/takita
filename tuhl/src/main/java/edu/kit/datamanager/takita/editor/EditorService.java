@@ -614,21 +614,19 @@ public class EditorService implements IEditorService {
 	* Gets the content of a page that is given in the TEI standard from eXist-db.
 	*
 	* @param documentId the id of the document (usually the id of the pageDo in the base-repo)
-	* @param fileName identifies the file associated to a page
 	* @return the xml as a String
 	* @throws IOException if an error occurs while sending or receiving
 	* @throws InterruptedException if the get request is interrupted
 	*/
   @Override
-  public String getXMLDocument(String documentId, String fileName) throws IOException, InterruptedException {
-	  return existAccessService.getXMLDocument(documentId, fileName);
+  public String getXMLDocument(String documentId) throws IOException, InterruptedException {
+	  return existAccessService.getXMLDocument(documentId);
   }
 
    /**
     * Gets one fragment of a page that is given in the TEI standard from eXist-db.
 	*
 	* @param documentId the id of the document (usually the id of the pageDo in the base-repo)
-	* @param fileName identifies the file associated to a page (not used currently)
 	* @param xPath (encoded) identifies the document fragment
 	* @param trimmed decides if the resolved xPath should have its content trimmed
 	* according to the substring() function in the xPath. 
@@ -655,8 +653,8 @@ public class EditorService implements IEditorService {
 	* @throws UnsupportedEncodingException 
 	*/
   @Override
-  public String getXMLDocumentFragment(String documentId, String fileName, String xPath, Boolean trimmed) throws IOException, InterruptedException, TransformerConfigurationException, ParserConfigurationException, SAXException, TransformerException, XPathExpressionException, DOMException, UnsupportedEncodingException {
-	  return existAccessService.getXMLDocumentFragment(documentId, fileName, xPath, trimmed);
+  public String getXMLDocumentFragment(String documentId, String xPath, Boolean trimmed) throws IOException, InterruptedException, TransformerConfigurationException, ParserConfigurationException, SAXException, TransformerException, XPathExpressionException, DOMException, UnsupportedEncodingException {
+	  return existAccessService.getXMLDocumentFragment(documentId, xPath, trimmed);
   }
   
   /**

@@ -773,19 +773,18 @@ public class RestController {
      * Delegates the task to get the raw XML content of a page from an exist-db to IEditorStubService.
      * 
      * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
-     * @param fileName
      * @param request to access the headers from the HTTP request
      * @param response to access the headers for the HTTP response
      * @return HTTP entity sent back, either ok for a success including the
      *    XML or 500 for an internal error
      */
-    @RequestMapping(value = "/content/exist/{documentId}/{fileName}", method = RequestMethod.GET, produces = "application/xml")
+    @RequestMapping(value = "/content/exist/{documentId}", method = RequestMethod.GET, produces = "application/xml")
     @ResponseBody
-    public ResponseEntity getXMLDocument(@PathVariable("documentId") String pageId, 
-    		@PathVariable("fileName") String fileName, final WebRequest request, final HttpServletResponse response) {
+    public ResponseEntity getXMLDocument(@PathVariable("documentId") String documentId,
+                                         final WebRequest request, final HttpServletResponse response) {
 	    String rawXml;
 	    try {
-	        rawXml = editorService.getXMLDocument(pageId, fileName);
+	        rawXml = editorService.getXMLDocument(documentId);
 	        } catch (IOException e) {
 	            return ResponseEntity.status(500).body(e.getMessage());
 	        } catch (InterruptedException e) {
@@ -799,7 +798,6 @@ public class RestController {
       * Delegates the task to get the raw XML fragment of a page from an exist-db to IEditorStubService.
       * 
 	  * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
-	  * @param fileName identifies the file associated to a page
 	  * @param xPath (encoded) identifies the document fragment
 	  * @param trimmed decides if the resolved xPath should have its content trimmed
 	  * according to the substring() function in the xPath. 
@@ -810,15 +808,14 @@ public class RestController {
       * @return HTTP entity sent back, either ok for a success including the
       *    XML or 500 for an internal error
       */
-    @RequestMapping(value = "/content/exist/{documentId}/{fileName}/{xPath}/{trimmed}", method = RequestMethod.GET, produces = "application/xml")
+    @RequestMapping(value = "/content/exist/{documentId}/{xPath}/{trimmed}", method = RequestMethod.GET, produces = "application/xml")
     @ResponseBody
     public ResponseEntity getXMLDocumentFragment(@PathVariable("documentId") String documentId,
-    		@PathVariable("fileName") String fileName, @PathVariable("xPath") String xPath,
-    		@PathVariable("trimmed") String trimmed,
+                                                 @PathVariable("xPath") String xPath, @PathVariable("trimmed") String trimmed,
     		final WebRequest request, final HttpServletResponse response) {
 	    String rawXml = null;
 	    try {
-	        rawXml = editorService.getXMLDocumentFragment(documentId, fileName, xPath, Boolean.valueOf(trimmed));
+	        rawXml = editorService.getXMLDocumentFragment(documentId, xPath, Boolean.valueOf(trimmed));
 	        } catch (UnsupportedEncodingException e) {
 				return ResponseEntity.status(500).body(e.getMessage());
 			} catch (IOException e) {

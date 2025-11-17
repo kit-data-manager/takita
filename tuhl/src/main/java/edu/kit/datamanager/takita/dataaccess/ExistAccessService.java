@@ -67,7 +67,7 @@ public class ExistAccessService implements IExistAccessService {
 
 	@PostConstruct
 	public void checkProperty() {
-		if (baseUrl == null || baseUrl.equals("")) {
+		if (baseUrl == null || baseUrl.isEmpty()) {
 			throw new MissingPropertyException("exist.baseUrl");
 		}
 	}
@@ -76,13 +76,12 @@ public class ExistAccessService implements IExistAccessService {
 	 * Gets the content of a page that is given in the TEI standard from eXist-db.
 	 *
 	 * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
-	 * @param fileName identifies the file associated to a page
 	 * @return the xml as a String
 	 * @throws IOException if an error occurs while sending or receiving
 	 * @throws InterruptedException if the get request is interrupted
 	 */
 	@Override
-	public String getXMLDocument(String documentId, String fileName) throws IOException, InterruptedException {
+	public String getXMLDocument(String documentId) throws IOException, InterruptedException {
 		// xml:ids are not valid, if they start with a number, so depending on the
 		// ids used by a project the ids have to be prefixed with at least one
 		// letter. The letter can be changed in the application.properties. If a prefix
@@ -103,7 +102,6 @@ public class ExistAccessService implements IExistAccessService {
 	 * Gets one fragment of a page that is given in the TEI standard from eXist-db.
 	 *
 	 * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
-	 * @param fileName identifies the file associated to a page (not used currently)
 	 * @param xPath (encoded) identifies the document fragment
 	 * @param trimmed decides if the resolved xPath should have its content trimmed
 	 * according to the substring() function in the xPath. 
@@ -130,14 +128,14 @@ public class ExistAccessService implements IExistAccessService {
      * @throws UnsupportedEncodingException 
 	 */
 	@Override
-	public String getXMLDocumentFragment(String documentId, String fileName, String xPath, Boolean trimmed)
+	public String getXMLDocumentFragment(String documentId, String xPath, Boolean trimmed)
 			throws IOException, InterruptedException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException, XPathExpressionException, DOMException, UnsupportedEncodingException {
 		logger.info(String.format("Trying to resolve xPath: %s, for document: %s", xPath, documentId));
 		String query = constructQueryForXPath(documentId, xPath);
 		String encodedQuery = URLEncoder.encode(query, "UTF-8");
 		// instead of "get()" you might have to use "getFromExistDbWithAuth()" to use the credentials
 		// for the exist-db user specified in the application.properties.
-		// using the falg to not indent the result to keep original document format
+		// using the flag to not indent the result to keep original document format
 		String teiString = httpRequestHelper
 				.get(baseUrl + staticPath + SEARCH_URL + encodedQuery + NO_INDENT_FLAG).body();
 		// .getFromExistDbWithAuth(baseUrl + staticPath + pageId + "/" + fileName + SEARCH_URL + encodedQuery + NO_INDENT_FLAG).body();
@@ -205,7 +203,7 @@ public class ExistAccessService implements IExistAccessService {
 	 * extract ids from xPath and construct a query to be send to the exist-db, which will
 	 * return the closest common ancestor of the first and last element given in the xPath
 	 * 
-	 * @param document id of the document fragment of a file in exist-db (this should be the id of the
+	 * @param documentId id of the document fragment of a file in exist-db (this should be the id of the
 	 * page DO from the base-repo)
 	 * @param xPath which is encoded and holding all the ids
 	 * @return query string
