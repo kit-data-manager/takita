@@ -803,40 +803,29 @@ public class RestController {
 	  * according to the substring() function in the xPath. 
 	  * - "true" will lead to text contents of elements to be trimmed according to the substring-function
 	  * - "false" will leave the text contents of elements untouched (ignoring the substring-function)
+      * @param indented decides if the resulting xml-fragment should be indented by exist-db (true) or preserve the
+      * indentation of the original document (false)
       * @param request to access the headers from the HTTP request
       * @param response to access the headers for the HTTP response
       * @return HTTP entity sent back, either ok for a success including the
       *    XML or 500 for an internal error
       */
-    @RequestMapping(value = "/content/exist/{documentId}/{xPath}/{trimmed}", method = RequestMethod.GET, produces = "application/xml")
+    @RequestMapping(value = "/content/exist/{documentId}/{xPath}/{trimmed}/{indented}", method = RequestMethod.GET, produces = "application/xml")
     @ResponseBody
     public ResponseEntity getXMLDocumentFragment(@PathVariable("documentId") String documentId,
-                                                 @PathVariable("xPath") String xPath, @PathVariable("trimmed") String trimmed,
+            @PathVariable("xPath") String xPath, @PathVariable("trimmed") Boolean trimmed, @PathVariable("indented") Boolean indented,
     		final WebRequest request, final HttpServletResponse response) {
 	    String rawXml = null;
 	    try {
-	        rawXml = editorService.getXMLDocumentFragment(documentId, xPath, Boolean.valueOf(trimmed));
-	        } catch (UnsupportedEncodingException e) {
-				return ResponseEntity.status(500).body(e.getMessage());
-			} catch (IOException e) {
-	            return ResponseEntity.status(500).body(e.getMessage());
+	        rawXml = editorService.getXMLDocumentFragment(documentId, xPath, trimmed, indented);
 	        } catch (InterruptedException e) {
 	            Thread.currentThread().interrupt();
 	            return ResponseEntity.status(500).body(e.getMessage());
-	        } catch (TransformerConfigurationException e) {
-	        	return ResponseEntity.status(500).body(e.getMessage());
-			} catch (TransformerException e) {
-				return ResponseEntity.status(500).body(e.getMessage());
-			} catch (ParserConfigurationException e) {
-				return ResponseEntity.status(500).body(e.getMessage());
-			} catch (SAXException e) {
-				return ResponseEntity.status(500).body(e.getMessage());
-			} catch (XPathExpressionException e) {
-				return ResponseEntity.status(500).body(e.getMessage());
-			} catch (DOMException e) {
-				return ResponseEntity.status(500).body(e.getMessage());
-			} 
-	    return ResponseEntity.ok().body(rawXml);
+	        } catch (IOException | TransformerException | ParserConfigurationException | SAXException |
+                     XPathExpressionException | DOMException e) {
+	            return ResponseEntity.status(500).body(e.getMessage());
+	        }
+        return ResponseEntity.ok().body(rawXml);
     }
 
     private String decodeURL(String url) throws UnsupportedEncodingException {

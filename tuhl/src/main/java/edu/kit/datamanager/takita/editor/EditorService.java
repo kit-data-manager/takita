@@ -632,7 +632,9 @@ public class EditorService implements IEditorService {
 	* according to the substring() function in the xPath. 
 	* - "true" will lead to text contents of elements to be trimmed according to the substring-function
 	* - "false" will leave the text contents of elements untouched (ignoring the substring-function)
-	* @return the xml as a String
+    * @param indented decides if the resulting xml-fragment should be indented by eXist-db (true) or preserve the
+    * indentation of the original document (false)
+    * @return the xml as a String
 	* 1. if called with an xPath holding only one id ("pageId/filename/id("e.id")/false")
 	* consisting of one element and its descendants like a division or a word
 	* 2. a) if called with an xPath holding only multiple ids ("pageId/filename/id("e.id")|id("e.id2")/false")
@@ -653,8 +655,8 @@ public class EditorService implements IEditorService {
 	* @throws UnsupportedEncodingException 
 	*/
   @Override
-  public String getXMLDocumentFragment(String documentId, String xPath, Boolean trimmed) throws IOException, InterruptedException, TransformerConfigurationException, ParserConfigurationException, SAXException, TransformerException, XPathExpressionException, DOMException, UnsupportedEncodingException {
-	  return existAccessService.getXMLDocumentFragment(documentId, xPath, trimmed);
+  public String getXMLDocumentFragment(String documentId, String xPath, Boolean trimmed, Boolean indented) throws IOException, InterruptedException, TransformerConfigurationException, ParserConfigurationException, SAXException, TransformerException, XPathExpressionException, DOMException, UnsupportedEncodingException {
+	  return existAccessService.getXMLDocumentFragment(documentId, xPath, trimmed, indented);
   }
   
   /**

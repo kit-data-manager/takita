@@ -264,6 +264,8 @@ public interface IEditorService {
    *   according to the substring() function in the xPath.
    *   - "true" will lead to text contents of elements to be trimmed according to the substring-function
    *   - "false" will leave the text contents of elements untouched (ignoring the substring-function)
+   * @param indented decides if the resulting xml-fragment should be indented by eXist-db (true) or preserve the
+   * indentation of the original document (false)
    * @return the xml as a String
    * @throws IOException
    * @throws InterruptedException
@@ -275,7 +277,7 @@ public interface IEditorService {
    * @throws XPathExpressionException
    * @throws UnsupportedEncodingException 
    */
-  String getXMLDocumentFragment(String documentId, String xPath, Boolean trimmed) throws IOException, InterruptedException, TransformerConfigurationException, ParserConfigurationException, SAXException, TransformerException, XPathExpressionException, DOMException, UnsupportedEncodingException;
+  String getXMLDocumentFragment(String documentId, String xPath, Boolean trimmed, Boolean indented) throws IOException, InterruptedException, TransformerConfigurationException, ParserConfigurationException, SAXException, TransformerException, XPathExpressionException, DOMException, UnsupportedEncodingException;
   /**
    * Gets the raw JSON of an annotation.
    *

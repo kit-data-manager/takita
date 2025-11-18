@@ -117,7 +117,9 @@ public class ExistAccessService implements IExistAccessService {
 	 * consisting of the closest parent of the first and last element given in the xPath. Only the elemts, whos
 	 * ids are present in the xPath are included in the result, the others are getting removed, if the
 	 * "trimmed" variable is false
-	 * @throws IOException if an error occurs while sending or receiving
+     * @param indented decides if the resulting xml-fragment should be indented by exist-db (true) or preserve the
+     * indentation of the original document (false)
+     * @throws IOException if an error occurs while sending or receiving
 	 * @throws InterruptedException if the get request is interrupted
 	 * @throws ParserConfigurationException 
 	 * @throws SAXException 
@@ -128,16 +130,17 @@ public class ExistAccessService implements IExistAccessService {
      * @throws UnsupportedEncodingException 
 	 */
 	@Override
-	public String getXMLDocumentFragment(String documentId, String xPath, Boolean trimmed)
+	public String getXMLDocumentFragment(String documentId, String xPath, Boolean trimmed, Boolean indented)
 			throws IOException, InterruptedException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException, XPathExpressionException, DOMException, UnsupportedEncodingException {
 		logger.info(String.format("Trying to resolve xPath: %s, for document: %s", xPath, documentId));
 		String query = constructQueryForXPath(documentId, xPath);
 		String encodedQuery = URLEncoder.encode(query, "UTF-8");
 		// instead of "get()" you might have to use "getFromExistDbWithAuth()" to use the credentials
 		// for the exist-db user specified in the application.properties.
-		// using the flag to not indent the result to keep original document format
+		// using the flag to not indent the result to keep original document format, if desired
 		String teiString = httpRequestHelper
-				.get(baseUrl + staticPath + SEARCH_URL + encodedQuery + NO_INDENT_FLAG).body();
+				.get(baseUrl + staticPath + SEARCH_URL + encodedQuery + (indented ? NO_INDENT_FLAG : ""))
+                .body();
 		// .getFromExistDbWithAuth(baseUrl + staticPath + pageId + "/" + fileName + SEARCH_URL + encodedQuery + NO_INDENT_FLAG).body();
 		// parsing the string into a document
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
