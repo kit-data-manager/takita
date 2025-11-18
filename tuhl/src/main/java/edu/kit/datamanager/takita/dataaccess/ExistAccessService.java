@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -48,18 +49,15 @@ public class ExistAccessService implements IExistAccessService {
 
 	@Value("${exist.baseUrl:#{null}}")
 	private String baseUrl;
-	@Value("${exist.staticPath}")
-	private String staticPath;
+	@Value("${exist.restEndpoint:rest/db/}")
+	private String restEndpoint;
 	@Value("${exist.idPrefix:#{null}}")
 	private String idPrefix;
 
 	private final HttpRequestHelper httpRequestHelper;
-	// private static final String existQueryUrl = baseUrl + staticPath +
-	// SEARCH_URL;
 
 	/**
-	 * Implements IRepositoryAccessService, contains logic for accessing the
-	 * repository.
+	 * Implements IExistAccessService, contains logic for accessing the eXist-db.
 	 */
 	public ExistAccessService() {
 		httpRequestHelper = new HttpRequestHelper();
@@ -82,20 +80,22 @@ public class ExistAccessService implements IExistAccessService {
 	 */
 	@Override
 	public String getXMLDocument(String documentId) throws IOException, InterruptedException {
-		// xml:ids are not valid, if they start with a number, so depending on the
-		// ids used by a project the ids have to be prefixed with at least one
-		// letter. The letter can be changed in the application.properties. If a prefix
-		// is given use it.
+		// xml:ids are not valid, if they start with a number. The base-repo generates ids, which
+        // can start with a number, and if these ids are used as xml:ids for fragments in the xml
+        // document it can lead to problems. Adding a prefix to the xml:ids prior to uploading
+        // the documents to eXist-db might be necessary. So depending on the  ids used by a
+        // project the ids have to be prefixed with at least one letter. The letter can be changed
+        // in the application.properties. If a prefix is given use it.
 		if (idPrefix != null) {
 			documentId = idPrefix + documentId;
 		}
 		
 		// the context for the xPath should only be a tei-body with the pageId
 		String query = "//id('" + documentId + "')";
-		String encodedQuery = URLEncoder.encode(query, "UTF-8");
-		logger.info(String.format("Trying to get content for document: %s", documentId));
-		// using the falg to not indent the result to keep original document format
-		return httpRequestHelper.get(baseUrl + staticPath + SEARCH_URL + encodedQuery + NO_INDENT_FLAG).body();
+		String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
+		logger.info("Trying to get content for document: {}", documentId);
+		// using the flag to not indent the result to keep original document format
+		return httpRequestHelper.get(baseUrl + restEndpoint + SEARCH_URL + encodedQuery + NO_INDENT_FLAG).body();
 	}
 	
 	/**
@@ -114,7 +114,7 @@ public class ExistAccessService implements IExistAccessService {
 	 * consisting of the closest parent of the first and last element given in the xPath. The whole parent is
 	 * included if the "trimmed" variable is false
 	 *    b) if called with an xPath holding only multiple ids ("pageId/filename/id("e.id")|id("e.id2")/false")
-	 * consisting of the closest parent of the first and last element given in the xPath. Only the elemts, whos
+	 * consisting of the closest parent of the first and last element given in the xPath. Only the elements, whose
 	 * ids are present in the xPath are included in the result, the others are getting removed, if the
 	 * "trimmed" variable is false
      * @param indented decides if the resulting xml-fragment should be indented by exist-db (true) or preserve the
@@ -132,21 +132,21 @@ public class ExistAccessService implements IExistAccessService {
 	@Override
 	public String getXMLDocumentFragment(String documentId, String xPath, Boolean trimmed, Boolean indented)
 			throws IOException, InterruptedException, ParserConfigurationException, SAXException, TransformerConfigurationException, TransformerException, XPathExpressionException, DOMException, UnsupportedEncodingException {
-		logger.info(String.format("Trying to resolve xPath: %s, for document: %s", xPath, documentId));
+		logger.info("Trying to resolve xPath: {}, for document: {}", xPath, documentId);
 		String query = constructQueryForXPath(documentId, xPath);
-		String encodedQuery = URLEncoder.encode(query, "UTF-8");
+		String encodedQuery = URLEncoder.encode(query, StandardCharsets.UTF_8);
 		// instead of "get()" you might have to use "getFromExistDbWithAuth()" to use the credentials
 		// for the exist-db user specified in the application.properties.
 		// using the flag to not indent the result to keep original document format, if desired
 		String teiString = httpRequestHelper
-				.get(baseUrl + staticPath + SEARCH_URL + encodedQuery + (indented ? NO_INDENT_FLAG : ""))
+				.get(baseUrl + restEndpoint + SEARCH_URL + encodedQuery + (indented ? NO_INDENT_FLAG : ""))
                 .body();
-		// .getFromExistDbWithAuth(baseUrl + staticPath + pageId + "/" + fileName + SEARCH_URL + encodedQuery + NO_INDENT_FLAG).body();
-		// parsing the string into a document
+		// .getFromExistDbWithAuth(baseUrl + restEndpoint + pageId + "/" + fileName + SEARCH_URL + encodedQuery + (indented ? NO_INDENT_FLAG : "")).body();
+
+        // parsing the string into a document
 		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
 		factory.setNamespaceAware(true);
-		DocumentBuilder builder;
-		builder = factory.newDocumentBuilder();
+		DocumentBuilder builder = factory.newDocumentBuilder();
 		Document teiDocument = builder.parse(new InputSource(new StringReader(teiString)));
 
 		if (trimmed) {
@@ -159,19 +159,13 @@ public class ExistAccessService implements IExistAccessService {
 			// as the return of the exist database is using it
 			NamespaceContext namespaceContext = new NamespaceContext() {
 				public String getNamespaceURI(String prefix) {
-					String uri;
-					if (prefix.equals("tei")) {
-						uri = "http://www.tei-c.org/ns/1.0";
-					} else if (prefix.equals("xi")) {
-						uri = "http://www.w3.org/2001/XInclude";
-					} else if (prefix.equals("xml")) {
-						uri = "http://www.w3.org/XML/1998/namespace";
-					} else if (prefix.equals("exist")) {
-						uri = "http://exist.sourceforge.net/NS/exist";
-					} else {
-						uri = null;
-					}
-					return uri;
+                    return switch (prefix) {
+                        case "tei" -> "http://www.tei-c.org/ns/1.0";
+                        case "xi" -> "http://www.w3.org/2001/XInclude";
+                        case "xml" -> "http://www.w3.org/XML/1998/namespace";
+                        case "exist" -> "http://exist.sourceforge.net/NS/exist";
+                        default -> null;
+                    };
 				}
 
 				// Dummy implementation - not used!
@@ -179,7 +173,7 @@ public class ExistAccessService implements IExistAccessService {
 					return null;
 				}
 
-				// Dummy implemenation - not used!
+				// Dummy implementation - not used!
 				public String getPrefix(String uri) {
 					return null;
 				}
@@ -192,11 +186,11 @@ public class ExistAccessService implements IExistAccessService {
 			List<String> ids = extractIDsFromXPath(xPath);
 			iterateNodeList(teiDocument.getDocumentElement().getChildNodes(), ids, xPathInstance);
 			String docString = documentToString(teiDocument);
-			logger.info(String.format("Successfully resolved xPath: %s, for document: %s with trimmed content:\n%s", xPath, documentId, docString));
+			logger.info("Successfully resolved xPath: {}, for document: {} with trimmed content.", xPath, documentId);
 		    return docString;
 		} else {
 			String docString = documentToString(teiDocument);
-			logger.info(String.format("Successfully resolved xPath: %s, for document: %s with untrimmed content:\n%s", xPath, documentId, docString));
+			logger.info("Successfully resolved xPath: {}, for document: {} with untrimmed content.", xPath, documentId);
 		    return docString;
 		}
 			
@@ -269,16 +263,16 @@ public class ExistAccessService implements IExistAccessService {
 	 * @throws UnsupportedEncodingException
 	 */
 	private List<String> extractIDsFromXPath(String xPath) throws UnsupportedEncodingException {
-		String decodedXPath =URLDecoder.decode(xPath, "UTF-8");
+		String decodedXPath = URLDecoder.decode(xPath, StandardCharsets.UTF_8);
 		
 		if(decodedXPath.contains("concat(")) {
 			// if the xPath contains substrings, e.g.
 			// 'concat(substring(id("w.1_6-1"), 2, 7), " ", id("w.1_6-2"), " ", id("w.1_6-3"))'
 			String[] parts = decodedXPath.split("id\\(");
 
-			List<String> ids= new ArrayList(parts.length-1);
+			List<String> ids = new ArrayList<>(parts.length-1);
 			// add all ids to the ids array, but skip the first entry of the parts array
-			// as it is "cpncat("
+			// as it is "concat("
 			for (int i = 1; i < parts.length; i++) {
 				ids.add(parts[i].split("\"")[1]);
 			}
@@ -286,9 +280,9 @@ public class ExistAccessService implements IExistAccessService {
 		} else {
 			// if the xPath doesn't contain a substring, e.g.
 			// 'id("w.1") | id("w.2") | id("w.3"'
-			String[] parts = URLDecoder.decode(xPath, "UTF-8").split("\\|");
+			String[] parts = URLDecoder.decode(xPath, StandardCharsets.UTF_8).split("\\|");
 
-			List<String> ids= new ArrayList(parts.length);
+			List<String> ids= new ArrayList<>(parts.length);
 			for (String part :parts) {
 				ids.add(part.split("\"")[1]);
 			}
@@ -347,12 +341,12 @@ public class ExistAccessService implements IExistAccessService {
 	 * @param node to be checked
 	 * @param ids list of ids
 	 * @return boolean, true: if the node has any id from the nodelist;
-	 * false (default return): if the the node does not have any id from the nodelist
+	 * false (default return): if the node does not have any id from the nodelist
 	 */
 	private Boolean selfIsIncludedInIDList(Node node, List<String> ids) {
-		// i think i have to clone or stuff is getting weird.
-		// i think its because somehow the node still has connections to its parents
-		// and then the xpaths are acting up
+		// Cloning or stuff is getting weird.
+		// It might get weird because somehow the node still has connections to its parents
+		// and then the xPaths are acting up
 		Node clone = node.cloneNode(true);
 		
 		// check for every id, if it is present in the node. This is solely via the attributes
@@ -384,9 +378,9 @@ public class ExistAccessService implements IExistAccessService {
 	 * @throws XPathExpressionException
 	 */
 	private Boolean descendantsAreIncludedInIDList(Node node, List<String> ids, XPath xPathInstance) throws XPathExpressionException {
-		// i think i have to clone or stuff is getting weird.
-		// i think its because somehow the node still has connections to its parents
-		// and then the xpaths are acting up
+        // Cloning or stuff is getting weird.
+        // It might get weird because somehow the node still has connections to its parents
+		// and then the xPaths are acting up
 		Node clone = node.cloneNode(true);
 		
 		// check for every id, if it is present in the node. This is done via xPath.
@@ -401,7 +395,7 @@ public class ExistAccessService implements IExistAccessService {
 	/**
 	 * turn xml document into a string
 	 * 
-	 * @param document
+	 * @param document to be converted
 	 * @return the xml document as string
 	 * @throws TransformerConfigurationException
 	 * @throws TransformerException

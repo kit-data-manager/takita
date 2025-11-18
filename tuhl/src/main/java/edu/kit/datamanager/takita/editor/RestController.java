@@ -780,7 +780,7 @@ public class RestController {
      */
     @RequestMapping(value = "/content/exist/{documentId}", method = RequestMethod.GET, produces = "application/xml")
     @ResponseBody
-    public ResponseEntity getXMLDocument(@PathVariable("documentId") String documentId,
+    public ResponseEntity<String> getXMLDocument(@PathVariable("documentId") String documentId,
                                          final WebRequest request, final HttpServletResponse response) {
 	    String rawXml;
 	    try {
@@ -812,7 +812,7 @@ public class RestController {
       */
     @RequestMapping(value = "/content/exist/{documentId}/{xPath}/{trimmed}/{indented}", method = RequestMethod.GET, produces = "application/xml")
     @ResponseBody
-    public ResponseEntity getXMLDocumentFragment(@PathVariable("documentId") String documentId,
+    public ResponseEntity<String> getXMLDocumentFragment(@PathVariable("documentId") String documentId,
             @PathVariable("xPath") String xPath, @PathVariable("trimmed") Boolean trimmed, @PathVariable("indented") Boolean indented,
     		final WebRequest request, final HttpServletResponse response) {
 	    String rawXml = null;
