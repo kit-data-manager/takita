@@ -1,0 +1,11 @@
+{
+  "extends": ["config:base"],
+  "platform": "gitlab",
+  "enabledManagers": ["gradle"],
+  "automerge": false,
+  "minimumReleaseAge": "3 days",
+  "dependencyDashboard": true,
+  "labels": ["dependencies", "renovate"],
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 2
+}
