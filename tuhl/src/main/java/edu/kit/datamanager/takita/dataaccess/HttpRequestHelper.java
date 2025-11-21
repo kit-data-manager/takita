@@ -17,25 +17,27 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
  */
 class HttpRequestHelper {
   HttpClient client;
-  HttpClient existClient;
-	@Value("${exist.user.name}")
-	private String user;
-	@Value("${exist.user.password}")
-	private String password;
 
   /**
    * Constructor for the HttpRequestHelper. Creates the HttpClient instance.
    */
   public HttpRequestHelper() {
     client = HttpClient.newHttpClient();
-    existClient = HttpClient.newBuilder()
-    		.authenticator(new Authenticator() {
-  		      @Override
-  		      protected PasswordAuthentication getPasswordAuthentication() {
-  		          return new PasswordAuthentication(user, password.toCharArray());
-  		      }
-  		  })
-  		  .build();
+  }
+
+  /**
+   * Overloaded constructor for the HttpRequestHelper. Creates the HttpClient instance with basic
+   * authentication.
+   */
+  public HttpRequestHelper(String user, String password) {
+        client = HttpClient.newBuilder()
+                .authenticator(new Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(user, password.toCharArray());
+                    }
+                })
+                .build();
   }
 
   /**
@@ -53,22 +55,6 @@ class HttpRequestHelper {
 
     return client.send(request,
           HttpResponse.BodyHandlers.ofString());
-  }
-  
-  /**
-   * Performs a HTTP get request at the specified url with authentication.
-   *
-   * @param url the url path specified as a String
-   * @return the HttpResponse
-   * @throws IOException if an error occurs while sending or receiving
-   * @throws InterruptedException if the get request is interrupted
-   */
-  public HttpResponse<String> getFromExistDbWithAuth(String url) throws IOException, InterruptedException {
-	    HttpRequest request = HttpRequest.newBuilder()
-	        .uri(URI.create(url))
-	        .build();
-	    return existClient.send(request,
-	          HttpResponse.BodyHandlers.ofString());
   }
 
   public HttpResponse<String> postManuscript(String url, JSONObject requestBody)

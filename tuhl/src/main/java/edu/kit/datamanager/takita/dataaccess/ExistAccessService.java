@@ -6,6 +6,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -56,11 +57,23 @@ public class ExistAccessService implements IExistAccessService {
 
 	private final HttpRequestHelper httpRequestHelper;
 
-	/**
-	 * Implements IExistAccessService, contains logic for accessing the eXist-db.
-	 */
-	public ExistAccessService() {
-		httpRequestHelper = new HttpRequestHelper();
+    /**
+     * Implements IExistAccessService, contains logic for accessing the eXist-db.
+     * If a username and password is provided in the application.properties, the
+     * HTTP-requests will be sent with authentication enabled as the HttpRequestHelper
+     * will be constructed using these credentials.
+     *
+     * @param username for the user in the eXist-db. It can also be null, if none was
+     *                 given in the application.properties.
+     * @param password for the user in the eXist-db. It can also be null, if none was
+     *                 given in the application.properties.
+     */
+	public ExistAccessService(@Value("${exist.user.name:#{null}}") String username, @Value("${exist.user.password:#{null}}") String password) {
+        boolean credentialsGiven = (username != null && !username.isEmpty()) && (password != null && !password.isEmpty());
+        logger.info(credentialsGiven ?
+                "Creating httpRequestHelper for ExistAccessService with authentication as a username and password was given" :
+                "Creating httpRequestHelper for ExistAccessService without authentication as no username and password was given");
+        httpRequestHelper = credentialsGiven ? new HttpRequestHelper(username, password) : new HttpRequestHelper();
 	}
 
 	@PostConstruct
@@ -107,6 +120,8 @@ public class ExistAccessService implements IExistAccessService {
 	 * according to the substring() function in the xPath. 
 	 * - "true" will lead to text contents of elements to be trimmed according to the substring-function
 	 * - "false" will leave the text contents of elements untouched (ignoring the substring-function)
+     * @param indented decides if the resulting xml-fragment should be indented by exist-db (true) or preserve the
+     * indentation of the original document (false)
 	 * @return the xml as a String
 	 * 1. if called with an xPath holding only one id ("pageId/filename/id("e.id")/false")
 	 * consisting of one element and its descendants like a division or a word
@@ -117,8 +132,6 @@ public class ExistAccessService implements IExistAccessService {
 	 * consisting of the closest parent of the first and last element given in the xPath. Only the elements, whose
 	 * ids are present in the xPath are included in the result, the others are getting removed, if the
 	 * "trimmed" variable is false
-     * @param indented decides if the resulting xml-fragment should be indented by exist-db (true) or preserve the
-     * indentation of the original document (false)
      * @throws IOException if an error occurs while sending or receiving
 	 * @throws InterruptedException if the get request is interrupted
 	 * @throws ParserConfigurationException 
@@ -138,61 +151,66 @@ public class ExistAccessService implements IExistAccessService {
 		// instead of "get()" you might have to use "getFromExistDbWithAuth()" to use the credentials
 		// for the exist-db user specified in the application.properties.
 		// using the flag to not indent the result to keep original document format, if desired
-		String teiString = httpRequestHelper
-				.get(baseUrl + restEndpoint + SEARCH_URL + encodedQuery + (indented ? NO_INDENT_FLAG : ""))
-                .body();
-		// .getFromExistDbWithAuth(baseUrl + restEndpoint + pageId + "/" + fileName + SEARCH_URL + encodedQuery + (indented ? NO_INDENT_FLAG : "")).body();
+		HttpResponse<String> response = httpRequestHelper
+                .get(baseUrl + restEndpoint + SEARCH_URL + encodedQuery + (indented ? NO_INDENT_FLAG : ""));
 
-        // parsing the string into a document
-		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-		factory.setNamespaceAware(true);
-		DocumentBuilder builder = factory.newDocumentBuilder();
-		Document teiDocument = builder.parse(new InputSource(new StringReader(teiString)));
+        if (response.statusCode() == 200) {
+            String teiString = response.body();
+            // parsing the string into a document
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setNamespaceAware(true);
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document teiDocument = builder.parse(new InputSource(new StringReader(teiString)));
 
-		if (trimmed) {
-			// defining the namespaces to be used by the following code see:
-			// https://stackoverflow.com/questions/13702637/xpath-with-namespace-in-java
-			// and
-			// https://web.archive.org/web/20070328212209/http://blog.davber.com/2006/09/17/xpath-with-namespaces-in-java/
-			// We map the prefixes to URIs
-			// the "xml"-namespace is necessary as we access the "@xml:id" and the "exist"-namespace
-			// as the return of the exist database is using it
-			NamespaceContext namespaceContext = new NamespaceContext() {
-				public String getNamespaceURI(String prefix) {
-                    return switch (prefix) {
-                        case "tei" -> "http://www.tei-c.org/ns/1.0";
-                        case "xi" -> "http://www.w3.org/2001/XInclude";
-                        case "xml" -> "http://www.w3.org/XML/1998/namespace";
-                        case "exist" -> "http://exist.sourceforge.net/NS/exist";
-                        default -> null;
-                    };
-				}
+            if (trimmed) {
+                // defining the namespaces to be used by the following code see:
+                // https://stackoverflow.com/questions/13702637/xpath-with-namespace-in-java
+                // and
+                // https://web.archive.org/web/20070328212209/http://blog.davber.com/2006/09/17/xpath-with-namespaces-in-java/
+                // We map the prefixes to URIs
+                // the "xml"-namespace is necessary as we access the "@xml:id" and the "exist"-namespace
+                // as the return of the exist database is using it
+                NamespaceContext namespaceContext = new NamespaceContext() {
+                    public String getNamespaceURI(String prefix) {
+                        return switch (prefix) {
+                            case "tei" -> "http://www.tei-c.org/ns/1.0";
+                            case "xi" -> "http://www.w3.org/2001/XInclude";
+                            case "xml" -> "http://www.w3.org/XML/1998/namespace";
+                            case "exist" -> "http://exist.sourceforge.net/NS/exist";
+                            default -> null;
+                        };
+                    }
 
-				// Dummy implementation - not used!
-				public Iterator getPrefixes(String val) {
-					return null;
-				}
+                    // Dummy implementation - not used!
+                    public Iterator getPrefixes(String val) {
+                        return null;
+                    }
 
-				// Dummy implementation - not used!
-				public String getPrefix(String uri) {
-					return null;
-				}
-			};
+                    // Dummy implementation - not used!
+                    public String getPrefix(String uri) {
+                        return null;
+                    }
+                };
 
-			// creating the xPath object
-			XPath xPathInstance = XPathFactory.newInstance().newXPath();
-			xPathInstance.setNamespaceContext(namespaceContext);
+                // creating the xPath object
+                XPath xPathInstance = XPathFactory.newInstance().newXPath();
+                xPathInstance.setNamespaceContext(namespaceContext);
 
-			List<String> ids = extractIDsFromXPath(xPath);
-			iterateNodeList(teiDocument.getDocumentElement().getChildNodes(), ids, xPathInstance);
-			String docString = documentToString(teiDocument);
-			logger.info("Successfully resolved xPath: {}, for document: {} with trimmed content.", xPath, documentId);
-		    return docString;
-		} else {
-			String docString = documentToString(teiDocument);
-			logger.info("Successfully resolved xPath: {}, for document: {} with untrimmed content.", xPath, documentId);
-		    return docString;
-		}
+                List<String> ids = extractIDsFromXPath(xPath);
+                iterateNodeList(teiDocument.getDocumentElement().getChildNodes(), ids, xPathInstance);
+                String docString = documentToString(teiDocument);
+                logger.info("Successfully resolved xPath: {}, for document: {} with trimmed content.", xPath, documentId);
+                return docString;
+            } else {
+                String docString = documentToString(teiDocument);
+                logger.info("Successfully resolved xPath: {}, for document: {} with untrimmed content.", xPath, documentId);
+                return docString;
+            }
+        } else {
+            logger.info("Could not access document: {} from eXist-db.", documentId);
+            return response.body();
+        }
+
 			
 	}
 
