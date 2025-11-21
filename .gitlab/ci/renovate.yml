@@ -1,0 +1,23 @@
+renovate:
+  stage: deploy
+  image: renovate/renovate:latest
+  variables:
+    GIT_STRATEGY: none 
+    RENOVATE_PLATFORM: gitlab 
+    RENOVATE_ENDPOINT: $CI_API_V4_URL 
+    RENOVATE_REPOSITORIES: '["$CI_PROJECT_PATH"]' 
+    RENOVATE_IGNORE_PR_AUTHOR: "true" 
+    RENOVATE_CACHE_DIR: $CI_PROJECT_DIR/.cache/ 
+  script: 
+    - renovate
+  cache: 
+    key: renovate
+    paths:
+      - .cache/
+  interruptible: false 
+  environment: 
+    name: renovate
+    action: access
+  resource_group: renovate 
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
