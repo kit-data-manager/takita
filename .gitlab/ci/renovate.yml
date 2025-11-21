@@ -1,5 +1,7 @@
 renovate:
   stage: deploy
+  tags:
+    - kgr1-instance-mini
   image: renovate/renovate:latest
   variables:
     GIT_STRATEGY: none 
