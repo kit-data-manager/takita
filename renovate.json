@@ -7,5 +7,8 @@
   "dependencyDashboard": true,
   "labels": ["dependencies", "renovate"],
   "prConcurrentLimit": 5,
-  "prHourlyLimit": 2
+  "prHourlyLimit": 2,
+  "gitlabci": {
+    "fileMatch": ["\\.gitlab-ci\\.ya?ml$", "(^|/)\\.gitlab/ci/.+\\.ya?ml$"]
+  }  
 }
