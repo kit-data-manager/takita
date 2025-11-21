@@ -10,5 +10,6 @@
   "prHourlyLimit": 2,
   "gitlabci": {
     "fileMatch": ["\\.gitlab-ci\\.ya?ml$", "(^|/)\\.gitlab/ci/.+\\.ya?ml$"]
-  }  
+  },
+  "branchPrefix": "renovate-mr/"
 }
