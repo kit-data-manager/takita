@@ -1,4 +1,4 @@
-package edu.kit.datamanager.takita.dataaccess;
+package edu.kit.datamanager.takita.dataaccess.existDb;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -11,9 +11,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import edu.kit.datamanager.takita.dataaccess.HttpRequestHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
@@ -41,9 +44,12 @@ import edu.kit.datamanager.takita.MissingPropertyException;
 import jakarta.annotation.PostConstruct;
 
 @Service
-public class ExistAccessService implements IExistAccessService {
+@ConditionalOnProperty(
+        value = "exist.baseUrl",
+        matchIfMissing = false)
+public class ExistDbAccessService implements IExistDbAccessService {
 
-	private static final Logger logger = LoggerFactory.getLogger(ExistAccessService.class);
+	private static final Logger logger = LoggerFactory.getLogger(ExistDbAccessService.class);
 
 	private static final String SEARCH_URL = "?_query=";
 	private static final String NO_INDENT_FLAG = "&_indent=no";
@@ -68,7 +74,7 @@ public class ExistAccessService implements IExistAccessService {
      * @param password for the user in the eXist-db. It can also be null, if none was
      *                 given in the application.properties.
      */
-	public ExistAccessService(@Value("${exist.user.name:#{null}}") String username, @Value("${exist.user.password:#{null}}") String password) {
+	public ExistDbAccessService(@Value("${exist.user.name:#{null}}") String username, @Value("${exist.user.password:#{null}}") String password) {
         boolean credentialsGiven = (username != null && !username.isEmpty()) && (password != null && !password.isEmpty());
         logger.info(credentialsGiven ?
                 "Creating httpRequestHelper for ExistAccessService with authentication as a username and password was given" :

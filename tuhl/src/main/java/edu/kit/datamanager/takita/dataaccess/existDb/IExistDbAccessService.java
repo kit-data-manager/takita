@@ -1,4 +1,4 @@
-package edu.kit.datamanager.takita.dataaccess;
+package edu.kit.datamanager.takita.dataaccess.existDb;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -11,7 +11,7 @@ import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.DOMException;
 import org.xml.sax.SAXException;
 
-public interface IExistAccessService {
+public interface IExistDbAccessService {
 
 	/**
 	 * Gets the content of a page that is given in the TEI standard from eXist.

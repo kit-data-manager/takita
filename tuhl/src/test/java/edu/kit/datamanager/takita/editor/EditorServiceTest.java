@@ -4,7 +4,6 @@ import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 import edu.kit.datamanager.takita.assistance.IAssistanceService;
 import edu.kit.datamanager.takita.assistance.User;
 import edu.kit.datamanager.takita.dataaccess.IAnnotationStoreAccessService;
-import edu.kit.datamanager.takita.dataaccess.IExistAccessService;
 import edu.kit.datamanager.takita.dataaccess.IRepositoryAccessService;
 import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import edu.kit.datamanager.takita.model.Annotation;
@@ -50,9 +49,6 @@ class EditorServiceTest {
 
   @MockBean
   private IRepositoryAccessService mockRepositoryAccessService;
-
-  @MockBean
-  private IExistAccessService mockedExistAccessService;
 
   @MockBean
   private IAnnotationStoreAccessService mockAnnotationStoreAccessService;

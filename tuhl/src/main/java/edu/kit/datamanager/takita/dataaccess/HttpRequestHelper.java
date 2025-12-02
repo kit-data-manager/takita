@@ -15,7 +15,7 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 /**
  * Helper class to send http requests.
  */
-class HttpRequestHelper {
+public class HttpRequestHelper {
   HttpClient client;
 
   /**
