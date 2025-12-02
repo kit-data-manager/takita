@@ -9,12 +9,16 @@ import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 
 
 @Service("skosmos")
+@ConditionalOnProperty(
+        value = "thesaurus.baseUrl",
+        matchIfMissing = false)
 public class SkosmosService  implements IThesaurusService {
     
     @Value("${thesaurus.baseUrl}")

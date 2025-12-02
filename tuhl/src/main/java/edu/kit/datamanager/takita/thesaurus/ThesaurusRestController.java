@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.MediaType;
@@ -23,6 +24,9 @@ import org.springframework.web.context.request.WebRequest;
  */
 @Controller
 @RequestMapping("/thesaurus_rest")
+@ConditionalOnProperty(
+        value = "thesaurus.baseUrl",
+        matchIfMissing = false)
 public class ThesaurusRestController {
 
     @Autowired
