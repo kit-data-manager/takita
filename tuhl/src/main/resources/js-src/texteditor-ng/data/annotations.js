@@ -31,7 +31,7 @@ function buildAnnoUrl(annoId) {
 export async function getAnnotationData(annoId) {
   const url = buildAnnoUrl(annoId);
   const response = await getAnnotation(url);
-  if (response.status != 200) {
+  if (response.status == 200) {
     return await response.json();
   } else {
     // throw new Error('Getting the annotation failed with response: ', { cause: response });
