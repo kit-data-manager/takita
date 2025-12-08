@@ -4,6 +4,7 @@ import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 import edu.kit.datamanager.takita.assistance.IAssistanceService;
 import edu.kit.datamanager.takita.dataaccess.AnnotationConverter;
 import edu.kit.datamanager.takita.dataaccess.IAnnotationStoreAccessService;
+import edu.kit.datamanager.takita.dataaccess.IExistAccessService;
 import edu.kit.datamanager.takita.dataaccess.IRepositoryAccessService;
 import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import edu.kit.datamanager.takita.model.Annotation;
@@ -18,11 +19,17 @@ import edu.kit.datamanager.takita.model.target.TextQuoteSelector;
 import edu.kit.datamanager.takita.model.target.XPathSelector;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +39,8 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.annotation.SessionScope;
+import org.w3c.dom.DOMException;
+import org.xml.sax.SAXException;
 
 /**
  * Implements the Interface IEditorService, handles methods needed by the EditorController.
@@ -47,6 +56,7 @@ public class EditorService implements IEditorService {
   private final ISearchIndexService searchIndexService;
   private final IAnnotationStoreAccessService accessService;
   private final IRepositoryAccessService repositoryAccessService;
+  private final IExistAccessService existAccessService;
   private final AnnotationConverter annotationConverter;
 
   private static final Logger logger = LoggerFactory.getLogger(EditorService.class);
@@ -61,11 +71,13 @@ public class EditorService implements IEditorService {
   public EditorService(IAssistanceService assistanceService,
                            ISearchIndexService searchIndexService,
                            IAnnotationStoreAccessService accessService,
-                           IRepositoryAccessService repositoryAccessService) {
+                           IRepositoryAccessService repositoryAccessService,
+                           IExistAccessService existAccessService) {
     this.assistanceService = assistanceService;
     this.searchIndexService = searchIndexService;
     this.accessService = accessService;
     this.repositoryAccessService = repositoryAccessService;
+    this.existAccessService = existAccessService;
     this.annotationConverter = new AnnotationConverter(accessService, repositoryAccessService);
   }
 
@@ -616,7 +628,56 @@ public class EditorService implements IEditorService {
   public String getPageContentXml(String pageId, String fileName) throws IOException, InterruptedException {
 	    return searchIndexService.getRawPageContentXml(pageId, fileName);
   }
+  
+   /**
+	* Gets the content of a page that is given in the TEI standard from eXist-db.
+	*
+	* @param documentId the id of the document (usually the id of the pageDo in the base-repo)
+	* @return the xml as a String
+	* @throws IOException if an error occurs while sending or receiving
+	* @throws InterruptedException if the get request is interrupted
+	*/
+  @Override
+  public String getXMLDocument(String documentId) throws IOException, InterruptedException {
+	  return existAccessService.getXMLDocument(documentId);
+  }
 
+   /**
+    * Gets one fragment of a page that is given in the TEI standard from eXist-db.
+	*
+	* @param documentId the id of the document (usually the id of the pageDo in the base-repo)
+	* @param xPath (encoded) identifies the document fragment
+	* @param trimmed decides if the resolved xPath should have its content trimmed
+	* according to the substring() function in the xPath. 
+	* - "true" will lead to text contents of elements to be trimmed according to the substring-function
+	* - "false" will leave the text contents of elements untouched (ignoring the substring-function)
+    * @param indented decides if the resulting xml-fragment should be indented by eXist-db (true) or preserve the
+    * indentation of the original document (false)
+    * @return the xml as a String
+	* 1. if called with an xPath holding only one id ("pageId/filename/id("e.id")/false")
+	* consisting of one element and its descendants like a division or a word
+	* 2. a) if called with an xPath holding only multiple ids ("pageId/filename/id("e.id")|id("e.id2")/false")
+	* consisting of the closest parent of the first and last element given in the xPath. The whole parent is
+	* included if the "trimmed" variable is false
+	*    b) if called with an xPath holding only multiple ids ("pageId/filename/id("e.id")|id("e.id2")/false")
+	* consisting of the closest parent of the first and last element given in the xPath. Only the elemts, whos
+	* ids are present in the xPath are included in the result, the others are getting removed, if the
+	* "trimmed" variable is false
+	* @throws IOException if an error occurs while sending or receiving
+	* @throws InterruptedException if the get request is interrupted
+	* @throws ParserConfigurationException 
+	* @throws SAXException 
+	* @throws TransformerException 
+	* @throws TransformerConfigurationException 
+	* @throws DOMException 
+	* @throws XPathExpressionException
+	* @throws UnsupportedEncodingException 
+	*/
+  @Override
+  public String getXMLDocumentFragment(String documentId, String xPath, Boolean trimmed, Boolean indented) throws IOException, InterruptedException, TransformerConfigurationException, ParserConfigurationException, SAXException, TransformerException, XPathExpressionException, DOMException, UnsupportedEncodingException {
+	  return existAccessService.getXMLDocumentFragment(documentId, xPath, trimmed, indented);
+  }
+  
   /**
    * Gets the raw JSON of a page.
    *

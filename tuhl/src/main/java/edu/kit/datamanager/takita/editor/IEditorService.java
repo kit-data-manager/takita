@@ -8,12 +8,20 @@ import edu.kit.datamanager.takita.model.page.Page;
 import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.springframework.boot.configurationprocessor.json.JSONArray;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.xpath.XPathExpressionException;
+
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.DOMException;
+import org.xml.sax.SAXException;
 
 /**
  * Interface for an Editor Service that should handle the requests from the Editor controller.
@@ -32,7 +40,7 @@ public interface IEditorService {
    * @throws InterruptedException when the http request to database is interrupted
    * @throws NoSuchIndexEntryException when there is no such page in the index
    * @throws IOException when the http request to database was faulty
-   * @throws JSONException when there is a problem with the JSON object holding the selector 
+   * @throws JSONException when there is a problem with the JSON object holding the selector
    */
   Annotation addAnnotation(String pageId, String color, JSONArray selectors, String motivation)
       throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException;
@@ -238,6 +246,41 @@ public interface IEditorService {
    */
   String getPageContentXml(String pageId, String fileName) throws IOException, InterruptedException;
 
+  /**
+   * Gets the raw XML of a document from exist-db.
+   *
+   * @param documentId of the manuscript to which the raw XML should be gotten
+   * @return page as XML as String
+   * @throws IOException when the http request to database was faulty
+   * @throws InterruptedException when the http request to database is interrupted
+   */
+  String getXMLDocument(String documentId) throws IOException, InterruptedException;
+
+  /**
+   *
+   *
+   * Gets a fragment/node of a document that is given in the TEI standard.
+	 *
+   * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
+   * @param xPath (encoded) identifies the document fragment
+   * @param trimmed decides if the resolved xPath should have its content trimmed
+   *   according to the substring() function in the xPath.
+   *   - "true" will lead to text contents of elements to be trimmed according to the substring-function
+   *   - "false" will leave the text contents of elements untouched (ignoring the substring-function)
+   * @param indented decides if the resulting xml-fragment should be indented by eXist-db (true) or preserve the
+   * indentation of the original document (false)
+   * @return the xml as a String
+   * @throws IOException
+   * @throws InterruptedException
+   * @throws TransformerException
+   * @throws SAXException
+   * @throws ParserConfigurationException
+   * @throws TransformerConfigurationException
+   * @throws DOMException
+   * @throws XPathExpressionException
+   * @throws UnsupportedEncodingException
+   */
+  String getXMLDocumentFragment(String documentId, String xPath, Boolean trimmed, Boolean indented) throws IOException, InterruptedException, TransformerConfigurationException, ParserConfigurationException, SAXException, TransformerException, XPathExpressionException, DOMException, UnsupportedEncodingException;
   /**
    * Gets the raw JSON of an annotation.
    *
