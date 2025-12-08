@@ -3,6 +3,9 @@
       xmlns:th="http://www.thymeleaf.org" style="overflow-x: hidden;">
 <head>
     <meta charset="UTF-8">
+    <!-- storing the token in the meta-element so the modularized code can access it from there -->
+    <meta name="_csrf" th:if="${securityEnabled}" th:content="${_csrf.token}"/>
+    <meta name="_csrf" th:if="!${securityEnabled} " th:content="notAvailableCSRFProtectionMightBeDisabled"/>
     <title th:text="#{label.editor}"> </title>
     <!-- define common scripts in head fragment to include here; the text editor can not use the head:baseContent fragment
         as the jQuery instance imported there will override the jQuery instance used in the modularised code
@@ -335,8 +338,10 @@
     </div> -->
     <div th:replace="~{pseudonym.html :: pseudonym_modal}"></div>
     <script th:inline="javascript">
+        /*<![CDATA[*/
         // setting contextpath
         window.CONTEXTPATH = /*[[@{/}]]*/ "/";
+        /*]]>*/
     </script>
 
     <script th:src="@{/js/texteditor-ng.js}" type="module"></script>

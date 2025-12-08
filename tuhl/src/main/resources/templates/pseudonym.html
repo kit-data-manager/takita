@@ -11,17 +11,32 @@
         th:value="${user.getName()}"
         disabled>
     <div class="input-group-append">
-        <button id="editButton"
+        <button th:if="${@environment.getProperty('takita.security.enabled') == 'false'}"
+            id="editButton"
             class="btn btn-outline-secondary"
             onclick="clickButton(event)"
             th:text="#{buttons.edit}"
             data-bs-toggle="tooltip" data-bs-placement="bottom"
             th:data-bs-title="#{tooltips.pseudonym}"> </button>
+        <button th:if="${@environment.getProperty('takita.security.enabled') == 'true'}"
+            id="editButton"
+            class="btn btn-outline-secondary"
+            onclick="logout(event)"
+            data-bs-toggle="tooltip" data-bs-placement="bottom"
+            th:data-bs-title="#{tooltips.pseudonym}">Logout</button>
     </div>      
 
 <script th:inline="javascript">
+
+    /*<![CDATA[*/
     // setting contextpath
     window.CONTEXTPATH = /*[[@{/}]]*/ "/";
+    const logoutUrl = /*[[@{/logout}]]*/ "/logout";
+    /*]]>*/
+
+    function logout(event) {
+        location.href = logoutUrl;
+    }
 
     async function clickButton(event){
         /*<![CDATA[*/

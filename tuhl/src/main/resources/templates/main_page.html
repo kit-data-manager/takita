@@ -2,6 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="_csrf" th:if="${securityEnabled}" th:content="${_csrf.token}"/>
+    <meta name="_csrf" th:if="!${securityEnabled} " th:content="notAvailableCSRFProtectionMightBeDisabled"/>
     <!-- generic script loading in fragment -->
     <th:block th:replace="~{head :: baseContent}"></th:block>
 
@@ -44,7 +46,7 @@
                 </div>
             </div>
         </form>
-        <form id="manuscriptSearchbar" onsubmit="setSearchTerm(event)">
+        <form id="manuscriptSearchbar" onsubmit="setSearchTerm(event, csrfTokenMP)">
             <div class="input-group">
                 <input id="searchTerm"
                        type="text"
@@ -79,8 +81,11 @@
          th:insert="~{table_view.html :: tableView}"></div>
 </div>
 <script th:inline="javascript">
+    /*<![CDATA[*/
     // setting contextpath
     window.CONTEXTPATH = /*[[@{/}]]*/ "/";
+    const csrfTokenMP = document.querySelector("meta[name='_csrf']").getAttribute('content');
+    /*]]>*/
 </script>
 <script th:inline="javascript">
     document.addEventListener('pseudonymUpdate', function(event) {

@@ -1,4 +1,4 @@
-function setSearchTerm(event) {
+function setSearchTerm(event, csrfToken) {
     event.preventDefault();
     let searchTerm;
     if(document.getElementById("searchTermEmpty") == null){
@@ -14,7 +14,8 @@ function setSearchTerm(event) {
                 url: './search',
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
                 },
                 dataType: 'text',
                 data: searchTerm,

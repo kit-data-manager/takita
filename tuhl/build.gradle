@@ -47,6 +47,7 @@ configurations {
 ext {
 	set('testcontainersVersion', "1.20.0")
 	set('springDocVersion', "2.6.0")
+	set('keycloakVersion', "24.0.5")
 }
 
 dependencyManagement {
@@ -62,11 +63,20 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 
 	// springdoc
 	//implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}"
 	implementation "org.springdoc:springdoc-openapi-starter-common:${springDocVersion}"
 	implementation "org.springdoc:springdoc-openapi-starter-webmvc-api:${springDocVersion}"
+
+	// AAI
+	// oauth client
+	implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
+	// thymeleaf
+	implementation "org.thymeleaf.extras:thymeleaf-extras-springsecurity6"
+
 
 	implementation 'com.google.code.gson:gson:2.10.1'
 	implementation 'jakarta.json:jakarta.json-api:2.1.0'
@@ -161,5 +171,9 @@ jar {
 }
 
 tasks.withType(Copy).all {
+	duplicatesStrategy 'exclude'
+}
+
+tasks.withType(Jar).all {
 	duplicatesStrategy 'exclude'
 }

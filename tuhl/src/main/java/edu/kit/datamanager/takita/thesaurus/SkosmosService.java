@@ -21,10 +21,10 @@ import org.springframework.stereotype.Service;
         matchIfMissing = false)
 public class SkosmosService  implements IThesaurusService {
     
-    @Value("${thesaurus.baseUrl}")
+    @Value("${thesaurus.baseUrl:http://localhost:9191}")
     private String baseUrl;
     
-    @Value("${thesaurus.searchPath}")
+    @Value("${thesaurus.searchPath:rest/v1/ct/search}")
     private String searchPath;
     
     private String queryUrl;

@@ -52,7 +52,7 @@
                     <span class="badge text-bg-secondary col-auto m-auto"
                         type="button"
                         th:data-field="${filter.field}"
-                        onclick="remove(this.getAttribute('data-field'))"
+                        onclick="remove(this.getAttribute('data-field'), csrfTokenFS)"
                         th:text="#{buttons.remove}">
                     </span>
                 </div>
@@ -158,6 +158,10 @@
     </div>
 
     <script th:inline="javascript">
+ 
+        /*<![CDATA[*/
+        const csrfTokenFS = document.querySelector("meta[name='_csrf']").getAttribute('content');
+        /*]]>*/
 
         function add() {
             //Check if there is something to add
@@ -195,7 +199,8 @@
                 url: window.CONTEXTPATH + 'filter/add',
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfTokenFS
                 },
                 dataType: 'text',
                 data: JSON.stringify({'fields': $('#addFilterSelect').val()}),
