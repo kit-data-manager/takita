@@ -1,5 +1,5 @@
 import { initializeAnnotationTable, textDisplayAnnotationFunction } from '../../common/annotationTable';
-import { possibleHighlightClasses } from '../../projectspecific';
+import { possibleHighlightClasses } from '../projectspecific';
 import { getAllAnnotationsData } from '../data';
 import { removeStyles, drawAnnos } from '../highlighting';
 import { checkIsTargetCompatible, makeTargetsCompatible } from '../utils';

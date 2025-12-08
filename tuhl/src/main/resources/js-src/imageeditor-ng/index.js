@@ -2,7 +2,7 @@ import * as bootstrap from 'bootstrap';
 import * as Raphael from 'raphael';
 
 import { Mode } from '../common/mode';
-import { pickTemplate } from '../common/annotationCreation';
+import { pickTemplate } from './projectspecific/annotationCreation/templates';
 import { selectAnnotation } from '../common/annotationCard';
 import { encodeAnnoId, enableTooltips, toggleVisibility } from '../common/utils';
 

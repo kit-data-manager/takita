@@ -6,7 +6,8 @@ import { deleteAnnotationData } from '../../texteditor-ng/data/annotations';
 import { encodeAnnoId } from './url';
 import { selectAnnotation } from '../annotationCard/annotationCard';
 import { toggleVisibility } from './display';
-import { hooks } from '../../projectspecific';
+import { hooks as hooksText } from '../../texteditor-ng/projectspecific';
+import { hooks as hooksImage } from '../../imageeditor-ng/projectspecific';
 
 /**
  * TODO: what does this do @Danah
@@ -45,7 +46,13 @@ export function fillMetaDataEditorTable(annoJson) {
       field: 'id',
       headerSort: false,
       cellClick: async function (e, cell) {
-        window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(cell.getValue()), hooks);
+        if (window.EDITORTYPE == 'IMAGE') {
+          window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(cell.getValue()), hooksImage);
+        }
+        if (window.EDITORTYPE == 'TEXT') {
+          window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(cell.getValue()), hooksText);
+        }
+
         if ($annotationCard.classList.contains('invisible')) {
           toggleVisibility($annotationCard);
         }
@@ -84,7 +91,13 @@ export function fillMetaDataEditorTable(annoJson) {
     //    });
     //},
     updateOperation: async function (rowColumnvalue) {
-      window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(rowColumnvalue.id), hooks);
+      if (window.EDITORTYPE == 'IMAGE') {
+        window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(rowColumnvalue.id), hooksImage);
+      }
+      if (window.EDITORTYPE == 'TEXT') {
+        window.SELECTED_ANNOTATION = await selectAnnotation(null, encodeAnnoId(rowColumnvalue.id), hooksText);
+      }
+
       if ($annotationCard.classList.contains('invisible')) {
         toggleVisibility($annotationCard);
       }

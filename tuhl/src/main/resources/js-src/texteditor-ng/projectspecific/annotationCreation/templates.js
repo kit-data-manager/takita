@@ -5,10 +5,10 @@ import * as bootstrap from 'bootstrap';
 // internal imports
 import { makeAnnotationData, makeBodiesData } from './utils';
 import { hooks } from '..';
-import { createAnnotation } from '../../common/annotationCreation';
-import { selectAnnotation } from '../../common/annotationCard';
-import '../../common/utils/metadataeditor';
-import { createBodyData } from '../../texteditor-ng/data';
+import { createAnnotation } from '../../../common/annotationCreation';
+import { selectAnnotation } from '../../../common/annotationCard';
+import '../../../common/utils/metadataeditor';
+import { createBodyData } from '../../data';
 
 // TODO: CUSTOMISE the four objects in here, which are necessary for annotation/body creation
 
@@ -39,7 +39,7 @@ const bodyTemplate = {
  * @param {[Object]} selectors array holding all the selectors
  * @returns {JSON} the ui form
  */
-export function getFormObjectCreateAnnotation(selectors) {
+function getFormObjectCreateAnnotation(selectors) {
   return {
     // adding blank first option, to allow the functionalities on change
     schema: {
@@ -97,7 +97,7 @@ export function getFormObjectCreateAnnotation(selectors) {
  * @param {String} encodedAnnoId encoded id of the annotation
  * @returns {JSON} the ui form
  */
-export function getFormObjectCreateBody(encodedAnnoId) {
+function getFormObjectCreateBody(encodedAnnoId) {
   return {
     // adding blank first option, to allow the functionalities on change
     schema: {
@@ -195,7 +195,7 @@ export function getFormObjectCreateBody(encodedAnnoId) {
  * @param {String} chosenTemplate the template that was chosen
  * @returns {[Object]} dataModel, uiForm associated with the template
  */
-export function getFormModel(chosenTemplate) {
+function getFormModel(chosenTemplate) {
   let dataModel;
   let uiForm;
 
@@ -321,4 +321,46 @@ export function getFormModel(chosenTemplate) {
  */
 export function useJQueryPlugin(node) {
   return $(node);
+}
+
+/**
+ * creates the JSONForm and shows the modal to create an annotation based on
+ * the given template
+ *
+ * @param {[Object]} selectors array containing the selector objects
+ * @param {String} encodedAnnoId encoded id of the annotation
+ * @param {String} createFormId
+ * @param {String} pickFormId
+ * @param {String} template for body or annotation creation
+ */
+export function pickTemplate(selectors, encodedAnnoId, createFormId, pickFormId, template) {
+  // clear out forms and content from former submissions
+  let pickContent = document.getElementById(pickFormId);
+  while (pickContent.firstChild) {
+    pickContent.firstChild.remove();
+  }
+  let formContent = document.getElementById(createFormId);
+  while (formContent.firstChild) {
+    formContent.firstChild.remove();
+  }
+
+  // Philipp doesn't understand why this is necessary. Everything works without it.
+  // The titleMap only contains the words (annotationTemplate or bodyTemplate)
+  // split into a titleMap (index: letter -> 0:a, 1:n ...). The actual values used in
+  // the dropdown selection are taken from getFormObjectCreateAnnotation().schema.template.enum.
+  // creates title map needed for the dropdown selection
+  // for (const tName in Object.keys(template)) {
+  //   if (template === 'bodyTemplate') {
+  //     getFormObjectCreateBody().form[0].titleMap[Object.keys(template)[tName]] = Object.values(template)[tName];
+  //   } else {
+  //     getFormObjectCreateAnnotation().form[0].titleMap[Object.keys(template)[tName]] = Object.values(template)[tName];
+  //   }
+  // }
+
+  // creates dropdown from enum objects defined at the top
+  if (template === 'bodyTemplate') {
+    $('#' + pickFormId).jsonForm(getFormObjectCreateBody(encodedAnnoId));
+  } else {
+    $('#' + pickFormId).jsonForm(getFormObjectCreateAnnotation(selectors));
+  }
 }

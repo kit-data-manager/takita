@@ -2,7 +2,7 @@
 import { Mode } from '../common/mode';
 import { enableTooltips } from '../common/utils';
 import { initializeTopbar } from '../common/topbar';
-import { hooks } from '../projectspecific';
+import { hooks } from './projectspecific';
 import { initializeTextEditor } from './editor';
 import { initializeSidebar } from './sidebar';
 import { initializeAnnotationTable, textDisplayAnnotationFunction } from '../common/annotationTable';

@@ -1,7 +1,7 @@
 import { toggleDisplay } from '../../common/utils';
 import { getTextLanguage } from '../textloader/textloader';
 import { decreaseFontSize, increaseFontSize, resetFontSize } from '../utils/fontsize';
-import { Variant } from '../../projectspecific';
+import { Variant } from '../projectspecific';
 /**
  * Set Takita's sidebar up to make it suitable for the texteditor.
  * @module sidebar

@@ -7,49 +7,7 @@ import { toggleVisibility, encodeAnnoId } from '../utils';
 import { updateDisplay } from '../../texteditor-ng/display';
 import { selectAnnotation } from '../annotationCard';
 import { createBodyData, createAnnotationData, getAnnotationData } from '../../texteditor-ng/data/annotations';
-import { getFormObjectCreateAnnotation, getFormObjectCreateBody } from '../../projectspecific';
 import { initializeAnnotationTable, defaultDisplayAnnotationFunction } from '../annotationTable';
-/**
- * creates the JSONForm and shows the modal to create an annotation based on
- * the given template
- *
- * @param {[Object]} selectors array containing the selector objects
- * @param {String} encodedAnnoId encoded id of the annotation
- * @param {String} createFormId
- * @param {String} pickFormId
- * @param {String} template for body or annotation creation
- */
-export function pickTemplate(selectors, encodedAnnoId, createFormId, pickFormId, template) {
-  // clear out forms and content from former submissions
-  let pickContent = document.getElementById(pickFormId);
-  while (pickContent.firstChild) {
-    pickContent.firstChild.remove();
-  }
-  let formContent = document.getElementById(createFormId);
-  while (formContent.firstChild) {
-    formContent.firstChild.remove();
-  }
-
-  // Philipp doesn't understand why this is necessary. Everything works without it.
-  // The titleMap only contains the words (annotationTemplate or bodyTemplate)
-  // split into a titleMap (index: letter -> 0:a, 1:n ...). The actual values used in
-  // the dropdown selection are taken from getFormObjectCreateAnnotation().schema.template.enum.
-  // creates title map needed for the dropdown selection
-  // for (const tName in Object.keys(template)) {
-  //   if (template === 'bodyTemplate') {
-  //     getFormObjectCreateBody().form[0].titleMap[Object.keys(template)[tName]] = Object.values(template)[tName];
-  //   } else {
-  //     getFormObjectCreateAnnotation().form[0].titleMap[Object.keys(template)[tName]] = Object.values(template)[tName];
-  //   }
-  // }
-
-  // creates dropdown from enum objects defined at the top
-  if (template === 'bodyTemplate') {
-    $('#' + pickFormId).jsonForm(getFormObjectCreateBody(encodedAnnoId));
-  } else {
-    $('#' + pickFormId).jsonForm(getFormObjectCreateAnnotation(selectors));
-  }
-}
 
 /**
  *

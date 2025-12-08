@@ -1,5 +1,5 @@
 import * as bootstrap from 'bootstrap';
-import { pickTemplate } from '../../common/annotationCreation';
+import { pickTemplate } from '../projectspecific/annotationCreation/templates';
 
 export function createPageAnnotation() {
   let createAnnotation = document.getElementById('createAnnotation');

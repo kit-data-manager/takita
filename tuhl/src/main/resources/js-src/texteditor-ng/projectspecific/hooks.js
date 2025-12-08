@@ -1,0 +1,202 @@
+/* eslint-disable no-unused-vars */
+import { enableLanguageViewToggleButton } from './sidebar';
+
+/**
+ * add functions to the hook. The API definition can be found below
+ */
+export const hooks = {
+  initializeProjectspecifics: [],
+  preMakeHTML: [],
+  postApplyStyles: [],
+  postSidebarCreation: [enableLanguageViewToggleButton],
+  preAnnotationTableCreation: [],
+  postTargetCreation: [],
+  manipulatingData: [],
+  postAnnotationCreation: [],
+  preAppendingBodies: [],
+  postAppendingBodies: [],
+  preHorizontalBodyCardCreation: [],
+  postAnnotationCardCreation: [],
+};
+
+// ------ HOOK API DEFINITION START ------
+/* You can find the documentation for the individual hooks here as empty functions. These
+   empty functions act as dummies, but mirror how they are called and their return values.
+   Furthermore the location, where they are called is given.
+ */
+
+/**
+ * called at texteditor-ng/index.js (initializeTextEditorComponent()) with no parameters/return value.
+ * Can be called to initiliaze window.variables etc.
+ */
+function initializeProjectspecifics() {}
+
+// SIDEBAR
+/**
+ * called at texteditor-ng/sidebar/sidebar.js (initializeSidebar()).
+ * Can be used to manipulate the sidebar (eg. adding/removing buttons).
+ *
+ * @param {Element} $sidebar the sidebar
+ * @param {Class} variant specifies if the current text document has special requirements. The
+ * class definition can be found in projectspecific/textloader.js
+ */
+function postSidebarCreation($sidebar, variant) {}
+
+// ANNOTATIONTABLE (in the editor)
+/**
+ * called at common/annotationTable/annotationTable.js (initializeAnnotationTable()).
+ * Can be used to modify the data and column definitions passed to tabulator to
+ * create the table of annotations displayed at the bottom of the screen after
+ * clicking on the "Show Annotations" button in the sidebar.
+ *
+ * @param {JSONArray} tableData the data to be put into the table
+ * @param {JSONArray} columns the column definitions of the table
+ * @returns {[JSONArray, JSONArray]} the modified [tableData, columns]
+ */
+function preAnnotationTableCreation(tableData, columns) {
+  // do stuff
+  return [tableData, columns];
+}
+
+// TEXTLOADER
+/**
+ * called at texteditor-ng/textloader/textloader.js (prepareTEIDocument()).
+ * Can be used to change the contents of the xml file (text) BEFORE being
+ * passed to CETEIcean, which will convert the file (text) to custom HTML-elements.
+ *
+ * @param {String} xmlString the xml file to be added to the DOM
+ * @returns {String} newXmlString changed xml file to be added to the DOM
+ */
+function preMakeHTML(xmlString) {
+  let newXmlString;
+  // do stuff
+  return newXmlString;
+}
+
+/**
+ * called at texteditor-ng/textloader/textloader.js (applyStyles())
+ * Can be used to change the text AFTER CETEIcean converted it, but BEFORE it gets
+ * added to the DOM.
+ *
+ * @param {Element} $processedHTML the element containing the TEI-xml
+ * @param {String} language the language of the text
+ * @returns $newProcessedHTML the element containing the cahnged TEI-xml
+ */
+function postApplyStyles($processedHTML, language) {
+  let $newProcessedHTML;
+  // do stuff
+  return $newProcessedHTML;
+}
+
+// TEXTEDITOR
+/**
+ * called at texteditor-ng/editor/editor.js (annotateSelectedText())
+ * Can be used to store information from the selection in window.variables, which can then be used
+ * in the creation templates/during the annotation creation procedure.
+ *
+ * @param {Selection} selection the selection cerated by the user
+ * @param {JSONArray} annoJson contains all the annotation of the pages as JSONObjects
+ */
+function postTargetCreation(selection, annoJson) {}
+
+// ANNOTATIONCREATION
+/**
+ * called at common/annotationCreation/annotationCreation.js (createAnnotation())
+ * Can be used to interact with the DOM after annotation creation. THe image editor
+ * might use this to store the annotation ID within the corresponding shape.
+ *
+ * @param {Object} newAnnotation the newly created annotation fetched from tAkita core
+ */
+function postAnnotationCreation(newAnnotation) {}
+
+// ANNOTATIONCARD
+/**
+ * called at common/annotationCard/annotationCard.js (selectAnnotation())
+ * Can be used to change the annotation data passed to the annotationCard creation and therefore
+ * influence the look and behavior of the annotationCard as a whole PRIOR its creation.
+ *
+ * @param {Object} annotationData holding all the data for an annotation fetched from tAkita core
+ * @returns {Object} newAnnotationData manipulated/changed annotation data
+ */
+function manipulatingData(annotationData) {
+  let newAnnotationData;
+  // do stuff
+  return newAnnotationData;
+}
+
+/**
+ * called at common/annotationCard/annotationCard.js (selectAnnotation())
+ * Can be used to change to influence the look and behavior of the annotationCard as a whole
+ * AFTER its creation. You can interact with the finished element/the DOM directly.
+ *
+ * @param {Object} annotationData holding all the data for an annotation fetched from tAkita core
+ * @param {Element} $annotationDiv holding the annotationCard
+ * @returns {Element} $newAnnotationDiv modified div holding the annotationCard
+ */
+function postAnnotationCardCreation(annotationData, $annotationDiv) {
+  // do stuff
+  return $annotationDiv;
+}
+
+/**
+ * called at common/annotationCard/annotationCard.js (createAnnotationDiv())
+ * Can be used to change to influence the look and behavior of the annotationCard BEFORE
+ * the cards for each body gets appended. You can interact with the finished element/the
+ * DOM directly.
+ *
+ * @param {Object} annotationData the annotation as JSON
+ * @param {Element} $annotationDiv holding the annotationCard
+ * @returns {Element} $newAnnotationDiv modified div holding the annotationCard
+ */
+function preAppendingBodies(annotationData, $annotationDiv) {
+  // do stuff
+  return $annotationDiv;
+}
+
+/**
+ * called at common/annotationCard/annotationCard.js (createAnnotationDiv())
+ * Can be used to change to influence the look and behavior of the annotationCard AFTER
+ * the cards for each body gets appended. You can interact with the finished element/the
+ * DOM directly.
+ *
+ * @param {Object} annotationData the annotation as JSON
+ * @param {Element} $annotationDiv holding the annotationCard
+ * @returns {Element} $newAnnotationDiv modified div holding the annotationCard
+ */
+function postAppendingBodies(annotationData, $annotationDiv) {
+  // do stuff
+  return $annotationDiv;
+}
+
+/**
+ * called at common/annotationCard/annotationCard.js (createAndAppendBodyForms())
+ * Can be used to change the various configuration objects and/or the data of an individual
+ * body passed to the horizontal bodyCard creation and therefore influence the display and/or
+ * the displayed values of the horizontal bodyCard PRIOR to its creation.
+ *
+ * @param {String} annotationId id of the annotation
+ * @param {String} operationHorizontal the operation type of the form
+ * @param {Object} formBodyDataModelHorizontal the dataModel used by JSONForms
+ * @param {Object} uiFormHorizontal the uiForm used by JSONForms
+ * @param {Object} body the body as JSON
+ * @returns {[Object]} holding the manipulated inputs
+ * - operationHorizontal
+ * - formBodyDataModelHorizontal
+ * - uiFormHorizontal
+ * - modifiedBody manipulated/changed body
+ * NOTE: all implementations for this hook take the same input, they must always return all four
+ * objects. If one object is not modified just return it anyways as the code calling the hook
+ * will not function properly otherwise.
+ */
+async function preHorizontalBodyCardCreation(
+  operationHorizontal,
+  formBodyDataModelHorizontal,
+  uiFormHorizontal,
+  annotationId,
+  body,
+) {
+  let modifiedBody;
+  // do stuff. This can be asynchronous as well.
+  return [operationHorizontal, formBodyDataModelHorizontal, uiFormHorizontal, modifiedBody];
+}
+// ------ HOOK API DEFINITION END ------

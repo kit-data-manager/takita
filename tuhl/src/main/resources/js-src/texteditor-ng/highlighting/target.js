@@ -1,4 +1,4 @@
-import { highlightAnnotationFunction } from '../../projectspecific';
+import { highlightAnnotationFunction } from '../projectspecific';
 import { escapeSelector } from 'jquery';
 
 /**

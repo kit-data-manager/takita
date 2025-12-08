@@ -5,8 +5,8 @@ import { encodeAnnoId } from '../../common/utils';
 import { selectAnnotation } from '../../common/annotationCard';
 import { collapseSidebar } from '../sidebar';
 import { createTextSelectors } from '../targetBuilding';
-import { pickTemplate } from '../../common/annotationCreation';
-import { possibleHighlightClasses } from '../../projectspecific';
+import { pickTemplate } from '../projectspecific/annotationCreation/templates';
+import { possibleHighlightClasses } from '../projectspecific';
 import { drawAnnos, removeStyles } from '../highlighting';
 
 /**

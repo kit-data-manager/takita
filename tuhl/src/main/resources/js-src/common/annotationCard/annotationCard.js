@@ -4,7 +4,7 @@ import { createAnnotationDiv } from './elements';
 import { appendForms } from './formManipulation';
 import { getData } from './utils';
 // projectspecific
-import { headerFieldsArray, omitFieldsArray, editableFieldsArray } from '../../projectspecific';
+import { headerFieldsArray, omitFieldsArray, editableFieldsArray } from '../../texteditor-ng/projectspecific';
 
 /**
  * Main entry point to handle a user interaction to select an annotation

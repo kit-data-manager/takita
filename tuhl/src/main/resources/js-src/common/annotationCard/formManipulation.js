@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import '../utils/metadataeditor';
-import { changeLabel } from '../../projectspecific/annotationCard';
+import { changeLabel } from '../../texteditor-ng/projectspecific/annotationCard';
 import { updateBody } from './utils';
 
 // JSONForm creation

@@ -7,11 +7,12 @@ import {
   updateTarget,
   cancelModification,
 } from '../../texteditor-ng/targetBuilding';
-import { pickTemplate } from '../annotationCreation';
 import { enableTooltips, encodeAnnoId, toggleExpand } from '../utils';
 import { deleteAnnotation, deleteBody } from './utils';
 // projectspecific
-import { targetUpdateCallback } from '../../projectspecific';
+import { targetUpdateCallback } from '../../texteditor-ng/projectspecific';
+import { pickTemplate as pickTemplateImage } from '../../imageeditor-ng/projectspecific/annotationCreation/templates';
+import { pickTemplate as pickTemplateText } from '../../texteditor-ng/projectspecific/annotationCreation/templates';
 
 /**
  * Fills the div with all the information from an annotation
@@ -256,7 +257,12 @@ export function createAddBodyIcon(annoId) {
     //modal.style.display = "block";
     const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('createBody'));
     $modal.toggle();
-    pickTemplate('', encodeAnnoId(annoId), 'createForm', 'pickBodyTemplateForm', 'bodyTemplate');
+    if (window.EDITORTYPE == 'IMAGE') {
+      pickTemplateImage('', encodeAnnoId(annoId), 'createForm', 'pickBodyTemplateForm', 'bodyTemplate');
+    }
+    if (window.EDITORTYPE == 'TEXT') {
+      pickTemplateText('', encodeAnnoId(annoId), 'createForm', 'pickBodyTemplateForm', 'bodyTemplate');
+    }
   });
   return $addBodyIcon;
 }

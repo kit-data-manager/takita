@@ -1,5 +1,5 @@
 import { encodeAnnoId } from '../../common/utils';
-import { getColorNameFromEnumEntry } from '../../projectspecific';
+import { getColorNameFromEnumEntry } from '../projectspecific';
 import {
   getAnnotation,
   getAllAnnotations,

@@ -6,7 +6,7 @@ import { createOption, setDisplay, toggleVisibility } from '../../common/utils';
 import { selectAnnotation } from '../../common/annotationCard';
 import { encodeAnnoId } from '../../common/utils';
 // projectspecifics
-import { POSSIBLE_DIVISION_TYPES } from '../../projectspecific';
+import { POSSIBLE_DIVISION_TYPES } from '../projectspecific';
 
 // global state, modified by the various button callbacks.
 // It's needed to track the visible divisions to show only
