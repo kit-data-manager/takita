@@ -1,11 +1,14 @@
 package edu.kit.datamanager.takita.dataaccess;
 
 import java.io.IOException;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import org.apache.http.protocol.HTTP;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 
@@ -20,6 +23,21 @@ class HttpRequestHelper {
    */
   public HttpRequestHelper() {
     client = HttpClient.newHttpClient();
+  }
+
+  /**
+   * Overloaded constructor for the HttpRequestHelper. Creates the HttpClient instance with basic
+   * authentication.
+   */
+  public HttpRequestHelper(String user, String password) {
+        client = HttpClient.newBuilder()
+                .authenticator(new Authenticator() {
+                    @Override
+                    protected PasswordAuthentication getPasswordAuthentication() {
+                        return new PasswordAuthentication(user, password.toCharArray());
+                    }
+                })
+                .build();
   }
 
   /**
