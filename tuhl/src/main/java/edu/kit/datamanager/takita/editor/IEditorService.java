@@ -10,6 +10,7 @@ import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -25,15 +26,16 @@ public interface IEditorService {
    *
    * @param pageId ID of the page on which the annotation is located
    * @param color color of the annotation
-   * @param svgCode svg code of the shape of the annotation
+   * @param selectors 1-n selectors (part of the target) of the annotation
    * @param motivation motivation of the annotation
    * @return the added annotation
    * @throws InterruptedException when the http request to database is interrupted
    * @throws NoSuchIndexEntryException when there is no such page in the index
    * @throws IOException when the http request to database was faulty
+   * @throws JSONException when there is a problem with the JSON object holding the selector
    */
-  Annotation addAnnotation(String pageId, String color, String svgCode, String motivation)
-      throws InterruptedException, NoSuchIndexEntryException, IOException;
+  Annotation addAnnotation(String pageId, String color, JSONArray selectors, String motivation)
+      throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException;
 
   /**
    * Gets an annotation from the searchIndexService by its ID.
@@ -49,15 +51,16 @@ public interface IEditorService {
    *
    * @param annotationId ID of the annotation to update
    * @param color new color of the annotation
-   * @param svgCode new svg code of the annotation
+   * @param selectors 1-n selectors (part of the target) of the annotation
    * @param motivation new motivation of the annotation
    * @return updated annotation
    * @throws NoSuchIndexEntryException when there is no such annotation in the index
    * @throws InterruptedException when the http request to database is interrupted
    * @throws IOException when the http request to database was faulty
+   * @throws JSONException when there is a problem with the JSON object holding the selector
    */
-  Annotation updateAnnotation(String annotationId, String color, String svgCode, String motivation)
-      throws NoSuchIndexEntryException, InterruptedException, IOException;
+  Annotation updateAnnotation(String annotationId, String color, JSONArray selectors, String motivation)
+      throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException;
 
   /**
    * Validates an annotation in the search index and the database.
@@ -234,7 +237,7 @@ public interface IEditorService {
    * @throws InterruptedException when the http request to database is interrupted
    */
   String getPageContentXml(String pageId, String fileName) throws IOException, InterruptedException;
-  
+
   /**
    * Gets the raw JSON of an annotation.
    *

@@ -8,18 +8,18 @@ import { updateDisplay } from '../../texteditor-ng/display';
 import { selectAnnotation } from '../annotationCard';
 import { createBodyData, createAnnotationData, getAnnotationData } from '../../texteditor-ng/data/annotations';
 import { getFormObjectCreateAnnotation, getFormObjectCreateBody } from '../../projectspecific';
-
+import { initializeAnnotationTable, defaultDisplayAnnotationFunction } from '../annotationTable';
 /**
  * creates the JSONForm and shows the modal to create an annotation based on
  * the given template
  *
- * @param {String} svgCode containing the target string (svgCode or xPath)
- * @param {String} encodedId of the annotation
+ * @param {[Object]} selectors array containing the selector objects
+ * @param {String} encodedAnnoId encoded id of the annotation
  * @param {String} createFormId
  * @param {String} pickFormId
  * @param {String} template for body or annotation creation
  */
-export function pickTemplate(svgCode, encodedId, createFormId, pickFormId, template) {
+export function pickTemplate(selectors, encodedAnnoId, createFormId, pickFormId, template) {
   // clear out forms and content from former submissions
   let pickContent = document.getElementById(pickFormId);
   while (pickContent.firstChild) {
@@ -43,21 +43,11 @@ export function pickTemplate(svgCode, encodedId, createFormId, pickFormId, templ
   //   }
   // }
 
-  // stores annotation id in data attribute in case of body creation
-  if (encodedId !== '') {
-    document.getElementById(createFormId).setAttribute('data-annotation-id', encodedId);
-  }
-
-  // stores targetcode in data attribute in case of annotation creation for shape
-  if (svgCode !== '') {
-    document.getElementById(createFormId).setAttribute('data-annotation-targetcode', svgCode);
-  }
-
   // creates dropdown from enum objects defined at the top
   if (template === 'bodyTemplate') {
-    $('#' + pickFormId).jsonForm(getFormObjectCreateBody());
+    $('#' + pickFormId).jsonForm(getFormObjectCreateBody(encodedAnnoId));
   } else {
-    $('#' + pickFormId).jsonForm(getFormObjectCreateAnnotation());
+    $('#' + pickFormId).jsonForm(getFormObjectCreateAnnotation(selectors));
   }
 }
 
@@ -76,7 +66,7 @@ export async function createAnnotation(annotationData, hooks = {}) {
       pageId: annotationData.pageId,
       color: annotationData.color,
       motivation: annotationData.motivation,
-      svgCode: annotationData.svgCode,
+      selectors: annotationData.selectors,
     };
 
     const newAnnotation = await createAnnotationData(annotationCreationData);
@@ -130,16 +120,14 @@ export async function resetFormAndUpdateDisplay(annotation, hooks = {}) {
     toggleVisibility($annotationCard);
   }
 
-  // TODO: previuosly fillMetaDataEditorTable() was used. When modularizing the imageEditor
-  // uncomment the next line and import the corresponding function. The textEditor doesn't
-  // need it, as the function is included in updateDisplay()
-  // initializeAnnotationTable(
-  //   window.ANNOJSON,
-  //   document.getElementById('annotationTableBottom'),
-  //   document.getElementById('annotationCard'),
-  //   hooks,
-  // );
-  //document.getElementById('createRectangleButton').parentElement.classList.remove('active');
-  //document.getElementById('createPolygonButton').parentElement.classList.remove('active');
-  document.getElementById('createAnnotationForm').removeAttribute('data-annotation-id');
+  if (window.EDITORTYPE == 'IMAGE') {
+    // The textEditor doesn't need the following, as the function is included in updateDisplay()
+    initializeAnnotationTable(
+      window.ANNOJSON,
+      document.getElementById('annotationTableBottom'),
+      defaultDisplayAnnotationFunction,
+    );
+    document.getElementById('createRectangleButton').parentElement.classList.remove('active');
+    document.getElementById('createPolygonButton').parentElement.classList.remove('active');
+  }
 }

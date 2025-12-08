@@ -2,6 +2,7 @@ import Tabulator from 'tabulator-tables';
 import { selectAnnotation } from '../annotationCard';
 import { enableTooltips, encodeAnnoId, toggleVisibility } from '../utils';
 import { initializeNavigation } from '../../texteditor-ng/navigation';
+import { toggleShapeSelect } from '../../imageeditor-ng/highlighting';
 
 /**
  * innitialize the table displaying all annotation of the current editor window.
@@ -167,9 +168,34 @@ export function fixTableStyling($annotationTable) {
  */
 export function defaultDisplayAnnotationFunction(_event, cell, hooks) {
   const $annotationCard = document.getElementById('annotationCard');
-  selectAnnotation(null, encodeAnnoId(cell.getRow().getData().id), hooks);
+  const annotationId = encodeAnnoId(cell.getRow().getData().id);
+  // display the annotation with the id stored in the url
+  selectAnnotation(null, annotationId, hooks);
   if ($annotationCard.classList.contains('invisible')) {
     toggleVisibility($annotationCard);
+  }
+
+  // if there is a shape, highlight it. For page-annotations, no shape will be highlighted
+  // as there is none
+  if (cell.getRow().getData().svg.length > 0) {
+    let targetShape = undefined;
+    // getting the shape corresponding to the annotation and unselecting
+    // all previously selected shapes
+    // Note: raphael doesn't offer a filter()-function
+    window.paper.forEach((shape) => {
+      // finding the correct shape
+      if (shape.annoIdEncoded === annotationId) {
+        targetShape = shape;
+      }
+      // unselecting all previously selected shapes
+      if (shape.selected) {
+        toggleShapeSelect(shape);
+      }
+    });
+    if (targetShape) {
+      // highlight the shape on the canvas
+      toggleShapeSelect(targetShape);
+    }
   }
 }
 
@@ -182,11 +208,17 @@ export function defaultDisplayAnnotationFunction(_event, cell, hooks) {
  * @param {Object} [hooks] containing an array for various hooks to be passed to initializeNavigation
  */
 export function textDisplayAnnotationFunction(_event, cell, hooks) {
+  const rowData = cell.getRow().getData();
   const $text = document.getElementById('TEI');
   const $navBarTop = document.getElementById('textNavBar');
   const $navBarLow = document.getElementById('textNavBarLow');
-  // get the Id of the first word of the target.  It has to be unpacked from 'id("w.123")' to 'w.123'
-  const fragmentId = cell.getRow().getData().svg?.[0].split('id("')[1].split('"')[0];
-  const annotationId = cell.getRow().getData().id;
+  // get the Id of the first word of the target. First find the xPathSelector and then
+  // unpack its value from 'id("w.123")' to 'w.123'
+  const xPathselector = rowData.svg?.filter((selectors) => selectors.type === 'XPathSelector')[0];
+  const fragmentId =
+    xPathselector.value instanceof Array
+      ? xPathselector.value[0].split('id("')[1].split('"')[0]
+      : xPathselector.value.split('id("')[1].split('"')[0];
+  const annotationId = rowData.id;
   initializeNavigation($navBarTop, $navBarLow, $text, fragmentId, annotationId, hooks);
 }

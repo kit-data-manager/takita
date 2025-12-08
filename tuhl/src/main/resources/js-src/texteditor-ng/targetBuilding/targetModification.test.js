@@ -184,16 +184,26 @@ describe('saving modification process', () => {
     const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('updateSelection'));
     const oldSelectedText = document.getElementById('oldSelectedText').firstElementChild.innerHTML;
     const newSelectedText = document.getElementById('newSelectedText').firstElementChild.innerHTML;
-    const targetXPath = $modal._element.dataset.newTargetXmlId;
+    const targetXPath = $modal._element.dataset.newTargetCode;
 
     expect(stoppedFunction).toBe(undefined);
     expect(oldSelectedText).toBe('nor st');
     expect(newSelectedText).toBe('nor stan');
-    // the test result should be 'concat(id("w.133"), " ", substring(id("w.134"), 1, 4))',
+    // the test results `value` should be 'concat(id("w.133"), " ", substring(id("w.134"), 1, 4))',
     // as the functions called by saveModificaiton() are tested and working properly.
     // But for in a test-environment the targetbuilding behaves differently as
     // the nodes don't have the proper 'innerText' propertiy
-    expect(targetXPath).toBe('id("w.133") | id("w.134")');
+    expect(targetXPath).toStrictEqual(
+      JSON.stringify([
+        { type: 'XPathSelector', value: 'id("w.133") | id("w.134")' },
+        {
+          type: 'TextQuoteSelector',
+          exact: 'nor stan',
+          prefix: '                                                  ',
+          suffix: ' standeth in the            sinners, nor sitteth i',
+        },
+      ]),
+    );
   });
 
   it('stops the modification process for an annotation when no text (only whitespace) is selected', () => {

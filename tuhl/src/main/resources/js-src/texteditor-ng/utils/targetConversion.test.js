@@ -3,7 +3,12 @@ import { checkIsTargetCompatible, makeTargetsCompatible, convertXPath } from './
 describe('checking if a target is compatible with tAkita', () => {
   it('checks compatible annotations that are part of the annoJson and have a substring selector', () => {
     const annotation = {
-      svg: ['substring(id("w.206"),  2,  4)', 'id("w.207")', 'id("w.208")', 'id("w.209")'],
+      svg: [
+        {
+          type: 'XPathSelector',
+          value: ['substring(id("w.206"),  2,  4)', 'id("w.207")', 'id("w.208")', 'id("w.209")'],
+        },
+      ],
     };
     const result = checkIsTargetCompatible(annotation);
     expect(result).toBe(true);
@@ -11,7 +16,12 @@ describe('checking if a target is compatible with tAkita', () => {
 
   it('checks incompatible annotations that are part of the annoJson and have a substring selector', () => {
     const annotation = {
-      svg: ['concat(substring(id("w.206"), 2, 4), " ", id("w.207"), " ", id("w.208"), " ", id("w.209"), " ")'],
+      svg: [
+        {
+          type: 'XPathSelector',
+          value: ['concat(substring(id("w.206"), 2, 4), " ", id("w.207"), " ", id("w.208"), " ", id("w.209"), " ")'],
+        },
+      ],
     };
     const result = checkIsTargetCompatible(annotation);
     expect(result).toBe(false);
@@ -19,7 +29,12 @@ describe('checking if a target is compatible with tAkita', () => {
 
   it('checks compatible annotations that are part of the annoJson and have a multiple id selectors', () => {
     const annotation = {
-      svg: ['id("w.131")', 'id("w.132")', 'id("w.99990")', 'id("pc.1")'],
+      svg: [
+        {
+          type: 'XPathSelector',
+          value: ['id("w.131")', 'id("w.132")', 'id("w.99990")', 'id("pc.1")'],
+        },
+      ],
     };
     const result = checkIsTargetCompatible(annotation);
     expect(result).toBe(true);
@@ -27,7 +42,12 @@ describe('checking if a target is compatible with tAkita', () => {
 
   it('checks incompatible annotations that are part of the annoJson and have a multiple id selectors', () => {
     const annotation = {
-      svg: ['id("w.1") | id("w.2") | id("w.3") | id("w.4") | id("w.5")'],
+      svg: [
+        {
+          type: 'XPathSelector',
+          value: ['id("w.1") | id("w.2") | id("w.3") | id("w.4") | id("w.5")'],
+        },
+      ],
     };
     const result = checkIsTargetCompatible(annotation);
     expect(result).toBe(false);
@@ -143,18 +163,33 @@ describe('checking if a target is compatible with tAkita', () => {
 describe('making a target compatible to tAkita', () => {
   it('makes incompatible annotations that are part of the annoJson and have a substring selector compatible', () => {
     const annotation = {
-      svg: ['concat(substring(id("w.206"), 2, 4), " ", id("w.207"), " ", id("w.208"), " ", id("w.209"), " ")'],
+      svg: [
+        {
+          type: 'XPathSelector',
+          value: ['concat(substring(id("w.206"), 2, 4), " ", id("w.207"), " ", id("w.208"), " ", id("w.209"), " ")'],
+        },
+      ],
     };
     const result = makeTargetsCompatible(annotation);
-    expect(result).toStrictEqual(['substring(id("w.206"),  2,  4)', 'id("w.207")', 'id("w.208")', 'id("w.209")']);
+    expect(result[0].value).toStrictEqual([
+      'substring(id("w.206"),  2,  4)',
+      'id("w.207")',
+      'id("w.208")',
+      'id("w.209")',
+    ]);
   });
 
   it('makes incompatible annotations that are part of the annoJson and have a multiple id selectors compatible', () => {
     const annotation = {
-      svg: ['id("w.1") | id("w.2") | id("w.3") | id("pc.1")'],
+      svg: [
+        {
+          type: 'XPathSelector',
+          value: ['id("w.1") | id("w.2") | id("w.3") | id("pc.1")'],
+        },
+      ],
     };
     const result = makeTargetsCompatible(annotation);
-    expect(result).toStrictEqual(['id("w.1")', 'id("w.2")', 'id("w.3")', 'id("pc.1")']);
+    expect(result[0].value).toStrictEqual(['id("w.1")', 'id("w.2")', 'id("w.3")', 'id("pc.1")']);
   });
 
   it('makes the incompatible globaly selected annotation having a substring selector compatible', () => {

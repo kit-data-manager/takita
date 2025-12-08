@@ -61,9 +61,20 @@ export function convertXPath(longXPath) {
 export function makeTargetsCompatible(annotation) {
   // annotation passed to the function is part of the annoJson
   if (annotation.svg) {
-    if (annotation.svg[0].includes('xml:id') || annotation.svg[0].includes('id(')) {
-      return convertXPath(annotation.svg[0]);
-    }
+    annotation.svg.forEach((selector) => {
+      if (selector.type === 'XPathSelector') {
+        if (selector.value instanceof Array) {
+          if (selector.value[0].includes('xml:id') || selector.value[0].includes('id(')) {
+            selector.value = convertXPath(selector.value[0]);
+          }
+        } else {
+          if (selector.value.includes('xml:id') || selector.value.includes('id(')) {
+            selector.value = convertXPath(selector.value);
+          }
+        }
+      }
+    });
+    return annotation.svg;
   }
 
   // annotation passed to the function is the globalSelectedAnnotation
@@ -94,7 +105,11 @@ export function checkIsTargetCompatible(annotation) {
 
   // annotation passed to the function is part of the annoJson
   if (annotation.svg) {
-    targetXPath = annotation.svg[0];
+    annotation.svg.forEach((selector) => {
+      if (selector.type === 'XPathSelector') {
+        selector.value instanceof Array ? (targetXPath = selector.value[0]) : (targetXPath = selector.value);
+      }
+    });
   }
 
   // annotation passed to the function is the globalSelectedAnnotation

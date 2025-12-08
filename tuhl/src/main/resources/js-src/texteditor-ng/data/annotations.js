@@ -34,7 +34,9 @@ export async function getAnnotationData(annoId) {
   if (response.status == 200) {
     return await response.json();
   } else {
-    throw new Error('Getting the annotation failed with response: ', response);
+    // throw new Error('Getting the annotation failed with response: ', { cause: response });
+    console.warn(`Getting the annotation failed with response code: ${response.status}`);
+    throw response;
   }
 }
 
@@ -52,7 +54,8 @@ export async function getAllAnnotationsData() {
   if (response.status == 200) {
     return await response.json();
   } else {
-    throw new Error('Getting all annotations failed with response: ', response);
+    console.warn(`Getting all annotations failed with response code: ${response.status}`);
+    throw response;
   }
 }
 
@@ -70,7 +73,8 @@ export async function createAnnotationData(annotationData) {
   if (response.status == 200) {
     return await response.json();
   } else {
-    throw new Error('Annotation creation failed with response: ', response);
+    console.warn(`Annotation creation failed with response code: ${response.status}`);
+    throw response;
   }
 }
 
@@ -92,7 +96,8 @@ export async function createBodyData(annoId, bodyData) {
   if (response.status == 200) {
     return await response.json();
   } else {
-    throw new Error('Body creation failed with response: ', response);
+    console.warn(`Body creation failed with response code: ${response.status}`);
+    throw response;
   }
 }
 
@@ -116,7 +121,8 @@ export async function updateBodyData(annoId, newBody) {
   if (response.status == 200) {
     return await response.json();
   } else {
-    throw new Error('Body update failed with response: ', response);
+    console.warn(`Body update failed with response code: ${response.status}`);
+    throw response;
   }
 }
 
@@ -124,16 +130,16 @@ export async function updateBodyData(annoId, newBody) {
  * Helper/facade for network/annotation.js for the fetch call to update a target
  *
  * @param {Object} anno the annotation to be updated
- * @param {String} newTarget containing the new target (svg code or xPath)
- * @throws {Exception} if the tsrget wasn't updated
+ * @param {[JSONObject]} newSelectors the new selectors (might be xPath and/or textQuote)
+ * @throws {Exception} if the target wasn't updated
  * @returns {Response} of the update request
  */
-export async function updateTargetData(anno, newTarget) {
+export async function updateTargetData(anno, newSelectors) {
   const idOfAnnotationToUpdate = encodeAnnoId(anno.id);
 
   // update the target of an annotation (and the "purpose:describing" body, if it exists) by sending a put request
   const colorName = getColorNameFromEnumEntry(anno.color);
-  const annotationDataJson = { color: colorName, motivation: 'describing', svgCode: newTarget };
+  const annotationDataJson = { color: colorName, motivation: 'describing', selectors: newSelectors };
 
   const url = window.CONTEXTPATH + 'editor_rest/annotations/' + idOfAnnotationToUpdate;
 
@@ -141,7 +147,8 @@ export async function updateTargetData(anno, newTarget) {
   if (response.status == 200) {
     return await response.json();
   } else {
-    throw new Error('Target update failed with response: ', response);
+    console.warn(`Target update failed with response code: ${response.status}`);
+    throw response;
   }
 }
 
@@ -161,7 +168,8 @@ export async function deleteAnnotationData(annoId) {
   if (response.status == 204) {
     return response;
   } else {
-    throw new Error('Annotation deletion failed with response: ', response);
+    console.warn(`Annotation deletion failed with response code: ${response.status}`);
+    throw response;
   }
 }
 
@@ -257,6 +265,7 @@ export async function deleteBodyData(annoId, body) {
   if (response.status == 204) {
     return response;
   } else {
-    throw new Error('Body deletion failed with response: ', response);
+    console.warn(`Body deletion failed with response code: ${response.status}`);
+    throw response;
   }
 }

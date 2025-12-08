@@ -19,6 +19,7 @@ esdata
 # developed in tuhl/src/main/resources/js-src/.
 # Run `npm run build` to create these static files.
 tuhl/src/main/resources/static/js/texteditor-ng.js*
+tuhl/src/main/resources/static/js/imageeditor-ng.js*
 
 
 # Ignore Gradle project-specific cache directory

@@ -42,7 +42,6 @@ export async function selectAnnotation(_event, annoId, hooks = {}) {
 
   // creating new annotationCard
   let $annotationDiv = document.getElementById('annotationCard');
-  $annotationDiv.setAttribute('data-annotation-id', annoId);
   await fillAnnotationDiv($annotationDiv, annotationData, hooks);
 
   if (hooks.postAnnotationCardCreation) {

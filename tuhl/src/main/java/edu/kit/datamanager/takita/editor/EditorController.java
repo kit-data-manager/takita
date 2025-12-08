@@ -147,7 +147,11 @@ public class EditorController {
         // adding the targets
         JSONArray targets = new JSONArray();
         for (Target target : annotations.get(i).getTargets()) {
-        	targets.put(target.getSelector().toString());
+        	// this check is necessary for "page"-annotations, which don't have a selector, i.e. which
+        	// target the whole document/image
+        	if (target.getSelector() != null) {
+        		targets.put(target.getSelector().getWADMSerialization());
+        	}
         }
         thisAnno.put("svg", targets);
         

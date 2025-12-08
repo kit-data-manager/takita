@@ -14,6 +14,7 @@ import edu.kit.datamanager.takita.model.body.TextCard;
 import edu.kit.datamanager.takita.model.page.Page;
 import edu.kit.datamanager.takita.model.target.SVGSelector;
 import edu.kit.datamanager.takita.model.target.Target;
+import edu.kit.datamanager.takita.model.target.TextQuoteSelector;
 import edu.kit.datamanager.takita.model.target.XPathSelector;
 
 import java.io.IOException;
@@ -26,6 +27,7 @@ import java.util.UUID;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -72,16 +74,17 @@ public class EditorService implements IEditorService {
    *
    * @param pageId ID of the page on which the annotation is located
    * @param color color of the annotation
-   * @param svgCode svg code of the shape of the annotation
+   * @param selectors 1-n selectors (part of the target) of the annotation
    * @param motivation motivation of the annotation
    * @return the added annotation
    * @throws InterruptedException when the http request to database is interrupted
    * @throws NoSuchIndexEntryException when there is no such page in the index
    * @throws IOException when the http request to database was faulty
+   * @throws JSONException when there is a problem with the JSON object holding the selector
    */
   @Override
-  public Annotation addAnnotation(String pageId, String color, String svgCode, String motivation)
-      throws InterruptedException, NoSuchIndexEntryException, IOException {
+  public Annotation addAnnotation(String pageId, String color, JSONArray selectors, String motivation)
+      throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException {
     Annotation newAnnotation = new Annotation();
     newAnnotation.setPageId(pageId);
     newAnnotation.setCreators(Collections.singletonList(
@@ -95,43 +98,50 @@ public class EditorService implements IEditorService {
       newAnnotation.setColor(Color.DEFAULT);
     }
 
-    // create the target from the String sent by the frontend
-    // TODO: the frontend should send JSONObject instead of a String
-    // this change needs to be done here as well
-    if (svgCode != null && !svgCode.trim().equals("")) {
-        if (svgCode.contains("§")) {
-        	// building multiple targets, if multiple svgCodes or xPaths are given
-	        String[] xPaths = svgCode.split("§");
-	        for (String xPath : xPaths) {
-		    	// using constructor w/o parameters here as the link to the resource is not present here
-		    	Target newTarget = new Target();
-		    	// building targets for texts or images
-		    	if (xPath.contains("xml:id") || xPath.contains("id(")) {
-		        	XPathSelector newSelector = new XPathSelector(xPath);
+    if (selectors != null) {
+    	for (int i = 0; i < selectors.length(); i++) {
+			String selectorType = selectors.getJSONObject(i).getString("type");
+			switch (selectorType) {
+				case "XPathSelector":
+					Target newTarget = new Target();
+					String xPath = selectors.getJSONObject(i).getString("value");
+					XPathSelector newXPathSelector = new XPathSelector(xPath);
 		        	newTarget.setType("TEXT");
-		        	newTarget.setSelector(newSelector);
-		    	} else {
-		    		SVGSelector newSelector = new SVGSelector(xPath);
-		    		newTarget.setType("IMAGE");
-		        	newTarget.setSelector(newSelector);
-		    	}
-		    	newAnnotation.addTarget(newTarget);
-	        }
-        } else {
-        	// building single target, if only one svgCode or xPath is given
-		    Target newTarget = new Target();
-		    // building target for texts or images
-		    if (svgCode.contains("xml:id") || svgCode.contains("id(")) {
-	        	XPathSelector newSelector = new XPathSelector(svgCode);
-	        	newTarget.setType("TEXT");
-	        	newTarget.setSelector(newSelector);
-	    	} else {
-	    		SVGSelector newSelector = new SVGSelector(svgCode);
-	    		newTarget.setType("IMAGE");
-	        	newTarget.setSelector(newSelector);
-	    	}
-		    newAnnotation.addTarget(newTarget);
-        }
+		        	newTarget.setSelector(newXPathSelector);
+		        	newAnnotation.addTarget(newTarget);
+		        	System.out.println(newAnnotation.getTargets().get(0).getWADMSerialization().toString());
+					break;
+				case "SvgSelector":
+					Target newTarget2 = new Target();
+					String svgCode = selectors.getJSONObject(i).getString("value");
+					SVGSelector newSVGSelector = new SVGSelector(svgCode);
+		    		newTarget2.setType("IMAGE");
+		        	newTarget2.setSelector(newSVGSelector);
+		        	newAnnotation.addTarget(newTarget2);
+					break;
+				case "TextQuoteSelector":
+					Target newTarget3 = new Target();
+					String exactString = selectors.getJSONObject(i).getString("exact");
+					TextQuoteSelector newTextQuoteSelector = new TextQuoteSelector(exactString);
+					if (selectors.getJSONObject(i).getString("prefix") != null) {
+						newTextQuoteSelector.setPrefix(selectors.getJSONObject(i).getString("prefix"));
+					}
+					if (selectors.getJSONObject(i).getString("suffix") != null) {
+						newTextQuoteSelector.setSuffix(selectors.getJSONObject(i).getString("suffix"));
+					}
+		    		newTarget3.setType("TEXT");
+		        	newTarget3.setSelector(newTextQuoteSelector);
+		        	newAnnotation.addTarget(newTarget3);
+			}
+    	}
+    } else {
+    	// this branch should get reached when users create a "page"-annotation, i.e.
+    	// an annotation targeting the whole document/image
+    	// TODO: this has to be tested by someone who works with page-annotations.
+    	// Philipp tested it and it seems to work.
+		Target newTarget = new Target();
+    	newTarget.setType("PAGE");
+    	newAnnotation.addTarget(newTarget);
     }
 
     if (motivation != null) {
@@ -170,11 +180,12 @@ public class EditorService implements IEditorService {
    * @throws NoSuchIndexEntryException when there is no such annotation in the index
    * @throws InterruptedException when the http request to database is interrupted
    * @throws IOException when the http request to database was faulty
+   * @throws JSONException when there is a problem with the JSON object holding the selector
    */
   @Override
   public Annotation updateAnnotation(String annotationId, String color,
-                                     String svgCode, String motivation)
-      throws NoSuchIndexEntryException, InterruptedException, IOException {
+		  JSONArray selectors, String motivation)
+      throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException {
     Annotation updatedAnnotation = searchIndexService.getAnnotationById(annotationId);
     if (!updatedAnnotation.getCreators().contains(assistanceService
         .getCurrentUser().getName())) {
@@ -188,47 +199,55 @@ public class EditorService implements IEditorService {
       updatedAnnotation.setColor(Color.DEFAULT);
     }
 
-    // update the target from the String sent by the frontend
-    // TODO: the frontend should send JSONObject instead of a String
-    // this change needs to be done here as well
-    if (svgCode != null && !svgCode.trim().equals("")) {
-    	// storing the link to the resource, which is present in the annotation, that will be updated
+    if (selectors != null) {
+    	// TODO: this way of getting the link to the resource is dangerous. If there 
+    	// are multiple targets, which target different resource, all targets will target
+    	// the same resource after a target update (as the targets are just getting overwritten
+    	// by "updatedAnnotation.setTargets(newTargets)") and the annotation will be incorrect.
     	String linkToResource = updatedAnnotation.getTargets().get(0).getLinkToResource();
     	List<Target> newTargets = new ArrayList<>();
-    	if (svgCode.contains("§")) {
-    		// building multiple targets, if multiple svgCodes or xPaths are given
-   	        String[] xPaths = svgCode.split("§");
-	        for (String xPath : xPaths) {
-		    	Target newTarget = new Target(linkToResource);
-		    	// for each svgCode create new target
-		    	if (xPath.contains("xml:id") || xPath.contains("id(")) {
-		        	XPathSelector newSelector = new XPathSelector(xPath);
+    	for (int i = 0; i < selectors.length(); i++) {
+			String selectorType = selectors.getJSONObject(i).getString("type");
+			switch (selectorType) {
+				case "XPathSelector":
+					Target newTarget = new Target(linkToResource);
+					String xPath = selectors.getJSONObject(i).getString("value");
+					XPathSelector newXPathSelector = new XPathSelector(xPath);
 		        	newTarget.setType("TEXT");
-		        	newTarget.setSelector(newSelector);
-		    	} else {
-		    		SVGSelector newSelector = new SVGSelector(xPath);
-		    		newTarget.setType("IMAGE");
-		        	newTarget.setSelector(newSelector);
-		    	}
-		    	newTargets.add(newTarget);
-	        }
-	        updatedAnnotation.setTargets(newTargets);
-        } else {
-        	// building single target, if only one svgCode or xPath is given
-        	Target newTarget = new Target(linkToResource);
-        	// building target for texts or images
-	    	if (svgCode.contains("xml:id") || svgCode.contains("id(")) {
-	        	XPathSelector newSelector = new XPathSelector(svgCode);
-	        	newTarget.setType("TEXT");
-	        	newTarget.setSelector(newSelector);
-	    	} else {
-	    		SVGSelector newSelector = new SVGSelector(svgCode);
-	    		newTarget.setType("IMAGE");
-	        	newTarget.setSelector(newSelector);
-	    	}
-	    	newTargets.add(newTarget);
-	    	updatedAnnotation.setTargets(newTargets);
-        }
+		        	newTarget.setSelector(newXPathSelector);
+		        	newTargets.add(newTarget);
+					break;
+				case "SvgSelector":
+					Target newTarget2 = new Target(linkToResource);
+					String svgCode = selectors.getJSONObject(i).getString("value");
+					SVGSelector newSVGSelector = new SVGSelector(svgCode);
+		    		newTarget2.setType("IMAGE");
+		        	newTarget2.setSelector(newSVGSelector);
+		        	newTargets.add(newTarget2);
+					break;
+				case "TextQuoteSelector":
+					Target newTarget3 = new Target(linkToResource);
+					String exactString = selectors.getJSONObject(i).getString("exact");
+					TextQuoteSelector newTextQuoteSelector = new TextQuoteSelector(exactString);
+					if (selectors.getJSONObject(i).getString("prefix") != null) {
+						newTextQuoteSelector.setPrefix(selectors.getJSONObject(i).getString("prefix"));
+					}
+					if (selectors.getJSONObject(i).getString("suffix") != null) {
+						newTextQuoteSelector.setSuffix(selectors.getJSONObject(i).getString("suffix"));
+					}
+		    		newTarget3.setType("TEXT");
+		        	newTarget3.setSelector(newTextQuoteSelector);
+		        	newTargets.add(newTarget3);
+					break;
+			}
+    	}
+    	updatedAnnotation.setTargets(newTargets);
+    } else {
+    	// this branch should get reached when users updates a "page"-annotation, i.e.
+    	// an annotation targeting the whole document/image. It might get reached, when a
+    	// user wants to turn a normal annotation into a a "page"-annotation.
+    	// TODO: this has to be figured out. It could just create one target w/o a selector
+    	// and turn the annotation into a page-annotation
     }
 
     if (motivation != null) {

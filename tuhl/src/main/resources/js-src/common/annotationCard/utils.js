@@ -2,6 +2,7 @@ import { getAnnotationData, deleteAnnotationData, deleteBodyData, updateBodyData
 import { makeTargetsCompatible, checkIsTargetCompatible } from '../../texteditor-ng/utils';
 import { removeStyles } from '../../texteditor-ng/highlighting';
 import { updateDisplay } from '../../texteditor-ng/display';
+import { initializeAnnotationTable, defaultDisplayAnnotationFunction } from '../annotationTable';
 import { toggleVisibility } from '../utils';
 import { selectAnnotation } from './annotationCard';
 // data manipulation
@@ -162,44 +163,44 @@ export async function deleteAnnotation(annoId, hooks = {}) {
       // checking if paper is defined. it is defined for image annotation,
       // but not for text annotation
       // eslint-disable-next-line no-undef
-      if (window.PAPER != undefined) {
+      if (window.paper != undefined && window.EDITORTYPE == 'IMAGE') {
         // eslint-disable-next-line no-undef
-        window.PAPER.forEach(function (element) {
+        window.paper.forEach(function (element) {
           if (element.annoId === annoId) {
             element.remove();
           }
         });
-      }
 
-      // this for-loop is unnecessary for the textEditor
-      // as the updateDisplay()-function updates the annoJson as well
-      // the imageEditor still needs the for-loop
-      for (let anno in window.ANNOJSON) {
-        if (window.ANNOJSON[anno].id === annoId) {
-          //console.log(annoId + " this must go!")
-          window.ANNOJSON.splice(anno, 1);
+        // this for-loop is unnecessary for the textEditor
+        // as the updateDisplay()-function updates the annoJson as well
+        // the imageEditor still needs the for-loop
+        for (let anno in window.ANNOJSON) {
+          if (window.ANNOJSON[anno].id === annoId) {
+            //console.log(annoId + " this must go!")
+            window.ANNOJSON.splice(anno, 1);
+          }
         }
+
+        // The textEditor doesn't need the following, as the function is included in updateDisplay()
+        initializeAnnotationTable(
+          window.ANNOJSON,
+          document.getElementById('annotationTableBottom'),
+          defaultDisplayAnnotationFunction,
+        );
+        document.getElementById('createRectangleButton').parentElement.classList.remove('active');
+        document.getElementById('createPolygonButton').parentElement.classList.remove('active');
       }
 
       // updating the display for text annotation
       // checking if TEI-element is null. it is defined for text annotation,
       // but not for image annotation
-      if (document.getElementById('TEI') != null) {
+      if (document.getElementById('TEI') != null && window.EDITORTYPE == 'TEXT') {
         // redrawing all annotations
         await updateDisplay(hooks);
       }
 
       // maybe move it within the if clause?
       //console.log(annoJson);
-      // TODO: previuosly fillMetaDataEditorTable() was used. When modularizing the imageEditor
-      // uncomment the next line and import the corresponding function. The textEditor doesn't
-      // need it, as the function is included in updateDisplay()
-      // initializeAnnotationTable(
-      //   window.ANNOJSON,
-      //   document.getElementById('annotationTableBottom'),
-      //   document.getElementById('annotationCard'),
-      //   hooks,
-      // );
     } catch (exception) {
       console.error(exception);
       confirmation = false;

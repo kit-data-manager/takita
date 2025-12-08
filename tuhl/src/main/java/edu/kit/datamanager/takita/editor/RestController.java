@@ -15,6 +15,7 @@ import java.util.List;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.ResponseEntity;
@@ -100,12 +101,12 @@ public class RestController {
             JSONObject json = new JSONObject(jsonString);
             String pageId = json.getString("pageId");
             String color = json.getString("color");
-            String svgCode = "";
-            if (json.has("svgCode")) {
-                svgCode = json.getString("svgCode");
+            JSONArray selectors = null;
+            if (json.has("selectors")) {
+            	selectors = (JSONArray) json.get("selectors");
             }
             String motivation = json.getString("motivation");
-            Annotation annotation = editorService.addAnnotation(pageId, color, svgCode, motivation);
+            Annotation annotation = editorService.addAnnotation(pageId, color, selectors, motivation);
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
             mapper.registerModule(new JavaTimeModule());
@@ -198,10 +199,10 @@ public class RestController {
         try {
             JSONObject json = new JSONObject(jsonString);
             String color = json.getString("color");
-            String svgCode = json.getString("svgCode");
+            JSONArray selectors = (JSONArray) json.get("selectors");
             String motivation = json.getString("motivation");
             Annotation annotation = editorService
-              .updateAnnotation(decodeURL(id), color, svgCode, motivation);
+              .updateAnnotation(decodeURL(id), color, selectors, motivation);
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
             mapper.registerModule(new JavaTimeModule());

@@ -82,7 +82,11 @@ public class Target {
 		wadmTarget.put(AnnotationStoreStrings.TYPE.getName(),
   	            AnnotationStoreStrings.SPECIFIC_RESOURCE.getName());
 		wadmTarget.put(AnnotationStoreStrings.SOURCE.getName(), this.linkToResource);
-		wadmTarget.put(AnnotationStoreStrings.SELECTOR.getName(), this.selector.getWADMSerialization());
+		// this check is necessary for "page"-annotations, which don't have a selector, i.e. which
+    	// target the whole document/image
+		if (this.selector != null) {
+			wadmTarget.put(AnnotationStoreStrings.SELECTOR.getName(), this.selector.getWADMSerialization());
+		}
 		/*for (ISelector wadmSelector : this.selector) {
 			wadmTarget.put(AnnotationStoreStrings.TYPE.getName(),
 	  	            AnnotationStoreStrings.SPECIFIC_RESOURCE.getName());

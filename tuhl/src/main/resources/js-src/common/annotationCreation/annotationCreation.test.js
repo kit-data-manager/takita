@@ -60,13 +60,18 @@ describe('creating various forms based on chosen template', () => {
     // mocking the projectspecific getFormObjectCreateAnnotation() so the test works independetly
     // from project setups
     jest.spyOn(templates, 'getFormObjectCreateAnnotation').mockReturnValue(getFormObjectCreateAnnotationMock());
-    pickTemplate('svgCode/xPath', '', 'createAnnotationForm', 'pickAnnotationTemplateForm', 'annotationTemplate');
+    pickTemplate(
+      [{ type: 'XPathSelector', value: 'targetXPath' }],
+      '',
+      'createAnnotationForm',
+      'pickAnnotationTemplateForm',
+      'annotationTemplate',
+    );
 
     const $form = document.getElementById('createAnnotationForm');
     const $pickForm = document.getElementById('pickAnnotationTemplateForm');
 
     expect($form.children.length).toBe(0);
-    expect($form.getAttribute('data-annotation-targetcode')).toStrictEqual('svgCode/xPath');
     expect($pickForm.querySelectorAll('option').length).toBe(3);
     expect($pickForm.querySelectorAll('option')[1].value).toStrictEqual('One');
   });
@@ -82,7 +87,6 @@ describe('creating various forms based on chosen template', () => {
     const $pickForm = document.getElementById('pickBodyTemplateForm');
 
     expect($form.children.length).toBe(0);
-    expect($form.getAttribute('data-annotation-id')).toStrictEqual('encodedId');
     expect($pickForm.querySelectorAll('option').length).toBe(3);
     expect($pickForm.querySelectorAll('option')[1].value).toStrictEqual('One');
   });

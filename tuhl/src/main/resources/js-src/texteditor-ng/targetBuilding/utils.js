@@ -149,40 +149,48 @@ export function getSubstringPosition(target, range) {
  */
 export function getSelectedTextOfAnnotation(annotation) {
   let selectedText;
-  let describingBody = annotation.textCards.find((textCard) => textCard.purpose === 'describing');
-  if (describingBody != undefined) {
-    selectedText = describingBody.value;
+  const textquoteSelector = annotation.targets?.find((target) => target.selector?.exact != undefined);
+  // TODO: remove the describing body as its CRC1475 specific, but CRC1475 still needs it
+  const describingBody = annotation.textCards?.find((textCard) => textCard.purpose === 'describing');
+  // if the annotation has a textQuoteelector it already holds the selected String
+  if (textquoteSelector != undefined) {
+    selectedText = textquoteSelector.selector.exact;
   } else {
-    // TODO: this ordering seems to be unnecessary as we store only one long xPath,
-    // which should have the proper order. This function
-    // can't deal with substrings. This needs to be checked
-    // make targets compatible, if necessary
-    if (!checkIsTargetCompatible(annotation)) {
-      annotation.targets = makeTargetsCompatible(annotation);
-    }
+    // if the annotation has a body storing the text ("describing-body"), it already holds the selected String
+    if (describingBody != undefined) {
+      selectedText = describingBody.value;
+    } else {
+      // TODO: this ordering seems to be unnecessary as we store only one long xPath,
+      // which should have the proper order. This function
+      // can't deal with substrings. This needs to be checked
+      // make targets compatible, if necessary
+      if (!checkIsTargetCompatible(annotation)) {
+        annotation.targets = makeTargetsCompatible(annotation);
+      }
 
-    // store the ids of the words
-    let idArray = [];
-    annotation.targets.forEach((target) => {
-      idArray.push(target.selector.xPath.split('"')[1]);
-    });
-    // this sorts the xml:ids to retrieve a somehow appropriate reconstruction of the text out of the targets
-    // in cases, where the ids are not in an ascending nummerical order, the reconstruction will be off
-    // especially regarding the punctuation
-    idArray = idArray.sort((a, b) => {
-      return a - b;
-    });
-    idArray = idArray.sort((a, b) => {
-      const na = a.split('.').slice(-1)[0];
-      const nb = b.split('.').slice(-1)[0];
-      return na - nb;
-    });
-    // get the text of each element
-    let stringArray = idArray.map((id) => {
-      return document.getElementById(id).textContent;
-    });
-    // merge the text of each element into one string
-    selectedText = stringArray.join(' ');
+      // store the ids of the words
+      let idArray = [];
+      annotation.targets.forEach((target) => {
+        idArray.push(target.selector.xPath.split('"')[1]);
+      });
+      // this sorts the xml:ids to retrieve a somehow appropriate reconstruction of the text out of the targets
+      // in cases, where the ids are not in an ascending nummerical order, the reconstruction will be off
+      // especially regarding the punctuation
+      idArray = idArray.sort((a, b) => {
+        return a - b;
+      });
+      idArray = idArray.sort((a, b) => {
+        const na = a.split('.').slice(-1)[0];
+        const nb = b.split('.').slice(-1)[0];
+        return na - nb;
+      });
+      // get the text of each element
+      let stringArray = idArray.map((id) => {
+        return document.getElementById(id).textContent;
+      });
+      // merge the text of each element into one string
+      selectedText = stringArray.join(' ');
+    }
   }
   return selectedText;
 }
@@ -216,10 +224,10 @@ export function isSelectable(node) {
  * @param {Element} $modal to hold the information and to be shown
  * @param {String} oldSelectedText
  * @param {String} newSelectedText
- * @param {String} targetXPath
+ * @param {[Object]} newSelectors
  * @returns {Element} the modal containing the inforamtion from the parameters
  */
-export function showSaveTargetModal($modal, oldSelectedText, newSelectedText, targetXPath) {
+export function showSaveTargetModal($modal, oldSelectedText, newSelectedText, newSelectors) {
   const $oldSelectedTextContainer = $modal._element.querySelector('#oldSelectedText');
   const $newSelectedTextContainer = $modal._element.querySelector('#newSelectedText');
 
@@ -239,8 +247,171 @@ export function showSaveTargetModal($modal, oldSelectedText, newSelectedText, ta
   $newSelectedTextContainer.append($newSelectedTextDiv);
 
   $modal.toggle();
-  $modal._element.dataset.newTargetXmlId = targetXPath;
+  $modal._element.dataset.newTargetCode = JSON.stringify(newSelectors);
   //modal.dataset.SelectedAnnotationId = selectedAnnotation.id;
 
   return $modal;
+}
+
+/**
+ * produces a String unique for an element
+ *
+ * @param {String} [string] optional parameter. If given it will be checked, wether its present
+ * in the document or will get modified; if not given a preset String will be used
+ * @param {Element} $text containing the text to be checked, wether it contains the given or
+ * preset String
+ * @returns {String} unique to the given Element
+ */
+export function getUniqueStringForElement(string, $text) {
+  const content = $text.textContent;
+  if (string) {
+    // check if the string is part of the textContent of the element by trying to
+    // split the textContent and evaluating the length of the result. If the textContent
+    // contains the string the lenght will be greater than 1 and the String will get a
+    // random number appended
+    while (content.split(string).length > 1) {
+      string += Math.random();
+    }
+    return string;
+  } else {
+    let uniquestring = 'uniqueString' + Math.random();
+    // check if the string is part of the textContent of the element by trying to
+    // split the textContent and evaluating the length of the result. If the textContent
+    // contains the string the lenght will be greater than 1 and the String will get a
+    // random number appended
+    while (content.split(uniquestring).length > 1) {
+      uniquestring += Math.random();
+    }
+    return uniquestring;
+  }
+}
+
+/**
+ * inserts an element at the beginning and one at the end of a selection created by a user
+ *
+ * @param {Element} $text the element (usualy the "#TEI"-element), which holds all the text
+ * @param {Selection} selection the selection that got created by a user, used to create the
+ * TextQuoteSelector
+ * @param {*} selectionRangeContents
+ * @param {String} leadingDelimiter will be inserted into the $text to indicate the beginning of
+ * the String selected by a user. The String will be inserted as the innerHTML of a span-Element
+ * @param {String} trailingDelimiterwill be inserted into the $text to indicate the end of
+ * the String selected by a user. The String will be inserted as the innerHTML of a span-Element
+ * @returns {[Element]} array holding the elements, which act as delimiters
+ */
+export function insertDelimiterElements($text, selection, selectionRangeContents, leadingDelimiter, trailingDelimiter) {
+  // create the marker elements
+  const $leading = document.createElement('span');
+  $leading.id = 'leadingSpan' + leadingDelimiter;
+  $leading.innerHTML = leadingDelimiter;
+  $leading.style = 'display:none';
+  const $trailing = document.createElement('span');
+  $trailing.id = 'trailingSpan' + trailingDelimiter;
+  $trailing.innerHTML = trailingDelimiter;
+  $trailing.style = 'display:none';
+  // according to the specs there should only be one range, but firefox
+  // creates multiple ranges, if a user has a multi selection
+  if (selection.rangeCount == 1) {
+    // clone the range to not interfere with the original one
+    const clonedRange = selection.getRangeAt(0).cloneRange();
+    // const clonedRange = selection.getRangeAt(0).cloneRange();
+    // insert the $leading marker at the start of the range
+    clonedRange.insertNode($leading);
+    // insert the $trailing marker at the end of the range by collapsing it
+    // to the end first
+    // see https://stackoverflow.com/questions/60181235/how-to-insert-node-at-the-end-of-the-range
+    clonedRange.collapse(false);
+    clonedRange.insertNode($trailing);
+    return [$leading, $trailing];
+  } else if (selection.rangeCount > 1) {
+    // getting the first and the last range, so the markers can be inserted at the start
+    // and end of a users selection
+    const firstRange = selection.getRangeAt(0).cloneRange();
+    const lastRange = selection.getRangeAt(selection.rangeCount - 1).cloneRange();
+    // insert the $leading marker at the start of the range
+    firstRange.insertNode($leading);
+    // insert the $trailing marker at the end of the range by collapsing it
+    // to the end first
+    lastRange.collapse(false);
+    lastRange.insertNode($trailing);
+    return [$leading, $trailing];
+  }
+}
+
+/**
+ * removes elements/reinstatesthe original DOM fragment
+ *
+ * @param {Element} $leading to be removed
+ * @param {Element} $trailing to be removed
+ * @param {Element} $text to have the elements removed from
+ * @param {String} originalText content of the $text-element to be set as innerHTML
+ */
+export function removeDelimiterElements($leading, $trailing, $text, originalText) {
+  // TODO: this corretly resets the text, but this causes unwanted side-effects
+  // (at least the navigation breaks)
+  // idea taken from: https://jsfiddle.net/Abeeee/9zjcgbku/ and
+  // https://stackoverflow.com/questions/60181235/how-to-insert-node-at-the-end-of-the-range
+  // $text.innerHTML = originalText;
+  // TODO: this leaves a whitespace/linebreak in the textnode when inspecting the text
+  // with the firefox inspector; it splits the text node
+  // "hallo" into two text nodes "hal" and "lo", if the delimiter element was placed
+  // after "hal". But printing the innerHTML, outerHTML or textContent return the correct
+  // repesentation of the word, i.e. w/o a linebreak
+  $leading.remove();
+  $trailing.remove();
+}
+
+/**
+ * splits a String at another given Strings location and returns the first characters BEFORE the delimiter.
+ * This will try to get the most characters available below the threshold; if there are no characters
+ * it will return an empty String
+ *
+ * @param {String} textString to be split at delimiter
+ * @param {String} delimiter marks the spot, where the textString will be split. This should be unique for
+ * the document to ensure that the textString will be split at the correct position
+ * @param {Number} threshold desired length of the leading String
+ * @returns {String} substring of textString split at delimiter or empty String
+ */
+export function getLeadingString(textString, delimiter, threshold) {
+  // split the string and take the first half as it is the text prior to the
+  // text selected by the user
+  const completeLeadingString = textString.split(delimiter)[0];
+  // check if there is sufficient text prior to a users selection. This is important
+  // for cases where users select the start of a text and the threshold is higher than
+  // the number of existing characters
+  for (let i = threshold; i > 0; i--) {
+    console.log(i);
+    if (i <= completeLeadingString.length) {
+      return completeLeadingString.substring(completeLeadingString.length - i, completeLeadingString.length);
+    }
+  }
+  console.log('Start of the text selected. Therefore, no leading text available.');
+  return '';
+}
+
+/**
+ * splits a String at another given Strings location and returns the first characters AFTER the delimiter.
+ * This will try to get the most characters available below the threshold; if there are no characters
+ * it will return an empty String
+ *
+ * @param {String} textString to be split at delimiter
+ * @param {String} delimiter marks the spot, where the textString will be split. This should be unique for
+ * the document to ensure that the textString will be split at the correct position
+ * @param {Number} threshold desired length of the leading String
+ * @returns {String} substring of textString split at delimiter or empty String
+ */
+export function getTrailingString(textString, delimiter, threshold) {
+  // split the string and take the second half as it is the text following the
+  // text selected by the user
+  const completeTrailingString = textString.split(delimiter)[1];
+  // check if there is sufficient text following a users selection. This is important
+  // for cases where users select the end of a text and the threshold is higher than
+  // the number of existing characters
+  for (let i = threshold; i > 0; i--) {
+    if (i <= completeTrailingString.length) {
+      return completeTrailingString.substring(0, i);
+    }
+  }
+  console.log('End of the text selected. Therefore, no trailing text available.');
+  return '';
 }

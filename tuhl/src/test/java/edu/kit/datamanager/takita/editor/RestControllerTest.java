@@ -138,10 +138,11 @@ class RestControllerTest {
   @Test
   void testCreateAnnotation() throws Exception {
 
-    Mockito.when(mockedEditorService.addAnnotation(pageId, "TEXT_REGION", "", "editing")).thenReturn(mockAnno);
-    Mockito.when(mockedEditorService.addAnnotation(pageId + "nf", "TEXT_REGION", "", "editing")).thenThrow(NoSuchIndexEntryException.class);
-    Mockito.when(mockedEditorService.addAnnotation(pageId + "io", "TEXT_REGION", "", "editing")).thenThrow(IOException.class);
-    Mockito.when(mockedEditorService.addAnnotation(pageId + "int", "TEXT_REGION", "", "editing")).thenThrow(InterruptedException.class);
+	JSONArray targets = new JSONArray();
+    Mockito.when(mockedEditorService.addAnnotation(pageId, "TEXT_REGION", targets, "editing")).thenReturn(mockAnno);
+    Mockito.when(mockedEditorService.addAnnotation(pageId + "nf", "TEXT_REGION", targets, "editing")).thenThrow(NoSuchIndexEntryException.class);
+    Mockito.when(mockedEditorService.addAnnotation(pageId + "io", "TEXT_REGION", targets, "editing")).thenThrow(IOException.class);
+    Mockito.when(mockedEditorService.addAnnotation(pageId + "int", "TEXT_REGION", targets, "editing")).thenThrow(InterruptedException.class);
 
     ObjectMapper mapper = new ObjectMapper(); 
     mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
@@ -153,22 +154,22 @@ class RestControllerTest {
         .andExpect(status().isInternalServerError())
         .andDo(MockMvcResultHandlers.print());
     
-    String notfound = "{\"pageId\":\"" + pageId + "nf\",\"color\":\"TEXT_REGION\",\"svgCode\":\"\",\"motivation\":\"editing\"}";
+    String notfound = "{\"pageId\":\"" + pageId + "nf\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"editing\"}";
     this.mockMvc.perform(post("/editor_rest/annotations").contentType(MediaType.APPLICATION_JSON).content(notfound))
         .andExpect(status().isNotFound())
         .andDo(MockMvcResultHandlers.print());
 
-    String io = "{\"pageId\":\"" + pageId + "io\",\"color\":\"TEXT_REGION\",\"svgCode\":\"\",\"motivation\":\"editing\"}";
+    String io = "{\"pageId\":\"" + pageId + "io\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"editing\"}";
     this.mockMvc.perform(post("/editor_rest/annotations").contentType(MediaType.APPLICATION_JSON).content(io))
         .andExpect(status().isInternalServerError())
         .andDo(MockMvcResultHandlers.print());
 
-    String inter = "{\"pageId\":\"" + pageId + "int\",\"color\":\"TEXT_REGION\",\"svgCode\":\"\",\"motivation\":\"editing\"}";
+    String inter = "{\"pageId\":\"" + pageId + "int\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"editing\"}";
     this.mockMvc.perform(post("/editor_rest/annotations").contentType(MediaType.APPLICATION_JSON).content(inter))
         .andExpect(status().isInternalServerError())
         .andDo(MockMvcResultHandlers.print());
 
-    String valid = "{\"pageId\":\"" + pageId + "\",\"color\":\"TEXT_REGION\",\"svgCode\":\"\",\"motivation\":\"editing\"}";
+    String valid = "{\"pageId\":\"" + pageId + "\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"editing\"}";
     this.mockMvc.perform(post("/editor_rest/annotations").contentType(MediaType.APPLICATION_JSON).content(valid).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -256,12 +257,17 @@ class RestControllerTest {
     mapper.registerModule(new JavaTimeModule());
     String mockAnnoUpdatedSerialized = mapper.writeValueAsString(mockAnnoUpdated);
 
-    Mockito.when(mockedEditorService.updateAnnotation(annoId, "TEXT_REGION", "", "bookmarking")).thenReturn(mockAnnoUpdated);
-    Mockito.when(mockedEditorService.updateAnnotation(annoId + "nf", "TEXT_REGION", "", "bookmarking")).thenThrow(NoSuchIndexEntryException.class);
-    Mockito.when(mockedEditorService.updateAnnotation(annoId + "io", "TEXT_REGION", "", "bookmarking")).thenThrow(IOException.class);
-    Mockito.when(mockedEditorService.updateAnnotation(annoId + "int", "TEXT_REGION", "", "bookmarking")).thenThrow(InterruptedException.class);
-
-    String notfound = "{\"annoId\":\"" + annoId + "nf\",\"color\":\"TEXT_REGION\",\"svgCode\":\"\",\"motivation\":\"bookmarking\"}";
+    JSONArray targets = new JSONArray();
+    Mockito.when(mockedEditorService.updateAnnotation(annoId, "TEXT_REGION", targets, "bookmarking")).thenReturn(mockAnnoUpdated);
+    Mockito.when(mockedEditorService.updateAnnotation(Mockito.eq(annoId + "nf"), Mockito.eq("TEXT_REGION"), Mockito.any(), Mockito.eq("bookmarking")))
+    	.thenThrow(NoSuchIndexEntryException.class);
+    Mockito.when(mockedEditorService.updateAnnotation(Mockito.eq(annoId + "io"), Mockito.eq("TEXT_REGION"), Mockito.any(), Mockito.eq("bookmarking")))
+    	.thenThrow(IOException.class);
+    Mockito.when(mockedEditorService.updateAnnotation(Mockito.eq(annoId + "int"), Mockito.eq("TEXT_REGION"), Mockito.any(), Mockito.eq("bookmarking")))
+    	.thenThrow(InterruptedException.class);
+    
+    String notfound = "{\"annoId\":\"" + annoId + "nf\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"bookmarking\"}";
+    
     this.mockMvc.perform(put("/editor_rest/annotations/" + URLEncoder.encode(URLEncoder.encode(annoId + "nf", StandardCharsets.UTF_8.name()), StandardCharsets.UTF_8.name())).contentType(MediaType.APPLICATION_JSON).content(notfound).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andDo(MockMvcResultHandlers.print());
@@ -274,7 +280,7 @@ class RestControllerTest {
         .andExpect(status().isInternalServerError())
         .andDo(MockMvcResultHandlers.print()); 
 
-    String valid = "{\"annoId\":\"" + annoId + "nf\",\"color\":\"TEXT_REGION\",\"svgCode\":\"\",\"motivation\":\"bookmarking\"}";
+    String valid = "{\"annoId\":\"" + annoId + "nf\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"bookmarking\"}";
     this.mockMvc.perform(put("/editor_rest/annotations/" + URLEncoder.encode(URLEncoder.encode(annoId, StandardCharsets.UTF_8.name()), StandardCharsets.UTF_8.name())).contentType(MediaType.APPLICATION_JSON).content(valid).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))

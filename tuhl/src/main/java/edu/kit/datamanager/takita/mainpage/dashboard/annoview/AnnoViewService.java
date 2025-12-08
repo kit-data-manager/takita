@@ -252,7 +252,11 @@ public class AnnoViewService implements IAnnoViewService {
         // getting all selectors
         JSONArray targetSelectors = new JSONArray();
         for (Target target : annotation.getTargets()) {
-        	targetSelectors.put(target.getSelector().getWADMSerialization());
+        	// this check is necessary for "page"-annotations, which don't have a selector, i.e. which
+        	// target the whole document/image
+        	if (target.getSelector() != null) {
+        		targetSelectors.put(target.getSelector().getWADMSerialization());
+        	}	
         }
         row.put("targetSelectors", targetSelectors);
         row.put("pageId", annotation.getPageId());

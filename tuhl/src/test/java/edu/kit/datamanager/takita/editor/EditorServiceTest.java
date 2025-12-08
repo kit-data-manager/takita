@@ -18,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -70,8 +71,10 @@ class EditorServiceTest {
           return annotation;
          });
 
+    JSONArray targets = new JSONArray();
+    targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
+    		targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -92,9 +95,11 @@ class EditorServiceTest {
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
-
+    
+    JSONArray targets = new JSONArray();
+    targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
+        targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -116,8 +121,10 @@ class EditorServiceTest {
           return annotation;
         });
 
+    JSONArray targets = new JSONArray();
+    targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
+        targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -139,8 +146,10 @@ class EditorServiceTest {
           return annotation;
         });
 
+    JSONArray targets = new JSONArray();
+    targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
+        targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -162,8 +171,10 @@ class EditorServiceTest {
           return annotation;
         });
 
+    JSONArray targets = new JSONArray();
+    targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
+        targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -185,8 +196,10 @@ class EditorServiceTest {
           return annotation;
         });
 
+    JSONArray targets = new JSONArray();
+    targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
+        targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -207,8 +220,10 @@ class EditorServiceTest {
           return annotation;
         });
 
+    JSONArray targets = new JSONArray();
+    targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
+        targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -230,8 +245,10 @@ class EditorServiceTest {
           return annotation;
         });
 
+    JSONArray targets = new JSONArray();
+    targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
+        targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -253,8 +270,10 @@ class EditorServiceTest {
           return annotation;
         });
 
+    JSONArray targets = new JSONArray();
+    targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
+       targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -275,8 +294,10 @@ class EditorServiceTest {
           return annotation;
         });
 
+    JSONArray targets = new JSONArray();
+    targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
+        targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -298,8 +319,10 @@ class EditorServiceTest {
           return annotation;
         });
 
+    JSONArray targets = new JSONArray();
+    targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-        annotation.getTargets().get(0).getSelector().toString(), annotation.getMotivation().toString());
+        targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -359,8 +382,10 @@ class EditorServiceTest {
       return updatedAnnotation;
     });
 
+    JSONArray targets = new JSONArray();
+    targets.put(updatedAnnotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.updateAnnotation(annotation.getId(),
-        Color.UNKNOWN_REGION.toString(), updatedAnnotation.getTargets().get(0).getSelector().toString(), updatedAnnotation.getMotivation().toString());
+        Color.UNKNOWN_REGION.toString(), targets, updatedAnnotation.getMotivation().toString());
 
     assertEqualsAnnotations(updatedAnnotation, actualAnnotation);
   }
@@ -572,7 +597,7 @@ class EditorServiceTest {
     mockAnnotation.setModified(Instant.now());
     List<Target> mockTargets = new ArrayList<>();
     Target mockTarget = new Target();
-    SVGSelector mockSvgSelector = new SVGSelector("<svg><rect x=\"279\" y=\"48\" width=\"2951\" height=\"4500\"/></svg>");
+    SVGSelector mockSvgSelector = new SVGSelector("<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"279\" y=\"48\" width=\"2951\" height=\"4500\"/></svg>");
     mockTarget.setSelector(mockSvgSelector);
     mockTargets.add(mockTarget);
     mockAnnotation.setTargets(mockTargets);

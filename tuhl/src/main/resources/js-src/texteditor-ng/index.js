@@ -85,7 +85,7 @@ function initializeState(annotationsString) {
 
   window.ANNOJSON = createAnnoJson(annotationsString);
   // this is needed for annotationCard.js to work atm
-  window.PAPER;
+  window.paper;
 
   // globalSelectedAnnotation stores the annotation, that gets
   // selected by right clicking on a highlighted word

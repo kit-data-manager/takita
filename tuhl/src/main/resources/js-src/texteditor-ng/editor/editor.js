@@ -4,7 +4,7 @@ import * as bootstrap from 'bootstrap';
 import { encodeAnnoId } from '../../common/utils';
 import { selectAnnotation } from '../../common/annotationCard';
 import { collapseSidebar } from '../sidebar';
-import { createTargetString } from '../targetBuilding';
+import { createTextSelectors } from '../targetBuilding';
 import { pickTemplate } from '../../common/annotationCreation';
 import { possibleHighlightClasses } from '../../projectspecific';
 import { drawAnnos, removeStyles } from '../highlighting';
@@ -97,11 +97,11 @@ export function initializeTextEditor(_annotations, hooks = {}) {
  * @returns nothing. The return statement only cancels the function
  */
 export function annotateSelectedText(selection, annoJson, hooks = {}) {
-  const targetXPath = createTargetString(selection);
+  const selectors = createTextSelectors(selection);
 
-  // newXPath will be an empty string/a "falsy" variable, if the target could
-  // not be created and therefore this saveModification function will return
-  if (targetXPath) {
+  // selectors will be null/a "falsy" variable, if the target could
+  // not be created and therefore this function will return
+  if (selectors) {
     if (hooks.postTargetCreation) {
       hooks.postTargetCreation.forEach((hook) => {
         hook(selection, annoJson);
@@ -112,7 +112,7 @@ export function annotateSelectedText(selection, annoJson, hooks = {}) {
     // by the user
     const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('createAnnotation'));
     $modal.toggle();
-    pickTemplate(targetXPath, '', 'createAnnotationForm', 'pickAnnotationTemplateForm', 'annotationTemplate');
+    pickTemplate(selectors, '', 'createAnnotationForm', 'pickAnnotationTemplateForm', 'annotationTemplate');
 
     // resetting parameters, so no new annotation can be created without clicking on
     // the button at the sidebar, that enables annotation
@@ -161,8 +161,14 @@ function cycleAnnotations(_event, $element, annoJson, currentSelectedAnnotation)
     // add all the annotations targeting the selected word to an array
     annoJson.forEach((item) => {
       item.svg.forEach((target) => {
-        if ($element.id == target.split('"')[1]) {
-          annotationsOnTarget.push(item);
+        if (target.type === 'XPathSelector') {
+          if (
+            target.value instanceof Array
+              ? target.value.some((val) => val.split('"')[1] === $element.id)
+              : target.value.split('"')[1] === $element.id
+          ) {
+            annotationsOnTarget.push(item);
+          }
         }
       });
     });
