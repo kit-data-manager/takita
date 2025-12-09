@@ -1,8 +1,8 @@
-import * as templates from '../../projectspecific/annotationCreation/templates';
+import * as templates from '../../texteditor-ng/projectspecific/annotationCreation/templates';
 import * as display from '../../texteditor-ng/display/display';
 import * as annotationCard from '../annotationCard/annotationCard';
 import * as metadataEditorWrapper from '../utils/metadataEditorWrapper';
-import { pickTemplate, resetFormAndUpdateDisplay } from './annotationCreation';
+import { resetFormAndUpdateDisplay } from './annotationCreation';
 //pickTemplate(
 // svgCode, encodedId,      createFormId,            pickFormId,                    template
 // targetXPath, '',         'createAnnotationForm', 'pickAnnotationTemplateForm',   'annotationTemplate'
@@ -43,14 +43,12 @@ const innerHTML = `
 // projectspecifc annotation creation templates with dummy ones
 function getFormObjectCreateAnnotationMock() {
   const object = templates.getFormObjectCreateAnnotation();
-  object.schema.template.enum = ['', 'One', 'Two'];
   return object;
 }
 // function to manipulate the return of getFormObjectCreateBody(). It replaces the
 // projectspecifc body creation templates with dummy ones
 function getFormObjectCreateBodyMock() {
   const object = templates.getFormObjectCreateBody();
-  object.schema.template.enum = ['', 'One', 'Two'];
   return object;
 }
 
@@ -60,7 +58,12 @@ describe('creating various forms based on chosen template', () => {
     // mocking the projectspecific getFormObjectCreateAnnotation() so the test works independetly
     // from project setups
     jest.spyOn(templates, 'getFormObjectCreateAnnotation').mockReturnValue(getFormObjectCreateAnnotationMock());
-    pickTemplate(
+    jest.replaceProperty(templates, 'annotationTemplate', {
+      EXAMPLE: 'example',
+      NOTEMPLATE: 'notemplate',
+    });
+
+    templates.pickTemplate(
       [{ type: 'XPathSelector', value: 'targetXPath' }],
       '',
       'createAnnotationForm',
@@ -73,22 +76,26 @@ describe('creating various forms based on chosen template', () => {
 
     expect($form.children.length).toBe(0);
     expect($pickForm.querySelectorAll('option').length).toBe(3);
-    expect($pickForm.querySelectorAll('option')[1].value).toStrictEqual('One');
+    expect($pickForm.querySelectorAll('option')[1].value).toStrictEqual('EXAMPLE');
   });
   it('creates a form used for the creation of another body', () => {
     document.body.innerHTML = innerHTML;
     // mocking the projectspecific getFormObjectCreateAnnotation() so the test works independetly
     // from project setups
     jest.spyOn(templates, 'getFormObjectCreateBody').mockReturnValue(getFormObjectCreateBodyMock());
+    jest.replaceProperty(templates, 'bodyTemplate', {
+      TAG: 'tag',
+      TEXTBODY: 'textbody',
+    });
 
-    pickTemplate('', 'encodedId', 'createForm', 'pickBodyTemplateForm', 'bodyTemplate');
+    templates.pickTemplate('', 'encodedId', 'createForm', 'pickBodyTemplateForm', 'bodyTemplate');
 
     const $form = document.getElementById('createForm');
     const $pickForm = document.getElementById('pickBodyTemplateForm');
 
     expect($form.children.length).toBe(0);
     expect($pickForm.querySelectorAll('option').length).toBe(3);
-    expect($pickForm.querySelectorAll('option')[1].value).toStrictEqual('One');
+    expect($pickForm.querySelectorAll('option')[1].value).toStrictEqual('TAG');
   });
 });
 

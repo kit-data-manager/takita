@@ -10,13 +10,16 @@ import { selectAnnotation } from '../../../common/annotationCard';
 import '../../../common/utils/metadataeditor';
 import { createBodyData } from '../../data';
 
-// TODO: CUSTOMISE the four objects in here, which are necessary for annotation/body creation
+// TODO: CUSTOMISE the four objects in here, which are necessary for annotation/body creation.
+// Leave the exported objects/functions (annotationTemplate, bodyTemplate, getFormObjectCreateAnnotation,
+// getFormObjectCreateBody, useJQueryPlugin, pickTemplate) untouched. They have to be exported to be
+// mocked during the tests
 
 // enum for different annotation templates (the values are shown in the dropdown after
 // starting the process of creating a new annotation)
 // for adding new: include name here and add dataModel in
 // getFormModel(chosenTemplate)
-const annotationTemplate = {
+export const annotationTemplate = {
   EXAMPLE: 'example',
   NOTEMPLATE: 'notemplate',
 };
@@ -26,7 +29,7 @@ const annotationTemplate = {
 // by clicking on the "+" icon in the top right corner of the annotation card)
 // for adding new: include name here and add dataModel in
 // getFormModel(chosenTemplate)
-const bodyTemplate = {
+export const bodyTemplate = {
   TAG: 'tag',
   TEXTBODY: 'textbody',
 };
@@ -39,7 +42,7 @@ const bodyTemplate = {
  * @param {[Object]} selectors array holding all the selectors
  * @returns {JSON} the ui form
  */
-function getFormObjectCreateAnnotation(selectors) {
+export function getFormObjectCreateAnnotation(selectors) {
   return {
     // adding blank first option, to allow the functionalities on change
     schema: {
@@ -97,7 +100,7 @@ function getFormObjectCreateAnnotation(selectors) {
  * @param {String} encodedAnnoId encoded id of the annotation
  * @returns {JSON} the ui form
  */
-function getFormObjectCreateBody(encodedAnnoId) {
+export function getFormObjectCreateBody(encodedAnnoId) {
   return {
     // adding blank first option, to allow the functionalities on change
     schema: {
