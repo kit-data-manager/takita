@@ -8,7 +8,7 @@ import { hooks } from '..';
 import { createAnnotation } from '../../../common/annotationCreation';
 import { selectAnnotation } from '../../../common/annotationCard';
 import '../../../common/utils/metadataeditor';
-import { createBodyData } from '../../data';
+import { createBodyData } from '../../../common/data';
 
 // TODO: CUSTOMISE the four objects in here, which are necessary for annotation/body creation.
 // Leave the exported objects/functions (annotationTemplate, bodyTemplate, getFormObjectCreateAnnotation,

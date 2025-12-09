@@ -13,7 +13,7 @@ import {
   changeCursor,
   createPolygonPath,
 } from './utils';
-import { updateTarget } from '../../texteditor-ng/network';
+import { updateTarget } from '../../common/network';
 
 export function enableRectangleModification(shape) {
   // Raphael event for rectangle movement

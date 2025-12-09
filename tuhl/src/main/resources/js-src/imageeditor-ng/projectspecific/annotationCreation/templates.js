@@ -8,7 +8,7 @@ import { hooks } from '..';
 import { createAnnotation } from '../../../common/annotationCreation';
 import { selectAnnotation } from '../../../common/annotationCard';
 import '../../../common/utils/metadataeditor';
-import { createBodyData } from '../../../texteditor-ng/data';
+import { createBodyData } from '../../../common/data';
 import { encodeAnnoId } from '../../../common/utils';
 import { toggleShapeSelect } from '../../highlighting';
 

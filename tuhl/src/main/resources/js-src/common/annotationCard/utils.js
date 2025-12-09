@@ -1,6 +1,5 @@
-import { getAnnotationData, deleteAnnotationData, deleteBodyData, updateBodyData } from '../../texteditor-ng/data';
+import { getAnnotationData, deleteAnnotationData, deleteBodyData, updateBodyData } from '../data';
 import { makeTargetsCompatible, checkIsTargetCompatible } from '../../texteditor-ng/utils';
-import { removeStyles } from '../../texteditor-ng/highlighting';
 import { updateDisplay } from '../../texteditor-ng/display';
 import { initializeAnnotationTable, defaultDisplayAnnotationFunction } from '../annotationTable';
 import { toggleVisibility } from '../utils';

@@ -8,7 +8,7 @@ import { initializeSidebar } from './sidebar';
 import { initializeAnnotationTable, textDisplayAnnotationFunction } from '../common/annotationTable';
 import { initializeNavigation } from './navigation';
 import { appendTEIDocument } from './textloader/textloader';
-import { fetchText } from './network';
+import { fetchText } from '../common/network';
 import { drawAnnos } from './highlighting';
 import { checkIsTargetCompatible, getTargetAnnotationId, getTargetFragment, makeTargetsCompatible } from './utils';
 

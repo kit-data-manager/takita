@@ -1,5 +1,5 @@
 import { updateDisplay } from '.';
-import * as data from '../data/annotations';
+import * as data from '../../common/data/annotations';
 
 // Silence console.xxx() for the duration of these tests, so it does
 // not spam our console

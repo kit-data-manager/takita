@@ -2,7 +2,7 @@
 import $ from 'jquery';
 import './metadataeditor';
 //internal modules
-import { deleteAnnotationData } from '../../texteditor-ng/data/annotations';
+import { deleteAnnotationData } from '../data';
 import { encodeAnnoId } from './url';
 import { selectAnnotation } from '../annotationCard/annotationCard';
 import { toggleVisibility } from './display';

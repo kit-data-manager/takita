@@ -6,7 +6,7 @@ import * as bootstrap from 'bootstrap';
 import { toggleVisibility, encodeAnnoId } from '../utils';
 import { updateDisplay } from '../../texteditor-ng/display';
 import { selectAnnotation } from '../annotationCard';
-import { createBodyData, createAnnotationData, getAnnotationData } from '../../texteditor-ng/data/annotations';
+import { createBodyData, createAnnotationData, getAnnotationData } from '../data/';
 import { initializeAnnotationTable, defaultDisplayAnnotationFunction } from '../annotationTable';
 
 /**

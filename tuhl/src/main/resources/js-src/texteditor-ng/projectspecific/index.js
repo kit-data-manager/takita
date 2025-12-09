@@ -11,7 +11,7 @@
 // can not use indirection with these imports (ie. importing the functions from the
 // index.js of the module) without breaking the tests
 // eslint-disable-next-line no-unused-vars
-import { updateTargetData } from '../data/annotations';
+import { updateTargetData } from '../../common/data/annotations';
 // eslint-disable-next-line no-unused-vars
 import { defaultHighlighting } from '../highlighting/target';
 // END of imports form outside the module
