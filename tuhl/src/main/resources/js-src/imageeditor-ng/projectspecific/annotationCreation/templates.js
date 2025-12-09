@@ -83,17 +83,8 @@ function getFormObjectCreateAnnotation(selectors) {
             // eslint-disable-next-line no-unused-vars
             const annotation = await createAnnotation(annotationData, hooks);
 
-            let shape;
-            window.paper.forEach(function (element) {
-              if (element.type === 'rect' || element.type === 'path') {
-                shape = element;
-              }
-            });
-            if (document.getElementById('createAnnotationForm').title !== '') {
-              shape.annoId = annotation.id;
-              shape.annoIdEncoded = encodeAnnoId(annotation.id);
-              shape.attr({ stroke: '#89f099', fill: '#89f099' });
-              toggleShapeSelect(shape);
+            if (annotation) {
+              updateNewAnnotationShape(window.paper, annotation.id, annotationData.color);
             }
           });
         },
@@ -101,6 +92,19 @@ function getFormObjectCreateAnnotation(selectors) {
       },
     ],
   };
+}
+
+function updateNewAnnotationShape(paper, annotationId, annotationColor) {
+  let shape;
+  paper.forEach(function (element) {
+    if (element.type === 'rect' || element.type === 'path') {
+      shape = element;
+    }
+  });
+  shape.annoId = annotationId;
+  shape.annoIdEncoded = encodeAnnoId(annotationId);
+  shape.attr({ stroke: annotationColor, fill: annotationColor });
+  toggleShapeSelect(shape);
 }
 
 /**
