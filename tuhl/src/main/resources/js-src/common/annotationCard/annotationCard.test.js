@@ -1,6 +1,6 @@
 import { selectAnnotation } from './annotationCard';
 import * as utils from './utils';
-import * as projectspecificAnnotationCard from '../../projectspecific/annotationCard';
+import * as projectspecificAnnotationCard from '../../texteditor-ng/projectspecific/annotationCard';
 
 const annoData = {
   pageId: '3bb48acd-5296-4343-949c-0eca80aa578f',

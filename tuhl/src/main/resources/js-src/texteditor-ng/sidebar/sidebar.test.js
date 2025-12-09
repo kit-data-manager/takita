@@ -1,4 +1,4 @@
-import { Variant } from '../../projectspecific';
+import { Variant } from '../projectspecific';
 import { collapseSidebar, determineVariant, toggleSidebar } from './sidebar';
 
 const expandedSidebar = `

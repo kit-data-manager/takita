@@ -1,5 +1,5 @@
 import * as annotationCard from '../../common/annotationCard/annotationCard';
-import * as projectspecific from '../../projectspecific/index';
+import * as projectspecific from '../projectspecific/index';
 import { createOption } from '../../common/utils';
 import {
   getTargetDivision,
