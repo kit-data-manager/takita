@@ -26,7 +26,7 @@ public class SVGSelector implements ISelector {
 		JSONObject wadmSelector = new JSONObject();
 
 		wadmSelector.put(AnnotationStoreStrings.TYPE.getName(), AnnotationStoreStrings.SVG_SELECTOR.getName());
-        if (!this.svgCode.contains("<svg>")) {
+        if (!this.svgCode.contains("<svg")) {
             wadmSelector.put(AnnotationStoreStrings.VALUE.getName(), "<svg xmlns=\"http://www.w3.org/2000/svg\">" + this.svgCode + "</svg>");
         } else {
 	        String svgString = this.svgCode.substring(this.svgCode.indexOf('>') + 1, this.svgCode.lastIndexOf('<'));

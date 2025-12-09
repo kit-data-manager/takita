@@ -270,10 +270,7 @@ public class AnnotationConverterTest {
      * @throws JSONException ...
      */
     @Test
-    @Disabled
     void selectorsFromJson() throws IOException, JSONException {
-        // disabled until https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/issues/47 is fixed
-        //Embedded SVG Selector
         String jsonString = TestUtils.readStringFromRelativePath("wadm_examples/correct/anno27.json");
         jsonString = jsonString.replaceAll("svg:svg", "svg"); //TODO: stop doing this once application has more robust svg handling
         JSONObject wadmAnnoJson = new JSONObject(jsonString);
@@ -354,7 +351,6 @@ public class AnnotationConverterTest {
     }
 
     @Test
-    @Disabled
     void buildJsonFromSimpleAnnotation() throws JSONException, IOException, InterruptedException, org.json.JSONException {
     	// tAkita currently can't handle "simple" targets, which just contain the URI of a resource.
     	// Therefore, this test will fail.
