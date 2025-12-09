@@ -1,6 +1,5 @@
 package edu.kit.datamanager.takita.assistance;
 
-import edu.kit.datamanager.takita.configuration.SecurityConfiguration;
 import edu.kit.datamanager.takita.mainpage.IMainPageService;
 import edu.kit.datamanager.takita.mainpage.search.IFilterService;
 import edu.kit.datamanager.takita.model.filter.Filter;
@@ -9,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -29,7 +29,7 @@ public class AssistanceService implements IAssistanceService {
   private User currentUser;
   private final IFilterService filterService;
   private final IMainPageService mainPageService;
-  private final SecurityConfiguration securityConfiguration;
+  public Boolean securityEnabled;
   
   /**
    * Constructor for the Assistance Service to autowire required instances.
@@ -40,18 +40,18 @@ public class AssistanceService implements IAssistanceService {
    *                      injection system indicated by @autowired annotation.
    * @param mainPageService instance of the logic for mainPage. Injected with Springs dependency
    *                        injection system indicated by @autowired annotation.
-   * @param securityConfiguration configuration holding security related properties. Injected with
-   *                        Springs dependency injection system indicated by @autowired annotation.
+   * @param securityEnabled value taken from the "takita.security.enabled" application property
+   *                        to decided whether security is enabled or not
    */
   @Autowired
   public AssistanceService(UserRepository repo, IFilterService filterService,
-                           IMainPageService mainPageService, SecurityConfiguration securityConfiguration) {
+                           IMainPageService mainPageService, @Value("${takita.security.enabled:false}") Boolean securityEnabled) {
     this.userRepository = repo;
     this.filterService = filterService;
     this.mainPageService = mainPageService;
-    this.securityConfiguration = securityConfiguration;
+    this.securityEnabled = securityEnabled;
     // if security is enabled use the "name" of the user as provided by the identity provider (eg. keycloak)
-    if (this.securityConfiguration.securityEnabled) {
+    if (this.securityEnabled) {
       OAuth2User user = ((OAuth2User) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
       this.currentUser = new User(user.getAttribute("name"));
     } else {
@@ -172,7 +172,7 @@ public class AssistanceService implements IAssistanceService {
       // "securityEnabled" is used to let thymeleaf decide whether, the main_page
       // template should store the csrf token (which is only available, if security is enabled)
       // or a default value in the "<meta name="_csrf">"-element.
-      model.addAttribute("securityEnabled", securityConfiguration.securityEnabled);
+      model.addAttribute("securityEnabled", this.securityEnabled);
       model.addAttribute("user", getCurrentUser());
   }
   
