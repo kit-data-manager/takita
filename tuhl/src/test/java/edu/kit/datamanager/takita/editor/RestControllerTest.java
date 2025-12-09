@@ -2,6 +2,7 @@ package edu.kit.datamanager.takita.editor;
 
 import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 import edu.kit.datamanager.takita.assistance.IAssistanceService;
+import edu.kit.datamanager.takita.configuration.SecurityConfiguration;
 import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import edu.kit.datamanager.takita.model.Annotation;
 import edu.kit.datamanager.takita.model.Color;
@@ -45,7 +46,7 @@ import java.util.List;
 
 
 @WebMvcTest(RestController.class)
-@Import(RestController.class)
+@Import({RestController.class, SecurityConfiguration.class})
 @TestPropertySource("classpath:application-test.properties")
 class RestControllerTest {
 
