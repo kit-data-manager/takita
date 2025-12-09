@@ -2,7 +2,11 @@ import { fetchWithSpinner } from '../../common/utils';
 
 // storing CSRF token, it is available from editor(_text).html at
 // "document.querySelector("meta[name='_csrf']").getAttribute('content')"
-const csrfToken = document.querySelector("meta[name='_csrf']").getAttribute('content');
+// in the test environment the element is not present, so it has to be checked
+// whether it is or not and set accordingly
+const csrfToken = document.querySelector("meta[name='_csrf']")
+  ? document.querySelector("meta[name='_csrf']").getAttribute('content')
+  : null;
 
 /**
  * get an annotation
