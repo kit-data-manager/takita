@@ -8,7 +8,7 @@ import { updateDisplay } from '../../texteditor-ng/display';
 import { selectAnnotation } from '../annotationCard';
 import { createBodyData, createAnnotationData, getAnnotationData } from '../data/';
 import { initializeAnnotationTable, defaultDisplayAnnotationFunction } from '../annotationTable';
-
+import { extractInformationFromSvg } from '../../imageeditor-ng/highlighting';
 /**
  *
  * @param {Object} annotationData the data necessary for annotaiton creation
@@ -79,6 +79,7 @@ export async function resetFormAndUpdateDisplay(annotation, hooks = {}) {
   }
 
   if (window.EDITORTYPE == 'IMAGE') {
+    window.ANNOJSON.push(transformImageAnnotation(annotation));
     // The textEditor doesn't need the following, as the function is included in updateDisplay()
     initializeAnnotationTable(
       window.ANNOJSON,
@@ -87,5 +88,42 @@ export async function resetFormAndUpdateDisplay(annotation, hooks = {}) {
     );
     document.getElementById('createRectangleButton').parentElement.classList.remove('active');
     document.getElementById('createPolygonButton').parentElement.classList.remove('active');
+    resetImageVariables();
   }
+}
+
+/**
+ * resets the global state variable used by the imageAnnotator at the end of
+ * annotation creation process
+ */
+function resetImageVariables() {
+  window.newRectangle = undefined;
+  window.polygonPoint = undefined;
+  window.firstPolygonPoint = undefined;
+  window.invisiblePolygonPoint = undefined;
+  window.polygonPath = undefined;
+  window.addingRectangle = false;
+  window.addingPolygon = false;
+}
+
+/**
+ * transforms an annotation received from the backend (via getAnnotationData()) into the
+ * format the imageAnnotator uses in the window.ANNOJSON.
+ * - Converts the dates to ISOStrings,
+ * - converts the creators arry into a simple String and stores it,
+ * - encodes the ID of the annotation,
+ * - extracts information from the svgCode
+ *
+ * @param {Object} annotation the annotation to transform
+ * @returns transformed annotation
+ */
+function transformImageAnnotation(annotation) {
+  annotation.created = new Date(annotation.created * 1000).toISOString();
+  annotation.creator = annotation.creators.toString();
+  annotation.idEncoded = encodeAnnoId(annotation.id);
+  annotation.modified = new Date(annotation.modified * 1000).toISOString();
+  annotation.visible = true;
+  const svgCode = annotation.targets.filter((target) => target.selector.svgcode)[0].selector.svgcode;
+  extractInformationFromSvg(svgCode, annotation);
+  return annotation;
 }

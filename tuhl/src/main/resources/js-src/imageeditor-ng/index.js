@@ -17,10 +17,14 @@ import { dragCircleMove, dragCircleEnd, dragCircleStart } from './targetBuilding
 
 // global state
 window.addingRectangle = false;
+window.newRectangle;
 window.addingPolygon = false;
+window.firstPolygonPoint;
+window.invisiblePolygonPoint;
+window.polygonPath;
+window.polygonPoint;
 window.drawingHistory = [];
 window.movingImage = false;
-window.firstPolygonPoint;
 window.paper;
 window.MODE_CLASS = Mode;
 window.MODE = window.MODE_CLASS.View;
@@ -30,10 +34,6 @@ window.ANNOJSON;
 // local state
 let mouseDownX;
 let mouseDownY;
-let newRectangle;
-let polygonPoint;
-let invisiblePolygonPoint;
-let polygonPath;
 
 let initiated = false;
 
@@ -68,15 +68,15 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
     e.preventDefault();
     if (window.addingPolygon) {
       document.getElementById('createPolygonButton').parentElement.classList.remove('active');
-      for (let point in polygonPath.points) {
-        polygonPath.points[point].remove();
+      for (let point in window.polygonPath.points) {
+        window.polygonPath.points[point].remove();
       }
-      polygonPath.remove();
+      window.polygonPath.remove();
       window.MODE = Mode.View;
       window.firstPolygonPoint = undefined;
-      polygonPath = undefined;
-      polygonPoint = undefined;
-      invisiblePolygonPoint = undefined;
+      window.polygonPath = undefined;
+      window.polygonPoint = undefined;
+      window.invisiblePolygonPoint = undefined;
       window.addingPolygon = false;
     }
   };
@@ -91,7 +91,7 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
       mouseDownX = Math.round(relativeCoordinates[0]);
       mouseDownY = Math.round(relativeCoordinates[1]);
 
-      newRectangle = drawRectangle(scaledX, scaledY, 0, 0, '#ff8d00', null, null);
+      window.newRectangle = drawRectangle(scaledX, scaledY, 0, 0, '#ff8d00', null, null);
     }
 
     if (window.movingImage || coordinates.ctrlKey) {
@@ -118,16 +118,18 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
 
       if (!window.firstPolygonPoint) {
         window.firstPolygonPoint = { x: scaledX, y: scaledY };
-        polygonPath = drawPolygon('M' + scaledX + ' ' + scaledY, '#ff8d00', null);
+        window.polygonPath = drawPolygon('M' + scaledX + ' ' + scaledY, '#ff8d00', null);
       }
 
       let dx = Math.abs(scaledX - window.firstPolygonPoint.x);
       let dy = Math.abs(scaledY - window.firstPolygonPoint.y);
 
       if ((dx > 0 && dx < 50 && dy < 50) || (dy > 0 && dx < 50 && dy < 50)) {
-        polygonPath.attr({
+        window.polygonPath.attr({
           path:
-            polygonPath.attrs.path.toString().substring(0, polygonPath.attrs.path.toString().lastIndexOf('L')) + 'Z',
+            window.polygonPath.attrs.path
+              .toString()
+              .substring(0, window.polygonPath.attrs.path.toString().lastIndexOf('L')) + 'Z',
           fill: '#ff8d00',
           'fill-opacity': 0.01,
         });
@@ -140,8 +142,9 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
         window.MODE = Mode.View;
 
         let svgString = '<svg><polygon points="';
-        for (let point in polygonPath.points) {
-          svgString += polygonPath.points[point].attrs.cx + ',' + polygonPath.points[point].attrs.cy + ' ';
+        for (let point in window.polygonPath.points) {
+          svgString +=
+            window.polygonPath.points[point].attrs.cx + ',' + window.polygonPath.points[point].attrs.cy + ' ';
         }
         svgString += '"/></svg>';
 
@@ -153,24 +156,24 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
 
         window.firstPolygonPoint = undefined;
         //polygonPath = undefined;
-        polygonPoint = undefined;
-        invisiblePolygonPoint = undefined;
+        window.polygonPoint = undefined;
+        window.invisiblePolygonPoint = undefined;
         window.addingPolygon = false;
       } else {
-        polygonPoint = window.paper
+        window.polygonPoint = window.paper
           .circle(scaledX, scaledY, 30)
           .attr('fill', 'white')
           .drag(dragCircleMove, dragCircleStart, dragCircleEnd)
           .hide();
-        polygonPoint.path = polygonPath;
-        polygonPath.points.push(polygonPoint);
-        if (invisiblePolygonPoint) {
-          invisiblePolygonPoint.attr({ cx: scaledX, cy: scaledY });
+        window.polygonPoint.path = window.polygonPath;
+        window.polygonPath.points.push(window.polygonPoint);
+        if (window.invisiblePolygonPoint) {
+          window.invisiblePolygonPoint.attr({ cx: scaledX, cy: scaledY });
         } else {
-          invisiblePolygonPoint = window.paper.circle(scaledX, scaledY, 1).hide();
+          window.invisiblePolygonPoint = window.paper.circle(scaledX, scaledY, 1).hide();
         }
 
-        polygonPath.attr({ path: polygonPath.attrs.path.toString() + 'L' + scaledX + ' ' + scaledY });
+        window.polygonPath.attr({ path: window.polygonPath.attrs.path.toString() + 'L' + scaledX + ' ' + scaledY });
       }
     }
     if (window.addingRectangle) {
@@ -179,7 +182,7 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
     }
   };
   document.getElementById('canvas').onmousemove = function (coordinates) {
-    if (window.addingRectangle && newRectangle) {
+    if (window.addingRectangle && window.newRectangle) {
       let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
       let scalingRatios = getScalingRatios();
 
@@ -201,24 +204,26 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
         scaledY = Math.round(mouseDownY / scalingRatios[1]);
       }
 
-      newRectangle.attr({
+      window.newRectangle.attr({
         x: scaledX + window.paper.currentX,
         y: scaledY + window.paper.currentY,
         width: rectangleWidth,
         height: rectangleHeight,
       });
     }
-    if (window.addingPolygon && polygonPoint && invisiblePolygonPoint) {
+    if (window.addingPolygon && window.polygonPoint && window.invisiblePolygonPoint) {
       let relativeCoordinates = getRelativeCoordinates(coordinates.pageX, coordinates.pageY);
       let scalingRatios = getScalingRatios();
 
       let polygonX = Math.round(relativeCoordinates[0] / scalingRatios[0] + window.paper.currentX);
       let polygonY = Math.round(relativeCoordinates[1] / scalingRatios[1] + window.paper.currentY);
-      invisiblePolygonPoint.attr({ cx: polygonX, cy: polygonY });
+      window.invisiblePolygonPoint.attr({ cx: polygonX, cy: polygonY });
 
-      polygonPath.attr({
+      window.polygonPath.attr({
         path:
-          polygonPath.attrs.path.toString().substring(0, polygonPath.attrs.path.toString().lastIndexOf('L')) +
+          window.polygonPath.attrs.path
+            .toString()
+            .substring(0, window.polygonPath.attrs.path.toString().lastIndexOf('L')) +
           'L' +
           polygonX +
           ' ' +
@@ -255,7 +260,7 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
       Math.round(relativeCoordinates[1]) === mouseDownY
     ) {
       document.getElementById('createRectangleButton').parentElement.classList.remove('active');
-      newRectangle.remove();
+      window.newRectangle.remove();
       //newRectangle = undefined;
       //addingRectangle = false;
       return;
@@ -266,13 +271,13 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
 
       let svgString =
         '<svg><rect x="' +
-        newRectangle.attrs.x +
+        window.newRectangle.attrs.x +
         '" y="' +
-        newRectangle.attrs.y +
+        window.newRectangle.attrs.y +
         '" width="' +
-        newRectangle.attrs.width +
+        window.newRectangle.attrs.width +
         '" height="' +
-        newRectangle.attrs.height +
+        window.newRectangle.attrs.height +
         '"/></svg>';
 
       let createAnnotation = document.getElementById('createAnnotation');
@@ -281,6 +286,7 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
       const selectors = [{ type: 'SvgSelector', value: svgString }];
       pickTemplate(selectors, '', 'createAnnotationForm', 'pickAnnotationTemplateForm', 'annotationTemplate');
 
+      console.log('after pick template');
       // reset variables needed for rectangle creation
       //addingRectangle = false;
       // TODO: find a new place for that!
@@ -354,14 +360,14 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
 
   document.getElementById('dismissAnnotation').addEventListener('click', (event) => {
     // if modal was shown during creation of new rectangle, remove rectangle
-    if (newRectangle) {
-      newRectangle.remove();
+    if (window.newRectangle) {
+      window.newRectangle.remove();
       document.getElementById('createRectangleButton').parentElement.classList.remove('active');
     }
 
     // if modal was shown during creation of new polygon, remove polygon
-    if (polygonPath) {
-      polygonPath.remove();
+    if (window.polygonPath) {
+      window.polygonPath.remove();
       document.getElementById('createPolygonButton').parentElement.classList.remove('active');
     }
   });

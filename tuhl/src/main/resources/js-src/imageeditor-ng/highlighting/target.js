@@ -118,7 +118,7 @@ export function toggleShapeSelect(shape) {
   }
 }
 
-function extractInformationFromSvg(svgString, annoJson) {
+export function extractInformationFromSvg(svgString, annoJson) {
   const svgDoc = new DOMParser().parseFromString(svgString, 'text/xml');
   let svgRect = svgDoc.getElementsByTagName('rect')[0];
   let svgPolygon = svgDoc.getElementsByTagName('polygon')[0];
