@@ -1,0 +1,48 @@
+services:
+  es:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    container_name: takita_es
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms8g -Xmx8g" # this sets min and max memory usage by elasticsearch (8g=8GB), try e.g 2GB if starting the service fails
+      - xpack.security.enabled=false #disables ssl to work with http connections
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - ./esdata:/var/lib/elasticsearch/data #should also work for windows systems, if not see comment below
+      # for windows systems absolute path might be needed: "E:/work/takita/esdata:/var/lib/elasticsearch/data"
+      # make sure the folder esdata does not exist before very first start
+    ports:
+      - ${TAKITADB_PORT}:9200
+    healthcheck:
+      test: curl -u elastic:elastic -s -f es:9200/_cat/health >/dev/null || exit 1
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+    - compose-network 
+  takita:
+    build:
+        context: .
+        dockerfile: Dockerfile
+    ports:
+      - "${TAKITA_PORT:-9100}:8080"
+    depends_on:
+      es:
+        condition: service_healthy
+    restart: unless-stopped
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        "elasticsearch.ip": "es",
+        "repository.baseUrl": "${TAKITA_REPOURL}",
+        "annotationStore.url": "${TAKITA_WAPURL}",
+        "sparqlQuery.urlPrefix": "${TAKITA_SPARQLURL}"
+      }'
+    networks:
+    - compose-network
+networks:
+  compose-network:
+    name: takitanet

@@ -1,0 +1,23 @@
+services:
+  wapserver:
+    hostname: annoserver
+    image: ghcr.io/kit-data-manager/wap-server:main
+    ports:
+      - 4330:4330
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        "Hostname": "annoserver",
+        "WapPort": 80, 
+        "server.port":80,
+        "SparqlReadPort": 4330,
+        "SparqlWritePort": -1,
+        "server.servlet.context-path": "/annoserver"
+        }'
+    healthcheck:
+      test: "curl --fail --silent annoserver/annoserver/wap/ | grep \"The Root Container\" || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 20
+      start_period: 40s
+    networks:
+      - compose-network
