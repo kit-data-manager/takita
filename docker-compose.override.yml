@@ -6,8 +6,8 @@ services:
     environment:
       SPRING_APPLICATION_JSON: '{
         "elasticsearch.ip": "es",
-        "repository.baseUrl": "http://baserepo/repo",
-        "annotationStore.url": "http://annoserver/wap/",
+        "repository.baseUrl": "http://baserepo/repo/",
+        "annotationStore.url": "http://annoserver/annoserver/wap/",
         "sparqlQuery.urlPrefix": "http://annoserver:4330/wap/sparql?query="
       }'
     healthcheck:
