@@ -1,3 +1,7 @@
+###############################################################################
+# This script ingests sample data into the base repo for takita to annotate
+# Metadata + Image Data + Text Data
+################################################################################
 ################################################################################
 # 0) Check Repo
 ################################################################################
@@ -10,12 +14,11 @@ HTTP 200
 POST {{host}}/api/v1/dataresources/
 Content-Type: application/json
 
-# --- Paste the exact content of imagePayload.json here ---
 # Example structure shown as placeholder (replace with your real payload):
 {
   "resourceType": {
     "typeGeneral": "IMAGE",
-    "value": "imageMetadata"
+    "value": "manuscriptPage"
   },
   "titles": [{"value": "MANUSCRIPTNAME, page1234.jpg"}],
   "relatedIdentifiers": []
@@ -56,7 +59,44 @@ status >= 200
 status < 300
 
 ################################################################################
-# 3) POST Manuscript DO (JSON) with {{imgID}} injected
+# 3) Upload text DO
+################################################################################
+POST {{host}}/api/v1/dataresources/
+Content-Type: application/json
+
+# Example structure shown as placeholder (replace with your real payload):
+{
+  "resourceType": {
+    "typeGeneral": "TEXT",
+    "value": "manuscriptPage"
+  },
+  "titles": [{"value": "MANUSCRIPTNAME, text.xml"}],
+  "relatedIdentifiers": []
+}
+# ---------------------------------------------------------
+
+HTTP *
+[Asserts]
+status >= 200
+status < 300
+[Captures]
+textID: jsonpath "$.id"
+
+################################################################################
+# 4) Upload text data
+################################################################################
+POST {{host}}/api/v1/dataresources/{{textID}}/data/text.xml
+[Multipart]
+# field name is 'file', file path points to the local file you have on disk
+file: file,data/text.xml; application/xml
+
+HTTP *
+[Asserts]
+status >= 200
+status < 300
+
+################################################################################
+# 5) POST Manuscript DO (JSON) with {{imgID}} and {{textID}} injected
 ################################################################################
 POST {{host}}/api/v1/dataresources/
 Content-Type: application/json
@@ -75,6 +115,11 @@ Content-Type: application/json
       "identifierType": "URL",
       "value": "{{host}}/api/v1/dataresources/{{imgID}}",
       "relationType": "IS_METADATA_FOR"
+    },
+    {
+      "identifierType": "URL",
+      "value": "{{host}}/api/v1/dataresources/{{textID}}",
+      "relationType": "IS_METADATA_FOR"
     }
   ]
 }
@@ -88,7 +133,7 @@ status < 300
 manuscriptID: jsonpath "$.id"
 
 ################################################################################
-# 4) Upload manuscript XML to .../{manuscriptID}/data/manuscript_metadata.xml
+# 6) Upload manuscript XML to .../{manuscriptID}/data/manuscript_metadata.xml
 ################################################################################
 POST {{host}}/api/v1/dataresources/{{manuscriptID}}/data/manuscript_metadata.xml
 [Multipart]
@@ -100,7 +145,7 @@ status >= 200
 status < 300
 
 ################################################################################
-# 5) Upload pages.json inline as multipart (no local file needed)
+# 7) Upload pages.json inline as multipart (no local file needed)
 ################################################################################
 POST {{host}}/api/v1/dataresources/{{manuscriptID}}/data/pages.json
 Content-Type: multipart/form-data; boundary=pagesBoundary
@@ -113,6 +158,10 @@ Content-Type: application/json
 {
 "resourceId": "{{imgID}}",
 "pageId": "page1234"
+},
+{
+"resourceId": "{{textID}}",
+"pageId": "text"
 }
 ]
 --pagesBoundary--
@@ -123,7 +172,7 @@ status >= 200
 status < 300
 
 ################################################################################
-# 6) PATCH Image DO (JSON Patch + If-Match etag)
+# 8) PATCH Image DO (JSON Patch + If-Match etag)
 #    First GET the resource to capture ETag, then PATCH with Content-Type:
 #    application/json-patch+json and If-Match: <etag>
 ################################################################################
