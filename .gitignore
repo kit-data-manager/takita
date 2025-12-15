@@ -7,5 +7,4 @@ tuhl/node_modules/
 !**/src/test/**
 **/.DS_Store
 esdata
-.gitattributes
 .idea
