@@ -158,7 +158,7 @@ public class ExistDbAccessService implements IExistDbAccessService {
 		// for the exist-db user specified in the application.properties.
 		// using the flag to not indent the result to keep original document format, if desired
 		HttpResponse<String> response = httpRequestHelper
-                .get(baseUrl + restEndpoint + SEARCH_URL + encodedQuery + (indented ? NO_INDENT_FLAG : ""));
+                .get(baseUrl + restEndpoint + SEARCH_URL + encodedQuery + (indented ? "" : NO_INDENT_FLAG));
 
         if (response.statusCode() == 200) {
             String teiString = response.body();
