@@ -1,6 +1,11 @@
 FROM eclipse-temurin:17.0.12_7-jdk
 EXPOSE 8080
 ENTRYPOINT ["/takita/start.sh"]
+#install dependency for node
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends libatomic1 \
+ && rm -rf /var/lib/apt/lists/*
+
 RUN mkdir -p /takita
 WORKDIR /takita
 COPY ./build.sh /takita/build.sh
