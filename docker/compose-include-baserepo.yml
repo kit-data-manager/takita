@@ -1,7 +1,7 @@
 services:
   baserepo:
     hostname: baserepo
-    image: ghcr.io/kit-data-manager/base-repo:latest
+    image: ghcr.io/kit-data-manager/base-repo:main #current workaround to use multi-platform build. change back to latest on 1.5.9
     ports:
       - :80
     environment:
