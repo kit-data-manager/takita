@@ -5,10 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.w3c.dom.DOMException;
 import org.xml.sax.SAXException;
@@ -17,6 +14,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
+import java.util.Base64;
 
 @Controller
 @RequestMapping("/exist")
@@ -77,14 +75,18 @@ public class ExistDbRestController {
      * @return HTTP entity sent back, either ok for a success including the
      *    XML or 500 for an internal error
      */
-    @RequestMapping(value = "/{documentId}/{xPath}/{trimmed}/{indented}", method = RequestMethod.GET, produces = "application/xml")
+    @RequestMapping(value = "/{documentId}", params = {"xPath", "trimmed", "indented"},
+            method = RequestMethod.GET, produces = "application/xml")
     @ResponseBody
     public ResponseEntity<String> getXMLDocumentFragment(@PathVariable("documentId") String documentId,
-                                                         @PathVariable("xPath") String xPath, @PathVariable("trimmed") Boolean trimmed, @PathVariable("indented") Boolean indented,
+                                                         @RequestParam("xPath") String xPath,
+                                                         @RequestParam("trimmed") Boolean trimmed,
+                                                         @RequestParam(name = "indented", required = false, defaultValue = "false") Boolean indented,
                                                          final WebRequest request, final HttpServletResponse response) {
         String rawXml = null;
         try {
-            rawXml = existAccessService.getXMLDocumentFragment(documentId, xPath, trimmed, indented);
+            String decodedXPath = new String(Base64.getDecoder().decode(xPath));
+            rawXml = existAccessService.getXMLDocumentFragment(documentId, decodedXPath, trimmed, indented);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             return ResponseEntity.status(500).body(e.getMessage());
