@@ -42,9 +42,6 @@ public class ExistDbRestController {
      */
     @RequestMapping(value = "/{documentId}", method = RequestMethod.GET, produces = "application/xml")
     @ResponseBody
-    @ConditionalOnProperty(
-            value = "exist.baseUrl",
-            matchIfMissing = false)
     public ResponseEntity<String> getXMLDocument(@PathVariable("documentId") String documentId,
                                                  final WebRequest request, final HttpServletResponse response) {
         String rawXml;
