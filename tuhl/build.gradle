@@ -22,12 +22,7 @@ node {
 	// Recommended: use a reproducible, locally managed Node distribution.
 	// See https://github.com/node-gradle/gradle-node-plugin for versions
 	download = true
-	nodeVersion = '25' // pick your version
-}
-
-
-tasks.register('npmInstall', com.github.gradle.node.npm.task.NpmTask) {
-	args = ['install']
+	version = '25.2.1' // pick your version
 }
 
 tasks.register('npmBuild', com.github.gradle.node.npm.task.NpmTask) {
@@ -35,11 +30,9 @@ tasks.register('npmBuild', com.github.gradle.node.npm.task.NpmTask) {
 	args = ['run', 'build']
 }
 
-tasks.named('build') {
+tasks.named('processResources') {
 	dependsOn('npmBuild')
 }
-
-
 
 java {
 	toolchain {
