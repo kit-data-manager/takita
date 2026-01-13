@@ -344,7 +344,7 @@
         // sometimes the loading time of the full page can be very long, because not only the image users want 
         // to annotate, but a lot of additional images (which are used to display previews of
         // other pages) and maybe other things, not necessary for annotation have to be loaded.
-        // Therefore, the load event isn't suitable as it fires after everything/the whole page is entirely 
+        // Therefore, the body.load event isn't suitable as it fires after everything/the whole page is entirely 
         // loaded. Hence, we only wait until the whole DOM is available and
         // the image that can be annotated is loaded.
         // Note: the images to display previews of other pages are now lazy loaded and therefore,
@@ -362,13 +362,28 @@
 
         const $image = document.getElementById('pageImage');
         // promise to resolve when the image is loaded
+
         await $image.complete
                 ? Promise.resolve()
                 : new Promise((resolve) => {
-                    $image.addEventListener('load', resolve);
-                    });
+                    $image.addEventListener('load', resolve, {once: true});
+                });
+        
+        // waiting for the image to be decoded, otherwise the naturalWidth/Height can be 0
+        // causing the Raphael viewport to be set to 0 and thereby interfering with annotation
+        // creation and display
+        // see: https://stackoverflow.com/questions/280049/how-can-i-run-a-javascript-callback-when-an-image-is-loaded
+        // and https://stackoverflow.com/questions/73860200/random-fails-trying-to-get-the-naturalheight-and-naturalwidth-of-an-image
+        // and https://www.tunetheweb.com/blog/what-does-the-image-decoding-attribute-actually-do/
+        // using the "decoding" attribute for the image-element could be another option, but this is
+        // not available for Safari, see: https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Attribute/decoding#browser_compatibility
+        await $image.decode();            
+
         const annotationsString = document.body.getAttribute('data-field');
         window.imageEditor.initializeImageEditorComponent(annotationsString, window.TL_VARIABLES);
+        
+        
+
     </script>
 
 </body>
