@@ -1,7 +1,6 @@
 import { Mode } from '../../common/mode';
 import { toggleDisplay } from '../../common/utils';
-import { collapseSidebar } from '../../texteditor-ng/sidebar/sidebar';
-import { toggleSidebar } from '../../texteditor-ng/sidebar/sidebar';
+import { collapseSidebar, toggleSidebar } from '../../common/sidebar';
 import { toggleShapeVisibility } from '../utils';
 import { confirmDiscardChanges, modifyShape, saveShape, undo } from '../targetBuilding';
 import { createPageAnnotation } from '../editor';

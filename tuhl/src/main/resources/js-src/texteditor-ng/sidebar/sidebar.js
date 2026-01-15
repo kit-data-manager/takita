@@ -1,4 +1,5 @@
 import { toggleDisplay } from '../../common/utils';
+import { toggleSidebar, collapseSidebar } from '../../common/sidebar';
 import { getTextLanguage } from '../textloader/textloader';
 import { decreaseFontSize, increaseFontSize, resetFontSize } from '../utils/fontsize';
 import { determineVariant } from '../projectspecific';
@@ -73,35 +74,4 @@ export function initializeSidebar($sidebar, $text, $pagesDialog, $tableContainer
   if (hooks.postSidebarCreation) {
     hooks.postSidebarCreation.forEach((hook) => hook($sidebar, variant));
   }
-}
-
-/**
- * Collapse sidebar
- * @param {Element} $sidebar the sidebar element
- */
-export function collapseSidebar($sidebar) {
-  if (!$sidebar.classList.contains('annocollapse')) {
-    toggleSidebar($sidebar);
-  }
-}
-
-/**
- * Toggle sidebar, adjust toggle button and item texts.
- * @param {Element} $sidebar the sidebar element
- */
-export function toggleSidebar($sidebar) {
-  const $toggleButton = $sidebar.querySelector('#logo-name__icon');
-  const $textElements = $sidebar.querySelectorAll('.features-item-text');
-  const wasCollapsedBefore = $sidebar.classList.contains('annocollapse');
-
-  // Toggle sidebar itself
-  $sidebar.classList.toggle('annocollapse');
-
-  // Adjust toggle button
-  $toggleButton.classList = wasCollapsedBefore
-    ? 'bx bx-arrow-from-right logo-name__icon'
-    : 'bx bx-arrow-from-left logo-name__icon annocollapse';
-
-  // Adjust item texts so that they are not hoverable
-  $textElements.forEach((elem) => elem.classList.toggle('annocollapse', !wasCollapsedBefore));
 }
