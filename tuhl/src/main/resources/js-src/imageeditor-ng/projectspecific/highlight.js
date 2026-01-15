@@ -1,19 +1,4 @@
 /**
- * Called by getPossibleClasses() hook. It returns the classes specific to a project (linked
- * to classes assigned in drawAnnos() function).
- * Note: to have these classes do smth, the css has to written (see editor_text.css). css for
- * 'backgroundOne', 'backgroundTwo', 'underline', 'underlineSecond' and 'defaulthighlight'
- * is available.
- * TODO: Implement this function for your projetc
- *
- * @returns {[String]} holding all classes that can be assigned/removed
- */
-export function getSpecificClasses() {
-  // TODO: Customise the following array
-  return ['backgroundOne', 'backgroundTwo', 'underline', 'underlineSecond'];
-}
-
-/**
  * assigns css-classes to an element.
  * TODO: Customize the cases to achieve custom highlighting of different annotations,
  * based on the color. See the java code in:
