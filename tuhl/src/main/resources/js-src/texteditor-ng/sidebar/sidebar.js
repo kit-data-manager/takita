@@ -1,7 +1,7 @@
 import { toggleDisplay } from '../../common/utils';
 import { getTextLanguage } from '../textloader/textloader';
 import { decreaseFontSize, increaseFontSize, resetFontSize } from '../utils/fontsize';
-import { Variant } from '../projectspecific';
+import { determineVariant } from '../projectspecific';
 /**
  * Set Takita's sidebar up to make it suitable for the texteditor.
  * @module sidebar
@@ -104,28 +104,4 @@ export function toggleSidebar($sidebar) {
 
   // Adjust item texts so that they are not hoverable
   $textElements.forEach((elem) => elem.classList.toggle('annocollapse', !wasCollapsedBefore));
-}
-
-/**
- * Determine whether the current document belongs to a specific subproject
- * and/or language which has special requirements.
- *
- * @param {Element} $text the text document
- * @param {String} language the document language
- * @returns {Variant}
- */
-export function determineVariant($text, language) {
-  let variant = Variant.Default;
-
-  // The presence of 'tei-choice' elements and their contents is our main
-  // indicator for a specific document variant.
-  const teiChoice = $text.querySelector('tei-choice');
-
-  if (teiChoice && (language === 'sa-Latn' || teiChoice.n === 'sandhi')) {
-    variant = Variant.B04;
-  } else if (teiChoice !== undefined && language === 'hbo') {
-    variant = Variant.Hebrew;
-  }
-
-  return variant;
 }

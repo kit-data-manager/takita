@@ -24,7 +24,7 @@ import { getSpecificClasses } from './highlight';
 export { targetUpdateCallback, POSSIBLE_DIVISION_TYPES, highlightAnnotationFunction, possibleHighlightClasses };
 export { hooks } from './hooks';
 export { headerFieldsArray, omitFieldsArray, editableFieldsArray } from './annotationCard';
-export { Variant } from './textloader';
+export { Variant, determineVariant } from './textloader';
 export { getColorHexFromEnumEntry, getColorNameFromEnumEntry } from './utils';
 
 // TODO: CUSTOMISE to be the correct function for your project case. The function is called
