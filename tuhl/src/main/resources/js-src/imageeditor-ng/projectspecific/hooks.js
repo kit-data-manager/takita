@@ -35,10 +35,8 @@ function initializeProjectspecifics() {}
  * Can be used to manipulate the sidebar (eg. adding/removing buttons).
  *
  * @param {Element} $sidebar the sidebar
- * @param {Class} variant specifies if the current text document has special requirements. The
- * class definition can be found in projectspecific/textloader.js
  */
-function postSidebarCreation($sidebar, variant) {}
+function postSidebarCreation($sidebar) {}
 
 // ANNOTATIONTABLE (in the editor)
 /**
