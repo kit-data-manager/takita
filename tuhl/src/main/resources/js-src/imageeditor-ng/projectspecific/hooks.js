@@ -2,13 +2,12 @@
 import { enableLanguageViewToggleButton } from './sidebar';
 
 /**
- * add functions to the hook. The API definition can be found below
+ * add functions to the respective array (eg. postSidebarCreation: [enableLanguageViewToggleButton]).
+ * The API definition can be found below
  */
 export const hooks = {
   initializeProjectspecifics: [],
-  preMakeHTML: [],
-  postApplyStyles: [],
-  postSidebarCreation: [enableLanguageViewToggleButton],
+  postSidebarCreation: [],
   preAnnotationTableCreation: [],
   postTargetCreation: [],
   manipulatingData: [],
@@ -26,14 +25,14 @@ export const hooks = {
  */
 
 /**
- * called at texteditor-ng/index.js (initializeTextEditorComponent()) with no parameters/return value.
+ * called at imageeditor-ng/index.js (initializeTextEditorComponent()) with no parameters/return value.
  * Can be called to initiliaze window.variables etc.
  */
 function initializeProjectspecifics() {}
 
 // SIDEBAR
 /**
- * called at texteditor-ng/sidebar/sidebar.js (initializeSidebar()).
+ * called at imageeditor-ng/sidebar/sidebar.js (initializeSidebar()).
  * Can be used to manipulate the sidebar (eg. adding/removing buttons).
  *
  * @param {Element} $sidebar the sidebar
@@ -58,46 +57,16 @@ function preAnnotationTableCreation(tableData, columns) {
   return [tableData, columns];
 }
 
-// TEXTLOADER
-/**
- * called at texteditor-ng/textloader/textloader.js (prepareTEIDocument()).
- * Can be used to change the contents of the xml file (text) BEFORE being
- * passed to CETEIcean, which will convert the file (text) to custom HTML-elements.
- *
- * @param {String} xmlString the xml file to be added to the DOM
- * @returns {String} newXmlString changed xml file to be added to the DOM
- */
-function preMakeHTML(xmlString) {
-  let newXmlString;
-  // do stuff
-  return newXmlString;
-}
-
-/**
- * called at texteditor-ng/textloader/textloader.js (applyStyles())
- * Can be used to change the text AFTER CETEIcean converted it, but BEFORE it gets
- * added to the DOM.
- *
- * @param {Element} $processedHTML the element containing the TEI-xml
- * @param {String} language the language of the text
- * @returns $newProcessedHTML the element containing the cahnged TEI-xml
- */
-function postApplyStyles($processedHTML, language) {
-  let $newProcessedHTML;
-  // do stuff
-  return $newProcessedHTML;
-}
-
 // TEXTEDITOR
 /**
- * called at texteditor-ng/editor/editor.js (annotateSelectedText())
+ * called at imageeditor-ng/index.js (annotateSelectedText())
  * Can be used to store information from the selection in window.variables, which can then be used
  * in the creation templates/during the annotation creation procedure.
  *
- * @param {Selection} selection the selection cerated by the user
+ * @param {Selection} selectors the selection converted into selector
  * @param {JSONArray} annoJson contains all the annotation of the pages as JSONObjects
  */
-function postTargetCreation(selection, annoJson) {}
+function postTargetCreation(selectors, annoJson) {}
 
 // ANNOTATIONCREATION
 /**

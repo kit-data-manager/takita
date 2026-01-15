@@ -6,9 +6,10 @@ import { toggleShapeVisibility } from '../utils';
 import { confirmDiscardChanges, modifyShape, saveShape, undo } from '../targetBuilding';
 import { createPageAnnotation } from '../editor';
 
-export function initializeSidebar($sidebar, $pagesDialog, $tableContainer) {
+export function initializeSidebar($sidebar, $pagesDialog, $tableContainer, hooks = {}) {
   const $pagesButton = $sidebar.querySelector('#pagesButton');
   const $annotationTableButton = $sidebar.querySelector('#annotationTableBottomButton');
+  const variant = undefined;
   // expand/hide sidebar
   $sidebar.querySelector('#logo-name__icon').addEventListener('click', function () {
     toggleSidebar($sidebar);
@@ -146,6 +147,9 @@ export function initializeSidebar($sidebar, $pagesDialog, $tableContainer) {
     collapseSidebar($sidebar);
     toggleDisplay($tableContainer, $annotationTableButton);
   });
+  if (hooks.postSidebarCreation) {
+    hooks.postSidebarCreation.forEach((hook) => hook($sidebar, variant));
+  }
 }
 
 export function imageZoomIn() {

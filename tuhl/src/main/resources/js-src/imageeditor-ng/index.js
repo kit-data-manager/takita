@@ -6,14 +6,14 @@ import { pickTemplate } from './projectspecific/annotationCreation/templates';
 import { selectAnnotation } from '../common/annotationCard';
 import { encodeAnnoId, enableTooltips, toggleVisibility } from '../common/utils';
 
-import { imageZoomIn, imageZoomOut } from './sidebar/sidebar';
-import { initializeSidebar } from './sidebar';
+import { initializeSidebar, imageZoomIn, imageZoomOut } from './sidebar';
 import { initializeAnnotationTable, defaultDisplayAnnotationFunction } from '../common/annotationTable';
 import { toggleShapeSelect } from './highlighting';
 import { getRelativeCoordinates } from './utils';
 import { getScalingRatios } from './targetBuilding/utils';
 import { drawRectangle, drawPolygon, drawAnnos } from './highlighting';
 import { dragCircleMove, dragCircleEnd, dragCircleStart } from './targetBuilding/utils';
+import { hooks } from './projectspecific';
 
 // global state
 window.addingRectangle = false;
@@ -91,7 +91,7 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
       mouseDownX = Math.round(relativeCoordinates[0]);
       mouseDownY = Math.round(relativeCoordinates[1]);
 
-      window.newRectangle = drawRectangle(scaledX, scaledY, 0, 0, '#ff8d00', null, null);
+      window.newRectangle = drawRectangle(scaledX, scaledY, 0, 0, '#ff8d00', null, null, hooks);
     }
 
     if (window.movingImage || coordinates.ctrlKey) {
@@ -118,7 +118,7 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
 
       if (!window.firstPolygonPoint) {
         window.firstPolygonPoint = { x: scaledX, y: scaledY };
-        window.polygonPath = drawPolygon('M' + scaledX + ' ' + scaledY, '#ff8d00', null);
+        window.polygonPath = drawPolygon('M' + scaledX + ' ' + scaledY, '#ff8d00', null, hooks);
       }
 
       let dx = Math.abs(scaledX - window.firstPolygonPoint.x);
@@ -152,6 +152,11 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
         let createAnnotationModal = bootstrap.Modal.getOrCreateInstance(createAnnotation);
         createAnnotationModal.toggle();
         const selectors = [{ type: 'SvgSelector', value: svgString }];
+        if (hooks.postTargetCreation) {
+          hooks.postTargetCreation.forEach((hook) => {
+            hook(selectors, window.ANNOJSON);
+          });
+        }
         pickTemplate(selectors, '', 'createAnnotationForm', 'pickAnnotationTemplateForm', 'annotationTemplate');
 
         window.firstPolygonPoint = undefined;
@@ -284,6 +289,11 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
       let createAnnotationModal = bootstrap.Modal.getOrCreateInstance(createAnnotation);
       createAnnotationModal.toggle();
       const selectors = [{ type: 'SvgSelector', value: svgString }];
+      if (hooks.postTargetCreation) {
+        hooks.postTargetCreation.forEach((hook) => {
+          hook(selectors, window.ANNOJSON);
+        });
+      }
       pickTemplate(selectors, '', 'createAnnotationForm', 'pickAnnotationTemplateForm', 'annotationTemplate');
 
       console.log('after pick template');
@@ -305,18 +315,19 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
 
   // Drawing anno svgs on first opening of page
   window.ANNOJSON = JSON.parse(annotations);
-  drawAnnos(window.ANNOJSON);
+  drawAnnos(window.ANNOJSON, hooks);
 
   initializeAnnotationTable(
     window.ANNOJSON,
     document.getElementById('annotationTableBottom'),
     defaultDisplayAnnotationFunction,
+    hooks,
   );
 
   // Showing the annotation and highlighting the shape on first opening of page
   const editorURL = new URL(window.location);
   if (editorURL.searchParams.size > 0) {
-    selectAnnotationOnLoad(editorURL);
+    selectAnnotationOnLoad(editorURL, hooks);
   }
 
   window.addEventListener('beforeunload', function (e) {
@@ -389,7 +400,12 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
   const $sidebar = document.querySelector('.anno-side-bar');
   const $pagesDialog = document.getElementById('pages');
   const $tableContainer = document.getElementById('annotationTableBottomDiv');
-  initializeSidebar($sidebar, $pagesDialog, $tableContainer);
+  initializeSidebar($sidebar, $pagesDialog, $tableContainer, hooks);
+
+  // initializes projectspecfic things by executing the hooks
+  if (hooks.initializeProjectspecifics) {
+    hooks.initializeProjectspecifics.forEach((hook) => hook());
+  }
 }
 
 /* function to be called on load of the editor;
@@ -397,7 +413,7 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
     The annotation id gets parsed from the search parameter of the
     url.
 */
-function selectAnnotationOnLoad(editorURL) {
+function selectAnnotationOnLoad(editorURL, hooks = {}) {
   const annotationId = editorURL.searchParams.get('annotationId');
   let targetShape = undefined;
   // getting the shape corresponding to the annotation
@@ -410,7 +426,7 @@ function selectAnnotationOnLoad(editorURL) {
 
   if (targetShape) {
     // display the annotation with the id stored in the url
-    selectAnnotation(null, encodeAnnoId(annotationId));
+    selectAnnotation(null, encodeAnnoId(annotationId), hooks);
     if (document.getElementById('annotationCard').classList.contains('invisible')) {
       toggleVisibility(document.getElementById('annotationCard'));
     }

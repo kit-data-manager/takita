@@ -5,7 +5,7 @@ import { dragCircleMove, dragCircleStart, dragCircleEnd } from '../targetBuildin
 import { disablePolygonModification, disableRectangleModification } from '../targetBuilding/targetModification';
 // main drawing function for rectangles
 // assigns moving and modifying functionalities on mouse click
-export function drawRectangle(x, y, width, height, color, id, idEncoded) {
+export function drawRectangle(x, y, width, height, color, id, idEncoded, hooks = {}) {
   let rectangle = window.paper.rect(x, y, width, height);
   rectangle.attr({
     stroke: color,
@@ -46,7 +46,7 @@ export function drawRectangle(x, y, width, height, color, id, idEncoded) {
           toggleVisibility($annotationCard);
         }
       } else {
-        selectAnnotation(null, this.annoIdEncoded);
+        selectAnnotation(null, this.annoIdEncoded, hooks);
         if ($annotationCard.classList.contains('invisible')) {
           toggleVisibility($annotationCard);
         }
@@ -59,7 +59,7 @@ export function drawRectangle(x, y, width, height, color, id, idEncoded) {
 
 // main drawing function for polygons
 // assigns moving and modifying functionalities on mouse click
-export function drawPolygon(path, color, id, idEncoded) {
+export function drawPolygon(path, color, id, idEncoded, hooks = {}) {
   let polygon = window.paper.path(path).attr({
     stroke: color,
     'stroke-width': 10,
@@ -96,7 +96,7 @@ export function drawPolygon(path, color, id, idEncoded) {
           toggleVisibility($annotationCard);
         }
       } else {
-        selectAnnotation(null, this.annoIdEncoded);
+        selectAnnotation(null, this.annoIdEncoded, hooks);
         if ($annotationCard.classList.contains('invisible')) {
           toggleVisibility($annotationCard);
         }
@@ -118,7 +118,7 @@ export function toggleShapeSelect(shape) {
   }
 }
 
-export function extractInformationFromSvg(svgString, annoJson) {
+export function extractInformationFromSvg(svgString, annoJson, hooks = {}) {
   const svgDoc = new DOMParser().parseFromString(svgString, 'text/xml');
   let svgRect = svgDoc.getElementsByTagName('rect')[0];
   let svgPolygon = svgDoc.getElementsByTagName('polygon')[0];
@@ -147,19 +147,19 @@ export function extractInformationFromSvg(svgString, annoJson) {
     annoJson.type = 'Polygon';
     annoJson.icon = "<i class='bx bx-polygon'></i>";
 
-    let polygonPath = drawPolygon(polygonTempPath, 'purple', null, null).hide();
+    let polygonPath = drawPolygon(polygonTempPath, 'purple', null, null, hooks).hide();
     annoJson.height = Math.round(polygonPath.getBBox().height);
     annoJson.width = Math.round(polygonPath.getBBox().width);
     polygonPath.remove();
   }
 }
 
-export function drawAnnos(annoJson) {
+export function drawAnnos(annoJson, hooks = {}) {
   for (let anno in annoJson) {
     // check if there is a value for svg as page-annotations will not have a value
     // and should print an error on the console
     annoJson[anno].svg[0]?.value
-      ? extractInformationFromSvg(annoJson[anno].svg[0].value, annoJson[anno])
+      ? extractInformationFromSvg(annoJson[anno].svg[0].value, annoJson[anno], hooks)
       : console.warn('annotation is page anno: ', annoJson[anno].id);
   }
 
@@ -193,6 +193,7 @@ export function drawAnnos(annoJson) {
           sortedAnnoJson[anno].color,
           sortedAnnoJson[anno].id,
           sortedAnnoJson[anno].idEncoded,
+          hooks,
         );
       } else if (sortedAnnoJson[anno].type === 'Polygon') {
         // if shape color has not been set, set it to default
@@ -205,6 +206,7 @@ export function drawAnnos(annoJson) {
           sortedAnnoJson[anno].color,
           sortedAnnoJson[anno].id,
           sortedAnnoJson[anno].idEncoded,
+          hooks,
         );
         for (let point in annoJson[anno].points) {
           const coordinatePair = annoJson[anno].points[point].split(',');
