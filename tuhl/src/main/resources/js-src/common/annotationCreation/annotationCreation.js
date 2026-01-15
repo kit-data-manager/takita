@@ -123,7 +123,11 @@ function transformImageAnnotation(annotation) {
   annotation.idEncoded = encodeAnnoId(annotation.id);
   annotation.modified = new Date(annotation.modified * 1000).toISOString();
   annotation.visible = true;
-  const svgCode = annotation.targets.filter((target) => target.selector.svgcode)[0].selector.svgcode;
-  extractInformationFromSvg(svgCode, annotation);
+  // check wether the annotation has a selector or if it targets the whole page and
+  // therefore does not have a selector from which the svgCode can be extracted
+  if (annotation.targets.some((target) => target?.selector != null)) {
+    const svgCode = annotation.targets.filter((target) => target.selector.svgcode)[0].selector.svgcode;
+    extractInformationFromSvg(svgCode, annotation);
+  }
   return annotation;
 }

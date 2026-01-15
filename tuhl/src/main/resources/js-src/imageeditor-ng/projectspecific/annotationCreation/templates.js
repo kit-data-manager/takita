@@ -84,7 +84,19 @@ function getFormObjectCreateAnnotation(selectors) {
             const annotation = await createAnnotation(annotationData, hooks);
 
             if (annotation) {
-              updateNewAnnotationShape(window.paper, annotation.id, annotationData.color);
+              // check wether the annotation has a selector or if it targets the whole page and
+              // therefore does not have a shape to be highlighted
+              if (annotation.targets.some((target) => target?.selector != null)) {
+                updateNewAnnotationShape(window.paper, annotation.id, annotationData.color);
+              } else {
+                // Note: raphael doesn't offer a filter()-function
+                window.paper.forEach((shape) => {
+                  // unselecting the previously selected shape
+                  if (shape.selected) {
+                    toggleShapeSelect(shape);
+                  }
+                });
+              }
             }
           });
         },
