@@ -9,7 +9,6 @@ export const hooks = {
   initializeProjectspecifics: [],
   postSidebarCreation: [],
   preAnnotationTableCreation: [],
-  postTargetCreation: [],
   manipulatingData: [],
   postAnnotationCreation: [],
   preAppendingBodies: [],
@@ -56,17 +55,6 @@ function preAnnotationTableCreation(tableData, columns) {
   // do stuff
   return [tableData, columns];
 }
-
-// TEXTEDITOR
-/**
- * called at imageeditor-ng/index.js (annotateSelectedText())
- * Can be used to store information from the selection in window.variables, which can then be used
- * in the creation templates/during the annotation creation procedure.
- *
- * @param {Selection} selectors the selection converted into selector
- * @param {JSONArray} annoJson contains all the annotation of the pages as JSONObjects
- */
-function postTargetCreation(selectors, annoJson) {}
 
 // ANNOTATIONCREATION
 /**

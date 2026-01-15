@@ -152,11 +152,6 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
         let createAnnotationModal = bootstrap.Modal.getOrCreateInstance(createAnnotation);
         createAnnotationModal.toggle();
         const selectors = [{ type: 'SvgSelector', value: svgString }];
-        if (hooks.postTargetCreation) {
-          hooks.postTargetCreation.forEach((hook) => {
-            hook(selectors, window.ANNOJSON);
-          });
-        }
         pickTemplate(selectors, '', 'createAnnotationForm', 'pickAnnotationTemplateForm', 'annotationTemplate');
 
         window.firstPolygonPoint = undefined;
@@ -289,11 +284,6 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
       let createAnnotationModal = bootstrap.Modal.getOrCreateInstance(createAnnotation);
       createAnnotationModal.toggle();
       const selectors = [{ type: 'SvgSelector', value: svgString }];
-      if (hooks.postTargetCreation) {
-        hooks.postTargetCreation.forEach((hook) => {
-          hook(selectors, window.ANNOJSON);
-        });
-      }
       pickTemplate(selectors, '', 'createAnnotationForm', 'pickAnnotationTemplateForm', 'annotationTemplate');
 
       console.log('after pick template');
