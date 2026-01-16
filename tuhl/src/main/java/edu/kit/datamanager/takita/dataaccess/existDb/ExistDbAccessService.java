@@ -43,6 +43,8 @@ import org.xml.sax.SAXException;
 import edu.kit.datamanager.takita.MissingPropertyException;
 import jakarta.annotation.PostConstruct;
 
+import static edu.kit.datamanager.takita.dataaccess.utils.XmlUtilities.getNamespaceContext;
+
 @Service
 @ConditionalOnProperty(
         value = "exist.baseUrl",
@@ -169,34 +171,7 @@ public class ExistDbAccessService implements IExistDbAccessService {
             Document teiDocument = builder.parse(new InputSource(new StringReader(teiString)));
 
             if (trimmed) {
-                // defining the namespaces to be used by the following code see:
-                // https://stackoverflow.com/questions/13702637/xpath-with-namespace-in-java
-                // and
-                // https://web.archive.org/web/20070328212209/http://blog.davber.com/2006/09/17/xpath-with-namespaces-in-java/
-                // We map the prefixes to URIs
-                // the "xml"-namespace is necessary as we access the "@xml:id" and the "exist"-namespace
-                // as the return of the exist database is using it
-                NamespaceContext namespaceContext = new NamespaceContext() {
-                    public String getNamespaceURI(String prefix) {
-                        return switch (prefix) {
-                            case "tei" -> "http://www.tei-c.org/ns/1.0";
-                            case "xi" -> "http://www.w3.org/2001/XInclude";
-                            case "xml" -> "http://www.w3.org/XML/1998/namespace";
-                            case "exist" -> "http://exist.sourceforge.net/NS/exist";
-                            default -> null;
-                        };
-                    }
-
-                    // Dummy implementation - not used!
-                    public Iterator getPrefixes(String val) {
-                        return null;
-                    }
-
-                    // Dummy implementation - not used!
-                    public String getPrefix(String uri) {
-                        return null;
-                    }
-                };
+                NamespaceContext namespaceContext = getNamespaceContext();
 
                 // creating the xPath object
                 XPath xPathInstance = XPathFactory.newInstance().newXPath();
