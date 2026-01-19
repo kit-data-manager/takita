@@ -3,7 +3,7 @@ import * as bootstrap from 'bootstrap';
 // internal modules
 import { encodeAnnoId } from '../../common/utils';
 import { selectAnnotation } from '../../common/annotationCard';
-import { collapseSidebar } from '../sidebar';
+import { collapseSidebar } from '../../common/sidebar';
 import { createTextSelectors } from '../targetBuilding';
 import { pickTemplate } from '../projectspecific/annotationCreation/templates';
 import { possibleHighlightClasses } from '../projectspecific';
