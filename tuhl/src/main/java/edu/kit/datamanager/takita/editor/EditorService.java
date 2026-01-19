@@ -109,7 +109,6 @@ public class EditorService implements IEditorService {
 		        	newTarget.setType("TEXT");
 		        	newTarget.setSelector(newXPathSelector);
 		        	newAnnotation.addTarget(newTarget);
-		        	System.out.println(newAnnotation.getTargets().get(0).getWADMSerialization().toString());
 					break;
 				case "SvgSelector":
 					Target newTarget2 = new Target();
