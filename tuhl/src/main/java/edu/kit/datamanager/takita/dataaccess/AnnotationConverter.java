@@ -579,28 +579,9 @@ public class AnnotationConverter {
 				break;
 			default:
 				// TODO: this should throw an exception
-				logger.error("Target is neither an image or a text file.");
+				logger.error("Target is neither an image, a text file nor a page.");
 				break;
 		}
-//		if (target.getType().equals("TEXT")){
-//			target.setLinkToResource(repositoryAccessService.getBaseUrl()
-//		            + repositoryAccessService.getStaticPath()
-//		            + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
-//		            + RepositoryAccessService.FILE_EXTENSION_XML);
-//			// add the target serialized as WADM to the list
-//			targetArray.put(target.getWADMSerialization());
-//		} else if (target.getType().equals("IMAGE")){
-//			target.setLinkToResource(repositoryAccessService.getBaseUrl()
-//		            + repositoryAccessService.getStaticPath()
-//		            + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
-//		            + RepositoryAccessService.MASTER_JPG);
-//			// add the target serialized as WADM to the list
-//			targetArray.put(target.getWADMSerialization());
-//		} else {
-//			// TODO: this should throw an exception
-//			System.out.println("Target is neither an image or a text file.");
-//		}
-
     }
 	// add the targets to the JSON annotation
 	jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), targetArray);
