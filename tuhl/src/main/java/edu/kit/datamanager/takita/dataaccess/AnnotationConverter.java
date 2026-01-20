@@ -22,7 +22,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.slf4j.Logger;
@@ -305,44 +304,14 @@ public class AnnotationConverter {
 				  linkToResource = targetJson.getString(AnnotationStoreStrings.ID.getName());
 			  }
 		  }
-		  Target target = new Target(linkToResource);
-		  
-		  if (targetJson.has(AnnotationStoreStrings.SELECTOR.getName())
-				  && targetJson.getJSONObject(AnnotationStoreStrings.SELECTOR.getName()).
-				  has(AnnotationStoreStrings.TYPE.getName())) {
-			  JSONObject selector = targetJson.getJSONObject(AnnotationStoreStrings.SELECTOR.getName());
-			  if (selector.getString(AnnotationStoreStrings.TYPE.getName()).
-					  equals(AnnotationStoreStrings.XPATH_SELECTOR.getName())) {
-				  XPathSelector xPathSelector = new XPathSelector(selector.
-						  getString(AnnotationStoreStrings.VALUE.getName()));
-				  target.setSelector(xPathSelector);
-				  target.setType("TEXT");
-			  }
-			  if (selector.getString(AnnotationStoreStrings.TYPE.getName()).
-					  equals(AnnotationStoreStrings.TEXTQUOTESELECTOR_SELECTOR.getName())) {
-				  TextQuoteSelector textQuoteSelector = new TextQuoteSelector(selector.
-						  getString(AnnotationStoreStrings.EXACT.getName()));
-					if (selector.has(AnnotationStoreStrings.PREFIX.getName())) {
-						textQuoteSelector.setPrefix(selector.
-								  getString(AnnotationStoreStrings.PREFIX.getName()));
-					}
-					if (selector.has(AnnotationStoreStrings.SUFFIX.getName())) {
-						textQuoteSelector.setSuffix(selector.
-								  getString(AnnotationStoreStrings.SUFFIX.getName()));
-					}
-				  target.setSelector(textQuoteSelector);
-				  target.setType("TEXT");
-			  }
-			  if (selector.getString(AnnotationStoreStrings.TYPE.getName()).
-					  equals(AnnotationStoreStrings.SVG_SELECTOR.getName())) {
-				  SVGSelector svgSelector = new SVGSelector(selector.
-						  getString(AnnotationStoreStrings.VALUE.getName()));
-				  target.setSelector(svgSelector);
-				  target.setType("IMAGE");
-			  }
-		  } else {
-			  target.setType("PAGE");
-		  }
+		  Target target;
+
+          if (targetJson.has(AnnotationStoreStrings.SELECTOR.getName())){
+              target  = new Target(linkToResource, targetJson.getJSONObject(AnnotationStoreStrings.SELECTOR.getName()));
+          } else {
+              target = new Target(linkToResource, null);
+          }
+
 		  targets.add(target);
 	  }
 	  

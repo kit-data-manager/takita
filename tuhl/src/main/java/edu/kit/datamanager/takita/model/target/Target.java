@@ -29,7 +29,36 @@ public class Target {
 		//this.linkToResource = linkToResource;
 		//this.selector = new ArrayList<>();
 	}
-	
+
+    public Target (String linkToResource, JSONObject selector) throws JSONException {
+        if (linkToResource != null) {
+            this.linkToResource = linkToResource;
+        }
+
+        if (selector != null) {
+            String selectorType = selector.getString("type");
+            if (selectorType.equals(AnnotationStoreStrings.XPATH_SELECTOR.getName())) {
+                this.type = "TEXT";
+                this.selector = new XPathSelector(selector.getString(AnnotationStoreStrings.VALUE.getName()));
+            } else if (selectorType.equals(AnnotationStoreStrings.SVG_SELECTOR.getName())) {
+                this.type = "IMAGE";
+                this.selector = new SVGSelector(selector.getString(AnnotationStoreStrings.VALUE.getName()));
+            } else if (selectorType.equals(AnnotationStoreStrings.TEXTQUOTE_SELECTOR.getName())) {
+                this.type = "TEXT";
+                TextQuoteSelector textQuoteSelector = new TextQuoteSelector(selector.getString(AnnotationStoreStrings.EXACT.getName()));
+                if (selector.getString(AnnotationStoreStrings.PREFIX.getName()) != null) {
+                    textQuoteSelector.setPrefix(selector.getString(AnnotationStoreStrings.PREFIX.getName()));
+                }
+                if (selector.getString(AnnotationStoreStrings.SUFFIX.getName()) != null) {
+                    textQuoteSelector.setSuffix(selector.getString(AnnotationStoreStrings.SUFFIX.getName()));
+                }
+                this.selector = textQuoteSelector;
+            }
+        } else {
+            this.type = "PAGE";
+        }
+    }
+
 	public String getType() {
 		return type;
 	}

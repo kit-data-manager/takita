@@ -53,7 +53,7 @@ public class TextQuoteSelector implements ISelector{
 		} catch (XPathExpressionException e) {
 			e.printStackTrace();
 		}*/
-		wadmSelector.put(AnnotationStoreStrings.TYPE.getName(), AnnotationStoreStrings.TEXTQUOTESELECTOR_SELECTOR.getName());
+		wadmSelector.put(AnnotationStoreStrings.TYPE.getName(), AnnotationStoreStrings.TEXTQUOTE_SELECTOR.getName());
 		wadmSelector.put(AnnotationStoreStrings.EXACT.getName(), this.exact);
 		if (this.prefix != null) {
 			wadmSelector.put(AnnotationStoreStrings.PREFIX.getName(), this.prefix);

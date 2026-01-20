@@ -85,68 +85,10 @@ public class EditorService implements IEditorService {
   @Override
   public Annotation addAnnotation(String pageId, String color, JSONArray selectors, String motivation)
       throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException {
-    Annotation newAnnotation = new Annotation();
-    newAnnotation.setPageId(pageId);
-    newAnnotation.setCreators(Collections.singletonList(
-        assistanceService.getCurrentUser().getName()));
-    newAnnotation.setCreated(Instant.now());
-    newAnnotation.setModified(Instant.now());
-
-    if (color != null) {
-      newAnnotation.setColor(Color.stringToColor(color));
-    } else {
-      newAnnotation.setColor(Color.DEFAULT);
-    }
-
-    if (selectors != null) {
-    	for (int i = 0; i < selectors.length(); i++) {
-			String selectorType = selectors.getJSONObject(i).getString("type");
-			switch (selectorType) {
-				case "XPathSelector":
-					Target newTarget = new Target();
-					String xPath = selectors.getJSONObject(i).getString("value");
-					XPathSelector newXPathSelector = new XPathSelector(xPath);
-		        	newTarget.setType("TEXT");
-		        	newTarget.setSelector(newXPathSelector);
-		        	newAnnotation.addTarget(newTarget);
-					break;
-				case "SvgSelector":
-					Target newTarget2 = new Target();
-					String svgCode = selectors.getJSONObject(i).getString("value");
-					SVGSelector newSVGSelector = new SVGSelector(svgCode);
-		    		newTarget2.setType("IMAGE");
-		        	newTarget2.setSelector(newSVGSelector);
-		        	newAnnotation.addTarget(newTarget2);
-					break;
-				case "TextQuoteSelector":
-					Target newTarget3 = new Target();
-					String exactString = selectors.getJSONObject(i).getString("exact");
-					TextQuoteSelector newTextQuoteSelector = new TextQuoteSelector(exactString);
-					if (selectors.getJSONObject(i).getString("prefix") != null) {
-						newTextQuoteSelector.setPrefix(selectors.getJSONObject(i).getString("prefix"));
-					}
-					if (selectors.getJSONObject(i).getString("suffix") != null) {
-						newTextQuoteSelector.setSuffix(selectors.getJSONObject(i).getString("suffix"));
-					}
-		    		newTarget3.setType("TEXT");
-		        	newTarget3.setSelector(newTextQuoteSelector);
-		        	newAnnotation.addTarget(newTarget3);
-			}
-    	}
-    } else {
-    	// this branch should get reached when users create a "page"-annotation, i.e.
-    	// an annotation targeting the whole document/image
-    	// TODO: this has to be tested by someone who works with page-annotations.
-    	// Philipp tested it and it seems to work.
-		Target newTarget = new Target();
-    	newTarget.setType("PAGE");
-    	newAnnotation.addTarget(newTarget);
-    }
-
-    if (motivation != null) {
-      newAnnotation.setMotivation(motivation);
-    }
-
+    List<String> creators = Collections.singletonList(
+              assistanceService.getCurrentUser().getName());
+    Instant currentTime = Instant.now();
+    Annotation newAnnotation = new Annotation(pageId, creators, currentTime, currentTime, color, selectors, motivation);
     try {
       logger.info("EditorService: " + newAnnotation.toString());
       newAnnotation = searchIndexService.addAnnotation(newAnnotation);
@@ -186,73 +128,9 @@ public class EditorService implements IEditorService {
 		  JSONArray selectors, String motivation)
       throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException {
     Annotation updatedAnnotation = searchIndexService.getAnnotationById(annotationId);
-    if (!updatedAnnotation.getCreators().contains(assistanceService
-        .getCurrentUser().getName())) {
-      updatedAnnotation.addCreator(assistanceService.getCurrentUser().getName());
-    }
-    updatedAnnotation.setModified(Instant.now());
-
-    if (color != null && !color.trim().equals("")) {
-      updatedAnnotation.setColor(Color.stringToColor(color));
-    } else {
-      updatedAnnotation.setColor(Color.DEFAULT);
-    }
-
-    if (selectors != null) {
-    	// TODO: this way of getting the link to the resource is dangerous. If there 
-    	// are multiple targets, which target different resource, all targets will target
-    	// the same resource after a target update (as the targets are just getting overwritten
-    	// by "updatedAnnotation.setTargets(newTargets)") and the annotation will be incorrect.
-    	String linkToResource = updatedAnnotation.getTargets().get(0).getLinkToResource();
-    	List<Target> newTargets = new ArrayList<>();
-    	for (int i = 0; i < selectors.length(); i++) {
-			String selectorType = selectors.getJSONObject(i).getString("type");
-			switch (selectorType) {
-				case "XPathSelector":
-					Target newTarget = new Target(linkToResource);
-					String xPath = selectors.getJSONObject(i).getString("value");
-					XPathSelector newXPathSelector = new XPathSelector(xPath);
-		        	newTarget.setType("TEXT");
-		        	newTarget.setSelector(newXPathSelector);
-		        	newTargets.add(newTarget);
-					break;
-				case "SvgSelector":
-					Target newTarget2 = new Target(linkToResource);
-					String svgCode = selectors.getJSONObject(i).getString("value");
-					SVGSelector newSVGSelector = new SVGSelector(svgCode);
-		    		newTarget2.setType("IMAGE");
-		        	newTarget2.setSelector(newSVGSelector);
-		        	newTargets.add(newTarget2);
-					break;
-				case "TextQuoteSelector":
-					Target newTarget3 = new Target(linkToResource);
-					String exactString = selectors.getJSONObject(i).getString("exact");
-					TextQuoteSelector newTextQuoteSelector = new TextQuoteSelector(exactString);
-					if (selectors.getJSONObject(i).getString("prefix") != null) {
-						newTextQuoteSelector.setPrefix(selectors.getJSONObject(i).getString("prefix"));
-					}
-					if (selectors.getJSONObject(i).getString("suffix") != null) {
-						newTextQuoteSelector.setSuffix(selectors.getJSONObject(i).getString("suffix"));
-					}
-		    		newTarget3.setType("TEXT");
-		        	newTarget3.setSelector(newTextQuoteSelector);
-		        	newTargets.add(newTarget3);
-					break;
-			}
-    	}
-    	updatedAnnotation.setTargets(newTargets);
-    } else {
-    	// this branch should get reached when users updates a "page"-annotation, i.e.
-    	// an annotation targeting the whole document/image. It might get reached, when a
-    	// user wants to turn a normal annotation into a a "page"-annotation.
-    	// TODO: this has to be figured out. It could just create one target w/o a selector
-    	// and turn the annotation into a page-annotation
-    }
-
-    if (motivation != null) {
-      updatedAnnotation.setMotivation(motivation);
-    }
-
+    List<String> creators = Collections.singletonList(assistanceService
+        .getCurrentUser().getName());
+    updatedAnnotation.update(creators, color, selectors, motivation);
     try {
       updatedAnnotation = searchIndexService.updateAnnotation(updatedAnnotation);
     } catch (JSONException e) {

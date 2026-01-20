@@ -6,6 +6,9 @@ import edu.kit.datamanager.takita.model.target.Target;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -53,6 +56,61 @@ public class Annotation {
     tags = new ArrayList<>();
     creators = new ArrayList<>();
     targets = new ArrayList<>();
+  }
+
+  public Annotation(String pageId, List<String> creators, Instant created, Instant modified, String color,
+                    JSONArray selectors, String motivation ) throws JSONException {
+      this.textCards = new ArrayList<>();
+      this.tags = new ArrayList<>();
+      this.pageId = pageId;
+      this.creators = creators;
+      this.created = created;
+      if (modified != null) {
+          this.modified = modified;
+      }
+      this.color = color != null ? Color.stringToColor(color) : Color.DEFAULT;
+      this.targets = createTargetsFromSelectors(selectors);
+      if (motivation != null) {
+        this.motivation = motivation;
+      }
+  }
+
+  public void update(List<String> creators, String color, JSONArray selectors, String motivation ) throws JSONException {
+      for (String creator : creators) {
+          if (!this.getCreators().contains(creator)) {
+              this.addCreator(creator);
+          }
+      }
+      this.setModified(Instant.now());
+      if (color != null && !color.trim().equals("")) {
+          this.setColor(Color.stringToColor(color));
+      } else {
+          this.setColor(Color.DEFAULT);
+      }
+      if (selectors != null) {
+          this.setTargets(createTargetsFromSelectors(selectors));
+      }
+      if (motivation != null) {
+          this.setMotivation(motivation);
+      }
+  }
+
+  private List<Target> createTargetsFromSelectors(JSONArray selectors) throws JSONException {
+      List<Target> targets = new ArrayList<>();
+      if (selectors != null) {
+          for (int i = 0; i < selectors.length(); i++) {
+              Target target = new Target(null, selectors.getJSONObject(i));
+              targets.add(target);
+          }
+      } else {
+          // this branch should get reached when users create a "page"-annotation, i.e.
+          // an annotation targeting the whole document/image
+          // TODO: this has to be tested by someone who works with page-annotations.
+          // Philipp tested it and it seems to work.
+          Target target = new Target(null, null);
+          targets.add(target);
+      }
+      return targets;
   }
 
   /**
