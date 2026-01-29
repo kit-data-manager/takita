@@ -115,7 +115,7 @@ public class EditorService implements IEditorService {
    *
    * @param annotationId ID of the annotation to update
    * @param color new color of the annotation
-   * @param svgCode new svg code of the annotation
+   * @param selectors new 1-n selectors (part of the target) of the annotation
    * @param motivation new motivation of the annotation
    * @return updated annotation
    * @throws NoSuchIndexEntryException when there is no such annotation in the index

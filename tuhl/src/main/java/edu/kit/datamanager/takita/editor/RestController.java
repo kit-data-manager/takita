@@ -738,7 +738,7 @@ public class RestController {
         return ResponseEntity.ok().body(rawXml);
     }
     /**
-     * Delegates the task to get the raw XML file to a page to IEditorStubService.
+     * Delegates the task to get the raw XML file to a page to IEditorService.
      *
      * @param pageId identifies the page to get the content of
      * @param fileName identifies the file associated to a page
