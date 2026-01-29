@@ -69,7 +69,7 @@ public class Annotation {
           this.modified = modified;
       }
       this.color = color != null ? Color.stringToColor(color) : Color.DEFAULT;
-      this.targets = createTargetsFromSelectors(selectors);
+      this.targets = selectors != null ? createTargetsFromSelectors(selectors) : new ArrayList<>();
       if (motivation != null) {
         this.motivation = motivation;
       }
