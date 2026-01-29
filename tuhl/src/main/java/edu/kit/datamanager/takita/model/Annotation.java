@@ -95,6 +95,13 @@ public class Annotation {
       }
   }
 
+    /**
+     * helper function to extract all selectors from an array and creates a target for each. If
+     * there are no selectors, one target targeting the whole "page" will be created.
+     * @param selectors 0 (null) to n JSONObjects holding information about the selector
+     * @return list of targets
+     * @throws JSONException when there is a problem with the JSON object holding the selector
+     */
   private List<Target> createTargetsFromSelectors(JSONArray selectors) throws JSONException {
       List<Target> targets = new ArrayList<>();
       if (selectors != null) {
