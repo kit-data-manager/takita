@@ -321,94 +321,72 @@ public class AnnotationConverter {
   /*
    * Builds body objects from JSON annotation if JSON for bodies is JSONArray.
    */
-  private void buildBodiesFromJson(JSONObject jsonAnnotation, Annotation annotation)
-      throws JSONException {
-    //ensure body json is json array
-    JSONArray bodyJson = new JSONArray();
-    if (isJsonArray(jsonAnnotation.getString(AnnotationStoreStrings.BODY.getName()))) {
-      bodyJson = jsonAnnotation.getJSONArray(AnnotationStoreStrings.BODY.getName());
-    } else {
-      bodyJson.put(jsonAnnotation.getJSONObject(AnnotationStoreStrings.BODY.getName()));
+    private void buildBodiesFromJson(JSONObject jsonAnnotation, Annotation annotation)
+            throws JSONException {
+        //ensure body json is json array
+        JSONArray bodyJson = new JSONArray();
+        if (isJsonArray(jsonAnnotation.getString(AnnotationStoreStrings.BODY.getName()))) {
+            bodyJson = jsonAnnotation.getJSONArray(AnnotationStoreStrings.BODY.getName());
+        } else {
+            bodyJson.put(jsonAnnotation.getJSONObject(AnnotationStoreStrings.BODY.getName()));
+        }
+
+        List<Tag> tags = new ArrayList<>();
+        List<TextCard> textCards = new ArrayList<>();
+        for (int i = 0; i < bodyJson.length(); i++) {
+            //extract body json
+            JSONObject thisJson = bodyJson.getJSONObject(i);
+            createBody(thisJson, tags, textCards, annotation);
+
+        }
+        annotation.setTags(tags);
+        annotation.setTextCards(textCards);
     }
 
-    List<Tag> tags = new ArrayList<>();
-    List<TextCard> textCards = new ArrayList<>();
-    for (int i = 0; i < bodyJson.length(); i++) {
-      //extract body json
-      JSONObject thisJson = bodyJson.getJSONObject(i);
+    /*
+     * Creates tags/text cards for body and adds them to list.
+     */
+    private void createBody(JSONObject jsonBody, List<Tag> tags, List<TextCard> textCards, Annotation annotation)
+            throws JSONException {
+        Body thisBody;
+        String annotationId = annotation.getId();
+        List<String> creators = jsonBody.has(AnnotationStoreStrings.CREATOR.getName()) ?
+                buildCreatorList(jsonBody, annotation) : new ArrayList<>();
+        Instant created = jsonBody.has(AnnotationStoreStrings.CREATED.getName()) ?
+                extractDateFromJsonAnnotation(jsonBody, AnnotationStoreStrings.CREATED.getName()) : null;
+        Instant modified = jsonBody.has(AnnotationStoreStrings.MODIFIED.getName()) ?
+                extractDateFromJsonAnnotation(jsonBody, AnnotationStoreStrings.MODIFIED.getName()) : null;
+        String title = jsonBody.has(AnnotationStoreStrings.DC_TITLE.getName()) ?
+                jsonBody.getString(AnnotationStoreStrings.DC_TITLE.getName()) : null;
+        String subject = jsonBody.has(AnnotationStoreStrings.DC_SUBJECT.getName()) ?
+                jsonBody.getString(AnnotationStoreStrings.DC_SUBJECT.getName()) : null;
+        String value = jsonBody.has(AnnotationStoreStrings.VALUE.getName()) ?
+                jsonBody.getString(AnnotationStoreStrings.VALUE.getName()) : null;
+        String source = jsonBody.has(AnnotationStoreStrings.SOURCE.getName()) ?
+                jsonBody.getString(AnnotationStoreStrings.SOURCE.getName()) : null;
+        String purpose = jsonBody.has(AnnotationStoreStrings.PURPOSE.getName()) ?
+                jsonBody.getString(AnnotationStoreStrings.PURPOSE.getName()) : null;
 
-      //create body
-      Body thisBody = createBody(thisJson, tags, textCards);
+        if (purpose != null) {
+            if (purpose.equals(AnnotationStoreStrings.TAGGING.getName())) {
+                Tag tag = new Tag(UUID.randomUUID().toString(), annotationId, creators,
+                        created, modified, source, subject, title, value);
+                tag.setFullJson(jsonBody);
+                tags.add(tag);
+            } else {
+                TextCard textCard = new TextCard(UUID.randomUUID().toString(), annotationId, creators,
+                        created, modified, source, subject, title, value, purpose);
+                textCard.setFullJson(jsonBody);
+                textCards.add(textCard);
+            }
+        } else {
+            TextCard textCard = new TextCard(UUID.randomUUID().toString(), annotationId, creators,
+                    created, modified, source, subject, title, value, purpose);
+            textCard.setFullJson(jsonBody);
+            textCards.add(textCard);
+        }
 
-      //set annotation id
-      thisBody.setAnnotationId(annotation.getId());
-
-      //set full json
-      thisBody.setFullJson(thisJson);
-
-      //set creators
-      if (thisJson.has(AnnotationStoreStrings.CREATOR.getName())) {
-        thisBody.setCreators(buildCreatorList(thisJson, annotation));
-      }
-
-      //set created date
-      if (thisJson.has(AnnotationStoreStrings.CREATED.getName())) {
-        thisBody.setCreated(extractDateFromJsonAnnotation(thisJson,
-            AnnotationStoreStrings.CREATED.getName()));
-      }
-
-      //set modified date
-      if (thisJson.has(AnnotationStoreStrings.MODIFIED.getName())) {
-        thisBody.setModified(extractDateFromJsonAnnotation(thisJson,
-            AnnotationStoreStrings.MODIFIED.getName()));
-      }
-
-      //set title
-      if (thisJson.has(AnnotationStoreStrings.DC_TITLE.getName())) {
-        thisBody.setTitle(thisJson.getString(AnnotationStoreStrings.DC_TITLE.getName()));
-      }
-      
-     //set subject
-      if (thisJson.has(AnnotationStoreStrings.DC_SUBJECT.getName())) {
-        thisBody.setSubject(thisJson.getString(AnnotationStoreStrings.DC_SUBJECT.getName()));
-      } 
-
-      //set value
-      if (thisJson.has(AnnotationStoreStrings.VALUE.getName())) {
-        thisBody.setValue(thisJson.getString(AnnotationStoreStrings.VALUE.getName()));
-      }
-      
-      //set source
-      if (thisJson.has(AnnotationStoreStrings.SOURCE.getName())) {
-        thisBody.setSource(thisJson.getString(AnnotationStoreStrings.SOURCE.getName()));
-      }
     }
-    annotation.setTags(tags);
-    annotation.setTextCards(textCards);
-  }
-
-  /*
-   * Creates tags/text cards for body and adds them to list.
-   */
-  private Body createBody(JSONObject jsonBody, List<Tag> tags, List<TextCard> textCards)
-      throws JSONException {
-    Body thisBody;
-    if (jsonBody.has(AnnotationStoreStrings.PURPOSE.getName()) && jsonBody.getString(
-        AnnotationStoreStrings.PURPOSE.getName()).equals(
-        AnnotationStoreStrings.TAGGING.getName())) {
-      thisBody = new Tag(UUID.randomUUID().toString());
-      tags.add((Tag) thisBody);
-    } else {
-      thisBody = new TextCard(UUID.randomUUID().toString());
-      if (jsonBody.has(AnnotationStoreStrings.PURPOSE.getName()) && 
-          jsonBody.getString(AnnotationStoreStrings.PURPOSE.getName()) != null) {
-        thisBody.setPurpose(jsonBody.getString(
-            AnnotationStoreStrings.PURPOSE.getName()));
-      }
-      textCards.add((TextCard) thisBody);
-    }
-    return thisBody;
-  }
 
   /**
    * Builds a JSONObject from an existing annotation.

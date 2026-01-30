@@ -199,32 +199,9 @@ public class EditorService implements IEditorService {
   @Override
   public TextCard addTextCard(String annotationId, String title, String subject, String value, String source, String purpose)
       throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException {
-    TextCard newTextCard = new TextCard(UUID.randomUUID().toString());
-    newTextCard.setAnnotationId(annotationId);
-    newTextCard.setCreators(Collections.singletonList(
-        assistanceService.getCurrentUser().getName()));
-    newTextCard.setCreated(Instant.now());
-    newTextCard.setModified(Instant.now());
-
-    if (title != null && !title.trim().equals("")) {
-      newTextCard.setTitle(title);
-    }
-    
-    if (subject != null && !subject.trim().equals("")) {
-      newTextCard.setSubject(subject);
-    }
-
-    if (value != null && !value.trim().equals("")) {
-      newTextCard.setValue(value);
-    }
-    
-    if (source != null && !source.trim().equals("")) {
-      newTextCard.setSource(source);
-    }
-
-    if (purpose != null) {
-      newTextCard.setPurpose(purpose);
-    }
+      List<String> creators = Collections.singletonList(assistanceService.getCurrentUser().getName());
+      TextCard newTextCard = new TextCard(UUID.randomUUID().toString(), annotationId, creators,
+            Instant.now(), Instant.now(), source, subject, title, value, purpose);
     
     newTextCard.setFullJson(annotationConverter.bodyToJson(newTextCard));
     try {
@@ -250,28 +227,10 @@ public class EditorService implements IEditorService {
   @Override
   public Tag addTag(String annotationId, String title, String subject, String value, String source)
       throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException {
-    Tag newTag = new Tag(UUID.randomUUID().toString());
+    List<String> creators = Collections.singletonList(assistanceService.getCurrentUser().getName());
+    Tag newTag = new Tag(UUID.randomUUID().toString(), annotationId, creators,
+            Instant.now(), Instant.now(), source, subject, title, value);
     logger.info("newTag: " + newTag.toString());
-    newTag.setAnnotationId(annotationId);
-    newTag.setCreators(Collections.singletonList(assistanceService.getCurrentUser().getName()));
-    newTag.setCreated(Instant.now());
-    newTag.setModified(Instant.now());
-
-    if (title != null && !title.trim().equals("")) {
-      newTag.setTitle(title);
-    }
-    
-    if (subject != null && !subject.trim().equals("")) {
-      newTag.setSubject(subject);
-    }
-
-    if (value != null && !value.trim().equals("")) {
-      newTag.setValue(value);
-    }
-    
-    if (source != null && !source.trim().equals("")) {
-      newTag.setSource(source);
-    }
     
     newTag.setFullJson(annotationConverter.bodyToJson(newTag));
     logger.info("addedInfo: " + newTag.toString());
@@ -320,43 +279,21 @@ public class EditorService implements IEditorService {
   @Override
   public TextCard updateTextCard(String textCardId, String title, String subject, String value, String source, String purpose)
       throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException {
-    TextCard updatedTextCard = searchIndexService.getTextCardById(textCardId);
-    if (!updatedTextCard.getCreators().contains(assistanceService.getCurrentUser().getName())) {
-      updatedTextCard.addCreator(assistanceService.getCurrentUser().getName());
-    }
-    updatedTextCard.setModified(Instant.now());
+    TextCard textCard = searchIndexService.getTextCardById(textCardId);
+    String creator = assistanceService.getCurrentUser().getName();
+    textCard.update(creator, Instant.now(), source, subject, title, value, purpose);
 
-    if (title != null && !title.trim().equals("")) {
-      updatedTextCard.setTitle(title);
-    }
-    
-    if (subject != null && !subject.trim().equals("")) {
-      updatedTextCard.setSubject(subject);
-    }
+    textCard.setFullJson(annotationConverter.bodyToJson(textCard));
 
-    if (value != null && !value.trim().equals("")) {
-      updatedTextCard.setValue(value);
-    }
-    
-    if (source != null && !source.trim().equals("")) {
-      updatedTextCard.setSource(source);
-    }
-
-    if (purpose != null && !purpose.trim().equals("")) {
-      updatedTextCard.setPurpose(purpose);
-    }
-    
-    updatedTextCard.setFullJson(annotationConverter.bodyToJson(updatedTextCard));
-
-    TextCard newTextCard;
+    TextCard updatedTextCard;
     try {
-      newTextCard = (TextCard) searchIndexService.updateBody(updatedTextCard);
+        updatedTextCard = (TextCard) searchIndexService.updateBody(textCard);
     } catch (JSONException e) {
-      newTextCard  = new TextCard("No TextCard");
+        updatedTextCard  = new TextCard("No TextCard");
       e.printStackTrace();
     }
 
-    return newTextCard;
+    return updatedTextCard;
   }
 
   /**
@@ -374,26 +311,9 @@ public class EditorService implements IEditorService {
   public Tag updateTag(String tagId, String title, String subject, String value, String source)
       throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException {
     Tag updatedTag = searchIndexService.getTagById(tagId);
-    if (!updatedTag.getCreators().contains(assistanceService.getCurrentUser().getName())) {
-      updatedTag.addCreator(assistanceService.getCurrentUser().getName());
-    }
-    updatedTag.setModified(Instant.now());
 
-    if (title != null && !title.trim().equals("")) {
-      updatedTag.setTitle(title);
-    }
-    
-    if (subject != null && !subject.trim().equals("")) {
-      updatedTag.setSubject(subject);
-    }
-
-    if (value != null && !value.trim().equals("")) {
-      updatedTag.setValue(value);
-    }
-    
-    if (source != null && !source.trim().equals("")) {
-      updatedTag.setSource(source);
-    }
+    String creator = assistanceService.getCurrentUser().getName();
+    updatedTag.update(creator, Instant.now(), source, subject, title, value);
     
     updatedTag.setFullJson(annotationConverter.bodyToJson(updatedTag));
 
