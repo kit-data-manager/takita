@@ -93,6 +93,27 @@ public class HttpRequestHelper {
   }
 
   /**
+   * generic function to post a SPARQL query to the database. Performs HTTP post request at the specified url.
+   *
+   * @param url url of the database/SPARQL endpoint
+   * @param query the query to be executed
+   * @return result of the query as JSONString
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
+   */
+  public HttpResponse<String> postSPARQLQuery(String url, String query)
+      throws IOException, InterruptedException {
+    HttpRequest request = HttpRequest.newBuilder()
+            .uri(URI.create(url))
+            .header(HTTP.CONTENT_TYPE, "application/sparql-query")
+            .header("Accept", "application/json")
+            .POST(HttpRequest.BodyPublishers.ofString(query))
+            .build();
+    return client.send(request,
+            HttpResponse.BodyHandlers.ofString());
+  }
+
+  /**
    * Performs a HTTP put request at the specified url.
    *
    * @param url the url path specified as a String

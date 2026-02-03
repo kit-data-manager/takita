@@ -1,6 +1,7 @@
 package edu.kit.datamanager.takita.dataaccess;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.URLEncoder;
 import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Queue;
 
 import edu.kit.datamanager.takita.MissingPropertyException;
+import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +26,16 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+
+import static edu.kit.datamanager.takita.dataaccess.utils.XmlUtilities.getNamespaceContext;
 
 /**
  * Contains logic for accessing the annotation store with RestTemplate.
@@ -500,5 +512,22 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
       }
     }
     return allAnnotations;
+  }
+
+  /**
+   * generic function to post a SPARQL query to the database.
+   *
+   * @param query the query to be executed
+   * @return result of the query as JSONString
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
+   */
+  public String postQuery(String query) throws IOException, InterruptedException {
+    HttpResponse<String> response = httpRequestHelper.postSPARQLQuery(sparqlQueryUrlPrefix, query);
+
+    if (response.statusCode() != 200) {
+        logger.info("Could not complete query: {} from SPARQL-ednpoint.", query);
+    }
+    return response.body();
   }
 }
