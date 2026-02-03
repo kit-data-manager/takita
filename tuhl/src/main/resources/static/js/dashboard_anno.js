@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 function getNumberOfAnnotations(url) {
   // counts the number of annotations in the WAP server
   // annotations in the inf container are omitted
@@ -15,7 +16,7 @@ function getNumberOfAnnotations(url) {
   $.ajax({
     type: 'POST',
     url: url,
-    data: query,
+    data: btoa(query),
     headers: {
       'Content-Type': 'application/sparql-query',
     },
@@ -54,7 +55,7 @@ function getPersonalStats(url, annotator) {
   $.ajax({
     type: 'POST',
     url: url,
-    data: query,
+    data: btoa(query),
     headers: {
       'Content-Type': 'application/sparql-query',
     },
@@ -101,7 +102,7 @@ function getAnnotationStreak(url, annotator) {
   $.ajax({
     type: 'POST',
     url: url,
-    data: query,
+    data: btoa(query),
     headers: {
       'Content-Type': 'application/sparql-query',
     },
@@ -168,7 +169,7 @@ function getTopAnnotators(url) {
   $.ajax({
     type: 'POST',
     url: url,
-    data: queryCombined,
+    data: btoa(queryCombined),
     headers: {
       'Content-Type': 'application/sparql-query',
     },
@@ -260,7 +261,7 @@ function getAnnotationStatus(url) {
   $.ajax({
     type: 'POST',
     url: url,
-    data: query1,
+    data: btoa(query1),
     headers: {
       'Content-Type': 'application/sparql-query',
     },
@@ -271,7 +272,7 @@ function getAnnotationStatus(url) {
       $.ajax({
         type: 'POST',
         url: url,
-        data: query2,
+        data: btoa(query2),
         headers: {
           'Content-Type': 'application/sparql-query',
         },
@@ -282,7 +283,7 @@ function getAnnotationStatus(url) {
           $.ajax({
             type: 'POST',
             url: url,
-            data: query3,
+            data: btoa(query3),
             headers: {
               'Content-Type': 'application/sparql-query',
             },
@@ -293,7 +294,7 @@ function getAnnotationStatus(url) {
               $.ajax({
                 type: 'POST',
                 url: url,
-                data: query4,
+                data: btoa(query4),
                 headers: {
                   'Content-Type': 'application/sparql-query',
                 },
@@ -384,7 +385,7 @@ function getAnnotationCreators(url) {
   $.ajax({
     type: 'POST',
     url: url,
-    data: query,
+    data: btoa(query),
     headers: {
       'Content-Type': 'application/sparql-query',
     },
@@ -475,7 +476,7 @@ function getAnnotationProgress(url) {
   $.ajax({
     type: 'POST',
     url: url,
-    data: query,
+    data: btoa(query),
     headers: {
       'Content-Type': 'application/sparql-query',
     },

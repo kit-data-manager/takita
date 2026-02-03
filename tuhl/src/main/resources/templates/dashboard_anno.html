@@ -149,9 +149,9 @@
 
 <script th:inline="javascript">
   // setting contextpath and storing it
-  window.CONTEXTPATH = /*[[@{/}]]*/ "";
+  window.CONTEXTPATH = /*[[@{/}]]*/ "/";
   showBars(true, false, false);
-  initializeAnnoDash("https://metaphors.scc.kit.edu/sparql", document.getElementById('pseudonymInput').value);
+  initializeAnnoDash(window.CONTEXTPATH + "annodash/data", document.getElementById('pseudonymInput').value);
 </script>
 
 </body>
