@@ -1,14 +1,12 @@
 /* eslint-disable no-undef */
 function getNumberOfAnnotations(url) {
   // counts the number of annotations in the WAP server
-  // annotations in the inf container are omitted
   let query = `
         PREFIX oa: <http://www.w3.org/ns/oa#>
         PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         SELECT (COUNT(?anno) as ?annos) {
           GRAPH ?g {
             ?anno a oa:Annotation.
-            FILTER(!STRSTARTS(str(?anno),"https://metaphors.scc.kit.edu:8090/wap/inf")).
             FILTER NOT EXISTS { ?anno <http://dem.scc.kit.edu/wapserv/ns#deleted> "true"^^xsd:boolean}
           }
         }`;
@@ -33,8 +31,7 @@ function getNumberOfAnnotations(url) {
 }
 
 function getPersonalStats(url, annotator) {
-  // counts the number of metaphor annotations of the specified annotator
-  // annotations in the inf container are omitted
+  // counts the number of annotations of the specified annotator
   let query = `
         PREFIX oa: <http://www.w3.org/ns/oa#>
         PREFIX dcterms: <http://purl.org/dc/terms/>
@@ -45,9 +42,6 @@ function getPersonalStats(url, annotator) {
           GRAPH ?g {
             ?anno a oa:Annotation.
                 ?anno dcterms:creator/foaf:name "${annotator}".
-            ?anno oa:hasBody ?b1.
-              ?b1 oa:hasPurpose oa:assessing.
-            FILTER(!STRSTARTS(str(?anno),"https://metaphors.scc.kit.edu:8090/wap/inf")).
             FILTER NOT EXISTS { ?anno <http://dem.scc.kit.edu/wapserv/ns#deleted> "true"^^xsd:boolean}
           }
         }`;
@@ -63,16 +57,6 @@ function getPersonalStats(url, annotator) {
     success: function (responseData) {
       let personalNumber = responseData.results.bindings[0].annos.value;
       $('#personalNumber').text(personalNumber);
-
-      let date1 = new Date('10/01/2023');
-      let date2 = new Date();
-
-      // calculating the number of days between now and January 10th 2023
-      let days = Math.round((date2.getTime() - date1.getTime()) / (1000 * 3600 * 24));
-      // predicting the number of annotations until end of funding period
-      let personalPrediction = Math.round((personalNumber / days) * 1461);
-
-      $('#personalPrediction').text(personalPrediction);
     },
 
     error: function (errorData) {
@@ -91,10 +75,9 @@ function getAnnotationStreak(url, annotator) {
         SELECT ?date {
           GRAPH ?g {           
                   ?anno dcterms:creator/foaf:name "${annotator}".
-              FILTER(!STRSTARTS(str(?anno),"https://metaphors.scc.kit.edu:8090/wap/inf")).
             FILTER NOT EXISTS { ?anno <http://dem.scc.kit.edu/wapserv/ns#deleted> "true"^^xsd:boolean}
               ?anno dcterms:created ?created.
-              BIND(xsd:date(concat(str(year(?created)),"-", str(month(?created)),"-", str(day(?created)))) as ?date).          
+              BIND(xsd:date(concat(str(year(?created)),"-", str(month(?created)),"-", str(day(?created)))) as ?date).
           }
         } GROUP BY ?date
         ORDER BY desc(?date) LIMIT 1`;
@@ -145,7 +128,6 @@ function getTopAnnotators(url) {
   let result = date30.toISOString().split('T')[0];
 
   // returns the count of annotations within the last 30 days for each annotator
-  // annotations in the inf container are omitted
   // TODO: include a limit of 3 in the query
   let queryCombined = `
         PREFIX foaf: <http://xmlns.com/foaf/0.1/>
@@ -160,7 +142,6 @@ function getTopAnnotators(url) {
               ?creator foaf:name ?creatorName.
                 ?anno dcterms:created ?created.
                 FILTER(xsd:date(?created) > "${result}"^^xsd:date)
-            FILTER(!STRSTARTS(str(?anno),"https://metaphors.scc.kit.edu:8090/wap/inf")).
             FILTER NOT EXISTS { ?anno <http://dem.scc.kit.edu/wapserv/ns#deleted> "true"^^xsd:boolean}
           } 
         } GROUP BY ?creatorName ORDER BY DESC(?annos)
@@ -187,178 +168,6 @@ function getTopAnnotators(url) {
   });
 }
 
-function getAnnotationStatus(url) {
-  let annotations = [];
-  let labels = [];
-  let counts = [];
-
-  // counts all metaphor annotations
-  let query1 = `
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX oa: <http://www.w3.org/ns/oa#>
-        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-        SELECT (COUNT(?anno) as ?annos) {
-          GRAPH ?g {
-            ?anno a oa:Annotation.
-              ?anno oa:hasBody ?b1.
-              ?b1 oa:hasPurpose oa:assessing.
-            FILTER(!STRSTARTS(str(?anno),"https://metaphors.scc.kit.edu:8090/wap/inf")).
-            FILTER NOT EXISTS { ?anno <http://dem.scc.kit.edu/wapserv/ns#deleted> "true"^^xsd:boolean}
-          }
-        }`;
-
-  // counts all metaphor annotations without propositions
-  let query2 = `
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX oa: <http://www.w3.org/ns/oa#>
-        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-        SELECT (COUNT(?anno) as ?annos) {
-          GRAPH ?g {
-            ?anno a oa:Annotation.
-              ?anno oa:hasBody ?b1.
-              ?b1 oa:hasPurpose oa:assessing.
-              ?b1 rdf:value ?value.
-              FILTER CONTAINS(?value, '"propositions":[]').
-            FILTER(!STRSTARTS(str(?anno),"https://metaphors.scc.kit.edu:8090/wap/inf")).
-            FILTER NOT EXISTS { ?anno <http://dem.scc.kit.edu/wapserv/ns#deleted> "true"^^xsd:boolean}
-          }
-        }`;
-
-  // counts all metaphor annotations without mappings
-  let query3 = `
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX oa: <http://www.w3.org/ns/oa#>
-        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-        SELECT (COUNT(?anno) as ?annos) {
-          GRAPH ?g {
-            ?anno a oa:Annotation.
-              ?anno oa:hasBody ?b1.
-              ?b1 oa:hasPurpose oa:assessing.
-              ?b1 rdf:value ?value.
-              FILTER CONTAINS(?value, '"mappings":[[{"source":{"value":"","step":null},"target":{"value":"","step":null}}]]').
-            FILTER(!STRSTARTS(str(?anno),"https://metaphors.scc.kit.edu:8090/wap/inf")).
-            FILTER NOT EXISTS { ?anno <http://dem.scc.kit.edu/wapserv/ns#deleted> "true"^^xsd:boolean}
-          }
-        }`;
-
-  // counts all metaphor annotations without linkings
-  let query4 = `
-        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
-        PREFIX oa: <http://www.w3.org/ns/oa#>
-        PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
-        SELECT (COUNT(?anno) as ?annos) {
-          GRAPH ?g {
-            ?anno a oa:Annotation.
-              ?anno oa:hasBody ?b1.
-              ?b1 oa:hasPurpose oa:assessing.
-              ?b1 rdf:value ?value.
-              FILTER CONTAINS(?value, '"linkings":[{"source":"","source_link":[],"target":"","target_link":[]}]').
-            FILTER(!STRSTARTS(str(?anno),"https://metaphors.scc.kit.edu:8090/wap/inf")).
-            FILTER NOT EXISTS { ?anno <http://dem.scc.kit.edu/wapserv/ns#deleted> "true"^^xsd:boolean}
-          }
-        }`;
-
-  $.ajax({
-    type: 'POST',
-    url: url,
-    data: btoa(query1),
-    headers: {
-      'Content-Type': 'application/sparql-query',
-    },
-
-    success: function (responseData) {
-      counts.push(responseData.results.bindings[0].annos.value);
-
-      $.ajax({
-        type: 'POST',
-        url: url,
-        data: btoa(query2),
-        headers: {
-          'Content-Type': 'application/sparql-query',
-        },
-
-        success: function (responseData2) {
-          counts.push(responseData2.results.bindings[0].annos.value);
-
-          $.ajax({
-            type: 'POST',
-            url: url,
-            data: btoa(query3),
-            headers: {
-              'Content-Type': 'application/sparql-query',
-            },
-
-            success: function (responseData3) {
-              counts.push(responseData3.results.bindings[0].annos.value);
-
-              $.ajax({
-                type: 'POST',
-                url: url,
-                data: btoa(query4),
-                headers: {
-                  'Content-Type': 'application/sparql-query',
-                },
-
-                success: function (responseData4) {
-                  counts.push(responseData4.results.bindings[0].annos.value);
-
-                  annotations.push(counts[0]);
-                  annotations.push(counts[0] - counts[1]);
-                  annotations.push(counts[0] - counts[2]);
-                  annotations.push(counts[0] - counts[3]);
-
-                  var options = {
-                    series: [
-                      {
-                        data: annotations,
-                      },
-                    ],
-                    chart: {
-                      type: 'bar',
-                      height: 200,
-                    },
-                    plotOptions: {
-                      bar: {
-                        borderRadius: 4,
-                        horizontal: true,
-                      },
-                    },
-                    dataLabels: {
-                      enabled: false,
-                    },
-                    xaxis: {
-                      categories: ['overall', 'incl. propositions', 'incl. mapping', 'incl. linking'],
-                    },
-                  };
-
-                  var chart = new ApexCharts(document.querySelector('#annoStatus'), options);
-                  chart.render();
-                },
-
-                error: function (errorData) {
-                  console.log(errorData);
-                },
-              });
-            },
-
-            error: function (errorData) {
-              console.log(errorData);
-            },
-          });
-        },
-
-        error: function (errorData) {
-          console.log(errorData);
-        },
-      });
-    },
-
-    error: function (errorData) {
-      console.log(errorData);
-    },
-  });
-}
-
 function getAnnotationCreators(url) {
   let series = [];
   let labels = [];
@@ -376,7 +185,6 @@ function getAnnotationCreators(url) {
               ?anno a oa:Annotation.
                 ?anno dcterms:creator ?creator.
                 ?creator foaf:name ?creatorName.
-              FILTER(!STRSTARTS(str(?anno),"https://metaphors.scc.kit.edu:8090/wap/inf")).
               FILTER NOT EXISTS { ?anno <http://dem.scc.kit.edu/wapserv/ns#deleted> "true"^^xsd:boolean}
             } 
         } GROUP BY ?creatorName ORDER BY ?annos
@@ -418,6 +226,7 @@ function getAnnotationCreators(url) {
           labels: labels,
           tooltip: {
             theme: 'dark',
+            fillSeriesColor: false,
           },
           grid: {
             strokeDashArray: 4,
@@ -437,9 +246,6 @@ function getAnnotationCreators(url) {
               vertical: 8,
             },
           },
-          tooltip: {
-            fillSeriesColor: false,
-          },
         }).render();
     },
 
@@ -452,7 +258,6 @@ function getAnnotationCreators(url) {
 function getAnnotationProgress(url) {
   let dates = [];
   let series = [];
-  let data = [];
 
   // returns all dates when annotations were created and their respective annotation count
   let query = `
@@ -468,7 +273,6 @@ function getAnnotationProgress(url) {
               BIND(xsd:date(concat(str(year(?created)),"-",
               str(month(?created)),"-",
               str(day(?created)))) as ?date).
-            FILTER(!STRSTARTS(str(?anno),"https://metaphors.scc.kit.edu:8090/wap/inf")).
             FILTER NOT EXISTS { ?anno <http://dem.scc.kit.edu/wapserv/ns#deleted> "true"^^xsd:boolean}
           } 
         } GROUP BY ?date ORDER BY ?date`;
@@ -574,7 +378,6 @@ function initializeAnnoDash(url, annotator) {
   getPersonalStats(url, annotator);
   getAnnotationStreak(url, annotator);
   getTopAnnotators(url);
-  getAnnotationStatus(url);
   getAnnotationCreators(url);
   getAnnotationProgress(url);
 }
