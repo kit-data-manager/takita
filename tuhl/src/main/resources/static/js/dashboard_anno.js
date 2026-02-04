@@ -87,7 +87,7 @@ async function getAnnotationStreak(url, annotator, $dashboard) {
     $icon.classList.add('bx-md');
 
     // if the result date is today, indicate a streak
-    if (responseData.results.bindings[0].date) {
+    if (responseData.results.bindings[0]?.date) {
       if (responseData.results.bindings[0].date.value === date.toISOString().split('T')[0]) {
         $content.textContent = " You're on a streak! Good job annotating today!";
         $icon.classList.add('bx-happy');
