@@ -10,7 +10,7 @@ async function postSPARQLQuery(query, url) {
   const response = await fetch(url, {
     method: 'POST',
     headers: { 'Content-Type': 'application/sparql-query' },
-    body: btoa(query),
+    body: query,
   });
   if (response.status == 200) {
     return await response.json();
@@ -141,6 +141,7 @@ async function getTopAnnotators(url, $dashboard) {
         `;
     const responseData = await postSPARQLQuery(queryCombined, url);
     for (let result in responseData.results.bindings) {
+      // we are only interested in the first 3 annotators, stopping afterwards
       if (result > 2) {
         break;
       }

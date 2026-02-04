@@ -62,8 +62,7 @@ public class AnnoDashController {
 	public ResponseEntity getQueryResult(@RequestBody String query, final WebRequest request, final HttpServletResponse response) {
 		String result;
 		try {
-			String decodedQuery = new String(Base64.getDecoder().decode(query));
-			result = annotationStoreAccessService.postQuery(decodedQuery);
+			result = annotationStoreAccessService.postQuery(query);
 		} catch (IOException e) {
 			return ResponseEntity.status(500).body(e.getMessage());
 		} catch (InterruptedException e) {
