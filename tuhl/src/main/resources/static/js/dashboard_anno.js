@@ -1,7 +1,29 @@
-/* eslint-disable no-undef */
-function getNumberOfAnnotations(url) {
-  // counts the number of annotations in the WAP server
-  let query = `
+/**
+ * sends SPARQL query to SPARQL endpoint
+ *
+ * @param {String} query SPARQL query to be posted
+ * @param {String} url of the SPARQL endpoint to be used
+ * @throws the response object, if the request was not sucessfull
+ * @returns {Object} result of the query
+ */
+async function postSPARQLQuery(query, url) {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/sparql-query' },
+    body: btoa(query),
+  });
+  if (response.status == 200) {
+    return await response.json();
+  } else {
+    console.error(`Executing the query failed with response code: ${response.status}`);
+    throw response;
+  }
+}
+
+async function getNumberOfAnnotations(url, $dashboard) {
+  try {
+    // counts the number of annotations in the WAP server
+    const query = `
         PREFIX oa: <http://www.w3.org/ns/oa#>
         PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         SELECT (COUNT(?anno) as ?annos) {
@@ -10,29 +32,17 @@ function getNumberOfAnnotations(url) {
             FILTER NOT EXISTS { ?anno <http://dem.scc.kit.edu/wapserv/ns#deleted> "true"^^xsd:boolean}
           }
         }`;
-
-  $.ajax({
-    type: 'POST',
-    url: url,
-    data: btoa(query),
-    headers: {
-      'Content-Type': 'application/sparql-query',
-    },
-
-    success: function (responseData) {
-      // adds the returned number to the specified div
-      $('#annoNumber').text(responseData.results.bindings[0].annos.value);
-    },
-
-    error: function (errorData) {
-      console.log(errorData);
-    },
-  });
+    const responseData = await postSPARQLQuery(query, url);
+    $dashboard.querySelector('#annoNumber').textContent = responseData.results.bindings[0].annos.value;
+  } catch (e) {
+    console.error('Could not display the total number of annotations, because: ', e);
+  }
 }
 
-function getPersonalStats(url, annotator) {
-  // counts the number of annotations of the specified annotator
-  let query = `
+async function getPersonalStats(url, annotator, $dashboard) {
+  try {
+    // counts the number of annotations of the specified annotator
+    const query = `
         PREFIX oa: <http://www.w3.org/ns/oa#>
         PREFIX dcterms: <http://purl.org/dc/terms/>
         PREFIX foaf:   <http://xmlns.com/foaf/0.1/>
@@ -45,29 +55,17 @@ function getPersonalStats(url, annotator) {
             FILTER NOT EXISTS { ?anno <http://dem.scc.kit.edu/wapserv/ns#deleted> "true"^^xsd:boolean}
           }
         }`;
-
-  $.ajax({
-    type: 'POST',
-    url: url,
-    data: btoa(query),
-    headers: {
-      'Content-Type': 'application/sparql-query',
-    },
-
-    success: function (responseData) {
-      let personalNumber = responseData.results.bindings[0].annos.value;
-      $('#personalNumber').text(personalNumber);
-    },
-
-    error: function (errorData) {
-      console.log(errorData);
-    },
-  });
+    const responseData = await postSPARQLQuery(query, url);
+    $dashboard.querySelector('#personalNumber').textContent = responseData.results.bindings[0].annos.value;
+  } catch (e) {
+    console.error('Could not display the personal stats, because: ', e);
+  }
 }
 
-function getAnnotationStreak(url, annotator) {
-  // returns the date of the newest annotation of the specified annotator
-  let query = `
+async function getAnnotationStreak(url, annotator, $dashboard) {
+  try {
+    // returns the date of the newest annotation of the specified annotator
+    const query = `
         PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
         PREFIX foaf: <http://xmlns.com/foaf/0.1/>
         PREFIX dcterms: <http://purl.org/dc/terms/>
@@ -81,55 +79,50 @@ function getAnnotationStreak(url, annotator) {
           }
         } GROUP BY ?date
         ORDER BY desc(?date) LIMIT 1`;
+    const responseData = await postSPARQLQuery(query, url);
+    const date = new Date();
+    const $icon = $dashboard.querySelector('#annoStreakIcon');
+    const $content = $dashboard.querySelector('#annoStreak');
+    $icon.classList.add('bx');
+    $icon.classList.add('bx-md');
 
-  $.ajax({
-    type: 'POST',
-    url: url,
-    data: btoa(query),
-    headers: {
-      'Content-Type': 'application/sparql-query',
-    },
-
-    success: function (responseData) {
-      let date = new Date();
-      let icon = document.getElementById('annoStreakIcon');
-      icon.classList.add('bx');
-      icon.classList.add('bx-md');
-
-      // if the result date is today, indicate a streak
+    // if the result date is today, indicate a streak
+    if (responseData.results.bindings[0].date) {
       if (responseData.results.bindings[0].date.value === date.toISOString().split('T')[0]) {
-        $('#annoStreak').text(" You're on a streak! Good job annotating today!");
-        icon.classList.add('bx-happy');
+        $content.textContent = " You're on a streak! Good job annotating today!";
+        $icon.classList.add('bx-happy');
       } else {
-        $('#annoStreak').text(" Oh no! I didn't find any annotations from you today. Why not start annotating now?");
-        icon.classList.add('bx-sad');
+        $content.textContent = " Oh no! I didn't find any annotations from you today. Why not start annotating now?";
+        $icon.classList.add('bx-sad');
       }
-    },
-
-    error: function (errorData) {
-      console.log(errorData);
-    },
-  });
+    } else {
+      $content.textContent = " Oh no! I didn't find any annotations from you today. Why not start annotating now?";
+      $icon.classList.add('bx-sad');
+    }
+  } catch (e) {
+    console.error('Could not display the annotation streak, because: ', e);
+  }
 }
 
-function getTopAnnotators(url) {
-  let date = new Date();
-  // date object for today - 30 days
-  let date30 = new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate() - 30,
-    date.getHours(),
-    date.getMinutes(),
-    date.getSeconds(),
-    date.getMilliseconds(),
-  );
+async function getTopAnnotators(url, $dashboard) {
+  try {
+    const date = new Date();
+    // date object for today - 30 days
+    const date30 = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate() - 30,
+      date.getHours(),
+      date.getMinutes(),
+      date.getSeconds(),
+      date.getMilliseconds(),
+    );
 
-  let result = date30.toISOString().split('T')[0];
+    const day = date30.toISOString().split('T')[0];
 
-  // returns the count of annotations within the last 30 days for each annotator
-  // TODO: include a limit of 3 in the query
-  let queryCombined = `
+    // returns the count of annotations within the last 30 days for each annotator
+    // TODO: include a limit of 3 in the query
+    const queryCombined = `
         PREFIX foaf: <http://xmlns.com/foaf/0.1/>
         PREFIX dcterms: <http://purl.org/dc/terms/>
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -141,40 +134,32 @@ function getTopAnnotators(url) {
               ?anno dcterms:creator ?creator.
               ?creator foaf:name ?creatorName.
                 ?anno dcterms:created ?created.
-                FILTER(xsd:date(?created) > "${result}"^^xsd:date)
+                FILTER(xsd:date(?created) > "${day}"^^xsd:date)
             FILTER NOT EXISTS { ?anno <http://dem.scc.kit.edu/wapserv/ns#deleted> "true"^^xsd:boolean}
           } 
         } GROUP BY ?creatorName ORDER BY DESC(?annos)
         `;
-
-  $.ajax({
-    type: 'POST',
-    url: url,
-    data: btoa(queryCombined),
-    headers: {
-      'Content-Type': 'application/sparql-query',
-    },
-
-    success: function (responseData) {
-      for (result in responseData.results.bindings) {
-        $('#annotator' + result).text(responseData.results.bindings[result].creatorName.value);
-        $('#annotations' + result).text(responseData.results.bindings[result].annos.value);
+    const responseData = await postSPARQLQuery(queryCombined, url);
+    for (let result in responseData.results.bindings) {
+      if (result > 2) {
+        break;
       }
-    },
-
-    error: function (errorData) {
-      console.log(errorData);
-    },
-  });
+      $dashboard.querySelector('#annotator' + result).textContent =
+        responseData.results.bindings[result].creatorName.value;
+      $dashboard.querySelector('#annotations' + result).textContent = responseData.results.bindings[result].annos.value;
+    }
+  } catch (e) {
+    console.error('Could not display the top annotators of the last 30 days, because: ', e);
+  }
 }
 
-function getAnnotationCreators(url) {
-  let series = [];
-  let labels = [];
-  let colors = [];
-
-  // returns all annotation creators and their respective annotation count
-  let query = `
+async function getAnnotationCreators(url, $dashboard) {
+  try {
+    const series = [];
+    const labels = [];
+    const colors = [];
+    // returns all annotation creators and their respective annotation count
+    const query = `
         PREFIX foaf: <http://xmlns.com/foaf/0.1/>
         PREFIX dcterms: <http://purl.org/dc/terms/>
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -189,78 +174,67 @@ function getAnnotationCreators(url) {
             } 
         } GROUP BY ?creatorName ORDER BY ?annos
       `;
-
-  $.ajax({
-    type: 'POST',
-    url: url,
-    data: btoa(query),
-    headers: {
-      'Content-Type': 'application/sparql-query',
-    },
-
-    success: function (responseData) {
-      for (result in responseData.results.bindings) {
-        series.push(parseInt(responseData.results.bindings[result].annos.value));
-        labels.push(responseData.results.bindings[result].creatorName.value);
-        colors.push(tabler.getColor('primary', 1 - 0.02 * result));
-      }
-
-      // mostly example from tabler & ApexChart
-      window.ApexCharts &&
-        new ApexCharts(document.getElementById('annoCreators'), {
-          chart: {
-            type: 'donut',
-            fontFamily: 'inherit',
-            height: 180,
-            sparkline: {
-              enabled: true,
-            },
-            animations: {
-              enabled: false,
-            },
+    const responseData = await postSPARQLQuery(query, url);
+    for (let result in responseData.results.bindings) {
+      series.push(parseInt(responseData.results.bindings[result].annos.value));
+      labels.push(responseData.results.bindings[result].creatorName.value);
+      // eslint-disable-next-line no-undef
+      colors.push(tabler.getColor('primary', 1 - 0.02 * result));
+    }
+    // mostly example from tabler & ApexChart
+    window.ApexCharts &&
+      // eslint-disable-next-line no-undef
+      new ApexCharts($dashboard.querySelector('#annoCreators'), {
+        chart: {
+          type: 'donut',
+          fontFamily: 'inherit',
+          height: 180,
+          sparkline: {
+            enabled: true,
           },
-          fill: {
-            opacity: 1,
+          animations: {
+            enabled: false,
           },
-          series: series,
-          labels: labels,
-          tooltip: {
-            theme: 'dark',
-            fillSeriesColor: false,
+        },
+        fill: {
+          opacity: 1,
+        },
+        series: series,
+        labels: labels,
+        tooltip: {
+          theme: 'dark',
+          fillSeriesColor: false,
+        },
+        grid: {
+          strokeDashArray: 4,
+        },
+        //colors: colors,
+        legend: {
+          show: false,
+          position: 'bottom',
+          offsetY: 12,
+          markers: {
+            width: 10,
+            height: 10,
+            radius: 100,
           },
-          grid: {
-            strokeDashArray: 4,
+          itemMargin: {
+            horizontal: 8,
+            vertical: 8,
           },
-          //colors: colors,
-          legend: {
-            show: false,
-            position: 'bottom',
-            offsetY: 12,
-            markers: {
-              width: 10,
-              height: 10,
-              radius: 100,
-            },
-            itemMargin: {
-              horizontal: 8,
-              vertical: 8,
-            },
-          },
-        }).render();
-    },
-
-    error: function (errorData) {
-      console.log(errorData);
-    },
-  });
+        },
+      }).render();
+  } catch (e) {
+    console.error('Could not display diagram showing the annotation creators');
+  }
 }
 
-function getAnnotationProgress(url) {
-  let dates = [];
-  let series = [];
-
-  // returns all dates when annotations were created and their respective annotation count
-  let query = `
+async function getAnnotationProgress(url, $dashboard) {
+  try {
+    const dates = [];
+    const series = [];
+    // returns all dates when annotations were created and their respective annotation count
+    const query = `
         PREFIX foaf: <http://xmlns.com/foaf/0.1/>
         PREFIX dcterms: <http://purl.org/dc/terms/>
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
@@ -276,108 +250,99 @@ function getAnnotationProgress(url) {
             FILTER NOT EXISTS { ?anno <http://dem.scc.kit.edu/wapserv/ns#deleted> "true"^^xsd:boolean}
           } 
         } GROUP BY ?date ORDER BY ?date`;
-
-  $.ajax({
-    type: 'POST',
-    url: url,
-    data: btoa(query),
-    headers: {
-      'Content-Type': 'application/sparql-query',
-    },
-
-    success: function (responseData) {
-      for (result in responseData.results.bindings) {
-        series.push(parseInt(responseData.results.bindings[result].annos.value));
-        if (result > 0) {
-          series[result] += series[result - 1];
-        }
-        dates.push(responseData.results.bindings[result].date.value);
+    const responseData = await postSPARQLQuery(query, url);
+    for (let result in responseData.results.bindings) {
+      series.push(parseInt(responseData.results.bindings[result].annos.value));
+      if (result > 0) {
+        series[result] += series[result - 1];
       }
-
-      // mostly example from tabler & ApexChart
-      window.ApexCharts &&
-        new ApexCharts(document.getElementById('annoProgress'), {
-          chart: {
-            type: 'line',
-            fontFamily: 'inherit',
-            height: 240,
-            parentHeightOffset: 0,
-            toolbar: {
-              show: false,
-            },
-            animations: {
-              enabled: false,
-            },
+      dates.push(responseData.results.bindings[result].date.value);
+    }
+    // mostly example from tabler & ApexChart
+    window.ApexCharts &&
+      // eslint-disable-next-line no-undef
+      new ApexCharts($dashboard.querySelector('#annoProgress'), {
+        chart: {
+          type: 'line',
+          fontFamily: 'inherit',
+          height: 240,
+          parentHeightOffset: 0,
+          toolbar: {
+            show: false,
           },
-          fill: {
-            opacity: 1,
+          animations: {
+            enabled: false,
           },
-          stroke: {
-            width: 2,
-            lineCap: 'round',
-            curve: 'straight',
+        },
+        fill: {
+          opacity: 1,
+        },
+        stroke: {
+          width: 2,
+          lineCap: 'round',
+          curve: 'straight',
+        },
+        series: [
+          {
+            name: 'Annotations',
+            data: series,
           },
-          series: [
-            {
-              name: 'Annotations',
-              data: series,
-            },
-          ],
+        ],
+        tooltip: {
+          theme: 'dark',
+        },
+        grid: {
+          padding: {
+            top: -20,
+            right: 0,
+            left: -4,
+            bottom: -4,
+          },
+          strokeDashArray: 4,
+        },
+        xaxis: {
+          labels: {
+            padding: 0,
+          },
           tooltip: {
-            theme: 'dark',
+            enabled: false,
           },
-          grid: {
-            padding: {
-              top: -20,
-              right: 0,
-              left: -4,
-              bottom: -4,
-            },
-            strokeDashArray: 4,
+          type: 'datetime',
+        },
+        yaxis: {
+          labels: {
+            padding: 4,
           },
-          xaxis: {
-            labels: {
-              padding: 0,
-            },
-            tooltip: {
-              enabled: false,
-            },
-            type: 'datetime',
+        },
+        labels: dates,
+        // eslint-disable-next-line no-undef
+        colors: [tabler.getColor('primary')],
+        legend: {
+          show: true,
+          position: 'bottom',
+          offsetY: 12,
+          markers: {
+            width: 10,
+            height: 10,
+            radius: 100,
           },
-          yaxis: {
-            labels: {
-              padding: 4,
-            },
+          itemMargin: {
+            horizontal: 8,
+            vertical: 8,
           },
-          labels: dates,
-          colors: [tabler.getColor('primary')],
-          legend: {
-            show: true,
-            position: 'bottom',
-            offsetY: 12,
-            markers: {
-              width: 10,
-              height: 10,
-              radius: 100,
-            },
-            itemMargin: {
-              horizontal: 8,
-              vertical: 8,
-            },
-          },
-        }).render();
-    },
-
-    error: function (errorData) {
-      console.log(errorData);
-    },
-  });
+        },
+      }).render();
+  } catch (e) {
+    $dashboard.querySelector('#annoProgress').textContent =
+      'Something went wrong while displaying the annotation progress.';
+    console.error('Could not display annotation prgoress, because: ', e);
+  }
 }
-function initializeAnnoDash(url, annotator) {
-  getNumberOfAnnotations(url);
-  getPersonalStats(url, annotator);
-  getAnnotationStreak(url, annotator);
-  getTopAnnotators(url);
-  getAnnotationCreators(url);
-  getAnnotationProgress(url);
+async function initializeAnnoDash(url, annotator, $dashboard) {
+  getNumberOfAnnotations(url, $dashboard);
+  getPersonalStats(url, annotator, $dashboard);
+  getAnnotationStreak(url, annotator, $dashboard);
+  getTopAnnotators(url, $dashboard);
+  getAnnotationCreators(url, $dashboard);
+  getAnnotationProgress(url, $dashboard);
 }

@@ -30,7 +30,7 @@
                   onclick="backToDashboard()" th:text="#{buttons.to_dashboard}"></button>
       </div>
     </div>
-    <div class="page">
+    <div class="page" id="annoDash">
         <div class="page-wrapper">
           <div class="page-body">
             <div class="container-xl">
@@ -74,22 +74,16 @@
                         </thead>
                         <tbody>
                           <tr>
-                            <td id="annotator1">Danah</td>
-                            <td id="annotations1" class="text-secondary">
-                              75
-                            </td>
+                            <td id="annotator0"></td>
+                            <td id="annotations0" class="text-secondary"></td>
                           </tr>
                           <tr>
-                            <td id="annotator2">Danah</td>
-                            <td id="annotations2" class="text-secondary">
-                              75
-                            </td>
+                            <td id="annotator1"></td>
+                            <td id="annotations1" class="text-secondary"></td>
                           </tr>
                           <tr>
-                            <td id="annotator3">Danah</td>
-                            <td id="annotations3" class="text-secondary">
-                              75
-                            </td>
+                            <td id="annotator2"></td>
+                            <td id="annotations2" class="text-secondary"></td>
                           </tr>
                         </tbody>
                       </table>
@@ -141,7 +135,7 @@
   // setting contextpath and storing it
   window.CONTEXTPATH = /*[[@{/}]]*/ "/";
   showBars(true, false, false);
-  initializeAnnoDash(window.CONTEXTPATH + "annodash/data", document.getElementById('pseudonymInput').value);
+  initializeAnnoDash(window.CONTEXTPATH + "annodash/data", document.getElementById('pseudonymInput').value, document.getElementById('annoDash'));
 </script>
 
 </body>
