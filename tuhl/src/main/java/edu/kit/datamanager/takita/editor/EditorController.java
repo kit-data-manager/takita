@@ -4,19 +4,15 @@ import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 import edu.kit.datamanager.takita.assistance.IAssistanceService;
 import edu.kit.datamanager.takita.configuration.SecurityConfiguration;
 import edu.kit.datamanager.takita.model.Annotation;
-import edu.kit.datamanager.takita.model.Color;
 import edu.kit.datamanager.takita.model.body.Tag;
 import edu.kit.datamanager.takita.model.body.TextCard;
 import edu.kit.datamanager.takita.model.page.ResourceType;
 import edu.kit.datamanager.takita.model.target.Target;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,9 +27,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.context.request.WebRequest;
 
 
 /**
@@ -163,10 +156,7 @@ public class EditorController {
         	}
         }
         thisAnno.put("svg", targets);
-        
-        if (annotations.get(i).getColor() != null) {
-            thisAnno.put("color", annotations.get(i).getColor().getColorHex());
-        }
+
         thisAnno.put("visible", true);
         thisAnno.put("created", annotations.get(i).getCreated());
         thisAnno.put("creator", annotations.get(i).getCreators());

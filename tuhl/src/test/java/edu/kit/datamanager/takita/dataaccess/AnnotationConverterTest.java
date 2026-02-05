@@ -249,7 +249,6 @@ public class AnnotationConverterTest {
 
         Annotation testAnno = annoConverter.buildAnnotationFromJson(testAnnoJson);
         assertEquals(uriString, testAnno.getTextCards().get(0).getSource());
-        assertNull(testAnno.getColor());
     }
 
     @Test

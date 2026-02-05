@@ -73,7 +73,6 @@ describe('appending child elements to a given element (the annotationCard) accor
       modified: '2024-07-09T07:03:37.000Z',
       creators: ['Tester'],
       created: '2024-07-09T07:03:37.000Z',
-      color: 'MRW_DIRECT',
       targets: [
         {
           type: 'TEXT',

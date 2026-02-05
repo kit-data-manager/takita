@@ -25,7 +25,6 @@ public interface IEditorService {
    * Adds an annotation to the search index and the database.
    *
    * @param pageId ID of the page on which the annotation is located
-   * @param color color of the annotation
    * @param selectors 1-n selectors (part of the target) of the annotation
    * @param motivation motivation of the annotation
    * @return the added annotation
@@ -34,7 +33,7 @@ public interface IEditorService {
    * @throws IOException when the http request to database was faulty
    * @throws JSONException when there is a problem with the JSON object holding the selector
    */
-  Annotation addAnnotation(String pageId, String color, JSONArray selectors, String motivation)
+  Annotation addAnnotation(String pageId, JSONArray selectors, String motivation)
       throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException;
 
   /**
@@ -50,7 +49,6 @@ public interface IEditorService {
    * Updates an annotation in the search index and the database.
    *
    * @param annotationId ID of the annotation to update
-   * @param color new color of the annotation
    * @param selectors 1-n selectors (part of the target) of the annotation
    * @param motivation new motivation of the annotation
    * @return updated annotation
@@ -59,7 +57,7 @@ public interface IEditorService {
    * @throws IOException when the http request to database was faulty
    * @throws JSONException when there is a problem with the JSON object holding the selector
    */
-  Annotation updateAnnotation(String annotationId, String color, JSONArray selectors, String motivation)
+  Annotation updateAnnotation(String annotationId, JSONArray selectors, String motivation)
       throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException;
 
   /**

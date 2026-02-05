@@ -55,7 +55,6 @@ const fullAnnotation = {
   modified: '2024-04-16T08:54:54.000Z',
   creators: ['sdfsf'],
   created: '2024-04-16T08:54:54.000Z',
-  color: 'MRW_DIRECT',
   targets: [
     {
       type: 'TEXT',
@@ -76,7 +75,6 @@ const annotationWithoutDescBody = {
   modified: '2024-04-16T08:54:54.000Z',
   creators: ['sdfsf'],
   created: '2024-04-16T08:54:54.000Z',
-  color: 'MRW_DIRECT',
   targets: [
     {
       type: 'TEXT',

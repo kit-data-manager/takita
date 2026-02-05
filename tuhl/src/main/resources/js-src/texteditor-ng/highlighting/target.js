@@ -40,7 +40,6 @@ export function drawAnnos(annoJson) {
       "id(\"w.2_1_6_6-101\")",
       "id(\"w.2_1_6_6-102\")"
     ],
-    "color": "#000012",
     "visible": true,
     "created": "2024-06-07T08:50:42Z",
     "creator": "[]",

@@ -7,19 +7,13 @@ import edu.kit.datamanager.takita.dataaccess.IAnnotationStoreAccessService;
 import edu.kit.datamanager.takita.dataaccess.IRepositoryAccessService;
 import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import edu.kit.datamanager.takita.model.Annotation;
-import edu.kit.datamanager.takita.model.Color;
 import edu.kit.datamanager.takita.model.Manuscript;
 import edu.kit.datamanager.takita.model.body.Tag;
 import edu.kit.datamanager.takita.model.body.TextCard;
 import edu.kit.datamanager.takita.model.page.Page;
-import edu.kit.datamanager.takita.model.target.SVGSelector;
-import edu.kit.datamanager.takita.model.target.Target;
-import edu.kit.datamanager.takita.model.target.TextQuoteSelector;
-import edu.kit.datamanager.takita.model.target.XPathSelector;
 
 import java.io.IOException;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -73,7 +67,6 @@ public class EditorService implements IEditorService {
    * Adds an annotation to the search index and the database.
    *
    * @param pageId ID of the page on which the annotation is located
-   * @param color color of the annotation
    * @param selectors 1-n selectors (part of the target) of the annotation
    * @param motivation motivation of the annotation
    * @return the added annotation
@@ -83,12 +76,12 @@ public class EditorService implements IEditorService {
    * @throws JSONException when there is a problem with the JSON object holding the selector
    */
   @Override
-  public Annotation addAnnotation(String pageId, String color, JSONArray selectors, String motivation)
+  public Annotation addAnnotation(String pageId, JSONArray selectors, String motivation)
       throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException {
     List<String> creators = Collections.singletonList(
               assistanceService.getCurrentUser().getName());
     Instant currentTime = Instant.now();
-    Annotation newAnnotation = new Annotation(pageId, creators, currentTime, currentTime, color, selectors, motivation);
+    Annotation newAnnotation = new Annotation(pageId, creators, currentTime, currentTime, selectors, motivation);
     try {
       logger.info("EditorService: " + newAnnotation.toString());
       newAnnotation = searchIndexService.addAnnotation(newAnnotation);
@@ -114,7 +107,6 @@ public class EditorService implements IEditorService {
    * Updates an annotation in the search index and the database.
    *
    * @param annotationId ID of the annotation to update
-   * @param color new color of the annotation
    * @param selectors new 1-n selectors (part of the target) of the annotation
    * @param motivation new motivation of the annotation
    * @return updated annotation
@@ -124,13 +116,12 @@ public class EditorService implements IEditorService {
    * @throws JSONException when there is a problem with the JSON object holding the selector
    */
   @Override
-  public Annotation updateAnnotation(String annotationId, String color,
-		  JSONArray selectors, String motivation)
+  public Annotation updateAnnotation(String annotationId, JSONArray selectors, String motivation)
       throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException {
     Annotation updatedAnnotation = searchIndexService.getAnnotationById(annotationId);
     List<String> creators = Collections.singletonList(assistanceService
         .getCurrentUser().getName());
-    updatedAnnotation.update(creators, color, selectors, motivation);
+    updatedAnnotation.update(creators, selectors, motivation);
     try {
       updatedAnnotation = searchIndexService.updateAnnotation(updatedAnnotation);
     } catch (JSONException e) {

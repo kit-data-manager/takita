@@ -1,10 +1,10 @@
 /**
  * Called by getPossibleClasses() hook. It returns the classes specific to a project (linked
  * to classes assigned in drawAnnos() function).
- * Note: to have these classes do smth, the css has to written (see editor_text.css). css for
+ * Note: to have these classes do smth, the css has to be written (see editor_text.css). css for
  * 'backgroundOne', 'backgroundTwo', 'underline', 'underlineSecond' and 'defaulthighlight'
  * is available.
- * TODO: Implement this function for your projetc
+ * TODO: Implement this function for your project
  *
  * @returns {[String]} holding all classes that can be assigned/removed
  */
@@ -15,11 +15,7 @@ export function getSpecificClasses() {
 
 /**
  * assigns css-classes to an element.
- * TODO: Customize the cases to achieve custom highlighting of different annotations,
- * based on the color. See the java code in:
- * - "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java"
- * - "takita/tuhl/src/main/resources/static/js/creation_templates_text.js"
- * and the js code in 'projectSpecific.js/getProjectSpecificClasses().
+ * TODO: Customize the cases to achieve custom highlighting of different annotations.
  * This is linked to classes to be removed in removeStyles() function.
  *
  * @param {Element} $element to be highlihgted/assigned a css class
@@ -31,9 +27,10 @@ export function getSpecificClasses() {
  * false, if none of the targets/words of the annotation is highlighted
  */
 export function assignStyle($element, annotation, index, alreadyHighlighted) {
+  const annotationType = getTypeOfAnnotation(annotation);
   // different highlights for different annotation types
-  switch (annotation.color) {
-    case '#000011':
+  switch (annotationType) {
+    case 'underline':
       // if a word is not highlighted add the "metaphor" class, if it is
       // already highlighted add "metaphorSecond"
       if (!alreadyHighlighted) {
@@ -53,21 +50,51 @@ export function assignStyle($element, annotation, index, alreadyHighlighted) {
         if ($element.nextSibling.textContent.trim() === '' && !(index === annotation.svg.length - 1)) {
           $element.classList.add('whitespaceAfter');
         }
-      } // else {
-      //    $element.classList.add('whitespaceAfter');
-      // }
+      }
+      break;
+    case 'backgroundOne':
+      $element.classList.add('backgroundOne');
+      break;
+    case 'backgroundTwo':
+      $element.classList.add('backgroundTwo');
       break;
     default:
-      // this is not ideal, but without the if clause, most of words
-      // will get the defaulthighlighting class
-      if (annotation.color === '#000011') {
-        // nothing will happen
-      } else {
-        $element.classList.add('defaulthighlight');
-        //console.log("Tag value not matching the possible cases, 'defaulthighlight'
-        // class added for:", annotation);
-      }
+      $element.classList.add('defaulthighlight');
   }
+}
+
+/**
+ * gets the type of an annotation based on custom logic.
+ * Implement your logic here. You can access the complete annotation
+ * and decide about the type based on that. For example you can use
+ * the value of a body or the presence of a body with a specific purpose.
+ * The type you assign here, will be used in assignStyle() above to assign
+ * CSS classes. In the default configuration the type is the same as the
+ * CSS class, but it doesn't have to be.
+ *
+ * @param {Object} annotation complete annotation
+ * @returns {String} type of an annotation
+ */
+export function getTypeOfAnnotation(annotation) {
+  let type = 'defaulthighlight';
+  if (annotation.tags.length > 0) {
+    type = 'backgroundOne';
+  }
+  if (annotation.textcards) {
+    annotation.textcards.forEach((textcard) => {
+      if (textcard.purpose) {
+        switch (textcard.purpose) {
+          case 'commenting':
+            type = 'underline';
+            break;
+          case 'classifying':
+            type = 'backgroundTwo';
+            break;
+        }
+      }
+    });
+  }
+  return type;
 }
 
 /**
@@ -78,40 +105,55 @@ export function assignStyle($element, annotation, index, alreadyHighlighted) {
  * annotation targets the same word
  * false, if none of the targets/words of the annotation is highlighted
  */
-export function checkIsATargetAlreadyHighlighted(targets) {
-  const alreadyHighlighted = targets.some((target) => {
-    let targetXmlId = target.split('"')[1];
-    if (document.getElementById(targetXmlId).classList.contains('underline')) {
-      return true;
-    } else {
-      return false;
+export function checkIsATargetAlreadyHighlighted(selectors) {
+  const alreadyHighlighted = selectors.some((selector) => {
+    switch (selector.type) {
+      case 'XPathSelector': {
+        const values = selector.value instanceof Array ? selector.value : [selector.value];
+        return values.some((value) => {
+          const targetXmlId = value.split('"')[1];
+          if (document.getElementById(targetXmlId).classList.contains('underline')) {
+            return true;
+          } else {
+            return false;
+          }
+        });
+      }
+      case 'TextQuoteSelector':
+        console.warn('Implement textQuoteSelector highlighting pls');
+        break;
     }
   });
   return alreadyHighlighted;
 }
 
 /**
- * crc1475 specific highlighting function. It is used as the highlightAnnotationFunction() in
+ * custom highlighting function. It is used as the highlightAnnotationFunction() in
  * highlight/target.js
  *
  * @param {Object} annotation to have its target highlighted
  */
-export function crc1475Highlighting(annotation) {
+export function customHighlighting(annotation) {
   // check if any target has the class "underline" and
   // therefore, is already highlighted
   const alreadyHighlighted = checkIsATargetAlreadyHighlighted(annotation.svg);
-
   // adding classes to highlight annotations
-  annotation.svg.forEach((target, index) => {
-    const targetXmlId = target.split('"')[1];
-    const targetElement = document.getElementById(targetXmlId);
-    targetElement.classList.add('selected');
-    // if color is available assign css class
-    if (annotation.color) {
-      assignStyle(targetElement, annotation, index, alreadyHighlighted);
-    } else {
-      // if no color is available, assign default
-      targetElement.classList.add('defaulthighlight');
+  annotation.svg.forEach((selector, index) => {
+    switch (selector.type) {
+      case 'XPathSelector': {
+        const values = selector.value instanceof Array ? selector.value : [selector.value];
+        values.forEach((value) => {
+          const targetXmlId = value.split('"')[1];
+          const targetElement = document.getElementById(targetXmlId);
+          targetElement.classList.add('selected');
+          assignStyle(targetElement, annotation, index, alreadyHighlighted);
+        });
+
+        break;
+      }
+      case 'TextQuoteSelector':
+        console.warn('Implement textQuoteSelector highlighting pls');
+        break;
     }
   });
 }

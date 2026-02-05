@@ -3,7 +3,6 @@ package edu.kit.datamanager.takita.dataaccess;
 import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import edu.kit.datamanager.takita.model.Annotation;
-import edu.kit.datamanager.takita.model.Color;
 import edu.kit.datamanager.takita.model.Manuscript;
 import edu.kit.datamanager.takita.model.body.Tag;
 import edu.kit.datamanager.takita.model.body.TextCard;
@@ -33,7 +32,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -321,7 +319,6 @@ class AccessServiceTest {
     annotation1.setCreated(Instant.parse("2018-02-06T11:06:01Z"));
     annotation1.setCreators(creatorAlgorithm);
     annotation1.setModified(Instant.parse("2019-05-08T10:59:38Z"));
-    annotation1.setColor(Color.CUSTOM_REGION);
     annotation1.setIsAlgorithmAnnotation(true);
     annotation1.setPageId(page1.getId());
     List<Target> targets1 = new ArrayList<>();
@@ -338,7 +335,6 @@ class AccessServiceTest {
     annotation2.setCreated(Instant.parse("2018-02-09T18:31:07Z"));
     annotation2.setCreators(creatorAlgorithm);
     annotation2.setModified(Instant.parse("2019-05-08T10:59:34Z"));
-    annotation2.setColor(Color.NOISE_REGION);
     annotation2.setIsAlgorithmAnnotation(true);
     annotation2.setPageId(page2.getId());
     List<Target> targets2 = new ArrayList<>();
@@ -356,7 +352,6 @@ class AccessServiceTest {
     annotation3.setCreators(creatorList);
     annotation3.setModified(Instant.parse("2019-07-04T09:25:56Z"));
     annotation3.setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/471a5c9c-25a5-4485-a213-7b51221dba9b");
-    annotation3.setColor(Color.DEFAULT);
     annotation3.setIsAlgorithmAnnotation(false);
     annotation3.setPageId(page3.getId());
     List<Target> targets3 = new ArrayList<>();
@@ -374,7 +369,6 @@ class AccessServiceTest {
     annotation4.setCreators(creatorList);
     annotation4.setModified(Instant.parse("2019-07-04T09:14:59Z"));
     annotation4.setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/c6c83ff9-3b68-4965-9e7a-359abad3eb9d");
-    annotation4.setColor(Color.TEXT_REGION);
     annotation4.setIsAlgorithmAnnotation(false);
     annotation4.setPageId(page3.getId());
     List<Target> targets4 = new ArrayList<>();
@@ -607,7 +601,6 @@ class AccessServiceTest {
     annotation1.setCreated(Instant.parse("2018-02-06T11:06:01Z"));
     annotation1.setCreators(creatorAlgorithm);
     annotation1.setModified(Instant.parse("2019-05-08T10:59:38Z"));
-    annotation1.setColor(Color.CUSTOM_REGION);
     annotation1.setIsAlgorithmAnnotation(true);
     annotation1.setPageId("5172f6cb-78c6-403d-b6eb-64d7738c76aa");
     List<Target> targets1 = new ArrayList<>();
@@ -624,7 +617,6 @@ class AccessServiceTest {
     annotation2.setCreated(Instant.parse("2018-02-09T18:31:07Z"));
     annotation2.setCreators(creatorAlgorithm);
     annotation2.setModified(Instant.parse("2019-03-11T14:09:50Z"));
-    annotation2.setColor(Color.NOISE_REGION);
     annotation2.setIsAlgorithmAnnotation(true);
     annotation2.setPageId("3f3bf25b-e0b9-48a9-b344-20630f733f8b");
     List<Target> targets2 = new ArrayList<>();
@@ -642,7 +634,6 @@ class AccessServiceTest {
     annotation3.setCreators(creatorList);
     annotation3.setModified(Instant.parse("2019-07-04T09:25:56Z"));
     annotation3.setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/471a5c9c-25a5-4485-a213-7b51221dba9b");
-    annotation3.setColor(Color.DEFAULT);
     annotation3.setIsAlgorithmAnnotation(false);
     annotation3.setPageId("f68e307b-c41b-412a-a2e2-60418fbbef27");
     List<Target> targets3 = new ArrayList<>();
@@ -660,7 +651,6 @@ class AccessServiceTest {
     annotation4.setCreators(creatorList);
     annotation4.setModified(Instant.parse("2019-07-04T09:14:59Z"));
     annotation4.setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/c6c83ff9-3b68-4965-9e7a-359abad3eb9d");
-    annotation4.setColor(Color.TEXT_REGION);
     annotation4.setIsAlgorithmAnnotation(false);
     annotation4.setPageId("f68e307b-c41b-412a-a2e2-60418fbbef27");
     List<Target> targets4 = new ArrayList<>();
@@ -833,7 +823,6 @@ class AccessServiceTest {
             assertEquals(expectedAnnotation.getId(), annotation.getId());
             assertEquals(expectedAnnotation.getCanonical(), annotation.getCanonical());
             assertEquals(expectedAnnotation.getVia(), annotation.getVia());
-            assertEquals(expectedAnnotation.getColor(), annotation.getColor());
             assertEquals(expectedAnnotation.getCreated(), annotation.getCreated());
             assertEquals(expectedAnnotation.getCreators(), annotation.getCreators());
             assertEquals(expectedAnnotation.getMotivation(), annotation.getMotivation());
@@ -878,7 +867,6 @@ class AccessServiceTest {
 
   private void assertEqualsAnnotations(Annotation expectedAnnotation, Annotation actualAnnotation) {
     assertEquals(expectedAnnotation.getId(), actualAnnotation.getId());
-    assertEquals(expectedAnnotation.getColor(), actualAnnotation.getColor());
     assertEquals(expectedAnnotation.getCanonical(), actualAnnotation.getCanonical());
     assertEquals(expectedAnnotation.getCreated(), actualAnnotation.getCreated());
     assertEquals(expectedAnnotation.getModified(), actualAnnotation.getModified());
@@ -944,7 +932,6 @@ class AccessServiceTest {
     annotations.get(0).setCreators(creatorList);
     annotations.get(0).setModified(Instant.parse("2019-07-04T07:05:57Z"));
     annotations.get(0).setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/c3aeb1ef-af1e-41fe-823c-76ea3761ee89");
-    annotations.get(0).setColor(Color.PAGE_REGION);
     annotations.get(0).setIsAlgorithmAnnotation(false);
     annotations.get(0).setPageId("758735a2-8e0d-4ac7-815e-bba2060217c3");
     List<Target> targets1 = new ArrayList<>();
@@ -992,7 +979,6 @@ class AccessServiceTest {
     annotations.get(1).setCreated(Instant.parse("2019-07-04T06:59:33.33Z"));
     annotations.get(1).setCreators(creatorList);
     annotations.get(1).setModified(Instant.parse("2019-07-04T07:05:57Z"));
-    annotations.get(1).setColor(Color.PAGE_REGION);
     annotations.get(1).setIsAlgorithmAnnotation(false);
     annotations.get(1).setPageId("758735a2-8e0d-4ac7-815e-bba2060217c3");
     List<Target> targets2 = new ArrayList<>();

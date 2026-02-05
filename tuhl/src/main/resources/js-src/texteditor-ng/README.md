@@ -121,14 +121,6 @@ _Note: the purpose of this module is to provide functionality which is useful to
 
 _preliminary remarks:_
 
-* colors get assigned in the `templates` and are used for highlighting the targets of an annotation. You have to keep the various representations the same. A couple of changes are necessary
-  * js
-    * `annotationCreation/templates/getFormObjectCreateAnnotation()`: initial assignment of colors (hex value)
-    * `highlight`: can use the color to assign a css class (hex value)
-    * `utils/getColorNameFromEnumEntry`: provides the name of a color (string) during the update of the target of an annotation in `/data/annotations/updateTargetData`
-  * java
-    * `takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java` holds all the various representations
-
 mandatory stuff is usually a "setting/variable/function" to be changed. optional stuff is a hook
 
 **mandatory implementations**
@@ -136,15 +128,12 @@ mandatory stuff is usually a "setting/variable/function" to be changed. optional
 * `annotationCreation`: templates and conversion of template form values into data to be sent to tAkita, which then creates the annotation
   * `templates`: necessary for the creation of
     * a new annotation: `getFormObjectCreateAnnotation()` is passed to the jsonForm library, which renders the according form
-      * you should add colors to the templates as they are used for highlighting
     * a new body: `getFormObjectCreateBody()` is passed to the jsonForm library, which renders the according form
     * `annotationTemplate` and `bodyTemplate` serve as enums to provide values for the dropdowns to select the according template
   * `utils`: functionality to convert the form values into data to be sent to tAkita, which then creates the annotation
     * `makeAnnotationData` and `makeBodiesData`/`makeBodyData` (inlcudes the assignment of purposes to the bodies via `assignPurpose`)
 * `highlight`: rendering of annotated words
   * `getSpecificClasses`: add the css-classes for highlighting the target of an annotation used by a project here. The array can be empty as well, but it needs to be defined for `index/possibleHighlightClasses` to work.
-* `utils`: utils used for the assignment of hex and strings based for the colors used
-  * `getColorHexFromEnumEntry`/`getColorNameFromEnumEntry`: returns the hex or name of a color. Colors are assigned in the `templates`.
 
 **optional implementations**
 
@@ -154,7 +143,7 @@ mandatory stuff is usually a "setting/variable/function" to be changed. optional
   * `editableFieldsArray`: fields (bodies with purposes listed here) that can be edited in the horizontal view
   * `changeLabel`: swaps out the purpose for a enduser-readable label for the horizontal view
 * `highlight`: rendering of annotated words
-  * you can add a function for the assignment of css-classes here as well; this should then be added to the export in `projectspecific/index`. Check the `defaultHighlighting`-function in `texteditor/highlighting/target.js` as well. You can use the "color" of an annotation stored in the annotation-object as well (`annotation.color`)
+  * you can add a function for the assignment of css-classes here as well; this should then be added to the export in `projectspecific/index`. Check the `defaultHighlighting`-function in `texteditor/highlighting/target.js` as well.
 * `hooks`: you can add functions, which will be called at other points in the code, to the hooks object. By adding a function to the array in `hooks.preMakeHTML`, the function will then be executed at `texteditor-ng/textloader/textloader.js (prepareTEIDocument())`. Check the file for documentation on possible hooks and behaviours. You can either define your functions in this file or spread them into other files and import them into `hooks.js`.
 * `index`: main entry point, where the exports happen. Usually you don't need to touch the "mandatory" `export`-statements.
   * `targetUpdateCallback`: function used when a user wants to update a target. `updateTargetData` is the standard function to update a target, it will only update the target; this will be sufficient in most cases.

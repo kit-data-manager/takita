@@ -114,7 +114,7 @@ export async function updateBody(url, annoBodyData) {
  * @param {String} url
  * a valid url looks like `window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + '/bodies/' + bodyId`
  * instead of "/bodies/", "/tags/" is also possible, since takita differentiates between these two kinds of bodies.
- * @param {Object} modifiedAnnotation conatins the color, motication and the new target (xPath)
+ * @param {Object} modifiedAnnotation conatins the motivation and the new target (xPath)
  * @returns {Response} containing takita's response
  */
 export async function updateTarget(url, modifiedAnnotation) {

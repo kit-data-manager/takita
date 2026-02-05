@@ -100,13 +100,12 @@ public class RestController {
         try {
             JSONObject json = new JSONObject(jsonString);
             String pageId = json.getString("pageId");
-            String color = json.getString("color");
             JSONArray selectors = null;
             if (json.has("selectors")) {
             	selectors = (JSONArray) json.get("selectors");
             }
             String motivation = json.getString("motivation");
-            Annotation annotation = editorService.addAnnotation(pageId, color, selectors, motivation);
+            Annotation annotation = editorService.addAnnotation(pageId, selectors, motivation);
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
             mapper.registerModule(new JavaTimeModule());
@@ -198,11 +197,9 @@ public class RestController {
         String annotationJson;
         try {
             JSONObject json = new JSONObject(jsonString);
-            String color = json.getString("color");
             JSONArray selectors = (JSONArray) json.get("selectors");
             String motivation = json.getString("motivation");
-            Annotation annotation = editorService
-              .updateAnnotation(decodeURL(id), color, selectors, motivation);
+            Annotation annotation = editorService.updateAnnotation(decodeURL(id), selectors, motivation);
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
             mapper.registerModule(new JavaTimeModule());

@@ -32,10 +32,6 @@ export function fillMetaDataEditorTable(annoJson) {
         type: 'string',
         title: 'ID',
       },
-      Color: {
-        type: 'string',
-        title: 'Color',
-      },
     },
   };
   // storing the annotationCard element as its used multiple times in the following code
@@ -72,7 +68,6 @@ export function fillMetaDataEditorTable(annoJson) {
       },
     },
     //{title: "", field: "icon", formatter:"html", width:60, hozAlign: "center"},
-    { title: '', field: 'color', formatter: 'color', width: 60 },
   ];
 
   let inputs = {

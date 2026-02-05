@@ -3,6 +3,7 @@ import { toggleVisibility } from '../../common/utils';
 import { selectAnnotation } from '../../common/annotationCard';
 import { dragCircleMove, dragCircleStart, dragCircleEnd } from '../targetBuilding/utils';
 import { disablePolygonModification, disableRectangleModification } from '../targetBuilding/targetModification';
+import { assignColor } from '../projectspecific/highlight';
 // main drawing function for rectangles
 // assigns moving and modifying functionalities on mouse click
 export function drawRectangle(x, y, width, height, color, id, idEncoded, hooks = {}) {
@@ -163,6 +164,8 @@ export function drawAnnos(annoJson, hooks = {}) {
       : console.warn('annotation is page anno: ', annoJson[anno].id);
   }
 
+  // assign the color based on projectspecific needs
+  annoJson.map((anno) => assignColor(anno));
   // sort all annotations resp. the corresponding shape area (descending)
   // annotations without shape are at the end of the array
   let sortedAnnoJson = annoJson.sort(function (a, b) {

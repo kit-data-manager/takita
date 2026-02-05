@@ -17,7 +17,7 @@ import { defaultHighlighting } from '../highlighting/target';
 // END of imports form outside the module
 
 // imports from inside the module. Change these accordingly
-import { getSpecificClasses } from './highlight';
+import { getSpecificClasses, customHighlighting } from './highlight';
 
 // EXPORTS
 // mandatory exports (optional exports can be found further down)
@@ -25,7 +25,6 @@ export { targetUpdateCallback, POSSIBLE_DIVISION_TYPES, highlightAnnotationFunct
 export { hooks } from './hooks';
 export { headerFieldsArray, omitFieldsArray, editableFieldsArray } from './annotationCard';
 export { Variant, determineVariant } from './textloader';
-export { getColorHexFromEnumEntry, getColorNameFromEnumEntry } from './utils';
 
 // TODO: CUSTOMISE to be the correct function for your project case. The function is called
 // when the buttons appended to the annotationCard are used to update the target of an annotation
@@ -48,12 +47,12 @@ const POSSIBLE_DIVISION_TYPES = {
  * TODO: CUSTOMISE to be the correct function for your project case
  * - defaultHighlighting is the standard function to highlight all targets of an annotation. Each
  *   a target, will get the 'defaultHighlight' class assigned, which just adds a background color
- * - crc1475Highlighting is the function used by CRC1475 to highlight all targets of an annotation.
+ * - customHighlighting is the function customized by you to highlight all targets of an annotation.
  *   It assigns classes responsible for background colors and underlinings for the different
  *   annotation types.
  * The function is called at "drawAnnos" in texteditor-ng/highlight/target.js.
  */
-const highlightAnnotationFunction = defaultHighlighting;
+const highlightAnnotationFunction = customHighlighting;
 
 // add the "defaulthighlighting" class to the project specific classes. The project specific classes
 // get "fetched" by calling the getProjectSpecificClasses function, that can be customized

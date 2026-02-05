@@ -185,12 +185,6 @@ export function getFormObjectCreateBody(encodedAnnoId) {
 // assigns data model needed for MetadataEditor to specific template
 // the actual thing where templating is done
 // TODO: CUSTOMISE available annotations and their structure/content (dataModel)
-//      (when adjusting the "color.default.value", make sure to add those to the enum in
-//      - "src/main/java/edu/kit/scc/dem/tuhl/model/Color.java" and the code in
-//      - "src/main/resources/js-src/projectspecific/highlight.js" at assignStyle() and
-//      - "src/main/resources/js-src/projectspecific/utils.js" at getColorNameFromEnumEntry(colorEnumEntry)/
-//         getColorHexFromEnumEntry(colorEnumEntry)
-//      and that the color hexcodes match)
 // and how they are displayed in the modal (uiForm)
 /**
  * gets data model needed for MetadataEditor/JSONForm of specific template
@@ -220,12 +214,6 @@ function getFormModel(chosenTemplate) {
             type: 'string',
             title: 'tag input',
           },
-          color: {
-            type: 'string',
-            title: 'color',
-            default: '#000011',
-            readOnly: true,
-          },
         },
       };
       uiForm = {
@@ -239,11 +227,6 @@ function getFormModel(chosenTemplate) {
           },
           {
             key: 'tag',
-          },
-          {
-            key: 'color',
-            readOnly: true,
-            htmlClass: 'd-none',
           },
         ],
       };

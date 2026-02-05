@@ -91,7 +91,7 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
       mouseDownX = Math.round(relativeCoordinates[0]);
       mouseDownY = Math.round(relativeCoordinates[1]);
 
-      window.newRectangle = drawRectangle(scaledX, scaledY, 0, 0, '#ff8d00', null, null, hooks);
+      window.newRectangle = drawRectangle(scaledX, scaledY, 0, 0, '#55ff00', null, null, hooks);
     }
 
     if (window.movingImage || coordinates.ctrlKey) {
@@ -118,7 +118,7 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
 
       if (!window.firstPolygonPoint) {
         window.firstPolygonPoint = { x: scaledX, y: scaledY };
-        window.polygonPath = drawPolygon('M' + scaledX + ' ' + scaledY, '#ff8d00', null, hooks);
+        window.polygonPath = drawPolygon('M' + scaledX + ' ' + scaledY, '#55ff00', null, hooks);
       }
 
       let dx = Math.abs(scaledX - window.firstPolygonPoint.x);
@@ -130,7 +130,7 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
             window.polygonPath.attrs.path
               .toString()
               .substring(0, window.polygonPath.attrs.path.toString().lastIndexOf('L')) + 'Z',
-          fill: '#ff8d00',
+          fill: '#55ff00',
           'fill-opacity': 0.01,
         });
         //let undoInformation = [{"id" : invisiblePolygonPoint.id}];

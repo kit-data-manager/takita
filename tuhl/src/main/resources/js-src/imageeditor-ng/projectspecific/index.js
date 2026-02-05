@@ -12,7 +12,6 @@
 // mandatory exports (optional exports can be found further down)
 export { hooks } from './hooks';
 export { headerFieldsArray, omitFieldsArray, editableFieldsArray } from './annotationCard';
-export { getColorHexFromEnumEntry, getColorNameFromEnumEntry } from './utils';
 
 // optional exports
 // add your things here

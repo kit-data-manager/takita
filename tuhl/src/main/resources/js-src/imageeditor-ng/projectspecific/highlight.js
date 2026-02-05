@@ -1,102 +1,46 @@
 /**
- * assigns css-classes to an element.
- * TODO: Customize the cases to achieve custom highlighting of different annotations,
- * based on the color. See the java code in:
- * - "takita/tuhl/src/main/java/edu/kit/scc/dem/tuhl/model/Color.java"
- * - "takita/tuhl/src/main/resources/static/js/creation_templates_text.js"
- * and the js code in 'projectSpecific.js/getProjectSpecificClasses().
- * This is linked to classes to be removed in removeStyles() function.
+ * assign a color to an annotation based on custom logic.
+ * Implement your logic here. You can access the complete annotation
+ * and decide about the color based on that. For example you can use
+ * the value of a body or the presence of a body with a specific purpose.
  *
- * @param {Element} $element to be highlihgted/assigned a css class
- * @param {Object} annotation the annotation
- * @param {Integer} index of the target in the targets(svg) array of the annotation. Used to
- * determine if the targetted $element is the last entry in the array
- * @param {Boolean} alreadyHighlighted true, if any target/word is already highlighted as another
- * annotation targets the same word
- * false, if none of the targets/words of the annotation is highlighted
+ * @param {Object} annotation complete annotation
  */
-export function assignStyle($element, annotation, index, alreadyHighlighted) {
-  // different highlights for different annotation types
-  switch (annotation.color) {
-    case '#000011':
-      // if a word is not highlighted add the "metaphor" class, if it is
-      // already highlighted add "metaphorSecond"
-      if (!alreadyHighlighted) {
-        $element.classList.add('underline');
-      } else {
-        $element.classList.add('underlineSecond');
-      }
+export function assignColor(annotation) {
+  // default color
+  annotation.color = '#ff8d00';
 
-      // if a word is followed only by whitespace add the "whitespaceAfter" class
-      // unless its the last word of the target.
-      // TODO: this doesn't work for overlapping annotations. The "whitespaceAfter" class will
-      // be assigned even if the word is the last target for one annotation as the word is part of multiple
-      // annotations and it might be the last target of one annotation but not the other one
-      // This is needed to create overlapping boxshadows.
-      // check if nextSibling is null first
-      if ($element.nextSibling !== null) {
-        if ($element.nextSibling.textContent.trim() === '' && !(index === annotation.svg.length - 1)) {
-          $element.classList.add('whitespaceAfter');
-        }
-      } // else {
-      //    $element.classList.add('whitespaceAfter');
-      // }
-      break;
-    default:
-      // this is not ideal, but without the if clause, most of words
-      // will get the defaulthighlighting class
-      if (annotation.color === '#000011') {
-        // nothing will happen
-      } else {
-        $element.classList.add('defaulthighlight');
-        //console.log("Tag value not matching the possible cases, 'defaulthighlight'
-        // class added for:", annotation);
-      }
+  if (annotation.tags.length > 0) {
+    annotation.color = '#00c7fe';
   }
-}
-
-/**
- * check if any target of an annotation is already highlighted
- *
- * @param {[String]}} targets holds all targets of an annotation
- * @returns {Boolean} true, if any target/word is already highlighted as another
- * annotation targets the same word
- * false, if none of the targets/words of the annotation is highlighted
- */
-export function checkIsATargetAlreadyHighlighted(targets) {
-  const alreadyHighlighted = targets.some((target) => {
-    let targetXmlId = target.split('"')[1];
-    if (document.getElementById(targetXmlId).classList.contains('underline')) {
-      return true;
-    } else {
-      return false;
-    }
-  });
-  return alreadyHighlighted;
-}
-
-/**
- * crc1475 specific highlighting function. It is used as the highlightAnnotationFunction() in
- * highlight/target.js
- *
- * @param {Object} annotation to have its target highlighted
- */
-export function crc1475Highlighting(annotation) {
-  // check if any target has the class "underline" and
-  // therefore, is already highlighted
-  const alreadyHighlighted = checkIsATargetAlreadyHighlighted(annotation.svg);
-
-  // adding classes to highlight annotations
-  annotation.svg.forEach((target, index) => {
-    const targetXmlId = target.split('"')[1];
-    const targetElement = document.getElementById(targetXmlId);
-    targetElement.classList.add('selected');
-    // if color is available assign css class
-    if (annotation.color) {
-      assignStyle(targetElement, annotation, index, alreadyHighlighted);
-    } else {
-      // if no color is available, assign default
-      targetElement.classList.add('defaulthighlight');
-    }
-  });
+  // annotations in the annoJson have textcards spelled with a lower case "c"
+  if (annotation.textcards) {
+    annotation.textcards.forEach((textcard) => {
+      if (textcard.purpose) {
+        switch (textcard.purpose) {
+          case 'commenting':
+            annotation.color = '#bdb51e';
+            break;
+          case 'classifying':
+            annotation.color = '#b20000';
+            break;
+        }
+      }
+    });
+  }
+  // freshly created annotations have textcards spelled with an upper case "C"
+  if (annotation.textCards) {
+    annotation.textCards.forEach((textcard) => {
+      if (textcard.purpose) {
+        switch (textcard.purpose) {
+          case 'commenting':
+            annotation.color = '#bdb51e';
+            break;
+          case 'classifying':
+            annotation.color = '#b20000';
+            break;
+        }
+      }
+    });
+  }
 }

@@ -5,7 +5,6 @@ import edu.kit.datamanager.takita.assistance.IAssistanceService;
 import edu.kit.datamanager.takita.configuration.SecurityConfiguration;
 import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import edu.kit.datamanager.takita.model.Annotation;
-import edu.kit.datamanager.takita.model.Color;
 import edu.kit.datamanager.takita.model.body.Tag;
 import edu.kit.datamanager.takita.model.body.TextCard;
 import edu.kit.datamanager.takita.model.target.SVGSelector;
@@ -74,7 +73,6 @@ class RestControllerTest {
     //TODO: think about moving this to the specific methods
     mockAnno = new Annotation();
     mockAnno.setId(annoId);
-    mockAnno.setColor(Color.TEXT_REGION);
     List<Target> mockTargets = new ArrayList<>();
     Target mockTarget = new Target();
     SVGSelector mockSvgSelector = new SVGSelector("");
@@ -140,10 +138,10 @@ class RestControllerTest {
   void testCreateAnnotation() throws Exception {
 
 	JSONArray targets = new JSONArray();
-    Mockito.when(mockedEditorService.addAnnotation(pageId, "TEXT_REGION", targets, "editing")).thenReturn(mockAnno);
-    Mockito.when(mockedEditorService.addAnnotation(pageId + "nf", "TEXT_REGION", targets, "editing")).thenThrow(NoSuchIndexEntryException.class);
-    Mockito.when(mockedEditorService.addAnnotation(pageId + "io", "TEXT_REGION", targets, "editing")).thenThrow(IOException.class);
-    Mockito.when(mockedEditorService.addAnnotation(pageId + "int", "TEXT_REGION", targets, "editing")).thenThrow(InterruptedException.class);
+    Mockito.when(mockedEditorService.addAnnotation(pageId, targets, "editing")).thenReturn(mockAnno);
+    Mockito.when(mockedEditorService.addAnnotation(pageId + "nf", targets, "editing")).thenThrow(NoSuchIndexEntryException.class);
+    Mockito.when(mockedEditorService.addAnnotation(pageId + "io", targets, "editing")).thenThrow(IOException.class);
+    Mockito.when(mockedEditorService.addAnnotation(pageId + "int", targets, "editing")).thenThrow(InterruptedException.class);
 
     ObjectMapper mapper = new ObjectMapper(); 
     mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
@@ -242,7 +240,6 @@ class RestControllerTest {
   void testUpdateAnnotationById() throws Exception {
     Annotation mockAnnoUpdated = new Annotation();
     mockAnnoUpdated.setId(annoId);
-    mockAnnoUpdated.setColor(Color.TEXT_REGION);
     List<Target> mockTargets = new ArrayList<>();
     Target mockTarget = new Target();
     SVGSelector mockSvgSelector = new SVGSelector("");
@@ -259,12 +256,12 @@ class RestControllerTest {
     String mockAnnoUpdatedSerialized = mapper.writeValueAsString(mockAnnoUpdated);
 
     JSONArray targets = new JSONArray();
-    Mockito.when(mockedEditorService.updateAnnotation(annoId, "TEXT_REGION", targets, "bookmarking")).thenReturn(mockAnnoUpdated);
-    Mockito.when(mockedEditorService.updateAnnotation(Mockito.eq(annoId + "nf"), Mockito.eq("TEXT_REGION"), Mockito.any(), Mockito.eq("bookmarking")))
+    Mockito.when(mockedEditorService.updateAnnotation(annoId, targets, "bookmarking")).thenReturn(mockAnnoUpdated);
+    Mockito.when(mockedEditorService.updateAnnotation(Mockito.eq(annoId + "nf"), Mockito.any(), Mockito.eq("bookmarking")))
     	.thenThrow(NoSuchIndexEntryException.class);
-    Mockito.when(mockedEditorService.updateAnnotation(Mockito.eq(annoId + "io"), Mockito.eq("TEXT_REGION"), Mockito.any(), Mockito.eq("bookmarking")))
+    Mockito.when(mockedEditorService.updateAnnotation(Mockito.eq(annoId + "io"), Mockito.any(), Mockito.eq("bookmarking")))
     	.thenThrow(IOException.class);
-    Mockito.when(mockedEditorService.updateAnnotation(Mockito.eq(annoId + "int"), Mockito.eq("TEXT_REGION"), Mockito.any(), Mockito.eq("bookmarking")))
+    Mockito.when(mockedEditorService.updateAnnotation(Mockito.eq(annoId + "int"), Mockito.any(), Mockito.eq("bookmarking")))
     	.thenThrow(InterruptedException.class);
     
     String notfound = "{\"annoId\":\"" + annoId + "nf\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"bookmarking\"}";

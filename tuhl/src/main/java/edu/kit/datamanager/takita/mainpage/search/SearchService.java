@@ -95,7 +95,6 @@ public class SearchService implements ISearchService {
                             .or("pages.resourceType").contains(singleSearchTerm)
                             .or("pages.annotations.title").contains(singleSearchTerm)
                             .or("pages.annotations.creators").contains(singleSearchTerm)
-                            .or("pages.annotations.color").contains(singleSearchTerm)
                             .or("pages.annotations.tags.creators").contains(singleSearchTerm)
                             .or("pages.annotations.tags.purpose").contains(singleSearchTerm)
                             .or("pages.annotations.tags.value").contains(singleSearchTerm)

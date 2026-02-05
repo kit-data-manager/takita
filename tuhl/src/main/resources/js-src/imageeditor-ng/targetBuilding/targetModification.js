@@ -156,7 +156,7 @@ export async function saveShape() {
     }
 
     const selectors = [{ type: 'SvgSelector', value: svgString }];
-    let annotationDataJson = { color: modifiedShape.attrs.fill, motivation: 'describing', selectors: selectors };
+    let annotationDataJson = { motivation: 'describing', selectors: selectors };
 
     // this should use data/updateTargetData, but the color here is given as a hex value and not as normal String,
     // so we use network/updateTarget directly

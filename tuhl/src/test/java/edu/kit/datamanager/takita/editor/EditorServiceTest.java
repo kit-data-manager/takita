@@ -7,7 +7,6 @@ import edu.kit.datamanager.takita.dataaccess.IAnnotationStoreAccessService;
 import edu.kit.datamanager.takita.dataaccess.IRepositoryAccessService;
 import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import edu.kit.datamanager.takita.model.Annotation;
-import edu.kit.datamanager.takita.model.Color;
 import edu.kit.datamanager.takita.model.body.Body;
 import edu.kit.datamanager.takita.model.body.Tag;
 import edu.kit.datamanager.takita.model.body.TextCard;
@@ -56,7 +55,7 @@ class EditorServiceTest {
 
   @Test
   void addAnnotation1() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
-    Annotation annotation = buildMockAnnotation(Color.DEFAULT, "tagging");
+    Annotation annotation = buildMockAnnotation("tagging");
 
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
@@ -66,22 +65,19 @@ class EditorServiceTest {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
-          assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
          });
 
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
-    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
-    		targets, annotation.getMotivation().toString());
-
+    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), targets, annotation.getMotivation().toString());
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
 
   @Test
   void addAnnotation2() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
-    Annotation annotation = buildMockAnnotation(Color.TEXT_REGION, "moderating");
+    Annotation annotation = buildMockAnnotation("moderating");
 
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
@@ -91,14 +87,13 @@ class EditorServiceTest {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
-          assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
     
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
-    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
+    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(),
         targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
@@ -106,7 +101,7 @@ class EditorServiceTest {
 
   @Test
   void addAnnotation3() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
-    Annotation annotation = buildMockAnnotation(Color.PAGE_REGION, "bookmarking");
+    Annotation annotation = buildMockAnnotation("bookmarking");
 
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
@@ -116,14 +111,13 @@ class EditorServiceTest {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
-          assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
 
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
-    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
+    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(),
         targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
@@ -131,7 +125,7 @@ class EditorServiceTest {
 
   @Test
   void addAnnotation4() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
-    Annotation annotation = buildMockAnnotation(Color.LINE_DRAWING_REGION, "classifying");
+    Annotation annotation = buildMockAnnotation("classifying");
 
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
@@ -141,14 +135,13 @@ class EditorServiceTest {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
-          assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
 
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
-    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
+    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(),
         targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
@@ -156,7 +149,7 @@ class EditorServiceTest {
 
   @Test
   void addAnnotation5() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
-    Annotation annotation = buildMockAnnotation(Color.GRAPHIC_REGION, "commenting");
+    Annotation annotation = buildMockAnnotation("commenting");
 
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
@@ -166,14 +159,13 @@ class EditorServiceTest {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
-          assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
 
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
-    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
+    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(),
         targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
@@ -181,7 +173,7 @@ class EditorServiceTest {
 
   @Test
   void addAnnotation6() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
-    Annotation annotation = buildMockAnnotation(Color.TABLE_REGION, "describing");
+    Annotation annotation = buildMockAnnotation("describing");
 
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
@@ -191,21 +183,20 @@ class EditorServiceTest {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
-          assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
 
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
-    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
+    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(),
         targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
   @Test
   void addAnnotation7() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
-    Annotation annotation = buildMockAnnotation(Color.CHART_REGION, "editing");
+    Annotation annotation = buildMockAnnotation("editing");
 
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
@@ -215,14 +206,13 @@ class EditorServiceTest {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
-          assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
 
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
-    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
+    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(),
         targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
@@ -230,7 +220,7 @@ class EditorServiceTest {
 
   @Test
   void addAnnotation8() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
-    Annotation annotation = buildMockAnnotation(Color.SEPARATOR_REGION, "highlighting");
+    Annotation annotation = buildMockAnnotation("highlighting");
 
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
@@ -240,14 +230,13 @@ class EditorServiceTest {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
-          assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
 
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
-    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
+    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(),
         targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
@@ -255,7 +244,7 @@ class EditorServiceTest {
 
   @Test
   void addAnnotation9() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
-    Annotation annotation = buildMockAnnotation(Color.MATHS_REGION, "identifying");
+    Annotation annotation = buildMockAnnotation("identifying");
 
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
@@ -265,21 +254,20 @@ class EditorServiceTest {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
-          assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
 
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
-    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
+    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(),
        targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
   @Test
   void addAnnotation10() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
-    Annotation annotation = buildMockAnnotation(Color.CHEM_REGION, "moderating");
+    Annotation annotation = buildMockAnnotation("moderating");
 
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
@@ -289,14 +277,13 @@ class EditorServiceTest {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
-          assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
 
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
-    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
+    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(),
         targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
@@ -304,7 +291,7 @@ class EditorServiceTest {
 
   @Test
   void addAnnotation11() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
-    Annotation annotation = buildMockAnnotation(Color.ADVERT_REGION, "replying");
+    Annotation annotation = buildMockAnnotation("replying");
 
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
@@ -314,14 +301,13 @@ class EditorServiceTest {
           Annotation thisAnnotation = invocation.getArgument(0);
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
-          assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
           return annotation;
         });
 
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
-    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), Color.colorToString(annotation.getColor()),
+    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(),
         targets, annotation.getMotivation().toString());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
@@ -329,7 +315,7 @@ class EditorServiceTest {
 
   @Test
   void getAnnotation() throws NoSuchIndexEntryException {
-    Annotation annotation = buildMockAnnotation(Color.TABLE_REGION, "highlighting");
+    Annotation annotation = buildMockAnnotation("highlighting");
 
     Mockito.when(mockedSearchIndexService.getAnnotationById(annotation.getId()
     )).thenReturn(annotation);
@@ -339,10 +325,10 @@ class EditorServiceTest {
 
   @Test
   void updateAnnotation1() throws NoSuchIndexEntryException, IOException, InterruptedException, JSONException {
-    Annotation annotation = buildMockAnnotation(Color.TEXT_REGION, "replying");
+    Annotation annotation = buildMockAnnotation("replying");
     User currentUser = new User("Maximilian Walz");
 
-    Annotation updatedAnnotation = buildMockAnnotation(Color.CUSTOM_REGION, "commenting");
+    Annotation updatedAnnotation = buildMockAnnotation("commenting");
     updatedAnnotation.addCreator(currentUser.getName());
     updatedAnnotation.setEtag("qwertzuiop");
 
@@ -353,23 +339,22 @@ class EditorServiceTest {
       Annotation thisAnnotation = invocation.getArgument(0);
       assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
       assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
-      assertEquals(annotation.getColor().getName(), thisAnnotation.getColor().getName());
       assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
       return updatedAnnotation;
     });
 
     Annotation actualAnnotation = EditorService.updateAnnotation(annotation.getId(),
-        Color.IMAGE_REGION.toString(), null, null);
+       null, null);
 
     assertEqualsAnnotations(updatedAnnotation, actualAnnotation);
   }
 
   @Test
   void updateAnnotation2() throws NoSuchIndexEntryException, IOException, InterruptedException, JSONException {
-    Annotation annotation = buildMockAnnotation(Color.TEXT_REGION, "replying");
+    Annotation annotation = buildMockAnnotation("replying");
     User currentUser = new User("Maximilian Walz");
 
-    Annotation updatedAnnotation = buildMockAnnotation(Color.UNKNOWN_REGION, "commenting");
+    Annotation updatedAnnotation = buildMockAnnotation("commenting");
     updatedAnnotation.addCreator(currentUser.getName());
     updatedAnnotation.setEtag("qwertzuiop");
 
@@ -385,15 +370,15 @@ class EditorServiceTest {
     JSONArray targets = new JSONArray();
     targets.put(updatedAnnotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.updateAnnotation(annotation.getId(),
-        Color.UNKNOWN_REGION.toString(), targets, updatedAnnotation.getMotivation().toString());
+        targets, updatedAnnotation.getMotivation().toString());
 
     assertEqualsAnnotations(updatedAnnotation, actualAnnotation);
   }
 
   @Test
   void validateAnnotation() throws NoSuchIndexEntryException, InterruptedException, JSONException, IOException {
-    Annotation validatedAnnotation = buildMockAnnotation(Color.DEFAULT, "tagging");
-    Annotation unvalidatedAnnotation = buildMockAnnotation(Color.DEFAULT, "tagging");
+    Annotation validatedAnnotation = buildMockAnnotation("tagging");
+    Annotation unvalidatedAnnotation = buildMockAnnotation("tagging");
     unvalidatedAnnotation.setId(validatedAnnotation.getVia());
     unvalidatedAnnotation.setVia("");
     unvalidatedAnnotation.setCanonical("");
@@ -406,7 +391,6 @@ class EditorServiceTest {
       Annotation thisAnnotation = invocation.getArgument(0);
       assertEquals(validatedAnnotation.getPageId(), thisAnnotation.getPageId());
       assertEquals(validatedAnnotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
-      assertEquals(validatedAnnotation.getColor().getName(), thisAnnotation.getColor().getName());
       assertEquals(validatedAnnotation.getMotivation(), thisAnnotation.getMotivation());
       return validatedAnnotation;
     });
@@ -416,7 +400,7 @@ class EditorServiceTest {
 
   @Test
   void deleteAnnotation() throws NoSuchIndexEntryException, IOException, InterruptedException {
-    Annotation annotation = buildMockAnnotation(Color.CUSTOM_REGION, "questioning");
+    Annotation annotation = buildMockAnnotation("questioning");
 
     Mockito.when(mockedSearchIndexService.getAnnotationById(annotation.getId())).thenReturn(annotation);
 
@@ -585,7 +569,7 @@ class EditorServiceTest {
     JSONAssert.assertEquals(annotation.toString(), EditorService.getAnnotationJson(annotationId).toString(), true);
   }
 
-  private Annotation buildMockAnnotation(Color color, String motivation) {
+  private Annotation buildMockAnnotation(String motivation) {
     List<String> creators = new ArrayList<>();
     creators.add("Leonie Schmidt");
 
@@ -601,7 +585,6 @@ class EditorServiceTest {
     mockTarget.setSelector(mockSvgSelector);
     mockTargets.add(mockTarget);
     mockAnnotation.setTargets(mockTargets);
-    mockAnnotation.setColor(color);
     mockAnnotation.setCreators(creators);
     mockAnnotation.setIsAlgorithmAnnotation(false);
     mockAnnotation.setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/c3aeb1ef-af1e-41fe-823c-76ea3761ee89");
@@ -647,7 +630,6 @@ class EditorServiceTest {
     assertEquals(expectedAnno.getId(), actualAnno.getId());
     assertEquals(expectedAnno.getPageId(), actualAnno.getPageId());
     assertEquals(expectedAnno.getMotivation(), actualAnno.getMotivation());
-    assertEquals(expectedAnno.getColor().getName(), actualAnno.getColor().getName());
     assertEquals(expectedAnno.getTargets().get(0).getSelector().toString(), actualAnno.getTargets().get(0).getSelector().toString());
     assertEquals(expectedAnno.getCanonical(), actualAnno.getCanonical());
     assertEquals(expectedAnno.getCreated(), actualAnno.getCreated());

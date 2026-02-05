@@ -1,6 +1,4 @@
 import { encodeAnnoId } from '../../common/utils';
-import { getColorNameFromEnumEntry as getColorNameFromEnumEntryText } from '../../texteditor-ng/projectspecific';
-import { getColorNameFromEnumEntry as getColorNameFromEnumEntryImage } from '../../imageeditor-ng/projectspecific';
 import {
   getAnnotation,
   getAllAnnotations,
@@ -139,15 +137,7 @@ export async function updateTargetData(anno, newSelectors) {
   const idOfAnnotationToUpdate = encodeAnnoId(anno.id);
 
   // update the target of an annotation (and the "purpose:describing" body, if it exists) by sending a put request
-  let colorName;
-  if (window.EDITORTYPE == 'TEXT') {
-    colorName = getColorNameFromEnumEntryText(anno.color);
-  }
-  if (window.EDITORTYPE == 'IMAGE') {
-    colorName = getColorNameFromEnumEntryImage(anno.color);
-  }
-
-  const annotationDataJson = { color: colorName, motivation: 'describing', selectors: newSelectors };
+  const annotationDataJson = { motivation: 'describing', selectors: newSelectors };
 
   const url = window.CONTEXTPATH + 'editor_rest/annotations/' + idOfAnnotationToUpdate;
 

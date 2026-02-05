@@ -1,14 +1,10 @@
 package edu.kit.datamanager.takita.dataaccess;
 
 import edu.kit.datamanager.takita.model.Annotation;
-import edu.kit.datamanager.takita.model.Color;
 import edu.kit.datamanager.takita.model.body.Body;
 import edu.kit.datamanager.takita.model.body.Tag;
 import edu.kit.datamanager.takita.model.body.TextCard;
-import edu.kit.datamanager.takita.model.target.SVGSelector;
 import edu.kit.datamanager.takita.model.target.Target;
-import edu.kit.datamanager.takita.model.target.TextQuoteSelector;
-import edu.kit.datamanager.takita.model.target.XPathSelector;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -71,11 +67,6 @@ public class AnnotationConverter {
     //set etag
     if (jsonAnnotation.has(AnnotationStoreStrings.ETAG.getName())) {
       annotation.setEtag(jsonAnnotation.getString(AnnotationStoreStrings.ETAG.getName()));
-    }
-
-    //set color
-    if (jsonAnnotation.has(AnnotationStoreStrings.BODY.getName())) {
-      buildColor(jsonAnnotation, annotation);
     }
 
     //set created date
@@ -144,52 +135,6 @@ public class AnnotationConverter {
     }
 
     return annotation;
-  }
-
-  private void buildColor(JSONObject jsonAnnotation, Annotation annotation) throws JSONException {
-    //if annotation has multiple bodies
-    if (isJsonArray(jsonAnnotation.getString(AnnotationStoreStrings.BODY.getName()))) {
-      JSONArray bodies = jsonAnnotation.getJSONArray(AnnotationStoreStrings.BODY.getName());
-      for (int i = 0; i < bodies.length(); i++) {
-        if (bodies.getJSONObject(i).has(AnnotationStoreStrings.DC_SUBJECT.getName())) {
-          annotation.setColor(Color.stringToColor(bodies.getJSONObject(i).getString(
-              AnnotationStoreStrings.DC_SUBJECT.getName())));
-        }
-        // non CRC980 annotations use a different annotation model, which stores the
-        // color relevant information in the value of the tagging (toRoll) or classifying (CRC1475) body
-        // TODO: CUSTOMISE which body is used to retrieve the color
-        // TODO: improve the color storage
-        if (bodies.getJSONObject(i).has(AnnotationStoreStrings.PURPOSE.getName())) {
-        	if (bodies.getJSONObject(i).getString(AnnotationStoreStrings.PURPOSE.getName()).equals("tagging")) {
-        		if (bodies.getJSONObject(i).has(AnnotationStoreStrings.VALUE.getName())) {
-        			annotation.setColor(Color.stringToColor(bodies.getJSONObject(i).getString(
-        	                AnnotationStoreStrings.VALUE.getName())));
-        			//logger.info("Color of the annotation: " + Color.stringToColor(bodies.getJSONObject(i).getString(AnnotationStoreStrings.VALUE.getName())).getName());
-            	}
-        	}
-        }
-      }
-      //if annotation has single body
-    } else {
-      if (jsonAnnotation.getJSONObject(AnnotationStoreStrings.BODY.getName())
-          .has(AnnotationStoreStrings.DC_SUBJECT.getName())) {
-            annotation.setColor(Color.stringToColor(jsonAnnotation.getJSONObject(AnnotationStoreStrings.BODY.getName()).getString(
-            AnnotationStoreStrings.DC_SUBJECT.getName())));
-      }
-      // non CRC980 annotations use a different annotation model, which stores the
-      // color relevant information in the value of the tagging (toRoll) or classifying (CRC1475) body
-      // TODO: CUSTOMISE which body is used to retrieve the color
-      // TODO: improve the color storage
-      JSONObject body = jsonAnnotation.getJSONObject(AnnotationStoreStrings.BODY.getName());
-      if (body.has(AnnotationStoreStrings.PURPOSE.getName())) {
-      	if (body.getString(AnnotationStoreStrings.PURPOSE.getName()).equals("tagging")) {
-      		if (body.has(AnnotationStoreStrings.VALUE.getName())) {
-      			annotation.setColor(Color.stringToColor(body.getString(
-      	                AnnotationStoreStrings.VALUE.getName())));
-          	}
-      	}
-      }
-    }
   }
 
   /*
@@ -468,11 +413,10 @@ public class AnnotationConverter {
   }
 
   /*
-   * Puts bodies and color from annotation in JSONObject form in JSON annotation
+   * Puts bodies from annotation in JSONObject form in JSON annotation
    */
   private void putBodies(JSONObject jsonAnnotation, Annotation annotation) throws JSONException {
-    if (annotation.getTextCards().size() + annotation.getTags().size() == 1
-        && annotation.getColor() == null) {
+    if (annotation.getTextCards().size() + annotation.getTags().size() == 1) {
       jsonAnnotation.put(AnnotationStoreStrings.BODY.getName(), buildJsonFromBody(annotation));
     } else {
       jsonAnnotation.put(AnnotationStoreStrings.BODY.getName(), buildJsonFromBodies(annotation));

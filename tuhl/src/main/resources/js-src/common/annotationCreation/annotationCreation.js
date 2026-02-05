@@ -22,7 +22,6 @@ export async function createAnnotation(annotationData, hooks = {}) {
     // it does not need the body information
     let annotationCreationData = {
       pageId: annotationData.pageId,
-      color: annotationData.color,
       motivation: annotationData.motivation,
       selectors: annotationData.selectors,
     };

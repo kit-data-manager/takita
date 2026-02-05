@@ -37,7 +37,6 @@ public class Annotation {
   //same as via
   private String canonical;
 
-  private Color color;
   private List<Target> targets;
 
   private String motivation;
@@ -58,7 +57,7 @@ public class Annotation {
     targets = new ArrayList<>();
   }
 
-  public Annotation(String pageId, List<String> creators, Instant created, Instant modified, String color,
+  public Annotation(String pageId, List<String> creators, Instant created, Instant modified,
                     JSONArray selectors, String motivation ) throws JSONException {
       this.textCards = new ArrayList<>();
       this.tags = new ArrayList<>();
@@ -68,25 +67,19 @@ public class Annotation {
       if (modified != null) {
           this.modified = modified;
       }
-      this.color = color != null ? Color.stringToColor(color) : Color.DEFAULT;
       this.targets = selectors != null ? createTargetsFromSelectors(selectors) : new ArrayList<>();
       if (motivation != null) {
         this.motivation = motivation;
       }
   }
 
-  public void update(List<String> creators, String color, JSONArray selectors, String motivation ) throws JSONException {
+  public void update(List<String> creators, JSONArray selectors, String motivation ) throws JSONException {
       for (String creator : creators) {
           if (!this.getCreators().contains(creator)) {
               this.addCreator(creator);
           }
       }
       this.setModified(Instant.now());
-      if (color != null && !color.trim().equals("")) {
-          this.setColor(Color.stringToColor(color));
-      } else {
-          this.setColor(Color.DEFAULT);
-      }
       if (selectors != null) {
           this.setTargets(createTargetsFromSelectors(selectors));
       }
@@ -325,24 +318,6 @@ public class Annotation {
   }
 
   /**
-   * Gets color of annotation.
-   *
-   * @return color
-   */
-  public Color getColor() {
-    return color;
-  }
-
-  /**
-   * Sets color of annotation.
-   *
-   * @param color to be set
-   */
-  public void setColor(Color color) {
-    this.color = color;
-  }
-
-  /**
    * Gets targets of annotation.
    *
    * @return targets
@@ -477,7 +452,7 @@ public class Annotation {
       return getClass().getSimpleName() + id + ": { " + "pageId: " + pageId + 
               ", modified: " + modified + ", created: " + created +
               ", via: " + via + ", canonical: " + canonical +
-              ", color: " + color + ", svgCode: " + targets.toString() + 
+              ", svgCode: " + targets.toString() +
               ", motivation: " + motivation + ", etag: " + etag +
               ", isAlgorithmAnnotation: " + isAlgorithmAnnotation +
               ", creators: " + creators.toString() + 
