@@ -31,8 +31,8 @@ export function assignStyle($element, annotation, index, alreadyHighlighted) {
   // different highlights for different annotation types
   switch (annotationType) {
     case 'underline':
-      // if a word is not highlighted add the "metaphor" class, if it is
-      // already highlighted add "metaphorSecond"
+      // if a word is not underlined add the "underline" class, if it is
+      // already underlined add "underlineSecond"
       if (!alreadyHighlighted) {
         $element.classList.add('underline');
       } else {
@@ -47,7 +47,8 @@ export function assignStyle($element, annotation, index, alreadyHighlighted) {
       // This is needed to create overlapping boxshadows.
       // check if nextSibling is null first
       if ($element.nextSibling !== null) {
-        if ($element.nextSibling.textContent.trim() === '' && !(index === annotation.svg.length - 1)) {
+        const xPathSelector = annotation.svg.find((selector) => selector.type === 'XPathSelector');
+        if ($element.nextSibling.textContent.trim() === '' && !(index === xPathSelector.value.length - 1)) {
           $element.classList.add('whitespaceAfter');
         }
       }

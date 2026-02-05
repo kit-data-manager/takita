@@ -80,15 +80,21 @@ export function makeTargetsCompatible(annotation) {
   // annotation passed to the function is the globalSelectedAnnotation
   let newTargets = [];
   if (annotation.targets) {
-    if (annotation.targets[0].selector.xPath) {
-      let xPathArray = convertXPath(annotation.targets[0].selector.xPath);
-      xPathArray.forEach((xPath) => {
-        let newTarget = JSON.parse(JSON.stringify(annotation.targets[0]));
-        newTarget.selector.xPath = xPath;
-        newTargets.push(newTarget);
-      });
-      return newTargets;
-    }
+    annotation.targets.forEach((target) => {
+      const selector = target.selector;
+      if (selector?.xPath) {
+        let xPathArray = convertXPath(selector.xPath);
+        xPathArray.forEach((xPath) => {
+          let newTarget = JSON.parse(JSON.stringify(target));
+          newTarget.selector.xPath = xPath;
+          newTargets.push(newTarget);
+        });
+      } else {
+        // add the TextQuoteSelector target
+        newTargets.push(target);
+      }
+    });
+    return newTargets;
   }
 }
 
@@ -114,11 +120,13 @@ export function checkIsTargetCompatible(annotation) {
 
   // annotation passed to the function is the globalSelectedAnnotation
   if (annotation.targets) {
-    if (annotation.targets[0].selector.xPath) {
-      targetXPath = annotation.targets[0].selector.xPath;
-    }
+    annotation.targets.forEach((target) => {
+      const selector = target.selector;
+      if (selector?.xPath) {
+        selector.xPath instanceof Array ? (targetXPath = selector.xPath[0]) : (targetXPath = selector.xPath);
+      }
+    });
   }
-
   // check if the xPath is a joined (resolving to nodes) or concatenated
   // (resolving to a string) one
   if (targetXPath.includes('|') || targetXPath.includes('concat')) {
