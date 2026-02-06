@@ -175,6 +175,14 @@ export function defaultDisplayAnnotationFunction(_event, cell, hooks) {
     toggleVisibility($annotationCard);
   }
 
+  // Note: raphael doesn't offer a filter()-function
+  window.paper.forEach((shape) => {
+    // unselecting all previously selected shapes
+    if (shape.selected) {
+      toggleShapeSelect(shape);
+    }
+  });
+
   // if there is a shape, highlight it. For page-annotations, no shape will be highlighted
   // as there is none
   if (cell.getRow().getData().targets.length > 0) {
@@ -186,10 +194,6 @@ export function defaultDisplayAnnotationFunction(_event, cell, hooks) {
       // finding the correct shape
       if (shape.annoIdEncoded === annotationId) {
         targetShape = shape;
-      }
-      // unselecting all previously selected shapes
-      if (shape.selected) {
-        toggleShapeSelect(shape);
       }
     });
     if (targetShape) {
