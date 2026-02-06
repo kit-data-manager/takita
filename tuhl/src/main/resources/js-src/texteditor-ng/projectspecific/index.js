@@ -52,7 +52,7 @@ const POSSIBLE_DIVISION_TYPES = {
  *   annotation types.
  * The function is called at "drawAnnos" in texteditor-ng/highlight/target.js.
  */
-const highlightAnnotationFunction = customHighlighting;
+const highlightAnnotationFunction = defaultHighlighting;
 
 // add the "defaulthighlighting" class to the project specific classes. The project specific classes
 // get "fetched" by calling the getProjectSpecificClasses function, that can be customized

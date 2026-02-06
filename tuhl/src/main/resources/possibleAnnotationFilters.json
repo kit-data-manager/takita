@@ -20,7 +20,7 @@
     "type": "MATCH"
   },
   {
-    "field": "textcards",
+    "field": "textCards",
     "type": "MATCH"
   },
   {

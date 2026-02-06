@@ -55,13 +55,14 @@ export function convertXPath(longXPath) {
  * for backwards compatability until every project only has targets, which
  * are one long xPath.
  *
- * @param {Object} annotation to have its targets (svg entries) converted
+ * @param {Object} annotation to have its targets converted
  * @returns {[String]} holding the xPaths to each element
  */
 export function makeTargetsCompatible(annotation) {
   // annotation passed to the function is part of the annoJson
-  if (annotation.svg) {
-    annotation.svg.forEach((selector) => {
+  if (annotation.targets) {
+    annotation.targets.forEach((target) => {
+      const selector = target.selector;
       if (selector.type === 'XPathSelector') {
         if (selector.value instanceof Array) {
           if (selector.value[0].includes('xml:id') || selector.value[0].includes('id(')) {
@@ -74,7 +75,7 @@ export function makeTargetsCompatible(annotation) {
         }
       }
     });
-    return annotation.svg;
+    return annotation.targets;
   }
 
   // annotation passed to the function is the globalSelectedAnnotation
@@ -101,7 +102,7 @@ export function makeTargetsCompatible(annotation) {
 /**
  * check if the annotation is compatible with the code
  *
- * @param {Object} annotation to have its targets (svg entries) checked
+ * @param {Object} annotation to have its targets checked
  * @returns {Boolean} indicating if the target is compatible
  * - true, if the annotation is compatible, i.e. has one xPath for each target
  * - false, if the annotation is incompatible, i.e. has one long xPath including all targets
@@ -110,8 +111,9 @@ export function checkIsTargetCompatible(annotation) {
   let targetXPath = 'default';
 
   // annotation passed to the function is part of the annoJson
-  if (annotation.svg) {
-    annotation.svg.forEach((selector) => {
+  if (annotation.targets) {
+    annotation.targets.forEach((target) => {
+      const selector = target.selector;
       if (selector.type === 'XPathSelector') {
         selector.value instanceof Array ? (targetXPath = selector.value[0]) : (targetXPath = selector.value);
       }
@@ -119,14 +121,14 @@ export function checkIsTargetCompatible(annotation) {
   }
 
   // annotation passed to the function is the globalSelectedAnnotation
-  if (annotation.targets) {
-    annotation.targets.forEach((target) => {
-      const selector = target.selector;
-      if (selector?.xPath) {
-        selector.xPath instanceof Array ? (targetXPath = selector.xPath[0]) : (targetXPath = selector.xPath);
-      }
-    });
-  }
+  // if (annotation.targets) {
+  //   annotation.targets.forEach((target) => {
+  //     const selector = target.selector;
+  //     if (selector?.xPath) {
+  //       selector.xPath instanceof Array ? (targetXPath = selector.xPath[0]) : (targetXPath = selector.xPath);
+  //     }
+  //   });
+  // }
   // check if the xPath is a joined (resolving to nodes) or concatenated
   // (resolving to a string) one
   if (targetXPath.includes('|') || targetXPath.includes('concat')) {

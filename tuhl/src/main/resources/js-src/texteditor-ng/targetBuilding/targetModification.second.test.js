@@ -44,7 +44,8 @@ const annotationWithoutDescBody = {
       linkToResource:
         'http://localhost:8090/api/v1/dataresources/9e92b0dd-dd60-48f3-9ded-ba7a8d3f0d2f/data/Book_of_Psalms.xml',
       selector: {
-        xPath: 'concat(id("w.133"), "\n                    ", substring(id("w.134"), 1, 2))',
+        type: 'XPathSelector',
+        value: 'concat(id("w.133"), "\n                    ", substring(id("w.134"), 1, 2))',
       },
     },
   ],

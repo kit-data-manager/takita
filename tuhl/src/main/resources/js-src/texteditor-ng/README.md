@@ -8,11 +8,11 @@
 * OnSelect:  
   * get id (comes from the TEI-file) of target of oncontextclick, find the id in the targets of annoJson and pass the id/uri of the annotation to selectAnnotation()
   * **load** "full" annotation (body) data from index
-  * textcard rendering process
+  * textCard rendering process
     * for metaphor-annotations, **load** mrw-annotation data, add that to the "render que"
 * OnSaveModificationAnnotation (same procedure for body addition/deletion):
   * **store** updated body, get updated annotation data
-  * then textcard rendering process
+  * then textCard rendering process
 * OnSaveModificationText:
 * OnAddBody
 * OnDeleteBody
@@ -55,7 +55,7 @@ _Note: when the module folder is eventually renamed to just "texteditor", all th
   * fetching (GETting)
     * get text
     * load all annos
-    * load single anno for selected textcard
+    * load single anno for selected textCard
     * load single mrw-anno
   * storing (PUTting / POST)
     * single annotation w/o body
@@ -96,12 +96,12 @@ _Note: the purpose of this module is to provide functionality which is useful to
 
 * preMakeHTML hook
 * postApplyStyles hook
-* textcard
-  * editing of bodies in horizontal textcard: <https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/common/annotationDisplay/selection.js#L343>
+* textCard
+  * editing of bodies in horizontal textCard: <https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/common/annotationDisplay/selection.js#L343>
   * horizontal texcard: <https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/common/annotationDisplay/selection.js#L496> has a hook already
   * copyId button (similar to button to analysisTool, but gets appended earlier) <https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/toroll/tuhl/src/main/resources/static/js/editor.js?ref_type=heads#L133>
-  * textcard button to analysisTool <https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/common/annotationDisplay/selection.js#L502> has a hook already
-  * horizontal textcard "content" of the body <https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/common/utils/utils.js#L113>
+  * textCard button to analysisTool <https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/common/annotationDisplay/selection.js#L502> has a hook already
+  * horizontal textCard "content" of the body <https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/common/utils/utils.js#L113>
 * creationTemplates and corresponding utils functions
   * assignement of purposes <https://gitlab.kit.edu/kit/scc/dem/sfb980/takita/-/blob/3d4f16288a6c9c4213d74e125d48b4ad05a1738a/tuhl/src/main/resources/js-src/texteditor/annotationEditor/annotationCreation/creationTemplates/utils.js#L685>
 * highlighting

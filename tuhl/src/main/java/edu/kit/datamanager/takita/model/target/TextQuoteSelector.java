@@ -12,6 +12,7 @@ public class TextQuoteSelector implements ISelector{
 	private String exact;
 	private String prefix;
 	private String suffix;
+	private final String type = AnnotationStoreStrings.TEXTQUOTE_SELECTOR.getName();
 
 	public TextQuoteSelector(String exact) {
 		this.exact = exact;
@@ -42,6 +43,9 @@ public class TextQuoteSelector implements ISelector{
 	}
 
 	@Override
+	public String getType() { return this.type; }
+
+	@Override
 	public JSONObject getWADMSerialization() throws JSONException {
 		JSONObject wadmSelector = new JSONObject();
 		/*try {
@@ -53,7 +57,7 @@ public class TextQuoteSelector implements ISelector{
 		} catch (XPathExpressionException e) {
 			e.printStackTrace();
 		}*/
-		wadmSelector.put(AnnotationStoreStrings.TYPE.getName(), AnnotationStoreStrings.TEXTQUOTE_SELECTOR.getName());
+		wadmSelector.put(AnnotationStoreStrings.TYPE.getName(), this.type);
 		wadmSelector.put(AnnotationStoreStrings.EXACT.getName(), this.exact);
 		if (this.prefix != null) {
 			wadmSelector.put(AnnotationStoreStrings.PREFIX.getName(), this.prefix);

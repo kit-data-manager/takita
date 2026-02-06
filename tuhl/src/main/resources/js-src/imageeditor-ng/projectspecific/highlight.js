@@ -13,26 +13,11 @@ export function assignColor(annotation) {
   if (annotation.tags.length > 0) {
     annotation.color = '#00c7fe';
   }
-  // annotations in the annoJson have textcards spelled with a lower case "c"
-  if (annotation.textcards) {
-    annotation.textcards.forEach((textcard) => {
-      if (textcard.purpose) {
-        switch (textcard.purpose) {
-          case 'commenting':
-            annotation.color = '#bdb51e';
-            break;
-          case 'classifying':
-            annotation.color = '#b20000';
-            break;
-        }
-      }
-    });
-  }
-  // freshly created annotations have textcards spelled with an upper case "C"
+  // annotations in the annoJson have textCards spelled with a lower case "c"
   if (annotation.textCards) {
-    annotation.textCards.forEach((textcard) => {
-      if (textcard.purpose) {
-        switch (textcard.purpose) {
+    annotation.textCards.forEach((textCard) => {
+      if (textCard.purpose) {
+        switch (textCard.purpose) {
           case 'commenting':
             annotation.color = '#bdb51e';
             break;

@@ -171,7 +171,11 @@ export function getSelectedTextOfAnnotation(annotation) {
       // store the ids of the words
       let idArray = [];
       annotation.targets.forEach((target) => {
-        idArray.push(target.selector.xPath.split('"')[1]);
+        if (target.selector.type === 'XPathSelector') {
+          target.selector.value instanceof Array
+            ? target.selector.value.forEach((value) => idArray.push(value.split('"')[1]))
+            : idArray.push(target.selector.value.split('"')[1]);
+        }
       });
       // this sorts the xml:ids to retrieve a somehow appropriate reconstruction of the text out of the targets
       // in cases, where the ids are not in an ascending nummerical order, the reconstruction will be off
@@ -234,8 +238,6 @@ export function showSaveTargetModal($modal, oldSelectedText, newSelectedText, ne
   // modal stuff should be optimised
   let $oldSelectedTextDiv = document.createElement('div');
   $oldSelectedTextDiv.innerHTML = oldSelectedText;
-  // + window.SELECTED_ANNOTATION.targets.toString();
-  //  + " | id: " + window.SELECTED_ANNOTATION.svgCode.split("\"")[1];
   // setting the innerHTML to empty the div (remove the innerHTML from a previous call)
   $oldSelectedTextContainer.innerHTML = 'Current Selection:';
   $oldSelectedTextContainer.append($oldSelectedTextDiv);

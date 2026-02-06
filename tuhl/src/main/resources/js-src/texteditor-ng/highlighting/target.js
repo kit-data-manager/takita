@@ -34,7 +34,7 @@ export function drawAnnos(annoJson) {
  * {
     "id": "5ffb6dce-18ee-4932-b489-d2505865f730",
     "idEncoded": "5ffb6dce-18ee-4932-b489-d2505865f730",
-    "svg": [
+    "targets": [
       "id(\"w.2_1_6_6-99\")",
       "id(\"w.2_1_6_6-100\")",
       "id(\"w.2_1_6_6-101\")",
@@ -50,7 +50,8 @@ export function drawAnnos(annoJson) {
  * 
  */
 export function defaultHighlighting(annotation) {
-  annotation.svg.forEach((selector) => {
+  annotation.targets.forEach((target) => {
+    const selector = target.selector;
     switch (selector.type) {
       case 'XPathSelector': {
         const values = selector.value instanceof Array ? selector.value : [selector.value];
@@ -85,8 +86,11 @@ export function highlightSelectedAnnotationsTarget(selectedAnnotation, $text) {
       if (target.selector?.exact) {
         console.warn('Implement textQuoteSelector highlighting for selectedAnnotaiton pls');
       } else {
-        const targetId = target.selector.xPath.split('"')[1];
-        $text.querySelector('#' + escapeSelector(targetId)).classList.add('selected');
+        const values = target.selector.value instanceof Array ? target.selector.value : [target.selector.value];
+        values.forEach((value) => {
+          const targetId = value.split('"')[1];
+          $text.querySelector('#' + escapeSelector(targetId)).classList.add('selected');
+        });
       }
     });
   }

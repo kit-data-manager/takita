@@ -8,28 +8,35 @@ import edu.kit.datamanager.takita.dataaccess.AnnotationStoreStrings;
 public class SVGSelector implements ISelector {
 
 	// TODO: change datatype of svgCode
-	private String svgCode;
+	private String value;
+	private final String type = AnnotationStoreStrings.SVG_SELECTOR.getName();
 	
-	public SVGSelector(String svgCode) {
-		this.svgCode = svgCode;
+	public SVGSelector(String value) {
+		this.value = value;
 	}
 
-	public void setSVGCode(String svgCode) {
-		this.svgCode = svgCode;
+	public void setValue(String value) {
+		this.value = value;
 	}
 	
-	public String getSVGCode() {
-		return this.svgCode;
+	public String getValue() {
+		return this.value;
 	}
+
+	@Override
+	public String getType() {
+		return this.type;
+	}
+
 	@Override
 	public JSONObject getWADMSerialization() throws JSONException {
 		JSONObject wadmSelector = new JSONObject();
 
-		wadmSelector.put(AnnotationStoreStrings.TYPE.getName(), AnnotationStoreStrings.SVG_SELECTOR.getName());
-        if (!this.svgCode.contains("<svg")) {
-            wadmSelector.put(AnnotationStoreStrings.VALUE.getName(), "<svg xmlns=\"http://www.w3.org/2000/svg\">" + this.svgCode + "</svg>");
+		wadmSelector.put(AnnotationStoreStrings.TYPE.getName(), this.type);
+        if (!this.value.contains("<svg")) {
+            wadmSelector.put(AnnotationStoreStrings.VALUE.getName(), "<svg xmlns=\"http://www.w3.org/2000/svg\">" + this.value + "</svg>");
         } else {
-	        String svgString = this.svgCode.substring(this.svgCode.indexOf('>') + 1, this.svgCode.lastIndexOf('<'));
+	        String svgString = this.value.substring(this.value.indexOf('>') + 1, this.value.lastIndexOf('<'));
 	        wadmSelector.put(AnnotationStoreStrings.VALUE.getName(), "<svg xmlns=\"http://www.w3.org/2000/svg\">" + svgString + "</svg>");
 	    };
 
@@ -37,6 +44,6 @@ public class SVGSelector implements ISelector {
 	}
 	
 	public String toString() {
-		 return this.svgCode;
+		 return this.value;
 	}
 }

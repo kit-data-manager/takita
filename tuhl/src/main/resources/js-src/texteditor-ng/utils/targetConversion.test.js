@@ -3,10 +3,12 @@ import { checkIsTargetCompatible, makeTargetsCompatible, convertXPath } from './
 describe('checking if a target is compatible with tAkita', () => {
   it('checks compatible annotations that are part of the annoJson and have a substring selector', () => {
     const annotation = {
-      svg: [
+      targets: [
         {
-          type: 'XPathSelector',
-          value: ['substring(id("w.206"),  2,  4)', 'id("w.207")', 'id("w.208")', 'id("w.209")'],
+          selector: {
+            type: 'XPathSelector',
+            value: ['substring(id("w.206"),  2,  4)', 'id("w.207")', 'id("w.208")', 'id("w.209")'],
+          },
         },
       ],
     };
@@ -16,10 +18,12 @@ describe('checking if a target is compatible with tAkita', () => {
 
   it('checks incompatible annotations that are part of the annoJson and have a substring selector', () => {
     const annotation = {
-      svg: [
+      targets: [
         {
-          type: 'XPathSelector',
-          value: ['concat(substring(id("w.206"), 2, 4), " ", id("w.207"), " ", id("w.208"), " ", id("w.209"), " ")'],
+          selector: {
+            type: 'XPathSelector',
+            value: ['concat(substring(id("w.206"), 2, 4), " ", id("w.207"), " ", id("w.208"), " ", id("w.209"), " ")'],
+          },
         },
       ],
     };
@@ -29,10 +33,12 @@ describe('checking if a target is compatible with tAkita', () => {
 
   it('checks compatible annotations that are part of the annoJson and have a multiple id selectors', () => {
     const annotation = {
-      svg: [
+      targets: [
         {
-          type: 'XPathSelector',
-          value: ['id("w.131")', 'id("w.132")', 'id("w.99990")', 'id("pc.1")'],
+          selector: {
+            type: 'XPathSelector',
+            value: ['id("w.131")', 'id("w.132")', 'id("w.99990")', 'id("pc.1")'],
+          },
         },
       ],
     };
@@ -42,10 +48,12 @@ describe('checking if a target is compatible with tAkita', () => {
 
   it('checks incompatible annotations that are part of the annoJson and have a multiple id selectors', () => {
     const annotation = {
-      svg: [
+      targets: [
         {
-          type: 'XPathSelector',
-          value: ['id("w.1") | id("w.2") | id("w.3") | id("w.4") | id("w.5")'],
+          selector: {
+            type: 'XPathSelector',
+            value: ['id("w.1") | id("w.2") | id("w.3") | id("w.4") | id("w.5")'],
+          },
         },
       ],
     };
@@ -59,30 +67,22 @@ describe('checking if a target is compatible with tAkita', () => {
         {
           type: 'TEXT',
           linkToResource: 'Book_of_Psalms.xml',
-          selector: {
-            xPath: 'substring(id("w.206"),  2,  4)',
-          },
+          selector: { type: 'XPathSelector', value: 'substring(id("w.206"),  2,  4)' },
         },
         {
           type: 'TEXT',
           linkToResource: 'Book_of_Psalms.xml',
-          selector: {
-            xPath: 'id("w.207")',
-          },
+          selector: { type: 'XPathSelector', value: 'id("w.207")' },
         },
         {
           type: 'TEXT',
           linkToResource: 'Book_of_Psalms.xml',
-          selector: {
-            xPath: 'id("w.208")',
-          },
+          selector: { type: 'XPathSelector', value: 'id("w.208")' },
         },
         {
           type: 'TEXT',
           linkToResource: 'Book_of_Psalms.xml',
-          selector: {
-            xPath: 'id("w.209")',
-          },
+          selector: { type: 'XPathSelector', value: 'id("w.209")' },
         },
       ],
     };
@@ -97,7 +97,8 @@ describe('checking if a target is compatible with tAkita', () => {
           type: 'TEXT',
           linkToResource: '8c458d2443b0',
           selector: {
-            xPath: 'concat(substring(id("w.206"), 2, 4), " ", id("w.207"), " ", id("w.208"), " ", id("w.209"), " ")',
+            type: 'XPathSelector',
+            value: 'concat(substring(id("w.206"), 2, 4), " ", id("w.207"), " ", id("w.208"), " ", id("w.209"), " ")',
           },
         },
       ],
@@ -112,30 +113,22 @@ describe('checking if a target is compatible with tAkita', () => {
         {
           type: 'TEXT',
           linkToResource: 'Book_of_Psalms.xml',
-          selector: {
-            xPath: 'id("w.131")',
-          },
+          selector: { type: 'XPathSelector', value: 'id("w.131")' },
         },
         {
           type: 'TEXT',
           linkToResource: 'Book_of_Psalms.xml',
-          selector: {
-            xPath: 'id("w.132")',
-          },
+          selector: { type: 'XPathSelector', value: 'id("w.132")' },
         },
         {
           type: 'TEXT',
           linkToResource: 'Book_of_Psalms.xml',
-          selector: {
-            xPath: 'id("w.99990")',
-          },
+          selector: { type: 'XPathSelector', value: 'id("w.99990")' },
         },
         {
           type: 'TEXT',
           linkToResource: 'Book_of_Psalms.xml',
-          selector: {
-            xPath: 'id("pc.1")',
-          },
+          selector: { type: 'XPathSelector', value: 'id("pc.1")' },
         },
       ],
     };
@@ -149,9 +142,7 @@ describe('checking if a target is compatible with tAkita', () => {
         {
           type: 'TEXT',
           linkToResource: '8c458d2443b0',
-          selector: {
-            xPath: 'id("w.131") | id("w.132") | id("w.99990") | id("pc.1")',
-          },
+          selector: { type: 'XPathSelector', value: 'id("w.131") | id("w.132") | id("w.99990") | id("pc.1")' },
         },
       ],
     };
@@ -163,15 +154,17 @@ describe('checking if a target is compatible with tAkita', () => {
 describe('making a target compatible to tAkita', () => {
   it('makes incompatible annotations that are part of the annoJson and have a substring selector compatible', () => {
     const annotation = {
-      svg: [
+      targets: [
         {
-          type: 'XPathSelector',
-          value: ['concat(substring(id("w.206"), 2, 4), " ", id("w.207"), " ", id("w.208"), " ", id("w.209"), " ")'],
+          selector: {
+            type: 'XPathSelector',
+            value: ['concat(substring(id("w.206"), 2, 4), " ", id("w.207"), " ", id("w.208"), " ", id("w.209"), " ")'],
+          },
         },
       ],
     };
     const result = makeTargetsCompatible(annotation);
-    expect(result[0].value).toStrictEqual([
+    expect(result[0].selector.value).toStrictEqual([
       'substring(id("w.206"),  2,  4)',
       'id("w.207")',
       'id("w.208")',
@@ -181,15 +174,17 @@ describe('making a target compatible to tAkita', () => {
 
   it('makes incompatible annotations that are part of the annoJson and have a multiple id selectors compatible', () => {
     const annotation = {
-      svg: [
+      targets: [
         {
-          type: 'XPathSelector',
-          value: ['id("w.1") | id("w.2") | id("w.3") | id("pc.1")'],
+          selector: {
+            type: 'XPathSelector',
+            value: ['id("w.1") | id("w.2") | id("w.3") | id("pc.1")'],
+          },
         },
       ],
     };
     const result = makeTargetsCompatible(annotation);
-    expect(result[0].value).toStrictEqual(['id("w.1")', 'id("w.2")', 'id("w.3")', 'id("pc.1")']);
+    expect(result[0].selector.value).toStrictEqual(['id("w.1")', 'id("w.2")', 'id("w.3")', 'id("pc.1")']);
   });
 
   it('makes the incompatible globaly selected annotation having a substring selector compatible', () => {
@@ -199,7 +194,8 @@ describe('making a target compatible to tAkita', () => {
           type: 'TEXT',
           linkToResource: 'Book_of_Psalms.xml',
           selector: {
-            xPath: 'concat(substring(id("w.206"), 2, 4), " ", id("w.207"), " ", id("w.208"), " ", id("w.209"), " ")',
+            type: 'XPathSelector',
+            value: 'concat(substring(id("w.206"), 2, 4), " ", id("w.207"), " ", id("w.208"), " ", id("w.209"), " ")',
           },
         },
       ],
@@ -210,28 +206,8 @@ describe('making a target compatible to tAkita', () => {
         type: 'TEXT',
         linkToResource: 'Book_of_Psalms.xml',
         selector: {
-          xPath: 'substring(id("w.206"),  2,  4)',
-        },
-      },
-      {
-        type: 'TEXT',
-        linkToResource: 'Book_of_Psalms.xml',
-        selector: {
-          xPath: 'id("w.207")',
-        },
-      },
-      {
-        type: 'TEXT',
-        linkToResource: 'Book_of_Psalms.xml',
-        selector: {
-          xPath: 'id("w.208")',
-        },
-      },
-      {
-        type: 'TEXT',
-        linkToResource: 'Book_of_Psalms.xml',
-        selector: {
-          xPath: 'id("w.209")',
+          type: 'XPathSelector',
+          value: ['substring(id("w.206"),  2,  4)', 'id("w.207")', 'id("w.208")', 'id("w.209")'],
         },
       },
     ]);
@@ -244,7 +220,8 @@ describe('making a target compatible to tAkita', () => {
           type: 'TEXT',
           linkToResource: 'Book_of_Psalms.xml',
           selector: {
-            xPath: 'id("w.131") | id("w.132") | id("w.99990") | id("pc.1")',
+            type: 'XPathSelector',
+            value: 'id("w.131") | id("w.132") | id("w.99990") | id("pc.1")',
           },
         },
       ],
@@ -255,28 +232,8 @@ describe('making a target compatible to tAkita', () => {
         type: 'TEXT',
         linkToResource: 'Book_of_Psalms.xml',
         selector: {
-          xPath: 'id("w.131")',
-        },
-      },
-      {
-        type: 'TEXT',
-        linkToResource: 'Book_of_Psalms.xml',
-        selector: {
-          xPath: 'id("w.132")',
-        },
-      },
-      {
-        type: 'TEXT',
-        linkToResource: 'Book_of_Psalms.xml',
-        selector: {
-          xPath: 'id("w.99990")',
-        },
-      },
-      {
-        type: 'TEXT',
-        linkToResource: 'Book_of_Psalms.xml',
-        selector: {
-          xPath: 'id("pc.1")',
+          type: 'XPathSelector',
+          value: ['id("w.131")', 'id("w.132")', 'id("w.99990")', 'id("pc.1")'],
         },
       },
     ]);

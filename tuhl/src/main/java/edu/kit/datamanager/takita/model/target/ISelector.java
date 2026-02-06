@@ -4,6 +4,6 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 public interface ISelector {
-	
+	public String getType();
 	public JSONObject getWADMSerialization() throws JSONException;
 }

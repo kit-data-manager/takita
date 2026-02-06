@@ -62,7 +62,7 @@ const annoData = {
       linkToResource:
         'http://localhost:8090/api/v1/dataresources/3bb48acd-5296-4343-949c-0eca80aa578f/data/Book_of_Psalms.xml',
       selector: {
-        xPath: 'id("w.219")',
+        value: 'id("w.219")',
       },
     },
   ],

@@ -111,7 +111,7 @@ function resetImageVariables() {
  * - Converts the dates to ISOStrings,
  * - converts the creators arry into a simple String and stores it,
  * - encodes the ID of the annotation,
- * - extracts information from the svgCode
+ * - extracts information from the svgCode stored in the target
  *
  * @param {Object} annotation the annotation to transform
  * @returns transformed annotation

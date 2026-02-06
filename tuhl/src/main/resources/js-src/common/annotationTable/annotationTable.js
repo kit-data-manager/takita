@@ -92,11 +92,11 @@ export function initializeAnnotationTable(annoJson, $annotationTable, onCellClic
         cardBody.setAttribute('class', 'card card-body no-wrap');
 
         // create rows for all bodies
-        const textcards = row.getData().textcards;
-        textcards.forEach((textcard) => {
+        const textCards = row.getData().textCards;
+        textCards.forEach((textCard) => {
           let row = document.createElement('div');
           row.setAttribute('class', 'row');
-          row.innerText = textcard.purpose + ': ' + textcard.value;
+          row.innerText = textCard.purpose + ': ' + textCard.value;
           cardBody.appendChild(row);
         });
         const tags = row.getData().tags;
@@ -177,7 +177,7 @@ export function defaultDisplayAnnotationFunction(_event, cell, hooks) {
 
   // if there is a shape, highlight it. For page-annotations, no shape will be highlighted
   // as there is none
-  if (cell.getRow().getData().svg.length > 0) {
+  if (cell.getRow().getData().targets.length > 0) {
     let targetShape = undefined;
     // getting the shape corresponding to the annotation and unselecting
     // all previously selected shapes
@@ -214,11 +214,11 @@ export function textDisplayAnnotationFunction(_event, cell, hooks) {
   const $navBarLow = document.getElementById('textNavBarLow');
   // get the Id of the first word of the target. First find the xPathSelector and then
   // unpack its value from 'id("w.123")' to 'w.123'
-  const xPathselector = rowData.svg?.filter((selectors) => selectors.type === 'XPathSelector')[0];
+  const xPathSelector = rowData.targets?.filter((target) => target.selector.type === 'XPathSelector')[0].selector;
   const fragmentId =
-    xPathselector.value instanceof Array
-      ? xPathselector.value[0].split('id("')[1].split('"')[0]
-      : xPathselector.value.split('id("')[1].split('"')[0];
+    xPathSelector.value instanceof Array
+      ? xPathSelector.value[0].split('id("')[1].split('"')[0]
+      : xPathSelector.value.split('id("')[1].split('"')[0];
   const annotationId = rowData.id;
   initializeNavigation($navBarTop, $navBarLow, $text, fragmentId, annotationId, hooks);
 }

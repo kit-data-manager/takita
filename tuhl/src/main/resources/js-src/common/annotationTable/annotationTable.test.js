@@ -5,7 +5,7 @@ const annoData = [
     id: 'http://localhost/wap/sfb1475/philipp/takita/001e4e8b-632f-40cf-bb05-d8241878e02c',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F001e4e8b-632f-40cf-bb05-d8241878e02c',
-    svg: [
+    targets: [
       {
         type: 'XPathSelector',
         value: ['id("w.153")'],
@@ -17,13 +17,13 @@ const annoData = [
     modified: '2024-06-07T12:14:00Z',
     motivation: 'describing',
     tags: [],
-    textcards: [{ value: 'mrw (direct)', purpose: 'classifying' }],
+    textCards: [{ value: 'mrw (direct)', purpose: 'classifying' }],
   },
   {
     id: 'http://localhost/wap/sfb1475/philipp/takita/cf890431-414e-4323-869b-b66737a5f07e',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252Fcf890431-414e-4323-869b-b66737a5f07e',
-    svg: [
+    targets: [
       {
         type: 'XPathSelector',
         value: ['id("w.127")'],
@@ -35,13 +35,13 @@ const annoData = [
     modified: '2024-06-07T12:27:29Z',
     motivation: 'describing',
     tags: [],
-    textcards: [{ value: 'mrw (direct)', purpose: 'classifying' }],
+    textCards: [{ value: 'mrw (direct)', purpose: 'classifying' }],
   },
   {
     id: 'http://localhost/wap/sfb1475/philipp/takita/33e435ac-4925-42b2-8507-8deddcfd2607',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F33e435ac-4925-42b2-8507-8deddcfd2607',
-    svg: [
+    targets: [
       {
         type: 'XPathSelector',
         value: ['id("w.127")'],
@@ -53,13 +53,13 @@ const annoData = [
     modified: '2024-06-07T12:27:56Z',
     motivation: 'describing',
     tags: [],
-    textcards: [{ value: 'mrw (indirect)', purpose: 'classifying' }],
+    textCards: [{ value: 'mrw (indirect)', purpose: 'classifying' }],
   },
   {
     id: 'http://localhost/wap/sfb1475/philipp/takita/9616d37d-b4d5-4d7e-95b1-162d59768924',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F9616d37d-b4d5-4d7e-95b1-162d59768924',
-    svg: [
+    targets: [
       {
         type: 'XPathSelector',
         value: ['id("w.126")'],
@@ -71,13 +71,13 @@ const annoData = [
     modified: '2024-06-07T12:28:43Z',
     motivation: 'describing',
     tags: [],
-    textcards: [{ value: 'mrw (direct)', purpose: 'classifying' }],
+    textCards: [{ value: 'mrw (direct)', purpose: 'classifying' }],
   },
   {
     id: 'http://localhost/wap/sfb1475/philipp/takita/02218c0d-7ee9-47d8-ba30-45c0cae6ffa6',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F02218c0d-7ee9-47d8-ba30-45c0cae6ffa6',
-    svg: [
+    targets: [
       {
         type: 'XPathSelector',
         value: ['id("w.125")'],
@@ -89,13 +89,13 @@ const annoData = [
     modified: '2024-06-07T12:29:55Z',
     motivation: 'describing',
     tags: [],
-    textcards: [{ value: 'mflag', purpose: 'classifying' }],
+    textCards: [{ value: 'mflag', purpose: 'classifying' }],
   },
   {
     id: 'http://localhost/wap/sfb1475/philipp/takita/2c3861fb-ea4c-415d-8d74-cb9990174641',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F2c3861fb-ea4c-415d-8d74-cb9990174641',
-    svg: [
+    targets: [
       {
         type: 'XPathSelector',
         value: ['id("w.149")'],
@@ -107,13 +107,13 @@ const annoData = [
     modified: '2024-06-07T12:42:53Z',
     motivation: 'describing',
     tags: [],
-    textcards: [{ value: 'mrw (direct)', purpose: 'classifying' }],
+    textCards: [{ value: 'mrw (direct)', purpose: 'classifying' }],
   },
   {
     id: 'http://localhost/wap/sfb1475/philipp/takita/631a742f-cf52-45cb-b546-d884c3736893',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F631a742f-cf52-45cb-b546-d884c3736893',
-    svg: [
+    targets: [
       {
         type: 'XPathSelector',
         value: ['id("w.159")'],
@@ -125,13 +125,13 @@ const annoData = [
     modified: '2024-06-07T12:45:02Z',
     motivation: 'describing',
     tags: [],
-    textcards: [{ value: 'mrw (direct)', purpose: 'classifying' }],
+    textCards: [{ value: 'mrw (direct)', purpose: 'classifying' }],
   },
   {
     id: 'http://localhost/wap/sfb1475/philipp/takita/35bc0255-49a4-444c-8613-f3b183f64668',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F35bc0255-49a4-444c-8613-f3b183f64668',
-    svg: [
+    targets: [
       {
         type: 'XPathSelector',
         value: ['id("w.156")'],
@@ -143,13 +143,13 @@ const annoData = [
     modified: '2024-06-07T13:24:28Z',
     motivation: 'describing',
     tags: [],
-    textcards: [{ value: 'mrw (direct)', purpose: 'classifying' }],
+    textCards: [{ value: 'mrw (direct)', purpose: 'classifying' }],
   },
   {
     id: 'http://localhost/wap/sfb1475/philipp/takita/8ea4228b-a11b-4fcd-8dfa-96c5a167bbf4',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F8ea4228b-a11b-4fcd-8dfa-96c5a167bbf4',
-    svg: [
+    targets: [
       {
         type: 'XPathSelector',
         value: ['id("w.176")'],
@@ -161,13 +161,13 @@ const annoData = [
     modified: '2024-06-07T13:26:16Z',
     motivation: 'describing',
     tags: [],
-    textcards: [{ value: 'mrw (direct)', purpose: 'classifying' }],
+    textCards: [{ value: 'mrw (direct)', purpose: 'classifying' }],
   },
   {
     id: 'http://localhost/wap/sfb1475/philipp/takita/7e8ea38c-3af3-4922-bcdb-baf75d1a5c0e',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F7e8ea38c-3af3-4922-bcdb-baf75d1a5c0e',
-    svg: [
+    targets: [
       {
         type: 'XPathSelector',
         value: ['id("w.130")'],
@@ -179,13 +179,13 @@ const annoData = [
     modified: '2024-07-15T08:40:55Z',
     motivation: 'describing',
     tags: [],
-    textcards: [{ value: 'mrw (direct)', purpose: 'classifying' }],
+    textCards: [{ value: 'mrw (direct)', purpose: 'classifying' }],
   },
   {
     id: 'http://localhost/wap/sfb1475/philipp/takita/130c7a9c-5b2f-4967-a9fc-84d916286c98',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F130c7a9c-5b2f-4967-a9fc-84d916286c98',
-    svg: [
+    targets: [
       {
         type: 'XPathSelector',
         value: ['id("w.176")'],
@@ -197,7 +197,7 @@ const annoData = [
     modified: '2024-07-15T08:41:18Z',
     motivation: 'describing',
     tags: [],
-    textcards: [
+    textCards: [
       { value: 'mflag', purpose: 'classifying' },
       { value: 'rivers', purpose: 'describing' },
     ],
@@ -206,7 +206,7 @@ const annoData = [
     id: 'http://localhost/wap/sfb1475/philipp/takita/559bc4ab-193f-4bb6-a408-ac74ed72a820',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F559bc4ab-193f-4bb6-a408-ac74ed72a820',
-    svg: [
+    targets: [
       {
         type: 'XPathSelector',
         value: ['id("w.143")'],
@@ -218,7 +218,7 @@ const annoData = [
     modified: '2024-10-09T09:02:01Z',
     motivation: 'describing',
     tags: [{ value: 'xc' }],
-    textcards: [
+    textCards: [
       { value: 'mrw (direct)', purpose: 'classifying' },
       { value: 'sitteth', purpose: 'describing' },
     ],
@@ -227,7 +227,7 @@ const annoData = [
     id: 'http://localhost/wap/sfb1475/philipp/takita/9e6db9e5-edb7-452d-8bb1-c890a3ff99ad',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F9e6db9e5-edb7-452d-8bb1-c890a3ff99ad',
-    svg: [
+    targets: [
       {
         type: 'XPathSelector',
         value: ['substring(id("w.178"), 2, 1)'],
@@ -239,13 +239,13 @@ const annoData = [
     modified: '2024-10-09T12:10:51Z',
     motivation: 'describing',
     tags: [],
-    textcards: [{ value: 'asd', purpose: 'commenting' }],
+    textCards: [{ value: 'asd', purpose: 'commenting' }],
   },
   {
     id: 'http://localhost/wap/sfb1475/philipp/takita/344ae33d-7c5a-403a-af7d-add5ea9df784',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F344ae33d-7c5a-403a-af7d-add5ea9df784',
-    svg: [
+    targets: [
       {
         type: 'XPathSelector',
         value: ['substring(id("w.166"),  3,  1)', 'id("w.167")', 'id("w.168")', 'substring(id("w.169"),  1,  1)'],
@@ -257,13 +257,13 @@ const annoData = [
     modified: '2024-10-09T13:20:36Z',
     motivation: 'describing',
     tags: [{ value: 'Term1' }],
-    textcards: [],
+    textCards: [],
   },
   {
     id: 'http://localhost/wap/sfb1475/philipp/takita/920ea72c-f3c1-4245-ade3-8e99fa326d62',
     idEncoded:
       'http%253A%252F%252Flocalhost%252Fwap%252Fsfb1475%252Fphilipp%252Ftakita%252F920ea72c-f3c1-4245-ade3-8e99fa326d62',
-    svg: [
+    targets: [
       {
         type: 'XPathSelector',
         value: ['id("w.194")'],
@@ -275,7 +275,7 @@ const annoData = [
     modified: '2024-10-09T13:49:58Z',
     motivation: 'describing',
     tags: [{ value: 'asd' }],
-    textcards: [],
+    textCards: [],
   },
 ];
 

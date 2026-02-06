@@ -167,7 +167,7 @@ export async function saveShape() {
     if (response.status == 200) {
       for (let anno in window.ANNOJSON) {
         if (window.ANNOJSON[anno].id === modifiedShape.annoId) {
-          window.ANNOJSON[anno].svg = svgString;
+          window.ANNOJSON[anno].targets[0].selector.value = svgString;
 
           if (window.ANNOJSON[anno].type === 'Rectangle') {
             window.ANNOJSON[anno].x = modifiedShape.attrs.x;

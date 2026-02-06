@@ -6,10 +6,10 @@ import { toggleVisibility } from '../utils';
 import { selectAnnotation } from './annotationCard';
 // data manipulation
 /**
- * Merges all the bodies of an annotation (tags and textcards) into one array
+ * Merges all the bodies of an annotation (tags and textCards) into one array
  *
  * @param {Object} data of the annotation
- * @returns {Array} of Objects holding both the bodies (textcards) and tags of the annotation
+ * @returns {Array} of Objects holding both the bodies (textCards) and tags of the annotation
  */
 export function mergeBodies(data) {
   // let bodies;

@@ -117,7 +117,7 @@ public class EditorController {
    * 
    * @param pageId Identifier in the editor of the page that should be displayed
    * @return HTTP entity sent back, either ok for a success including the 
-   * 	JSON object containing all all displayable annotations (annoJson) of a page
+   * 	JSON object containing all displayable annotations (annoJson) of a page
    * 	or 500, if something went wrong
    */
   @RequestMapping(value = "/{pageId}/displayableAnnotationsJSON", method = RequestMethod.GET, produces = "application/json")
@@ -152,10 +152,15 @@ public class EditorController {
         	// this check is necessary for "page"-annotations, which don't have a selector, i.e. which
         	// target the whole document/image
         	if (target.getSelector() != null) {
-        		targets.put(target.getSelector().getWADMSerialization());
+                // only send the selector (and not the source and type as well) of a target to
+                // the front-end to save bandwidth.
+                // One could also send the full target using targets.put(target.getWADMSerialization());
+                JSONObject targetSelector = new JSONObject();
+                targetSelector.put("selector", target.getSelector().getWADMSerialization());
+        		targets.put(targetSelector);
         	}
         }
-        thisAnno.put("svg", targets);
+        thisAnno.put("targets", targets);
 
         thisAnno.put("visible", true);
         thisAnno.put("created", annotations.get(i).getCreated());
@@ -181,22 +186,22 @@ public class EditorController {
         	System.out.println("No tags available");
         }
         
-        // adding textcards to the model
+        // adding textCards to the model
         try {
-        	JSONArray textcardJson = new JSONArray();
-        	List<TextCard> textcards = annotations.get(i).getTextCards();
+        	JSONArray textCardJson = new JSONArray();
+        	List<TextCard> textCards = annotations.get(i).getTextCards();
         	
-        	for (TextCard textcard : textcards) {
+        	for (TextCard textCard : textCards) {
         		JSONObject value = new JSONObject();
-        		value.put("value", textcard.getValue());
-        		value.put("purpose", textcard.getPurpose());
-        		textcardJson.put(value);
+        		value.put("value", textCard.getValue());
+        		value.put("purpose", textCard.getPurpose());
+        		textCardJson.put(value);
         	}
         	
-        	thisAnno.put("textcards", textcardJson);
+        	thisAnno.put("textCards", textCardJson);
         } catch (Exception e) {
         	System.out.println(e);
-        	System.out.println("No textcards available");
+        	System.out.println("No textCards available");
         }
         
 

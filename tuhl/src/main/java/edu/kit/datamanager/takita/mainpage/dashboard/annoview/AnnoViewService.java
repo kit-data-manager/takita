@@ -217,24 +217,24 @@ public class AnnoViewService implements IAnnoViewService {
         row.put("manuscriptTitle", annotation.getManuscriptTitle());
         
         // getting all bodies
-        // getting all textcards
-        JSONArray textcards = new JSONArray();
-        for (TextCard textcard : annotation.getTextCards()) {
+        // getting all textCards
+        JSONArray textCards = new JSONArray();
+        for (TextCard textCard : annotation.getTextCards()) {
         	JSONObject jsonObject = new JSONObject();
-        	jsonObject.put("purpose", textcard.getPurpose());
-        	if(textcard.getValue() != null) {
-        		jsonObject.put("value", textcard.getValue());
+        	jsonObject.put("purpose", textCard.getPurpose());
+        	if(textCard.getValue() != null) {
+        		jsonObject.put("value", textCard.getValue());
         	}
-        	if(textcard.getSource() != null) {
+        	if(textCard.getSource() != null) {
         		// It might be better to use "source" as the key for the JSONObject,
         		// but then the view needs to distinguish between "source"/"value".
         		// To avoid this distinction and to keep it more general, "value" is
         		// used.
-        		jsonObject.put("value", textcard.getSource());
+        		jsonObject.put("value", textCard.getSource());
         	}
-        	textcards.put(jsonObject);
+        	textCards.put(jsonObject);
         }
-        row.put("textcards", textcards);
+        row.put("textCards", textCards);
         // getting all tags
         JSONArray tags = new JSONArray();
         for (Tag tag : annotation.getTags()) {

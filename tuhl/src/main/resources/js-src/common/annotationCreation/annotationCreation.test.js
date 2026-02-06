@@ -3,10 +3,6 @@ import * as display from '../../texteditor-ng/display/display';
 import * as annotationCard from '../annotationCard/annotationCard';
 import * as metadataEditorWrapper from '../utils/metadataEditorWrapper';
 import { resetFormAndUpdateDisplay } from './annotationCreation';
-//pickTemplate(
-// svgCode, encodedId,      createFormId,            pickFormId,                    template
-// targetXPath, '',         'createAnnotationForm', 'pickAnnotationTemplateForm',   'annotationTemplate'
-// '', encodeAnnoId(annoId),'createForm',      '     pickBodyTemplateForm',         'bodyTemplate');
 
 const innerHTML = `
     <div class="modal" tabindex="-1" role="dialog" id="createBody" data-bs-backdrop="static">

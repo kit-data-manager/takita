@@ -157,10 +157,10 @@ export function extractInformationFromSvg(svgString, annoJson, hooks = {}) {
 
 export function drawAnnos(annoJson, hooks = {}) {
   for (let anno in annoJson) {
-    // check if there is a value for svg as page-annotations will not have a value
+    // check if there is a value for the svgCode stored in the target as page-annotations will not have a one
     // and should print an error on the console
-    annoJson[anno].svg[0]?.value
-      ? extractInformationFromSvg(annoJson[anno].svg[0].value, annoJson[anno], hooks)
+    annoJson[anno].targets[0]?.selector?.value
+      ? extractInformationFromSvg(annoJson[anno].targets[0].selector.value, annoJson[anno], hooks)
       : console.warn('annotation is page anno: ', annoJson[anno].id);
   }
 

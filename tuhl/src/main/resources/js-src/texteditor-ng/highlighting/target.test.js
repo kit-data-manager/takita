@@ -34,7 +34,7 @@ describe('removing all css classes relevant for highlighting a target', () => {
 describe('highlighting elements targeted by an annotation in the default way', () => {
   it('assigns the "defaulthighlight" class to elements targeted by an annotation', () => {
     document.body.innerHTML = `<div id="w.1"></div><div id="w.2"></div><div id="w.3"></div>`;
-    const annotation = { svg: [{ type: 'XPathSelector', value: ['id("w.1")', 'id("w.2")'] }] };
+    const annotation = { targets: [{ selector: { type: 'XPathSelector', value: ['id("w.1")', 'id("w.2")'] } }] };
     const $element1 = document.getElementById('w.1');
     const $element2 = document.getElementById('w.2');
     const $element3 = document.getElementById('w.3');
@@ -56,12 +56,12 @@ describe('highlighting elements targeted by an annotation, which got selected by
       targets: [
         {
           selector: {
-            xPath: 'id("w.1")',
+            value: 'id("w.1")',
           },
         },
         {
           selector: {
-            xPath: 'id("w.2")',
+            value: 'id("w.2")',
           },
         },
       ],

@@ -21,7 +21,7 @@ import { drawAnnos, removeStyles } from '../highlighting';
 export function initializeTextEditor(_annotations, hooks = {}) {
   const $text = document.getElementById('TEI');
   // bind eventHandlers to clicks and buttons
-  // open textcard if rightclicking on a word that is highlighted due to it
+  // open textCard if rightclicking on a word that is highlighted due to it
   // having a css class, i.e. has an annotation
   $text.addEventListener('contextmenu', async function (event) {
     event.preventDefault();
@@ -160,12 +160,13 @@ function cycleAnnotations(_event, $element, annoJson, currentSelectedAnnotation)
   if (possibleHighlightClasses.some((cls) => $element.classList.contains(cls))) {
     // add all the annotations targeting the selected word to an array
     annoJson.forEach((item) => {
-      item.svg.forEach((target) => {
-        if (target.type === 'XPathSelector') {
+      item.targets.forEach((target) => {
+        const selector = target.selector;
+        if (selector.type === 'XPathSelector') {
           if (
-            target.value instanceof Array
-              ? target.value.some((val) => val.split('"')[1] === $element.id)
-              : target.value.split('"')[1] === $element.id
+            selector.value instanceof Array
+              ? selector.value.some((val) => val.split('"')[1] === $element.id)
+              : selector.value.split('"')[1] === $element.id
           ) {
             annotationsOnTarget.push(item);
           }

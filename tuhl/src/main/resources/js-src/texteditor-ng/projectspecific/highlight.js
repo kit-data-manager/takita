@@ -47,8 +47,8 @@ export function assignStyle($element, annotation, index, alreadyHighlighted) {
       // This is needed to create overlapping boxshadows.
       // check if nextSibling is null first
       if ($element.nextSibling !== null) {
-        const xPathSelector = annotation.svg.find((selector) => selector.type === 'XPathSelector');
-        if ($element.nextSibling.textContent.trim() === '' && !(index === xPathSelector.value.length - 1)) {
+        const xPathTarget = annotation.targets.find((target) => target.selector.type === 'XPathSelector');
+        if ($element.nextSibling.textContent.trim() === '' && !(index === xPathTarget.selector.value.length - 1)) {
           $element.classList.add('whitespaceAfter');
         }
       }
@@ -81,10 +81,10 @@ export function getTypeOfAnnotation(annotation) {
   if (annotation.tags.length > 0) {
     type = 'backgroundOne';
   }
-  if (annotation.textcards) {
-    annotation.textcards.forEach((textcard) => {
-      if (textcard.purpose) {
-        switch (textcard.purpose) {
+  if (annotation.textCards) {
+    annotation.textCards.forEach((textCard) => {
+      if (textCard.purpose) {
+        switch (textCard.purpose) {
           case 'commenting':
             type = 'underline';
             break;
@@ -106,8 +106,9 @@ export function getTypeOfAnnotation(annotation) {
  * annotation targets the same word
  * false, if none of the targets/words of the annotation is highlighted
  */
-export function checkIsATargetAlreadyHighlighted(selectors) {
-  const alreadyHighlighted = selectors.some((selector) => {
+export function checkIsATargetAlreadyHighlighted(targets) {
+  const alreadyHighlighted = targets.some((target) => {
+    const selector = target.selector;
     switch (selector.type) {
       case 'XPathSelector': {
         const values = selector.value instanceof Array ? selector.value : [selector.value];
@@ -137,9 +138,10 @@ export function checkIsATargetAlreadyHighlighted(selectors) {
 export function customHighlighting(annotation) {
   // check if any target has the class "underline" and
   // therefore, is already highlighted
-  const alreadyHighlighted = checkIsATargetAlreadyHighlighted(annotation.svg);
+  const alreadyHighlighted = checkIsATargetAlreadyHighlighted(annotation.targets);
   // adding classes to highlight annotations
-  annotation.svg.forEach((selector, index) => {
+  annotation.targets.forEach((target, index) => {
+    const selector = target.selector;
     switch (selector.type) {
       case 'XPathSelector': {
         const values = selector.value instanceof Array ? selector.value : [selector.value];

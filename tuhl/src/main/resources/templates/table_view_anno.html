@@ -43,10 +43,10 @@
     showBars(false, true, false);
 
     function checkIsMetaphorAnnotation(cell){
-        const textcards = JSON.parse(cell.getRow().getData().textcards);
-        // check if a textcard has the value "metaphor", if it does the resulting array
+        const textCards = JSON.parse(cell.getRow().getData().textCards);
+        // check if a textCard has the value "metaphor", if it does the resulting array
         // will be longer than "0" and the comparison will return true
-        return textcards.filter(textcard => textcard.value ==="metaphor").length > 0;
+        return textCards.filter(textCard => textCard.value ==="metaphor").length > 0;
     }
 
     // create the annotation overview table
@@ -71,12 +71,13 @@
                     annotationId: annoId
                 });
 
-                const selector = cell.getRow().getData().targetSelectors[0];
-                if (selector.type === "XPathSelector"){
+                const selectors = JSON.parse(cell.getRow().getData().targetSelectors);
+                const xPathSelector = selectors.find(selector => selector.type === 'XPathSelector');
+                if (xPathSelector){
                     // get the Id of the first word of the target
-                    const firstWordOfTarget = selector.value
-                                    .split('id("')[1]
-                                    .split('"')[0];
+                    const firstWordOfTarget = xPathSelector.value instanceof Array
+                        ? xPathSelector.value[0].split('id("')[1].split('"')[0]
+                        : xPathSelector.value.split('id("')[1].split('"')[0];
                     searchParams.append("fragment", firstWordOfTarget);
                 }
 
@@ -129,8 +130,8 @@
             visible: false
         },
         {
-            title: [[#{col_name.textcards}]],
-            field: "textcards",
+            title: [[#{col_name.textCards}]],
+            field: "textCards",
             headerSort: false,
             headerMenu: headerMenu(),
             visible: false
@@ -231,23 +232,23 @@
                 // unwrapping the creator array
                 entry.creator = entry.creator.join(', ');
 
-                // the following is not necessary any longer as the tags/textcards are getting
+                // the following is not necessary any longer as the tags/textCards are getting
                 // stringified later and at necessary parts parsed into JSON again
                 // unwrapping the bodies to make them searchable
-                /*const unwrappedTextcards= entry.textcards.map(textcard => textcard.purpose + ": " + textcard.value);
+                /*const unwrappedTextcards= entry.textCards.map(textCard => textCard.purpose + ": " + textCard.value);
                 const unwrappedTags = entry.tags.map(tag => "tagging: " + tag.value);
                 entry.searchableBodies = unwrappedTags.concat(unwrappedTextcards);*/
 
                 // TODO: CUSTOMIZE how the label for the annotation is created
-                // check if a textcard has "identifying" as it its purpose (CRC1475 stores the label there)
-                entry.label = entry.textcards.filter(textcard => textcard.purpose === "identifying")
+                // check if a textCard has "identifying" as it its purpose (CRC1475 stores the label there)
+                entry.label = entry.textCards.filter(textCard => textCard.purpose === "identifying")
                                                 // get the last (and only) entry of the resulting array
                                                 .pop()
                                                 // check if the entry has a "value"-key, if not set it to "undefined"
                                                 ?.value || "undefined";
                 // TODO: CUSTOMIZE how the selected image/textpart of the annotation is created
-                // check if a textcard has "identifying" as it its purpose (CRC1475 stores the label there)
-                entry.selection = entry.textcards.filter(textcard => textcard.purpose === "describing")
+                // check if a textCard has "identifying" as it its purpose (CRC1475 stores the label there)
+                entry.selection = entry.textCards.filter(textCard => textCard.purpose === "describing")
                                                 // get the last (and only) entry of the resulting array
                                                 .pop()
                                                 // check if the entry has a "value"-key, if not set it to "undefined"
@@ -255,7 +256,7 @@
                 
                 // stringifying the bodies to make them searchable
                 entry.tags = JSON.stringify(entry.tags);
-                entry.textcards = JSON.stringify(entry.textcards);
+                entry.textCards = JSON.stringify(entry.textCards);
                 entry.targetSelectors = JSON.stringify(entry.targetSelectors);
             });
             return response; //return the response data to tabulator
@@ -279,11 +280,11 @@
                 cardBody.setAttribute('class', 'card card-body no-wrap');
 
                 // create rows for all bodies
-                const textcards = JSON.parse(row.getData().textcards);
-                textcards.forEach(textcard => {
+                const textCards = JSON.parse(row.getData().textCards);
+                textCards.forEach(textCard => {
                     let row = document.createElement('div');
                     row.setAttribute('class', 'row');
-                    row.innerText = textcard.purpose + ": " + textcard.value;
+                    row.innerText = textCard.purpose + ": " + textCard.value;
                     cardBody.appendChild(row);
                 });
                 const tags = JSON.parse(row.getData().tags);

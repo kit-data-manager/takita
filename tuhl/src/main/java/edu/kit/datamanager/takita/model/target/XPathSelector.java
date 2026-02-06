@@ -1,11 +1,5 @@
 package edu.kit.datamanager.takita.model.target;
 
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-import javax.xml.xpath.XPathFactoryConfigurationException;
-
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
@@ -14,19 +8,23 @@ import edu.kit.datamanager.takita.dataaccess.AnnotationStoreStrings;
 public class XPathSelector implements ISelector {
 
 	// TODO: change datatype of svgCode
-	private String xPath;
+	private String value;
+	private final String type = AnnotationStoreStrings.XPATH_SELECTOR.getName();
 	
-	public XPathSelector(String xPath) {
-		this.xPath = xPath;
+	public XPathSelector(String value) {
+		this.value = value;
 	}
 
-	public String getxPath() {
-		return xPath;
+	public String getValue() {
+		return value;
 	}
 
-	public void setxPath(String xPath) {
-		this.xPath = xPath;
+	public void setValue(String value) {
+		this.value = value;
 	}
+
+	@Override
+	public String getType() { return type; }
 
 	@Override
 	public JSONObject getWADMSerialization() throws JSONException {
@@ -41,14 +39,14 @@ public class XPathSelector implements ISelector {
 		} catch (XPathExpressionException e) {
 			e.printStackTrace();
 		}*/
-		wadmSelector.put(AnnotationStoreStrings.TYPE.getName(), AnnotationStoreStrings.XPATH_SELECTOR.getName());
-		wadmSelector.put(AnnotationStoreStrings.VALUE.getName(), this.xPath);
+		wadmSelector.put(AnnotationStoreStrings.TYPE.getName(), this.type);
+		wadmSelector.put(AnnotationStoreStrings.VALUE.getName(), this.value);
 		
 		return wadmSelector;
 	}
 	
 	public String toString() {
-		 return this.xPath;
+		 return this.value;
 	}
 		
 

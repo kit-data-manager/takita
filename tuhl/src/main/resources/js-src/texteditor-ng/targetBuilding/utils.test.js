@@ -237,9 +237,7 @@ describe('get string containing the selected text/target of an annotation', () =
       ],
       targets: [
         {
-          selector: {
-            xPath: 'id("w.133") | id("w.134") | id("w.135")',
-          },
+          selector: { type: 'XPathSelector', value: 'id("w.133") | id("w.134") | id("w.135")' },
         },
       ],
     };
@@ -256,9 +254,7 @@ describe('get string containing the selected text/target of an annotation', () =
       ],
       targets: [
         {
-          selector: {
-            xPath: 'id("w.133") | id("w.134") | id("w.135")',
-          },
+          selector: { type: 'XPathSelector', value: 'id("w.133") | id("w.134") | id("w.135")' },
         },
       ],
     };

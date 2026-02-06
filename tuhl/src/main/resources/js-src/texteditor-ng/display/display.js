@@ -25,7 +25,7 @@ export async function updateDisplay(hooks = {}) {
     // Make them compatible, if they are not
     annoJson = annoJson.map((annotation) => {
       if (!checkIsTargetCompatible(annotation)) {
-        annotation.svg = makeTargetsCompatible(annotation);
+        annotation.targets = makeTargetsCompatible(annotation);
       }
       return annotation;
     });

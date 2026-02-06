@@ -24,8 +24,16 @@ describe('updating the display by rendering the current annotations', () => {
         <div id="annotationTableBottom"></div>
         <div class="card card-body row-gap-2 invisible" id="annotationCard">`;
     const mockAnnoJson = [
-      { id: '1', svg: [{ type: 'XPathSelector', value: ['id("w.1")', 'id("w.2")'] }], creator: 'test' },
-      { id: '2', svg: [{ type: 'XPathSelector', value: ['id("w.3")', 'id("w.4")'] }], creator: 'test' },
+      {
+        id: '1',
+        targets: [{ selector: { type: 'XPathSelector', value: ['id("w.1")', 'id("w.2")'] } }],
+        creator: 'test',
+      },
+      {
+        id: '2',
+        targets: [{ selector: { type: 'XPathSelector', value: ['id("w.3")', 'id("w.4")'] } }],
+        creator: 'test',
+      },
     ];
     // mocking an inner funciton call, which does a network request, to be called successfully
     // and return the data
