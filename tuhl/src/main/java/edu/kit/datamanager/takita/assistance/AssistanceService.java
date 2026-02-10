@@ -30,6 +30,9 @@ public class AssistanceService implements IAssistanceService {
   private final IFilterService filterService;
   private final IMainPageService mainPageService;
   public Boolean securityEnabled;
+  // link provided via application.properties, which redirects to a location, where users can provide feedback.
+  @Value("${feedbackLink:#{null}}")
+  private String feedbackLink;
   
   /**
    * Constructor for the Assistance Service to autowire required instances.
@@ -173,6 +176,7 @@ public class AssistanceService implements IAssistanceService {
       // template should store the csrf token (which is only available, if security is enabled)
       // or a default value in the "<meta name="_csrf">"-element.
       model.addAttribute("securityEnabled", this.securityEnabled);
+      model.addAttribute("feedbackLink", this.feedbackLink);
       model.addAttribute("user", getCurrentUser());
   }
   

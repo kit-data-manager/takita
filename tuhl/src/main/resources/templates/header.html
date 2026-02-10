@@ -16,6 +16,7 @@
             <a class="dropdown-item" href="?lang=en" onclick="return clickEn()" th:text="#{language.gb}"> </a>
         </div>
     </div>
+    <div class="col-auto" th:if="${feedbackLink} != null" th:insert="~{feedback.html :: feedback}" style="padding: 0;"></div>
     <script th:inline="javascript">
         // setting contextpath
         window.CONTEXTPATH = /*[[@{/}]]*/ "/";

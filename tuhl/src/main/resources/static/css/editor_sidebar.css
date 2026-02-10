@@ -177,39 +177,3 @@
     cursor: not-allowed;
     font-size: 2rem;
 }
-
-/* help button in top right corner */
-
-.issueSvg {
-	position: absolute;
-	inset: 0px;
-	height: 100%;
-	width: 100%;
-	color: inherit;
-	fill: currentcolor;
-  }
-  
-.issueDiv {
-	display: inline-block;
-	flex: 0 0 32px;
-	width: 32px;
-	height: 32px;
-	min-width: 32px;
-	min-height: 32px;
-	position: relative;
-	color: inherit;
-  }
-  
-.issueButton {
-	padding: 2px;
-  }
-  
-.issueWrap {
-	display: inline-block;
-	flex: 0 0 32px;
-	width: 32px;
-	height: 32px;
-	min-width: 32px;
-	min-height: 32px;
-  }
-  
