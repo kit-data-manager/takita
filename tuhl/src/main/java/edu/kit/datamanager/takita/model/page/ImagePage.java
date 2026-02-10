@@ -21,7 +21,6 @@ public class ImagePage extends Page {
   public ImagePage(String id, ResourceType resourceType, String pageNumber, Instant created,
                    String resourceUrl, String thumbResourceUrl) {
     super(id, resourceType, pageNumber, created, resourceUrl);
-    annotations = new ArrayList<>();
     this.thumbResourceUrl = thumbResourceUrl;
   }
 

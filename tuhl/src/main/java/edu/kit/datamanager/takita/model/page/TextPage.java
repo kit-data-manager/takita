@@ -20,7 +20,6 @@ public class TextPage extends Page {
    */
   public TextPage(String id, ResourceType resourceType, String pageNumber, Instant created, String resourceUrl) {
     super(id, resourceType, pageNumber, created, resourceUrl);
-    annotations = new ArrayList<>();
   }
   
   /**

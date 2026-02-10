@@ -3,6 +3,7 @@ package edu.kit.datamanager.takita.model.page;
 import edu.kit.datamanager.takita.model.Annotation;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -46,6 +47,7 @@ public abstract class Page {
     this.pageNumber = pageNumber;
     this.created = created;
     this.resourceUrl = resourceUrl;
+    this.annotations = new ArrayList<>();
   }
 
   /**
