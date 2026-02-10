@@ -76,7 +76,7 @@ export async function createAnnotationDiv(annotationData, $annotationDiv, hooks 
 /**
  * Create a div element holding the information from one body
  *
- * @param {String} annoId single encoded the id of the annotaiton
+ * @param {String} annoId single encoded the id of the annotation
  * @param {Object} body the body as JSON
  * @param {number} index the index of the body in the bodies array
  * @param {Object} [hooks] containing an array for the hooks to be passed to "selectAnnotation()"

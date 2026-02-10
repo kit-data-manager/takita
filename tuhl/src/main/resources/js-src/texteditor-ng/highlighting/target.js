@@ -84,7 +84,7 @@ export function highlightSelectedAnnotationsTarget(selectedAnnotation, $text) {
   if (selectedAnnotation) {
     selectedAnnotation.targets.forEach((target) => {
       if (target.selector?.exact) {
-        console.warn('Implement textQuoteSelector highlighting for selectedAnnotaiton pls');
+        console.warn('Implement textQuoteSelector highlighting for selectedAnnotation pls');
       } else {
         const values = target.selector.value instanceof Array ? target.selector.value : [target.selector.value];
         values.forEach((value) => {
