@@ -29,8 +29,6 @@ public class AnnoViewController {
 
   private final AnnoViewService AnnoViewService;
   private final IMainPageService mainPageService;
-  //private final IAnnotationStoreAccessService annotationStoreAccessService;
-  private final ISearchIndexService searchIndexService;
 
   /**
    * Constructor for the AnnoViewController to autowire required instances.
@@ -41,10 +39,9 @@ public class AnnoViewController {
    *                        Springs dependency injection system indicated by @autowired annotation.
    */
   @Autowired
-  public AnnoViewController(AnnoViewService AnnoViewService, IMainPageService mainPageService, ISearchIndexService searchIndexService) {
+  public AnnoViewController(AnnoViewService AnnoViewService, IMainPageService mainPageService) {
     this.AnnoViewService = AnnoViewService;
     this.mainPageService = mainPageService;
-    this.searchIndexService = searchIndexService;
   }
 
   /**
@@ -59,85 +56,22 @@ public class AnnoViewController {
     mainPageService.update(model);
     return "table_view_anno.html :: annoView";
   }
-
-
-  /**
-   * Handles GET request for first page of manuscript.
-   *
-   * @param manId of manuscript
-   * @param model the holder for model attributes, used to pass attributes back to the view
-   * @return id of first page
-   */
-  @GetMapping("/getFirstPage/{manId}")
-  @ResponseBody
-  public String getFirstPage(@PathVariable("manId") String manId, Model model) {
-    try {
-      return AnnoViewService.getFirstPage(manId);
-
-    } catch (NoSuchIndexEntryException e) {
-      model.addAttribute("errorMessage", e.getMessage());
-      return "error";
-    }
-
-  }
-
-  /**
-   * Handles request when sort function in table is called.
-   *
-   * @param column to be sorted by
-   * @param order  asc or desc
-   * @param pageNo current pageNo
-   * @param size   current page size
-   * @param model  the holder for model attributes, used to pass attributes back to the view
-   * @return the sorted data in json format
-   */
-  @RequestMapping(value = "/sort", params = {"sorters[0][field]",
-      "sorters[0][dir]", "page", "size"})
-  @ResponseBody
-  public String getSorted(@RequestParam("sorters[0][field]") String column,
-                          @RequestParam("sorters[0][dir]") String order,
-                          @RequestParam("page") int pageNo, @RequestParam("size") int size,
-                          Model model) {
-    AnnoViewService.setCurrentPage(pageNo);
-    AnnoViewService.setNumberOfResults(size);
-    AnnoViewService.setSortAscending(order.equals("asc"));
-    AnnoViewService.setSortField(column);
-    AnnoViewService.search();
-    mainPageService.update(model);
-    try {
-      JSONArray data = AnnoViewService.getData();
-      JSONObject newData = new JSONObject();
-
-      newData.put("last_page", AnnoViewService.getNumberOfResultsPages());
-      newData.put("data", data);
-      return newData.toString();
-    } catch (JSONException e) {
-      model.addAttribute("errorMessage", e.getMessage());
-      return "error";
-    }
-
-  }
   
   /**
-   * Handles request when sort function in table is called.
+   * Handles request to get the data for the table.
    *
-   * @param column to be sorted by
-   * @param order  asc or desc
-   * @param pageNo current pageNo
-   * @param size   current page size
    * @param model  the holder for model attributes, used to pass attributes back to the view
    * @return the sorted data in json format
    */
-  @RequestMapping(value = "/annoview")
+  @RequestMapping(value = "/data")
   @ResponseBody
-  public String getAnnoview(Model model) {
+  public String getData(Model model) {
     AnnoViewService.search();
     mainPageService.update(model);
     try {
       JSONArray data = AnnoViewService.getData();
       JSONObject newData = new JSONObject();
 
-      newData.put("last_page", AnnoViewService.getNumberOfResultsPages());
       newData.put("data", data);
       return data.toString();
     } catch (JSONException e) {
@@ -145,18 +79,6 @@ public class AnnoViewController {
       return "error";
     }
 
-  }
-
-  /**
-   * Handles GET request to set table to first Page.
-   *
-   * @return placeholder
-   */
-  @GetMapping("/getFirst")
-  @ResponseBody
-  public String setFirstPage() {
-    AnnoViewService.setCurrentPage(1);
-    return "placeholder";
   }
 
 
