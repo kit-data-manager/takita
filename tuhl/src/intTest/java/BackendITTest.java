@@ -192,7 +192,7 @@ class BackendITTest {
         assertEquals(1, manuscript.getNoPages());
         assertEquals(1, annos.size());
 
-        editorService.addAnnotation(pageID, null, null, "testing");
+        editorService.addAnnotation(pageID, null, null);
         annos = searchIndexService.getAnnotationsForPageById(pageID);
         assertEquals(2, annos.size());
         assertTrue(annos.get(1).getCreated().isAfter(testDate));
