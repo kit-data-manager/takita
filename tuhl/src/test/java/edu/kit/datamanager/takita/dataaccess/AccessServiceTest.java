@@ -63,7 +63,7 @@ class AccessServiceTest {
   private AnnotationConverter mockedAnnotationConverter;
   
   @BeforeEach
-  void init() throws NoSuchFieldException {
+  void init() {
     //Insert mock HttpRequestHelper into private field of the RepositoryAccessService instance
     ReflectionTestUtils.setField(accessService, "annotationConverter",mockedAnnotationConverter);
     ReflectionTestUtils.setField(accessService, "manuscriptConverter", mockedManuscriptConverter);
@@ -74,7 +74,7 @@ class AccessServiceTest {
   void getAllManuscripts()
       throws InterruptedException, ParseException, JSONException, IOException, org.json.JSONException {
     List<Manuscript> expectedManuscripts = buildMocksAndExpectedManuscripts();
-    assertEqualManuscriptLists(expectedManuscripts, accessService.getAllManuscripts());
+    assertEqualManuscriptLists(expectedManuscripts, accessService.getManuscripts(-1));
   }
   
   @Test
@@ -150,12 +150,12 @@ class AccessServiceTest {
     Mockito.when(mockedManuscriptConverter.buildManuscriptFromJson(buildExpectedManuscripts.get(3), null)).thenReturn(moreManuscripts.get(1));
     Mockito.when(mockedManuscriptConverter.buildManuscriptFromJson(buildExpectedManuscripts.get(4), null)).thenReturn(moreManuscripts.get(2));
 
-    List<Manuscript> actualManuscripts = accessService.getFewManuscripts();
+    List<Manuscript> actualManuscripts = accessService.getManuscripts(5);
     assertEqualManuscriptLists(expectedManuscripts, actualManuscripts);
   }
   
   @Test
-  void addAnnotation() throws IOException, JSONException, InterruptedException, ParseException, NoSuchIndexEntryException {
+  void addAnnotation() throws IOException, JSONException, InterruptedException {
 
     JSONObject jsonAnnotation1 = new JSONObject(readStringFromRelativePath("addAnnotation/annotation1.json"));
     Annotation expectedAnnotation1 = createAnnotation1();
