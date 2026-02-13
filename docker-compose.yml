@@ -21,3 +21,20 @@ services:
         condition: service_healthy
     networks:
       - compose-network
+  sampleData:
+    profiles: ["playground"]
+    image: ghcr.io/orange-opensource/hurl:latest
+    depends_on:
+      - reverseProxy
+    volumes:
+      - ./tuhl/src/intTest/resources/hurl:/hurl
+    entrypoint: >
+      sh -c "
+      hurl --variable host=http://baserepo/repo --file-root /hurl --test /hurl/repo_setup.hurl -v &&
+      hurl --variable host=http://annoserver/annoserver --file-root /hurl --test /hurl/wap_setup.hurl -v &&
+      curl -X POST 'http://takita:8080/actuator/searchIndex?operation=rebuild' -H 'Content-Type: application/json'
+      "
+    networks:
+      - compose-network
+  
+
