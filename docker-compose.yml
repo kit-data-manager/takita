@@ -32,7 +32,8 @@ services:
       sh -c "
       hurl --variable host=http://baserepo/repo --file-root /hurl --test /hurl/repo_setup.hurl -v &&
       hurl --variable host=http://annoserver/annoserver --file-root /hurl --test /hurl/wap_setup.hurl -v &&
-      curl -X POST 'http://takita:8080/actuator/searchIndex?operation=rebuild' -H 'Content-Type: application/json'
+      sleep 10 &&
+      hurl --variable host=http://takita:8080 --file-root /hurl --test /hurl/rebuild_index.hurl -v
       "
     networks:
       - compose-network
