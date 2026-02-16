@@ -59,24 +59,76 @@ sast:
 include:
 - template: Security/SAST.gitlab-ci.yml
 
-e2e:
-  stage: test
-  trigger:
-    project: kit/sfb980/legacy/component-showcase/compose-stack
-    branch: e2etesting
-    strategy: depend
-  variables:
-    SOURCEBRANCH: ${CI_COMMIT_REF_NAME}
-  allow_failure: true
-#integration test is included in build anyway
-#integrationtest:
-#  image: eclipse-temurin:17.0.9_9-jdk
+#e2e:
 #  stage: test
-#  rules:
-#    - if: '$CI_COMMIT_BRANCH == "development" && $CI_PIPELINE_SOURCE == "push"'
-#    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"'
-#    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "development" && $CI_PIPELINE_SOURCE == "merge_request_event"'
-#    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "merge_request_event"'
-#  script:
-#    - cd tuhl
-#    - ./gradlew integrationTest
+#  trigger:
+#    project: kit/sfb980/legacy/component-showcase/compose-stack
+#    branch: e2etesting
+#    strategy: depend
+#  variables:
+#    SOURCEBRANCH: ${CI_COMMIT_REF_NAME}
+#  allow_failure: true
+
+docker_playground:
+  stage: test
+  image: docker:latest
+  tags:
+    - compose
+  variables:
+    DOCKER_HOST: tcp://dockerdind:2375
+    DOCKER_TLS_CERTDIR: ""
+  services:
+    - name: docker:dind
+      alias: dockerdind
+  script:
+    - echo "Starting playground stack..."
+    - docker compose --profile playground up -d
+
+    # --- Wait for sampleData to finish ---
+    - |
+      echo "Waiting for sampleData to finish..."
+      while true; do
+        STATUS=$(docker inspect -f '{{.State.Status}}' takita-sampleData-1 2>/dev/null || echo "notfound")
+      
+        if [ "$STATUS" = "notfound" ]; then
+          echo "sampleData container not found"
+          exit 1
+        fi
+      
+        case "$STATUS" in
+          created)
+            echo "sampleData is in 'created' state, waiting for it to start..."
+            ;;
+          running)
+            echo "sampleData is running..."
+            ;;
+          exited)
+            echo "sampleData has exited."
+            break
+            ;;
+          *)
+            echo "sampleData is in unexpected state: $STATUS"
+            break
+            ;;
+        esac
+      
+        sleep 5
+      done
+
+    # --- Check exit code ---
+    - EXIT_CODE=$(docker inspect -f '{{.State.ExitCode}}' takita-sampleData-1)
+    - echo "sampleData exit code $EXIT_CODE"
+    - if [ "$EXIT_CODE" -ne 0 ]; then echo "Playground setup has failed"; exit 1; fi
+
+    # --- Check that all other services are not exited unexpectedly ---
+    - echo "Checking other containers..."
+    - |
+      NON_RUNNING=$(docker compose ps --services --filter "status=exited" | grep -v sampleData || true)
+      if [ -n "$NON_RUNNING" ]; then
+        echo "Some containers exited unexpectedly:"
+        echo "$NON_RUNNING"
+        docker compose ps
+        exit 1
+      fi
+
+    - echo "Playground test passed successfully."
