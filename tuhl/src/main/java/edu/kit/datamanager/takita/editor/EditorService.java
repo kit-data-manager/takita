@@ -305,7 +305,7 @@ public class EditorService implements IEditorService {
 
     String creator = assistanceService.getCurrentUser().getName();
     updatedTag.update(creator, Instant.now(), source, subject, title, value);
-    
+
     updatedTag.setFullJson(annotationConverter.bodyToJson(updatedTag));
 
     try {
@@ -404,7 +404,7 @@ public class EditorService implements IEditorService {
   public String getPageContentXml(String pageId, String fileName) throws IOException, InterruptedException {
 	    return searchIndexService.getRawPageContentXml(pageId, fileName);
   }
-  
+
   /**
    * Gets the raw JSON of a page.
    *

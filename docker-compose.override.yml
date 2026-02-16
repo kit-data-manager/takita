@@ -1,0 +1,20 @@
+services:
+  es:
+    environment:
+      - "ES_JAVA_OPTS=-Xms256m -Xmx512m"
+  takita:
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        "elasticsearch.ip": "es",
+        "repository.baseUrl": "http://baserepo/repo/",
+        "annotationStore.url": "http://annoserver/annoserver/wap/",
+        "sparqlQuery.urlPrefix": "http://annoserver:4330/wap/sparql?query=",
+        "management.endpoints.web.exposure.include": "searchindex,health",
+        "management.endpoint.searchindex.enabled": "true"
+      }'
+    healthcheck:
+      test: "curl --fail --silent takita:8080/ || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 20
+      start_period: 40s

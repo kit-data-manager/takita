@@ -1,0 +1,26 @@
+services:
+  baserepo:
+    hostname: baserepo
+    image: ghcr.io/kit-data-manager/base-repo:main #current workaround to use multi-platform build. change back to latest on 1.5.9
+    ports:
+      - :80
+    environment:
+      SPRING_APPLICATION_JSON: '{
+        "server.port":80,
+        "server.servlet.context-path": "/repo"
+        }'
+    networks:
+      - compose-network
+    healthcheck:
+      test: "curl --fail --silent baserepo/repo/actuator/health | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 20
+      start_period: 40s
+    #volumes:
+      # - ./repodata/data:/var/repository
+      # - ./repodata/db:/tmp/base-repo
+#networks:
+#  compose-network:
+#    external: true
+#    name: sfb980Showcase

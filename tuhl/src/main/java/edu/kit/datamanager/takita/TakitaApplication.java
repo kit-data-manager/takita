@@ -36,6 +36,10 @@ public class TakitaApplication implements ApplicationRunner, WebMvcConfigurer {
   @Autowired
   private ISearchIndexService searchIndexService;
 
+  @Value(("${devIndex.size}"))
+  private int devIndexSize;
+
+
   /**
    * Entry point of the program. Runs the application.
    *
@@ -63,9 +67,13 @@ public class TakitaApplication implements ApplicationRunner, WebMvcConfigurer {
   private void handleArguments(ApplicationArguments args) {
     try {
       if (args.getNonOptionArgs().contains("buildDevIndex")) {
-        searchIndexService.buildSmallIndex();
+        searchIndexService.buildIndex(devIndexSize);
       }
-  
+
+      if (args.getNonOptionArgs().contains("buildIndex")) {
+        searchIndexService.buildIndex(-1);
+      }
+
       if (args.getNonOptionArgs().contains("updateIndex")) {
         searchIndexService.updateIndex();
       }
@@ -81,10 +89,6 @@ public class TakitaApplication implements ApplicationRunner, WebMvcConfigurer {
           updateIndexHour = Integer.parseInt(args.getOptionValues("hour").get(0));
         }
         searchIndexService.startIndexUpdateCycle(updateIndexDayInterval, updateIndexHour);
-      }
-  
-      if (args.getNonOptionArgs().contains("buildIndex")) {
-        searchIndexService.buildIndex();
       }
       
     } catch (InterruptedException e) {

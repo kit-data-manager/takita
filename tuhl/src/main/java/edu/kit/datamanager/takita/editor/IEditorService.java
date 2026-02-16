@@ -30,8 +30,8 @@ public interface IEditorService {
    * @return the added annotation
    * @throws InterruptedException when the http request to database is interrupted
    * @throws NoSuchIndexEntryException when there is no such page in the index
-   * @throws IOException when the http request to database was faulty
-   * @throws JSONException when there is a problem with the JSON object holding the selector
+   * @throws IOException when the http request to database was faulty and on connection error
+   * @throws JSONException when server returns non success code or response payload does not contain annotation
    */
   Annotation addAnnotation(String pageId, JSONArray selectors, String motivation)
       throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException;
@@ -224,7 +224,7 @@ public interface IEditorService {
    */
   JSONObject getPageJson(String pageId)
       throws InterruptedException, IOException;
-  
+
   /**
    * Gets the raw XML of a page.
    *

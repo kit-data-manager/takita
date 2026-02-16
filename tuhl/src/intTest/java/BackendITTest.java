@@ -171,7 +171,7 @@ class BackendITTest {
     @Test
     public void buildindexTest(Hoverfly hoverfly) throws IOException, JSONException, InterruptedException, NoSuchIndexEntryException {
 
-        searchIndexService.buildIndex();
+        searchIndexService.buildIndex(-1);
         Manuscript manuscript = searchIndexService.getManuscriptById(manuscriptID);
         List<Annotation> annos = searchIndexService.getAnnotationsForPageById(pageID);
 

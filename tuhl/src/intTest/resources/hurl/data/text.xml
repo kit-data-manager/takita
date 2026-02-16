@@ -1,0 +1,29 @@
+<text xmlns="http://www.tei-c.org/ns/1.0" xml:lang="la-Latn" type="edition">
+    <body>
+        <div n="1" type="section">
+            <p>
+                <w xml:id="w.1">Lorem</w>
+                <w xml:id="w.2">ipsum</w>
+                <w xml:id="w.3">dolor</w>
+                <w xml:id="w.4">sit</w>
+                <w xml:id="w.5">amet</w>
+                <pc xml:id="pc.1">,</pc>
+                <w xml:id="w.6">consectetur</w>
+                <w xml:id="w.7">adipiscing</w>
+                <w xml:id="w.8">elit</w>
+                <pc xml:id="pc.2">,</pc>
+                <lb/>
+                <w xml:id="w.9">Lorem</w>
+                <w xml:id="w.10">ipsum</w>
+                <w xml:id="w.11">dolor</w>
+                <w xml:id="w.12">sit</w>
+                <w xml:id="w.13">amet</w>
+                <pc xml:id="pc.3">,</pc>
+                <w xml:id="w.14">consectetur</w>
+                <w xml:id="w.15">adipiscing</w>
+                <w xml:id="w.16">elit</w>
+                <pc xml:id="pc.4">,</pc>
+            </p>
+        </div>
+    </body>
+</text>

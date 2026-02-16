@@ -24,14 +24,31 @@ native installation guide TBD
 
 ### Docker
 
-As an alternative to native installation, the provided Dockerfile can be used for containerized installation. To setup tAKITA together with the necessary elasticsearch API, the `docker-compose.yml`configuration can be used.
+As an alternative to native installation, we provide multiple docker compose setups for containerized installation.
+- `docker-compose.yml`: default configuration, bundled with elastic, base-repo service and wap-server service
+- `docker-compose.minimal.yml`: takita with elastic only (base-repo and wap-server have to be setup separately)
 
-To use the docker setup, the following minimal environment variables are needed (for example provided by an .env file):
+To use the minimal docker setup, the following environment variables are needed (for example provided by an .env file):
 
 ```
 TAKITA_REPOURL=http://<some-repo>/
 TAKITA_WAPURL=http://<some wadm server>/
 TAKITA_SPARQLURL=http://<some wadm server...>/sparql?query=
+```
+
+For the bundled version, all services run behind a reverse proxy. Therefore, only the proxy can be configured (default: localhost:7777)
+
+```
+COMPOSE_PROXYHOST=...
+COMPOSE_PROXYPORT=...
+```
+
+The different services can be reached under the following endpoints
+
+```
+COMPOSE_PROXYHOST:COMPOSE_PROXYPORT/ <- takita
+COMPOSE_PROXYHOST:COMPOSE_PROXYPORT/repo/ <- base-repo
+COMPOSE_PROXYHOST:COMPOSE_PROXYPORT/annoserver/ <- wap-server
 ```
 
 Starting with Docker:
@@ -41,6 +58,42 @@ git clone https://github.com/kit-data-manager/takita.git
 cd takita
 docker compose up
 ```
+
+### Additional setup hints
+
+#### Persist data
+
+The current default configuration does not persist any data on the host. To do so, the data folders of the bundled services can be mounted into the docker containers as volumes. The docker compose config files contain commented out `volumes` sections as pointers.
+
+
+#### Tweak elastic configuration
+
+Configuration of elastic is highly dependent on the target system and on the planned usage. Good results have been reached by providing elastic with at least 8GB of RAM. However, this may overload local systems. The configuration can be changed in `docker-compose.override.yml` by setting the following parameters (sample values)
+
+```
+    environment:
+      - "ES_JAVA_OPTS=-Xms256m -Xmx512m"
+```
+
+Since elastic is quite restrictive in regard to disk usage, the takita index may become read only (resulting in failing operations) on full disk systems.
+Elastic default configuration can be tweaked like this in the es service (sample values):
+
+```
+    environment:
+      - cluster.routing.allocation.disk.watermark.high=0.95
+      - cluster.routing.allocation.disk.watermark.flood_stage=0.98
+      - cluster.routing.allocation.disk.watermark.low=0.85
+```
+
+#### Setup as Demo / Playground
+
+The docker compose setup includes a `sampleData` service for ingesting a minimal dataset for annotations into the repo. To run this service, start the docker bundle with
+
+```
+docker compose --profile playground up
+```
+
+The sampleData service will only run if the repo is currently empty. The service is based on `hurl`, the hurl files used by this service can be found  in `tuhl/src/intTest/resources/hurl`.
     
 ## Usage
 ### Executing the Program
@@ -107,6 +160,14 @@ Set a custom port for the elasticsearch server.
 #### User Repository
 * `--spring.datasource.url=<myUrl>`    
 Set a custom source url for user repository. The default source url is `jdbc:h2:file:~/db/userdb`
+
+###  Updating the index
+
+tAKITA at the moment cannot auto-detect new data in the repository without additional setup (messaging). If the scheduled index updates described above are not sufficient, index updates (`operation=update`) and rebuilds (`operation=rebuild`) can also be triggered via HTTP request. This function at the moment is very limited (no info on success or failure) and should be handled with care
+
+```
+POST http://<takita host:port>/actuator/searchIndex?operation=rebuild'
+```
 
 ## License
 

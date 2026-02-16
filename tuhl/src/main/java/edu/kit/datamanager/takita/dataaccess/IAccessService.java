@@ -27,12 +27,13 @@ public interface IAccessService {
   /**
    * Gets all manuscripts and fuses them with all annotations.
    *
+   * @param numberManuscripts number of manuscripts or -1 for all
    * @return list of all manuscripts
    * @throws InterruptedException if the http request is interrupted
    * @throws JSONException if an error occurs while parsing json
    * @throws IOException if an error occurs while sending or receiving http request
    */
-  List<Manuscript> getAllManuscripts() throws InterruptedException, JSONException, IOException;
+  List<Manuscript> getManuscripts(int numberManuscripts) throws InterruptedException, JSONException, IOException;
 
   /**
    * Gets all manuscripts and annotations last modified after a certain time.
@@ -49,16 +50,6 @@ public interface IAccessService {
   List<Manuscript> getAllManuscriptsModifiedAfter(Instant timestamp)
       throws InterruptedException, JSONException, IOException,
       ParseException, NoSuchIndexEntryException;
-
-  /**
-   * Gets a limited number of manuscripts with pages and annotations specified above.
-   *
-   * @return List of some manuscripts
-   * @throws InterruptedException when http request is interrupted
-   * @throws JSONException when there is a problem with parsing the JSON files
-   * @throws IOException when the http request is faulty
-   */
-  List<Manuscript> getFewManuscripts() throws InterruptedException, JSONException, IOException;
 
   /**
    * Converts annotation to JSONObject so it can be added to database more easily,

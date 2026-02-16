@@ -12,7 +12,6 @@ tuhl/node_modules/
 !**/src/test/**
 **/.DS_Store
 esdata
-.gitattributes
 .idea
 
 # No longer include bundled versions and source maps for JS components
