@@ -19,5 +19,7 @@ services:
       timeout: 5s
       retries: 20
       start_period: 40s
+    #volumes:
+      # - ./annodata:/spring/wapserver/production_db
     networks:
       - compose-network

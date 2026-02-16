@@ -11,9 +11,9 @@ services:
       memlock:
         soft: -1
         hard: -1
-    volumes:
-      - ./esdata:/var/lib/elasticsearch/data #should also work for windows systems, if not see comment below
-      # for windows systems absolute path might be needed: "E:/work/takita/esdata:/var/lib/elasticsearch/data"
+    #volumes:
+      # - ./esdata:/usr/share/elasticsearch/data
+      # for windows systems absolute path might be needed on the host
       # make sure the folder esdata does not exist before very first start
     ports:
       - ${TAKITADB_PORT}:9200
