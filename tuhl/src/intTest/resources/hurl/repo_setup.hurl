@@ -1,8 +1,12 @@
 ################################################################################
 # 0) Check Repo
+# this script is intended to only run on an empty repsitory to avoid misuse on production data etc.
+# If you really need to change this behaviour, remove the assertion
 ################################################################################
 GET {{host}}/api/v1/dataresources/
 HTTP 200
+[Asserts]
+jsonpath "$" isEmpty
 
 ################################################################################
 # 1) POST Image DO (JSON)
