@@ -30,10 +30,11 @@ public interface IEditorService {
    * @return the added annotation
    * @throws InterruptedException when the http request to database is interrupted
    * @throws NoSuchIndexEntryException when there is no such page in the index
-   * @throws IOException when the http request to database was faulty
+   * @throws IOException when the http request to database was faulty and on connection error
+   * @throws JSONException when server returns non success code or response payload does not contain annotation
    */
   Annotation addAnnotation(String pageId, String color, String svgCode, String motivation)
-      throws InterruptedException, NoSuchIndexEntryException, IOException;
+          throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException;
 
   /**
    * Gets an annotation from the searchIndexService by its ID.

@@ -6,7 +6,7 @@ services:
   reverseProxy:
     image: nginx
     environment:
-      - NGINXPROXY=${COMPOSE_PROXYHOST}:${COMPOSE_PROXYPORT}
+      - NGINXPROXY=${COMPOSE_PROXYHOST:-localhost}:${COMPOSE_PROXYPORT:-7777}
     command: ["/bin/bash", "-c", "export NGINXPROXY && envsubst '$$NGINXPROXY' < /etc/nginx/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
     ports:
       - "${COMPOSE_PROXYPORT}:80"
@@ -21,3 +21,21 @@ services:
         condition: service_healthy
     networks:
       - compose-network
+  sampleData:
+    profiles: ["playground"]
+    image: ghcr.io/orange-opensource/hurl:latest
+    depends_on:
+      - reverseProxy
+    volumes:
+      - ./tuhl/src/intTest/resources/hurl:/hurl
+    entrypoint: >
+      sh -c "
+      hurl --variable host=http://baserepo/repo --file-root /hurl --test /hurl/repo_setup.hurl -v &&
+      hurl --variable host=http://annoserver/annoserver --file-root /hurl --test /hurl/wap_setup.hurl -v &&
+      sleep 10 &&
+      hurl --variable host=http://takita:8080 --file-root /hurl --test /hurl/rebuild_index.hurl -v
+      "
+    networks:
+      - compose-network
+  
+

@@ -77,7 +77,7 @@ public class EditorService implements IEditorService {
    */
   @Override
   public Annotation addAnnotation(String pageId, String color, String svgCode, String motivation)
-      throws InterruptedException, NoSuchIndexEntryException, IOException {
+          throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException {
     Annotation newAnnotation = new Annotation();
     newAnnotation.setPageId(pageId);
     newAnnotation.setCreators(Collections.singletonList(
@@ -99,12 +99,8 @@ public class EditorService implements IEditorService {
       newAnnotation.setMotivation(motivation);
     }
 
-    try {
-      logger.info("EditorService: " + newAnnotation.toString());
-      newAnnotation = searchIndexService.addAnnotation(newAnnotation);
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
+    logger.info("EditorService: " + newAnnotation.toString());
+    newAnnotation = searchIndexService.addAnnotation(newAnnotation);
     return newAnnotation;
   }
 

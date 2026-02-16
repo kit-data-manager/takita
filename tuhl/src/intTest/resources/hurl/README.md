@@ -6,7 +6,9 @@
 
 ### Start compose stack
 
-`docker compose up -d`
+```
+docker compose up -d
+```
 
 ### Add sample data to base repo
 

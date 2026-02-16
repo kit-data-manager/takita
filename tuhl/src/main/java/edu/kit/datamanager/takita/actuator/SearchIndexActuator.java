@@ -29,7 +29,7 @@ public class SearchIndexActuator {
                 if (operation.equalsIgnoreCase("update")) {
                     service.updateIndex();
                 } else {
-                    service.buildIndex();
+                    service.buildIndex(-1);
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();
