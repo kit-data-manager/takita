@@ -31,7 +31,7 @@ public class AssistanceService implements IAssistanceService {
   private final IMainPageService mainPageService;
   public Boolean securityEnabled;
   // link provided via application.properties, which redirects to a location, where users can provide feedback.
-  @Value("${feedbackLink:#{null}}")
+  @Value("${takita.feedbackLink:#{null}}")
   private String feedbackLink;
   
   /**
