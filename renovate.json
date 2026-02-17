@@ -1,7 +1,7 @@
 {
   "extends": ["config:base"],
   "platform": "gitlab",
-  "enabledManagers": ["gradle"],
+  "enabledManagers": ["gradle", "npm"],
   "automerge": false,
   "minimumReleaseAge": "3 days",
   "dependencyDashboard": true,
