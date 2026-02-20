@@ -3,6 +3,7 @@ package edu.kit.datamanager.takita.editor;
 import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 import edu.kit.datamanager.takita.assistance.IAssistanceService;
 import edu.kit.datamanager.takita.assistance.User;
+import edu.kit.datamanager.takita.dataaccess.AnnotationConverter;
 import edu.kit.datamanager.takita.dataaccess.IAnnotationStoreAccessService;
 import edu.kit.datamanager.takita.dataaccess.IRepositoryAccessService;
 import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
@@ -10,6 +11,9 @@ import edu.kit.datamanager.takita.model.Annotation;
 import edu.kit.datamanager.takita.model.body.Body;
 import edu.kit.datamanager.takita.model.body.Tag;
 import edu.kit.datamanager.takita.model.body.TextCard;
+import edu.kit.datamanager.takita.model.page.ImagePage;
+import edu.kit.datamanager.takita.model.page.Page;
+import edu.kit.datamanager.takita.model.page.ResourceType;
 import edu.kit.datamanager.takita.model.target.SVGSelector;
 import edu.kit.datamanager.takita.model.target.Target;
 
@@ -30,16 +34,20 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest(classes = EditorService.class)
+@SpringBootTest(classes = {EditorService.class, AnnotationConverter.class})
 @TestPropertySource("classpath:application-test.properties")
 class EditorServiceTest {
 
   @Autowired
-  private IEditorService EditorService;
+  private EditorService EditorService;
+
+  @Autowired
+  private AnnotationConverter annotationConverter;
 
   @MockBean
   private IAssistanceService mockedAssistanceService;
@@ -56,6 +64,10 @@ class EditorServiceTest {
   @Test
   void addAnnotation1() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
     Annotation annotation = buildMockAnnotation("tagging");
+
+    annotation.setPageId("1234");
+    Page page = new ImagePage("1234", ResourceType.IMAGE, "42", Instant.now(), "http://example.com", "http://example.com");
+    Mockito.when(mockedSearchIndexService.getPageById("1234")).thenReturn(page);
 
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
@@ -78,6 +90,10 @@ class EditorServiceTest {
   @Test
   void addAnnotation2() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
     Annotation annotation = buildMockAnnotation("moderating");
+
+    annotation.setPageId("1234");
+    Page page = new ImagePage("1234", ResourceType.IMAGE, "42", Instant.now(), "http://example.com", "http://example.com");
+    Mockito.when(mockedSearchIndexService.getPageById("1234")).thenReturn(page);
 
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
@@ -103,6 +119,10 @@ class EditorServiceTest {
   void addAnnotation3() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
     Annotation annotation = buildMockAnnotation("bookmarking");
 
+    annotation.setPageId("1234");
+    Page page = new ImagePage("1234", ResourceType.IMAGE, "42", Instant.now(), "http://example.com", "http://example.com");
+    Mockito.when(mockedSearchIndexService.getPageById("1234")).thenReturn(page);
+
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
 
@@ -126,6 +146,10 @@ class EditorServiceTest {
   @Test
   void addAnnotation4() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
     Annotation annotation = buildMockAnnotation("classifying");
+
+    annotation.setPageId("1234");
+    Page page = new ImagePage("1234", ResourceType.IMAGE, "42", Instant.now(), "http://example.com", "http://example.com");
+    Mockito.when(mockedSearchIndexService.getPageById("1234")).thenReturn(page);
 
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
@@ -151,6 +175,10 @@ class EditorServiceTest {
   void addAnnotation5() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
     Annotation annotation = buildMockAnnotation("commenting");
 
+    annotation.setPageId("1234");
+    Page page = new ImagePage("1234", ResourceType.IMAGE, "42", Instant.now(), "http://example.com", "http://example.com");
+    Mockito.when(mockedSearchIndexService.getPageById("1234")).thenReturn(page);
+
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
 
@@ -175,6 +203,10 @@ class EditorServiceTest {
   void addAnnotation6() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
     Annotation annotation = buildMockAnnotation("describing");
 
+    annotation.setPageId("1234");
+    Page page = new ImagePage("1234", ResourceType.IMAGE, "42", Instant.now(), "http://example.com", "http://example.com");
+    Mockito.when(mockedSearchIndexService.getPageById("1234")).thenReturn(page);
+
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
 
@@ -197,6 +229,10 @@ class EditorServiceTest {
   @Test
   void addAnnotation7() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
     Annotation annotation = buildMockAnnotation("editing");
+
+    annotation.setPageId("1234");
+    Page page = new ImagePage("1234", ResourceType.IMAGE, "42", Instant.now(), "http://example.com", "http://example.com");
+    Mockito.when(mockedSearchIndexService.getPageById("1234")).thenReturn(page);
 
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
@@ -222,6 +258,10 @@ class EditorServiceTest {
   void addAnnotation8() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
     Annotation annotation = buildMockAnnotation("highlighting");
 
+    annotation.setPageId("1234");
+    Page page = new ImagePage("1234", ResourceType.IMAGE, "42", Instant.now(), "http://example.com", "http://example.com");
+    Mockito.when(mockedSearchIndexService.getPageById("1234")).thenReturn(page);
+
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
 
@@ -246,6 +286,10 @@ class EditorServiceTest {
   void addAnnotation9() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
     Annotation annotation = buildMockAnnotation("identifying");
 
+    annotation.setPageId("1234");
+    Page page = new ImagePage("1234", ResourceType.IMAGE, "42", Instant.now(), "http://example.com", "http://example.com");
+    Mockito.when(mockedSearchIndexService.getPageById("1234")).thenReturn(page);
+
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
 
@@ -268,6 +312,10 @@ class EditorServiceTest {
   @Test
   void addAnnotation10() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
     Annotation annotation = buildMockAnnotation("moderating");
+
+    annotation.setPageId("1234");
+    Page page = new ImagePage("1234", ResourceType.IMAGE, "42", Instant.now(), "http://example.com", "http://example.com");
+    Mockito.when(mockedSearchIndexService.getPageById("1234")).thenReturn(page);
 
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
@@ -292,6 +340,10 @@ class EditorServiceTest {
   @Test
   void addAnnotation11() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
     Annotation annotation = buildMockAnnotation("replying");
+
+    annotation.setPageId("1234");
+    Page page = new ImagePage("1234", ResourceType.IMAGE, "42", Instant.now(), "http://example.com", "http://example.com");
+    Mockito.when(mockedSearchIndexService.getPageById("1234")).thenReturn(page);
 
     User currentUser = new User(annotation.getCreators().get(0));
     Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
@@ -328,6 +380,10 @@ class EditorServiceTest {
     Annotation annotation = buildMockAnnotation("replying");
     User currentUser = new User("Maximilian Walz");
 
+    annotation.setPageId("1234");
+    Page page = new ImagePage("1234", ResourceType.IMAGE, "42", Instant.now(), "http://example.com", "http://example.com");
+    Mockito.when(mockedSearchIndexService.getPageById("1234")).thenReturn(page);
+
     Annotation updatedAnnotation = buildMockAnnotation("commenting");
     updatedAnnotation.addCreator(currentUser.getName());
     updatedAnnotation.setEtag("qwertzuiop");
@@ -353,6 +409,10 @@ class EditorServiceTest {
   void updateAnnotation2() throws NoSuchIndexEntryException, IOException, InterruptedException, JSONException {
     Annotation annotation = buildMockAnnotation("replying");
     User currentUser = new User("Maximilian Walz");
+
+    annotation.setPageId("1234");
+    Page page = new ImagePage("1234", ResourceType.IMAGE, "42", Instant.now(), "http://example.com", "http://example.com");
+    Mockito.when(mockedSearchIndexService.getPageById("1234")).thenReturn(page);
 
     Annotation updatedAnnotation = buildMockAnnotation("commenting");
     updatedAnnotation.addCreator(currentUser.getName());

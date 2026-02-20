@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import edu.kit.datamanager.takita.MissingPropertyException;
+import edu.kit.datamanager.takita.model.page.ResourceType;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -301,6 +302,7 @@ public class RepositoryAccessService implements IRepositoryAccessService {
    *
    * @return base url String
    */
+  @Override
   public String getBaseUrl() {
     return baseUrl;
   }
@@ -310,7 +312,28 @@ public class RepositoryAccessService implements IRepositoryAccessService {
    *
    * @return static path String
    */
+  @Override
   public String getStaticPath() {
     return staticPath;
+  }
+
+  @Override
+  public String getLinkForPage(String pageId, String pageNumber, ResourceType linkType) {
+    //reconstruct repo link from pageID
+      return switch (linkType) {
+          case TEXT -> getBaseUrl()
+                  + getStaticPath()
+                  + pageId + DATA_PATH + pageNumber
+                  + FILE_EXTENSION_XML;
+          case IMAGE -> getBaseUrl()
+                  + getStaticPath()
+                  + pageId + DATA_PATH + pageNumber
+                  + MASTER_JPG;
+          default -> {
+              // TODO: this should throw an exception
+              logger.error("Target is neither an image, a text file nor a page.");
+              yield null;
+          }
+      };
   }
 }

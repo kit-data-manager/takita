@@ -58,7 +58,7 @@ public class Annotation {
   }
 
   public Annotation(String pageId, List<String> creators, Instant created, Instant modified,
-                    JSONArray selectors, String motivation ) throws JSONException {
+                    String linkToResource, JSONArray selectors, String motivation ) throws JSONException {
       this.textCards = new ArrayList<>();
       this.tags = new ArrayList<>();
       this.pageId = pageId;
@@ -67,13 +67,13 @@ public class Annotation {
       if (modified != null) {
           this.modified = modified;
       }
-      this.targets = selectors != null ? createTargetsFromSelectors(selectors) : new ArrayList<>();
+      this.targets = createTargetsFromSelectors(linkToResource, selectors);
       if (motivation != null) {
         this.motivation = motivation;
       }
   }
 
-  public void update(List<String> creators, JSONArray selectors, String motivation ) throws JSONException {
+  public void update(List<String> creators, String linkToResource, JSONArray selectors, String motivation ) throws JSONException {
       for (String creator : creators) {
           if (!this.getCreators().contains(creator)) {
               this.addCreator(creator);
@@ -81,7 +81,7 @@ public class Annotation {
       }
       this.setModified(Instant.now());
       if (selectors != null) {
-          this.setTargets(createTargetsFromSelectors(selectors));
+          this.setTargets(createTargetsFromSelectors(linkToResource, selectors));
       }
       if (motivation != null) {
           this.setMotivation(motivation);
@@ -95,11 +95,11 @@ public class Annotation {
      * @return list of targets
      * @throws JSONException when there is a problem with the JSON object holding the selector
      */
-  private List<Target> createTargetsFromSelectors(JSONArray selectors) throws JSONException {
+  private List<Target> createTargetsFromSelectors(String linkToResource, JSONArray selectors) throws JSONException {
       List<Target> targets = new ArrayList<>();
       if (selectors != null) {
           for (int i = 0; i < selectors.length(); i++) {
-              Target target = new Target(null, selectors.getJSONObject(i));
+              Target target = new Target(linkToResource, selectors.getJSONObject(i));
               targets.add(target);
           }
       } else {
@@ -107,7 +107,7 @@ public class Annotation {
           // an annotation targeting the whole document/image
           // TODO: this has to be tested by someone who works with page-annotations.
           // Philipp tested it and it seems to work.
-          Target target = new Target(null, null);
+          Target target = new Target(linkToResource, null);
           targets.add(target);
       }
       return targets;

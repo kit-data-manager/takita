@@ -471,39 +471,7 @@ public class AnnotationConverter {
 	for (Target target : annotation.getTargets()) {
 		// the targets' linkToResource needs to be set, as this is the first time it is present in takita core
 		// the targets' linkToResource differs for text and image file regarding their extensions
-		String targetType = target.getType();
-		switch (targetType) {
-			case "TEXT":
-				target.setLinkToResource(repositoryAccessService.getBaseUrl()
-			            + repositoryAccessService.getStaticPath()
-			            + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
-			            + RepositoryAccessService.FILE_EXTENSION_XML);
-				// add the target serialized as WADM to the list
-				targetArray.put(target.getWADMSerialization());
-				break;
-			case "IMAGE":
-				target.setLinkToResource(repositoryAccessService.getBaseUrl()
-			            + repositoryAccessService.getStaticPath()
-			            + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
-			            + RepositoryAccessService.MASTER_JPG);
-				// add the target serialized as WADM to the list
-				targetArray.put(target.getWADMSerialization());
-				break;
-			case "PAGE":
-				// TODO: currently only the imageEditor an produce PAGE-annotations, so we
-				// assume that the target resource is an image
-				target.setLinkToResource(repositoryAccessService.getBaseUrl()
-			            + repositoryAccessService.getStaticPath()
-			            + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
-			            + RepositoryAccessService.MASTER_JPG);
-				// add the target serialized as WADM to the list
-				targetArray.put(target.getWADMSerialization());
-				break;
-			default:
-				// TODO: this should throw an exception
-				logger.error("Target is neither an image, a text file nor a page.");
-				break;
-		}
+        targetArray.put(target.getWADMSerialization());
     }
 	// add the targets to the JSON annotation
 	jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), targetArray);

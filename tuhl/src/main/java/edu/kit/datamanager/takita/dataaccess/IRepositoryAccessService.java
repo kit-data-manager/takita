@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.util.List;
 
+import edu.kit.datamanager.takita.model.page.ResourceType;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -121,4 +122,12 @@ public interface IRepositoryAccessService {
    */
   String getStaticPath();
 
+  /**
+   * Construct page link from page id, number and linkType
+   * @param pageId page id in repo
+   * @param pageNumber page number in repo (file name without extension)
+   * @param linkType link to TEXT file or IMAGE file
+   * @return
+   */
+  String getLinkForPage(String pageId, String pageNumber, ResourceType linkType);
 }

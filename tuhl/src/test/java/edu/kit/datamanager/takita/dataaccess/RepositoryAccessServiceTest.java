@@ -1,5 +1,6 @@
 package edu.kit.datamanager.takita.dataaccess;
 
+import edu.kit.datamanager.takita.model.page.ResourceType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
@@ -8,6 +9,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -56,6 +58,12 @@ class RepositoryAccessServiceTest {
   
   @Autowired
   public IRepositoryAccessService repositoryAccessService;
+
+  @Value("${repository.staticPath}")
+  private String staticPath;
+
+  @Value("${repository.baseUrl}")
+  private String baseUrl;
   
   @BeforeEach
   void init() throws NoSuchFieldException {
@@ -171,6 +179,24 @@ class RepositoryAccessServiceTest {
         .getXmlByManuscriptId("000073cd-c425-4214-9648-b380ff20c61a");
     
     assertEquals(expected, actual);
+  }
+
+  @Test
+  void generateImageLink() {
+    String pageId = "000073cd-c425-4214-9648";
+    String pageNumber = "1234";
+
+    String expected = baseUrl + staticPath + pageId + "/data/1234.master.jpg";
+    assertEquals(expected, repositoryAccessService.getLinkForPage(pageId, pageNumber, ResourceType.IMAGE));
+  }
+
+  @Test
+  void generateXMLLink() {
+    String pageId = "000073cd-c425-4214-9648";
+    String pageNumber = "1234";
+
+    String expected = baseUrl + staticPath + pageId + "/data/1234.xml";
+    assertEquals(expected, repositoryAccessService.getLinkForPage(pageId, pageNumber, ResourceType.TEXT));
   }
   
   private void prepareGetManuscriptsMock() throws IOException, InterruptedException, JSONException {

@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -81,7 +82,9 @@ public class EditorService implements IEditorService {
     List<String> creators = Collections.singletonList(
               assistanceService.getCurrentUser().getName());
     Instant currentTime = Instant.now();
-    Annotation newAnnotation = new Annotation(pageId, creators, currentTime, currentTime, selectors, motivation);
+    Page page = searchIndexService.getPageById(pageId);
+    String linkToResource = repositoryAccessService.getLinkForPage(pageId, page.getPageNumber(), page.getResourceType());
+    Annotation newAnnotation = new Annotation(pageId, creators, currentTime, currentTime, linkToResource, selectors, motivation);
     try {
       logger.info("EditorService: " + newAnnotation.toString());
       newAnnotation = searchIndexService.addAnnotation(newAnnotation);
@@ -119,9 +122,13 @@ public class EditorService implements IEditorService {
   public Annotation updateAnnotation(String annotationId, JSONArray selectors, String motivation)
       throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException {
     Annotation updatedAnnotation = searchIndexService.getAnnotationById(annotationId);
+
+    Page page = searchIndexService.getPageById(updatedAnnotation.getPageId());
+    String linkToResource = repositoryAccessService.getLinkForPage(page.getId(), page.getPageNumber(), page.getResourceType());
+
     List<String> creators = Collections.singletonList(assistanceService
         .getCurrentUser().getName());
-    updatedAnnotation.update(creators, selectors, motivation);
+    updatedAnnotation.update(creators, linkToResource, selectors, motivation);
     try {
       updatedAnnotation = searchIndexService.updateAnnotation(updatedAnnotation);
     } catch (JSONException e) {
