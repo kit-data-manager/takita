@@ -94,6 +94,9 @@ class BackendITTest {
     @Value("classpath:hoverfly/repo/pages.json")
     Resource pagesjson;
 
+    @Value("classpath:hoverfly/repo/manuscript_metadata.xml")
+    Resource manuscriptxml;
+
     String manuscriptID;
     String pageID;
 
@@ -133,6 +136,12 @@ class BackendITTest {
                         .get(repositoryAccessService.getStaticPath() + pageID)
                         .willReturn(success()
                                 .body(dataresourcesArray.get(1).toString())
+                        )),
+                //Repo xml metadata
+                dsl(service(repositoryAccessService.getBaseUrl())
+                        .get(repositoryAccessService.getStaticPath() + manuscriptID + "/data/manuscript_metadata.xml")
+                        .willReturn(success()
+                                .body(manuscriptxml.getContentAsString(StandardCharsets.UTF_8))
                         )),
                 //WAP root
                 dsl(service(environment.getProperty("intTest_annotationStore.baseurl"))
@@ -192,7 +201,7 @@ class BackendITTest {
         assertEquals(1, manuscript.getNoPages());
         assertEquals(1, annos.size());
 
-        editorService.addAnnotation(pageID, null, null, "testing");
+        editorService.addAnnotation(pageID, null, "testing");
         annos = searchIndexService.getAnnotationsForPageById(pageID);
         assertEquals(2, annos.size());
         assertTrue(annos.get(1).getCreated().isAfter(testDate));
