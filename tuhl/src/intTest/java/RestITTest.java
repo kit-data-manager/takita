@@ -2,10 +2,12 @@ import static io.specto.hoverfly.junit.core.SimulationSource.dsl;
 import static io.specto.hoverfly.junit.dsl.HoverflyDsl.service;
 import static io.specto.hoverfly.junit.dsl.ResponseCreators.success;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.internal.matchers.text.ValuePrinter.print;
 
 import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 import edu.kit.datamanager.takita.TakitaApplication;
 import edu.kit.datamanager.takita.assistance.IAssistanceService;
+import edu.kit.datamanager.takita.dataaccess.AnnotationConverter;
 import edu.kit.datamanager.takita.dataaccess.IAnnotationStoreAccessService;
 import edu.kit.datamanager.takita.dataaccess.IRepositoryAccessService;
 import edu.kit.datamanager.takita.editor.IEditorService;
@@ -13,6 +15,7 @@ import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import edu.kit.datamanager.takita.model.Annotation;
 import edu.kit.datamanager.takita.model.Manuscript;
 import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit.core.model.RequestFieldMatcher;
@@ -38,6 +41,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.List;
@@ -47,12 +51,15 @@ import java.util.List;
  * Testdata: 1 manuscript with 1 image page. 1 annotation on the page
  * NOTE: the tests in this class have to be run in order and are depending on each other
  * External REST API responses are provided via hoverfly. Please make sure to keep this test up-to-date with upgrades on repo and wap server dependencies
+ *
+ * RestAPI tests need to be separated from other tests due to different webEnvironment config (there may be a more clever solution to this)
  */
-@SpringBootTest(classes= TakitaApplication.class, properties = "spring.config.name=application-integration")
+@SpringBootTest(classes= TakitaApplication.class, properties = "spring.config.name=application-integration", webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient
 @ExtendWith(HoverflyExtension.class)
 @HoverflyCore(mode= HoverflyMode.SIMULATE)
 @Testcontainers
-class BackendITTest {
+class RestITTest {
 
     @Container
     static ElasticsearchContainer elastic= new ElasticsearchContainer("docker.elastic.co/elasticsearch/elasticsearch:8.13.4")
@@ -74,14 +81,9 @@ class BackendITTest {
     @Autowired
     private ISearchIndexService searchIndexService;
 
-    @Autowired
-    private IAssistanceService assistanceService;
+    @LocalServerPort
+    int port;
 
-    @Autowired
-    private IAnnotationStoreAccessService annotationStoreAccessService;
-
-    @Autowired
-    private IEditorService editorService;
 
     @Value("${annotationStore.url}")
     private String urlPrefix;
@@ -172,10 +174,10 @@ class BackendITTest {
                         )),
                 //WAP POST ANNO
                 dsl(service(environment.getProperty("intTest_annotationStore.baseurl"))
-                         .post(containerPath + "takita/")
-                         .anyBody()
-                         .willReturn(success().body("{\"id\": \"someID\"}")) //response does not seem important besides valid id
-                        )
+                        .post(containerPath + "takita/")
+                        .anyBody()
+                        .willReturn(success().body("{\"id\": \"someID\"}")) //response does not seem important besides valid id
+                )
         );
 
     }
@@ -196,58 +198,41 @@ class BackendITTest {
     }
 
     @Test
-    public void addAnnotationTest (Hoverfly hoverfly) throws NoSuchIndexEntryException, IOException, InterruptedException, JSONException {
+    public void addAnnotationViaRest (Hoverfly hoverfly) throws NoSuchIndexEntryException, IOException, InterruptedException, JSONException {
+        String baseUrl = "http://localhost:" + port;
 
-        Instant testDate = Instant.now();
-        Manuscript manuscript = searchIndexService.getManuscriptById(manuscriptID);
         List<Annotation> annos = searchIndexService.getAnnotationsForPageById(pageID);
-        assertEquals(1, manuscript.getNoPages());
         assertEquals(1, annos.size());
 
-        editorService.addAnnotation(pageID, null, "testing");
-        annos = searchIndexService.getAnnotationsForPageById(pageID);
-        assertEquals(2, annos.size());
-        assertTrue(annos.get(1).getCreated().isAfter(testDate));
-    }
-
-    public void editAnnotationTest (Hoverfly hoverfly) {
-        //TODO: manipulate annotation
-    }
-
-    public void updateByWADMAnnotation (Hoverfly hoverfly) {
         String annoString1 = """
                 {
-                  "@context": "http://www.w3.org/ns/anno.jsonld",
-                  "id": "http://example.org/anno18",
-                  "type": "Annotation",
-                  "target": {
-                    "id": "http://example.org/photo1",
-                    "type": "SpecificResource"
-                  }
+                    "pageId": %s,
+                    "motivation": "describing",
+                    "selectors": [
+                        {
+                            "type": "XPathSelector",
+                            "value": "id(\\"w.1\\")"
+                        },
+                        {
+                            "type": "TextQuoteSelector",
+                            "exact": "testing",
+                            "prefix": "",
+                            "suffix": "is fun"
+                        }
+                    ]
                 }
-                """;
+                """.formatted(pageID);
 
-        String annoString2 = """
-                {
-                  "@context": "http://www.w3.org/ns/anno.jsonld",
-                  "id": "http://example.org/anno18",
-                  "type": "Annotation",
-                  "body": {"value": "testing"},
-                  "target": {
-                    "id": "http://example.org/photo1",
-                    "type": "SpecificResource"
-                  }
-                }
-                """;
+        // Call the REST API
+        RestAssured.given()
+                .contentType("application/json")
+                .body(annoString1)
+                .post(baseUrl + "/editor_rest/annotations")
+                .then()
+                .statusCode(200);
 
-
-
-
+        // Verify using internal service or repository
+        annos = searchIndexService.getAnnotationsForPageById(pageID);
+        assertEquals(2, annos.size());
     }
-
-    public void deleteAnnotationTest (Hoverfly hoverfly) {
-        //TODO: delete annotation
-    }
-
-    //TODO: updateIndex (likely not now ...)
 }

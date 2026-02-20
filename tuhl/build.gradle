@@ -114,6 +114,7 @@ dependencies {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 	intTestImplementation 'org.junit.jupiter:junit-jupiter'
+	intTestImplementation 'io.rest-assured:rest-assured'
 	intTestRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
