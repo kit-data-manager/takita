@@ -39,7 +39,9 @@ export const fetchConcept = async (uri) => {
  * @returns {Promise<Object>}
  */
 export const fetchMetaphorAnnotation = async (metaphorURI) => {
-  const response = await fetch(`${normalizeApiUrl(window.ANALYSIS_TOOL_API_URL)}/${metaphorURI}`);
+  const response = await fetch(`${normalizeApiUrl(window.ANALYSIS_TOOL_API_URL)}/${metaphorURI}`, {
+    headers: { Accept: 'application/ld+json' },
+  });
   if (!response.ok) {
     console.warn(`error while fetching Metaphor: ${response.status}`);
     throw response;
@@ -60,7 +62,9 @@ export const fetchMetaphorAnnotation = async (metaphorURI) => {
  */
 export const fetchMRWAnnotation = async (mrwURI) => {
   const url = encodeURL(mrwURI);
-  const response = await fetch(`${normalizeApiUrl(window.ANALYSIS_TOOL_API_URL)}/${url}`);
+  const response = await fetch(`${normalizeApiUrl(window.ANALYSIS_TOOL_API_URL)}/${url}`, {
+    headers: { Accept: 'application/ld+json' },
+  });
   if (!response.ok) {
     console.warn(`error while fetching MRWs: ${response.status}`);
     throw response;
@@ -89,8 +93,8 @@ export const updateAnalysis = async (annotation, apiUri) => {
     method: 'PUT',
     cache: 'no-cache',
     headers: {
-      'Content-Type': 'application/json',
-      Accepts: 'application/json',
+      'Content-Type': 'application/ld+json',
+      Accept: 'application/json',
     },
     body: payload,
   });

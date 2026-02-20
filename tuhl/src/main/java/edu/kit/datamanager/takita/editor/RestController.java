@@ -124,6 +124,7 @@ public class RestController {
 
   /**
    * Delegates the task to read an annotation to IEditorService.
+   * Default mapping if no Accept header or Accept header 'application/json' is provided
    *
    * @param id identifies the annotation to get
    * @param request to access the headers from the HTTP request
@@ -182,6 +183,7 @@ public class RestController {
 
   /**
    * Delegates the task to update an annotation to IEditorService.
+   * Default mapping if no Content-Type header or Content-Type header 'application/json' is provided
    *
    * @param id identifies the annotation to update
    * @param jsonString holds the values for specifying the updated annotation
@@ -192,7 +194,7 @@ public class RestController {
    *    internal error occurs
    */
 
-    @RequestMapping(value = "/annotations/{id}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/annotations/{id}", method = RequestMethod.PUT, consumes = "application/json")
     @ResponseBody
     public ResponseEntity updateAnnotationById(@PathVariable("id") final String id, @RequestBody final String jsonString, final WebRequest request, final HttpServletResponse response) {
         String annotationJson;
@@ -214,6 +216,38 @@ public class RestController {
             return ResponseEntity.status(500).body(e.getMessage());
         }
         return ResponseEntity.ok().body(annotationJson);
+    }
+
+    /**
+     * This request mapping functions as direct PUT based on WADM data, therefore receiving full WADM json and overriding the existing anno data
+     *
+     * @param id identifies the annotation to update
+     * @param jsonString WADM json
+     * @param request to access the headers from the HTTP request
+     * @param response to access the headers for the HTTP response
+     * @return HTTP entity sent back, either ok for a success including the
+     *    annotation or 404 if the annotation cannot be found or 500 if an
+     *    internal error occurs
+     */
+    @RequestMapping(value = "/annotations/{id}", method = RequestMethod.PUT, consumes = "application/ld+json")
+    @ResponseBody
+    public ResponseEntity updateAnnotationByIdWadm(@PathVariable("id") final String id, @RequestBody final String jsonString, final WebRequest request, final HttpServletResponse response) {
+        String rawJson;
+        try {
+            Annotation annotation = editorService.updateWADMAnnotation(decodeURL(id), jsonString);
+            rawJson = editorService
+                    .getAnnotationJson(annotation.getId())
+                    .toString(2)
+                    .replace("\\/", "/");
+        } catch (IOException | JSONException e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        } catch (NoSuchIndexEntryException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+        return ResponseEntity.ok().body(rawJson);
     }
 
   /**

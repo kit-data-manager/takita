@@ -60,7 +60,7 @@ export const normalizeBasename = (basename) => {
 };
 
 export const normalizeApiUrl = (apiUrl) => {
-  return apiUrl ? apiUrl : '/analysis_api';
+  return apiUrl ? apiUrl : '/editor_rest/annotations';
 };
 
 export const getConceptSearchURL = () => {

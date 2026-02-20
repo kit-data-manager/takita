@@ -139,6 +139,23 @@ public class EditorService implements IEditorService {
   }
 
   /**
+   * Updates an annotation in the search index and the database, based on new WADM version
+   * @return updated annotation
+   */
+  public Annotation updateWADMAnnotation(String annotationId, String wadmString) throws JSONException, NoSuchIndexEntryException, IOException, InterruptedException {
+    JSONObject newAnnoData = new JSONObject(wadmString);
+    Annotation currentAnnotation = searchIndexService.getAnnotationById(annotationId);
+    Annotation newAnnotation = this.annotationConverter.buildAnnotationFromJson(newAnnoData);
+
+    if (!Objects.equals(currentAnnotation.getPageId(), newAnnotation.getPageId())) {
+      throw new IllegalArgumentException("Applying an annotation update that changes the targeted page is currently not supported");
+    }
+    Annotation updatedAnnotation = this.searchIndexService.updateAnnotation(newAnnotation);
+
+    return updatedAnnotation;
+  }
+
+  /**
    * Validates an annotation in the search index and the database.
    *
    * @param annotationId ID of the annotation to be validated

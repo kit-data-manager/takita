@@ -61,6 +61,18 @@ public interface IEditorService {
       throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException;
 
   /**
+   * Updates an annotation in the search index and the database, based on new WADM version
+   * @param annotationId ID of the annotation to update
+   * @param jsonString WADM compliant json-ld string
+   * @return updated annotation
+   * @throws JSONException
+   * @throws NoSuchIndexEntryException
+   * @throws IOException
+   * @throws InterruptedException
+   */
+  Annotation updateWADMAnnotation(String annotationId, String jsonString) throws JSONException, NoSuchIndexEntryException, IOException, InterruptedException;
+
+  /**
    * Validates an annotation in the search index and the database.
    *
    * @param annotationId ID of the annotation to be validated
