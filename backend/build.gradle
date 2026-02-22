@@ -1,0 +1,231 @@
+import com.bmuschko.gradle.docker.tasks.image.Dockerfile
+import com.github.gradle.node.npm.task.NpmTask
+
+plugins {
+	id 'org.springframework.boot' version '3.2.2'
+	id 'io.spring.dependency-management' version '1.1.4'
+	id 'com.github.jk1.dependency-license-report' version '1.17'
+	id 'net.researchgate.release' version '3.0.2'
+	id 'java'
+	id 'jacoco'
+	id 'com.bmuschko.docker-spring-boot-application' version '9.4.0'
+	id 'com.github.node-gradle.node' version '7.1.0'
+}
+
+group = 'de.pse'
+version = '2.0.0-SNAPSHOT'
+
+repositories {
+	mavenCentral()
+}
+
+node {
+	// Recommended: use a reproducible, locally managed Node distribution.
+	// See https://github.com/node-gradle/gradle-node-plugin for versions
+	download = true
+	version = '25.2.1' // pick your version
+	nodeProjectDir = file("${project.rootDir}/../frontend")
+	npmInstallCommand = System.getenv("CI") ? 'ci' : 'install'
+}
+
+tasks.register('npmBuild', NpmTask) {
+	dependsOn('npmInstall')
+	args = ['run', 'build']
+}
+
+tasks.register('npmTest', NpmTask) {
+	dependsOn('npmBuild')
+	args = ['run', 'test']
+}
+
+tasks.named('processResources') {
+	dependsOn(['npmTest', 'copyFrontendResources'])
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+}
+
+javadoc {
+	source = sourceSets.main.allJava
+}
+
+sourceSets {
+	intTest {
+		compileClasspath += sourceSets.main.output
+		runtimeClasspath += sourceSets.main.output
+		java {
+			srcDir 'src/intTest/java'
+		}
+		resources {
+			srcDir 'src/intTest/resources'
+		}
+	}
+	main {
+		resources {
+			srcDirs = ['src/main/resources', '../frontend/messages']
+		}
+	}
+}
+
+// Custom task to copy frontend data to resources before build
+tasks.register('copyFrontendResources') {
+	doFirst {
+		// Copy templates to correct location
+		copy {
+			from '../frontend/templates'
+			into 'src/main/resources/templates'
+		}
+
+		// Copy static files to correct location
+		copy {
+			from '../frontend/static'
+			into 'src/main/resources/static'
+		}
+	}
+	dependsOn('npmBuild')
+}
+
+configurations {
+	intTestImplementation.extendsFrom implementation
+	intTestRuntimeOnly.extendsFrom runtimeOnly
+}
+ext {
+	set('testcontainersVersion', "1.21.4")
+	set('springDocVersion', "2.6.0")
+	set('keycloakVersion', "24.0.5")
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.testcontainers:testcontainers-bom:${testcontainersVersion}"
+	}
+}
+
+dependencies {
+	implementation 'org.webjars:bootstrap:5.3.2'
+	implementation 'org.mockito:mockito-core:5.9.0'
+	implementation 'org.springframework.data:spring-data-elasticsearch'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	// springdoc
+	//implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}"
+	implementation "org.springdoc:springdoc-openapi-starter-common:${springDocVersion}"
+	implementation "org.springdoc:springdoc-openapi-starter-webmvc-api:${springDocVersion}"
+
+	// AAI
+	// oauth client
+	implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
+	// thymeleaf
+	implementation "org.thymeleaf.extras:thymeleaf-extras-springsecurity6"
+
+
+	implementation 'com.google.code.gson:gson:2.10.1'
+	implementation 'jakarta.json:jakarta.json-api:2.1.0'
+	implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
+	runtimeOnly 'com.h2database:h2'
+	implementation 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
+	annotationProcessor "jakarta.persistence:jakarta.persistence-api:3.1.0"
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	intTestImplementation "org.testcontainers:testcontainers"
+	intTestImplementation "org.testcontainers:junit-jupiter"
+	intTestImplementation "org.testcontainers:elasticsearch"
+	intTestImplementation "io.specto:hoverfly-java-junit5:0.19.0"
+	intTestImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	intTestImplementation 'org.junit.jupiter:junit-jupiter'
+	intTestImplementation 'io.rest-assured:rest-assured'
+	intTestRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+
+
+test {
+	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed" //, "standardOut", "standardError"
+
+		showExceptions true
+		exceptionFormat "full"
+		showCauses true
+		showStackTraces true
+
+		// Change to `false` for less verbose test output (only 'passed' for working tests)
+		showStandardStreams = true
+	}
+}
+
+jacocoTestReport {
+	//dependsOn test // tests are required to run before generating the report
+	reports {
+		xml.required = true
+		csv.required = true
+	}
+}
+
+tasks.register('integrationTest', Test) {
+	description = 'Runs integration tests.'
+	group = 'verification'
+
+	testClassesDirs = sourceSets.intTest.output.classesDirs
+	classpath = sourceSets.intTest.runtimeClasspath
+	shouldRunAfter test
+
+	useJUnitPlatform()
+
+	testLogging {
+		events "passed"
+	}
+}
+
+check.dependsOn integrationTest
+
+//create Dockerfile on release to update jar version
+tasks.register('createDockerfile', Dockerfile) {
+	def basename = tasks.named('bootJar').get().archiveFileName.get()
+	destFile = project.file('../Dockerfile')
+	from 'eclipse-temurin:21.0.10_7-jdk'
+	exposePort 8080
+	entryPoint '/takita/start.sh'
+	/* Install dependency for Node (Debian-based images) */
+	runCommand 'apt-get update && apt-get install -y --no-install-recommends libatomic1 && rm -rf /var/lib/apt/lists/*'
+	runCommand 'mkdir -p /takita'
+	workingDir '/takita'
+	copyFile './build.sh', '/takita/build.sh'
+	copyFile './dockerstart.sh', '/takita/start.sh'
+	copyFile 'frontend/', '/takita/frontend/'
+	copyFile 'backend/', '/takita/backend/'
+	runCommand 'chmod +x /takita/build.sh'
+	runCommand 'chmod +x /takita/start.sh'
+	runCommand '/takita/build.sh'
+	runCommand 'chmod -R +x /takita/backend/build'
+	runCommand "cp /takita/backend/build/libs/${basename} /takita/takita.jar"
+}
+
+jar {
+	manifest {
+		attributes(
+				'Main-Class': 'edu.kit.datamanager.takita.TakitaApplication'
+		)
+	}
+	archiveFileName
+}
+
+tasks.withType(Copy).all {
+	duplicatesStrategy 'exclude'
+}
+
+tasks.withType(Jar).all {
+	duplicatesStrategy 'exclude'
+}

@@ -1,28 +1,15 @@
-tuhl/src/main/java/philippsTests/*
-tuhl/bin/main/application.properties
-tuhl/.classpath
-tuhl/.project
-tuhl/.settings
-tuhl/.gradle
-tuhl/build/
-tuhl/bin/
-tuhl/node_modules/
-!tuhl/gradle/wrapper/gradle-wrapper.jar
+**/application.properties
+**/.classpath
+**/.project
+**/.settings
+**/.gradle
+**/build/
+**/bin/
+**/node_modules/
+!**/gradle-wrapper.jar
 !**/src/main/**
 !**/src/test/**
 **/.DS_Store
 esdata
-.idea
-
-# No longer include bundled versions and source maps for JS components
-# developed in tuhl/src/main/resources/js-src/.
-# Run `npm run build` to create these static files.
-tuhl/src/main/resources/static/js/texteditor-ng.js*
-tuhl/src/main/resources/static/js/imageeditor-ng.js*
-
-
-# Ignore Gradle project-specific cache directory
-.gradle
-
-# Ignore Gradle build output directory
-build
+**/.idea
+frontend/static/js/
