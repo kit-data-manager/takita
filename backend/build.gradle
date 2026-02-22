@@ -39,8 +39,17 @@ tasks.register('npmTest', NpmTask) {
 }
 
 tasks.named('processResources') {
-	dependsOn(['npmTest', 'copyFrontendResources'])
+	dependsOn('npmTest') // ensure frontend build runs first
+
+	// Copy frontend templates and static files into the resources output
+	from('../frontend/templates') {
+		into 'templates'
+	}
+	from('../frontend/static') {
+		into 'static'
+	}
 }
+
 
 java {
 	toolchain {
@@ -68,24 +77,6 @@ sourceSets {
 			srcDirs = ['src/main/resources', '../frontend/messages']
 		}
 	}
-}
-
-// Custom task to copy frontend data to resources before build
-tasks.register('copyFrontendResources') {
-	doFirst {
-		// Copy templates to correct location
-		copy {
-			from '../frontend/templates'
-			into 'src/main/resources/templates'
-		}
-
-		// Copy static files to correct location
-		copy {
-			from '../frontend/static'
-			into 'src/main/resources/static'
-		}
-	}
-	dependsOn('npmBuild')
 }
 
 configurations {
