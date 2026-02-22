@@ -1,4 +1,5 @@
 import com.bmuschko.gradle.docker.tasks.image.Dockerfile
+import com.github.gradle.node.npm.task.NpmTask
 
 plugins {
 	id 'org.springframework.boot' version '3.2.2'
@@ -23,20 +24,26 @@ node {
 	// See https://github.com/node-gradle/gradle-node-plugin for versions
 	download = true
 	version = '25.2.1' // pick your version
+	npmInstallCommand = System.getenv("CI") ? 'ci' : 'install'
 }
 
-tasks.register('npmBuild', com.github.gradle.node.npm.task.NpmTask) {
+tasks.register('npmBuild', NpmTask) {
 	dependsOn('npmInstall')
 	args = ['run', 'build']
 }
 
-tasks.named('processResources') {
+tasks.register('npmTest', NpmTask) {
 	dependsOn('npmBuild')
+	args = ['run', 'test']
+}
+
+tasks.named('processResources') {
+	dependsOn('npmTest')
 }
 
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
+		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
 

@@ -1,12 +1,13 @@
 {
   "scripts": {
     "build": "webpack --mode production",
-    "test": "jest '^((?!selenium).)*.test.js$'",
+    "test": "jest \"^((?!selenium).)*\\.test\\.js$\"",
     "test-all": "jest --runInBand",
-    "test-selenium": "jest --runInBand '.*selenium\\.test\\.js'",
-    "test-jqp": "jest '.*jqp\\.test\\.js'",
+    "test-selenium": "jest --runInBand \".*selenium\\.test\\.js\"",
+    "test-jqp": "jest \".*jqp\\.test\\.js\"",
     "coverage": "jest --coverage --runInBand"
-  },
+  }
+,
   "dependencies": {
     "@popperjs/core": "^2.11.8",
     "raphael": "^2.3.0",
