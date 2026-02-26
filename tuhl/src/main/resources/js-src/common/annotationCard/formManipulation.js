@@ -85,12 +85,11 @@ export async function createAndAppendBodyForms(
   // create the expandable vertical JSONForm
   // using Destructuring assignment here, see:
   // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/Destructuring_assignment
-  const [formBodyDataModel, uiForm] = getFormBodyDataModelAndUiForm(body, omitFields, formDataModel);
+  const [formBodyDataModel, uiForm] = getBodyFormDataModelAndUiForm(body, omitFields, formDataModel);
   createAndAppendBodyForm(formBodyDataModel, uiForm, body, encodedAnnoId, hooks);
   // create the hoirzontal ("quick view") JSONForm
-  let [operationHorizontal, formBodyDataModelHorizontal, uiFormHorizontal] = getFormBodyDataModelAndUiFormHorizontal(
+  let [operationHorizontal, formBodyDataModelHorizontal, uiFormHorizontal] = getBodyFormDataModelAndUiFormHorizontal(
     body,
-    omitFields,
     editableFields,
   );
 
@@ -207,8 +206,8 @@ export function modifyBodyFormHorizontal($horizontalForm, modifiedBody) {
     }
   }
 
-  // enabling/diasbling the "Save"-buttons for inputs, textareas, dropdowns (selects) of the form
-  // the form contains multiple inputs elements. Apart from the one with "name === 'value'" all are hidden.
+  // enabling/diasbling the "Save"-buttons for inputs, textareas, dropdowns (selects) of the form.
+  // The form contains multiple inputs elements. Apart from the one with "name === 'value'" all are hidden.
   $horizontalForm.querySelectorAll('input[type="text"]').forEach((input) => {
     if (input.name === 'value') {
       // enable the input submit button if the value of the input field changes
@@ -265,7 +264,7 @@ export function modifyBodyFormHorizontal($horizontalForm, modifiedBody) {
  * and uiForm used by JSONForm
  */
 // eslint-disable-next-line no-unused-vars
-export function getFormBodyDataModelAndUiForm(body, omitFields, formDataModel) {
+export function getBodyFormDataModelAndUiForm(body, omitFields, formDataModel) {
   let formBodyDataModel = {
     type: 'object',
     properties: {},
@@ -309,58 +308,55 @@ export function getFormBodyDataModelAndUiForm(body, omitFields, formDataModel) {
  * Get operation type, dataModel and uiForm used by JSONForm for the horizontal form
  *
  * @param {Object} body the body as JSON
- * @param {Array} omitFields holds fields that should not be rendered
  * @param {Array} editableFields holds fields that should not be editeable
  * @returns {[String, Object, Object]} operationHorizontal, formBodyDataModelHorizontal, uiFormHorizontal
  * an Array containing the operation type of the form, the dataModel and uiForm used by JSONForm
  */
-export function getFormBodyDataModelAndUiFormHorizontal(body, omitFields, editableFields) {
-  let operationHorizontal = 'READ';
-
-  let formBodyDataModelHorizontal = {
+export function getBodyFormDataModelAndUiFormHorizontal(body, editableFields) {
+  // only include the value and the id of a body in the horizotnal form. The value should be displayed and
+  // the id is needed for updates.
+  let dataModel = {
     type: 'object',
-    properties: {},
+    properties: {
+      value: {
+        type: 'string',
+        title: body?.purpose ? changeLabel(body.purpose) : 'defaultTitle',
+      },
+      id: { type: 'string' },
+    },
   };
 
-  let uiFormHorizontal = {
-    type: 'fieldset',
-    items: [],
-  };
-
-  Object.keys(body).forEach((key) => {
-    //console.log(key);
-    //console.log(bodies[body]);
-    if (Object.prototype.hasOwnProperty.call(body, key)) {
-      formBodyDataModelHorizontal = completeFormDataModel(body, formBodyDataModelHorizontal, key, omitFields);
-      // prepare the ui form
-      // push the key and hide it, when its not the value key
-      if (key !== 'value' && omitFields.indexOf(key) === -1) {
-        // "type" : "hidden" doesn't work; for some reason this prevents
-        // the form to be submitted. Instead bootstraps "d-none" class is being used
-        uiFormHorizontal.items.push({ key: key, htmlClass: 'd-none' });
-        if (key === 'purpose') {
-          if (editableFields.includes(body.purpose)) {
-            operationHorizontal = 'UPDATE';
-          }
-        }
-      }
-      if (key === 'value' && omitFields.indexOf(key) === -1) {
-        // if a body value contains more than 45 characters, display it using a textarea.
-        // This allows for better readbility of the value
-        if (document.getElementById('annotationCard').getBoundingClientRect().width > 700) {
-          body?.value?.length > 35
-            ? uiFormHorizontal.items.push({ key: key, type: 'textarea', htmlClass: 'horizontalFormDiv' })
-            : uiFormHorizontal.items.push({ key: key, htmlClass: 'horizontalFormDiv' });
-        } else {
-          body?.value?.length > 20
-            ? uiFormHorizontal.items.push({ key: key, type: 'textarea', htmlClass: 'horizontalFormDiv' })
-            : uiFormHorizontal.items.push({ key: key, htmlClass: 'horizontalFormDiv' });
-        }
-      }
+  // decide if the value of a body can be edited based on the purpose.
+  // By default the value can't be edited.
+  let operationHorizontal = 'READ';
+  let readOnly = true;
+  if (body?.purpose) {
+    if (editableFields.includes(body.purpose)) {
+      operationHorizontal = 'UPDATE';
+      readOnly = false;
     }
-  });
+  }
 
-  return [operationHorizontal, formBodyDataModelHorizontal, uiFormHorizontal];
+  let uiForm = {
+    type: 'fieldset',
+    items: [
+      { key: 'value', htmlClass: 'horizontalFormDiv', readOnly: readOnly },
+      { key: 'id', htmlClass: 'd-none' },
+    ],
+  };
+
+  // use a textarea instead of an input field to display the value, if it reaches a certain length
+  if (document.getElementById('annotationCard').getBoundingClientRect().width > 700) {
+    if (body?.value?.length > 35) {
+      uiForm.items[0].type = 'textarea';
+    }
+  } else {
+    if (body?.value?.length > 20) {
+      uiForm.items[0].type = 'textarea';
+    }
+  }
+
+  return [operationHorizontal, dataModel, uiForm];
 }
 
 // HELPER export functionS
@@ -423,21 +419,11 @@ export function completeFormDataModel(responseJson, formDataModel, addition, omi
 
     formDataModel.properties[addition] = objectProperties;
   } else {
-    // changes to work for the "quick-view"
-    let title = addition;
-    // if the formDataModel entry for the "value" of the body is created
-    // relpace the title with the "purpose" of the body
-    // Only bodies can have a value and a purpose. An annotation can have a
-    // motivation, but never a value. This is relevant as the completeFormDataModel()
-    // is called for the creation of the form for annotations AND bodies
-    if (addition === 'value' && responseJson.purpose) {
-      title = changeLabel(responseJson.purpose);
-    }
     // console.log(title);
     if (omitFields.indexOf(addition) === -1) {
       formDataModel.properties[addition] = {
         type: 'string',
-        title: title,
+        title: addition,
       };
     }
   }
