@@ -11,7 +11,7 @@ import { initializeAnnotationTable, defaultDisplayAnnotationFunction } from '../
 import { extractInformationFromSvg } from '../../imageeditor-ng/highlighting';
 /**
  *
- * @param {Object} annotationData the data necessary for annotaiton creation
+ * @param {Object} annotationData the data necessary for annotation creation
  * @param {Object} [hooks] containing an array for the hooks to be called and
  * to be passed to "selectAnnotation()"
  * @returns {Object} finishedNewAnnotation the newly created annotation

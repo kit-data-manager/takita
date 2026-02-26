@@ -220,7 +220,7 @@
     window.annotable = new Tabulator("#searchresults", {
         layout: "fitDataTable",
         pagination: "local",
-        ajaxURL: window.CONTEXTPATH + "annoview/annoview", //set url for ajax request
+        ajaxURL: window.CONTEXTPATH + "annoview/data", //set url for ajax request
             ajaxResponse:function(url, params, response){
             if(response === "error"){
                 /*<![CDATA[*/

@@ -163,7 +163,7 @@ export function fixTableStyling($annotationTable) {
  * Displays an annotation. Should be used for imageEditor.
  *
  * @param {Event} _event
- * @param {*} cell tabulator cell containing information about the cell and its parent row (annotaiton information)
+ * @param {*} cell tabulator cell containing information about the cell and its parent row (annotation information)
  * @param {Object} [hooks] containing an array for various hooks to be passed to initializeNavigation
  */
 export function defaultDisplayAnnotationFunction(_event, cell, hooks) {
@@ -208,7 +208,7 @@ export function defaultDisplayAnnotationFunction(_event, cell, hooks) {
  * Used by /texteditor-ng/index or /texteditor-ng/display
  *
  * @param {Event} _event
- * @param {*} cell tabulator cell containing information about the cell and its parent row (annotaiton information)
+ * @param {*} cell tabulator cell containing information about the cell and its parent row (annotation information)
  * @param {Object} [hooks] containing an array for various hooks to be passed to initializeNavigation
  */
 export function textDisplayAnnotationFunction(_event, cell, hooks) {

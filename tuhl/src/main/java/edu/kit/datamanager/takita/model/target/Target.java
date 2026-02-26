@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import edu.kit.datamanager.takita.dataaccess.AnnotationConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
@@ -13,13 +16,14 @@ import edu.kit.datamanager.takita.dataaccess.RepositoryStrings;
 import edu.kit.datamanager.takita.model.target.ISelector;
 
 public class Target {
+	private static final Logger logger = LoggerFactory.getLogger(Target.class);
 	
 	// TODO: create an enum for target types
 	private String type;
 	private String linkToResource;
 	//private List<ISelector> selector;
 	private ISelector selector;
-	
+
 	public Target (String linkToResource) {
 		this.linkToResource = linkToResource;
 		//this.selector = new ArrayList<>();
@@ -46,12 +50,22 @@ public class Target {
             } else if (selectorType.equals(AnnotationStoreStrings.TEXTQUOTE_SELECTOR.getName())) {
                 this.type = "TEXT";
                 TextQuoteSelector textQuoteSelector = new TextQuoteSelector(selector.getString(AnnotationStoreStrings.EXACT.getName()));
-                if (selector.getString(AnnotationStoreStrings.PREFIX.getName()) != null) {
-                    textQuoteSelector.setPrefix(selector.getString(AnnotationStoreStrings.PREFIX.getName()));
-                }
-                if (selector.getString(AnnotationStoreStrings.SUFFIX.getName()) != null) {
-                    textQuoteSelector.setSuffix(selector.getString(AnnotationStoreStrings.SUFFIX.getName()));
-                }
+                try {
+					if (selector.getString(AnnotationStoreStrings.PREFIX.getName()) != null) {
+						textQuoteSelector.setPrefix(selector.getString(AnnotationStoreStrings.PREFIX.getName()));
+					}
+				} catch (JSONException e) {
+                    logger.error("Can not add prefix to TextQuoteSelector, because: {}", e.getMessage());
+				}
+
+				try {
+					if (selector.getString(AnnotationStoreStrings.SUFFIX.getName()) != null) {
+						textQuoteSelector.setSuffix(selector.getString(AnnotationStoreStrings.SUFFIX.getName()));
+					}
+				} catch (JSONException e) {
+                    logger.error("Can not add suffix to TextQuoteSelector, because: {}", e.getMessage());
+				}
+
                 this.selector = textQuoteSelector;
             }
         } else {

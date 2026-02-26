@@ -120,26 +120,29 @@ public class ExistDbAccessService implements IExistDbAccessService {
 	}
 	
 	/**
-	 * Gets one fragment of a page that is given in the TEI standard from eXist-db.
-	 *
-	 * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
-	 * @param xPath (encoded) identifies the document fragment
-	 * @param trimmed decides if the resolved xPath should have its content trimmed
-	 * according to the substring() function in the xPath. 
-	 * - "true" will lead to text contents of elements to be trimmed according to the substring-function
-	 * - "false" will leave the text contents of elements untouched (ignoring the substring-function)
-     * @param indented decides if the resulting xml-fragment should be indented by exist-db (true) or preserve the
-     * indentation of the original document (false)
-	 * @return the xml as a String
-	 * 1. if called with an xPath holding only one id ("pageId/filename/id("e.id")/false")
+	 * Gets one fragment of a page/document that is given in the TEI standard from eXist-db. Based on the
+	 * length of the xPath, it either gets a single element or the closest parent of the first and
+	 * last element given in the xPath. The result retrieved from eXist-db can be processed to
+	 * remove elements not explicitly present in the xPath.
+	 * 1. If called with an xPath holding only one id ("documentId/filename/id("e.id")/false")
 	 * consisting of one element and its descendants like a division or a word
-	 * 2. a) if called with an xPath holding only multiple ids ("pageId/filename/id("e.id")|id("e.id2")/false")
+	 * 2. a) If called with an xPath holding only multiple ids ("documentId/filename/id("e.id")|id("e.id2")/false")
 	 * consisting of the closest parent of the first and last element given in the xPath. The whole parent is
 	 * included if the "trimmed" variable is false
-	 *    b) if called with an xPath holding only multiple ids ("pageId/filename/id("e.id")|id("e.id2")/false")
+	 *    b) If called with an xPath holding only multiple ids ("documentId/filename/id("e.id")|id("e.id2")/false")
 	 * consisting of the closest parent of the first and last element given in the xPath. Only the elements, whose
 	 * ids are present in the xPath are included in the result, the others are getting removed, if the
 	 * "trimmed" variable is false
+	 *
+	 * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
+	 * @param xPath (encoded) identifies the document fragment
+	 * @param trimmed decides if the resolved xPath should have all elements, that are not explicitly mentioned,
+	 * removed.
+	 * - "true" will remove all elements not present in the xPath
+	 * - "false" will keep all elements
+     * @param indented decides if the resulting xml-fragment should be indented by exist-db (true) or preserve the
+     * indentation of the original document (false)
+	 * @return the xml as a String
      * @throws IOException if an error occurs while sending or receiving
 	 * @throws InterruptedException if the get request is interrupted
 	 * @throws ParserConfigurationException 
@@ -298,7 +301,7 @@ public class ExistDbAccessService implements IExistDbAccessService {
 	 * result of an xPath, which is checking for the presence of ids in a node.
 	 * 
 	 * @param nodeList holding elements or document fragments
-	 * @param ids list of ids to check, wether they are present in the nodelists entries
+	 * @param ids list of ids to check, whether they are present in the nodelists entries
 	 * @param xPathInstance used to check the presence of ids and injected into the function
 	 * performing the check
 	 * @throws DOMException 
