@@ -1,1 +1,0 @@
-export { PropositionList } from './propositionList';
