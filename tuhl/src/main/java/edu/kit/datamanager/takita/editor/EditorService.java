@@ -34,8 +34,8 @@ import org.springframework.web.context.annotation.SessionScope;
 @Service
 @SessionScope
 public class EditorService implements IEditorService {
-  private Manuscript currentManuscript;
-  private Page currentPage;
+  private final ThreadLocal<Manuscript> currentManuscript = new ThreadLocal<>();
+  private final ThreadLocal<Page> currentPage = new ThreadLocal<>();
   private Annotation currentAnnotation;
 
   private final IAssistanceService assistanceService;
@@ -482,20 +482,20 @@ public class EditorService implements IEditorService {
 
   @Override
   public void selectPage(String pageId) throws NoSuchIndexEntryException {
-    currentPage = searchIndexService.getPageById(pageId);
-    if (currentManuscript == null || currentManuscript.getId() != currentPage.getManuscriptId()) {
-      currentManuscript = searchIndexService.getManuscriptById(currentPage.getManuscriptId());
+    currentPage.set(searchIndexService.getPageById(pageId));
+    if (currentManuscript.get() == null || !currentManuscript.get().getId().equals(currentPage.get().getManuscriptId())) {
+      currentManuscript.set(searchIndexService.getManuscriptById(currentPage.get().getManuscriptId()));
     }
   }
 
   @Override
   public Manuscript getCurrentManuscript() {
-    return currentManuscript;
+    return currentManuscript.get();
   }
 
   @Override
   public Page getCurrentPage() {
-    return currentPage;
+    return currentPage.get();
   }
 
 }
