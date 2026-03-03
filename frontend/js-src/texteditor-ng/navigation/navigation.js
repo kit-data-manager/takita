@@ -198,7 +198,7 @@ export async function initializeNavigation($navBarTop, $navBarLow, $text, fragme
     initializeNavigationLow($navBarLow, $currentDivision, divisionTypeLow, undefined, fragmentId);
   }
 
-  // scroll to the first element targeted by an annotaiton, if an annotation should
+  // scroll to the first element targeted by an annotation, if an annotation should
   // be displayed. The element should be visible as both navigation bars are initialized and
   // during their initializitation the navBars show the necessary chapter.
   if (preselectedAnnoTarget !== null) {

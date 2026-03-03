@@ -36,36 +36,19 @@ import edu.kit.datamanager.takita.model.target.Target;
 public class AnnoViewService implements IAnnoViewService {
   
   private static final String TYPE = "AnnoView";
-  
-  private final ISearchIndexService searchIndexService;
+
   private final ISearchService searchService;
-  private final IAssistanceService assistanceService;
-  private int currentPage;
-  private boolean sortAscending;
-  private String sortField;
   
   /**
-   * Constructor for the Table View Service to autowire required instances.
+   * Constructor for the Anno View Service to autowire required instances.
    *
-   * @param searchIndexService instance of the logic for search index.
-   *                           Injected with Springs dependency injection system
-   *                           indicated by @autowired annotation.
    * @param searchService      instance of the logic for search.
-   *                           Injected with Springs dependency injection system
-   *                           indicated by @autowired annotation.
-   * @param assistanceService  instance of the logic for user management.
    *                           Injected with Springs dependency injection system
    *                           indicated by @autowired annotation.
    */
   @Autowired
-  public AnnoViewService(ISearchIndexService searchIndexService, ISearchService searchService,
-                          IAssistanceService assistanceService) {
-    this.searchIndexService = searchIndexService;
+  public AnnoViewService(ISearchService searchService) {
     this.searchService = searchService;
-    this.assistanceService = assistanceService;
-    this.sortAscending = false;
-    this.sortField = "id";
-    this.currentPage = 1;
   }
   
   
@@ -97,85 +80,7 @@ public class AnnoViewService implements IAnnoViewService {
   public String getType() {
     return TYPE;
   }
-  
-  /**
-   * gets current page number.
-   *
-   * @return current page number
-   */
-  public int getCurrentPage() {
-    return currentPage;
-  }
-  
-  /**
-   * Sets current page number.
-   *
-   * @param currentPage number to be set
-   */
-  public void setCurrentPage(int currentPage) {
-    assistanceService.getCurrentUser().setCurrentPage(currentPage);
-    this.currentPage = currentPage;
-  }
-  
-  /**
-   * Get SortAsc boolean.
-   *
-   * @return if SortAsc is true
-   */
-  public boolean isSortAscending() {
-    return sortAscending;
-  }
-  
-  /**
-   * Sets sortAsc boolean.
-   *
-   * @param sortAscending bool to be set
-   */
-  public void setSortAscending(boolean sortAscending) {
-    this.sortAscending = sortAscending;
-  }
-  
-  /**
-   * Gets sortField.
-   *
-   * @return sortField
-   */
-  public String getSortField() {
-    return sortField;
-  }
-  
-  /**
-   * Sets sortField.
-   *
-   * @param sortField to be set
-   */
-  public void setSortField(String sortField) {
-    this.sortField = sortField;
-  }
-  
-  /**
-   * Gets all Pages of a Manuscript from searchIndexService.
-   *
-   * @param manuscriptId of manuscript
-   * @return List of pages
-   * @throws NoSuchIndexEntryException when there is no manuscript with the given ID
-   *                                   in the search index
-   */
-  public List<Page> getPages(String manuscriptId) throws NoSuchIndexEntryException {
-    return searchIndexService.getManuscriptById(manuscriptId).getPages();
-  }
-  
-  /**
-   * Gets the id of the first Page of the Manuscript with the specified id.
-   *
-   * @param manuscriptId of manuscript
-   * @return the id of the first page
-   * @throws NoSuchIndexEntryException when there is no manuscript with this ID in the search index
-   */
-  public String getFirstPage(String manuscriptId) throws NoSuchIndexEntryException {
-    return getPages(manuscriptId).get(0).getId();
-  }
-  
+
   /**
    * Update Model with everything from AnnoViewService.
    *
@@ -183,17 +88,6 @@ public class AnnoViewService implements IAnnoViewService {
    */
   public void updateModel(Model model) {
     model.addAttribute("annoResults", getResults());
-    model.addAttribute("sortField", getSortField());
-    if (isSortAscending()) {
-      model.addAttribute("order", "asc");
-    } else {
-      model.addAttribute("order", "desc");
-    }
-    model.addAttribute("currentPage", getCurrentPage());
-  }
-  
-  public void setNumberOfResults(int numberOfResults) {
-    searchService.setPageSize(numberOfResults);
   }
   
   public long getNumberOfResultsPages() {
