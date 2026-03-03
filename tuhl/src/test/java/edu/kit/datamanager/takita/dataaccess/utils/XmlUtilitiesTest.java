@@ -214,4 +214,27 @@ public class XmlUtilitiesTest {
         assertNull(namespaceContext.getPrefixes("null"));
         assertNull(namespaceContext.getPrefix("null"));
     }
+
+    @Test
+    void testAddDates() {
+        String teiString = """
+                <TEI xmlns="http://www.tei-c.org/ns/1.0">
+                    <teiHeader xml:lang="en">
+                            <profileDesc>
+                                <creation>
+                                    <date when="2015-11-16">16. November 2015</date>
+                                    <date notBefore="2015">Likely 2015 or after</date>
+                                </creation>
+                            </profileDesc>
+                    </teiHeader>
+                </TEI>
+                """;
+
+        Manuscript manuscript = new Manuscript("1234", Instant.now(), "", "", 2025);
+
+        addTeiMetadata(manuscript, teiString);
+
+        assertEquals("2015-11-16", manuscript.getTeiManuscriptCreationDate().getFirst().getWhenDate().toString());
+        assertEquals("2015-01-01", manuscript.getTeiManuscriptCreationDate().getLast().getNotBeforeDate().toString());
+    }
 }
