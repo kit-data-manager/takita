@@ -120,37 +120,30 @@ public class XmlUtilities {
 
         for (int i = 0; i < titles.getLength(); i++) {
             try {
-                TeiTitle title = new TeiTitle(titles.item(i).getTextContent());
+                String titleType = titles.item(i).getAttributes().getNamedItem("type") != null ? titles.item(i).getAttributes().getNamedItem("type").getNodeValue() : null;
+                String titleLevel = titles.item(i).getAttributes().getNamedItem("level") != null ? titles.item(i).getAttributes().getNamedItem("level").getNodeValue() : null;
+                String titleLang = titles.item(i).getAttributes().getNamedItem("xml:lang") != null ? titles.item(i).getAttributes().getNamedItem("xml:lang").getNodeValue() : null;
 
-                // getting the values of the attribute of the title (title[@attribute])
-                if (titles.item(i).getAttributes().getNamedItem("type") != null) {
-                    title.setType(titles.item(i).getAttributes().getNamedItem("type").getNodeValue());
-                }
+                TeiTitle title = new TeiTitle(
+                        titles.item(i).getTextContent(),
+                        titleType,
+                        titleLevel,
+                        titleLang
+                );
 
-                if (titles.item(i).getAttributes().getNamedItem("xml:lang") != null) {
-                    title.setLanguage(titles.item(i).getAttributes().getNamedItem("xml:lang").getNodeValue());;
-                }
-
-                if (titles.item(i).getAttributes().getNamedItem("level") != null) {
-
-                    String level = titles.item(i).getAttributes().getNamedItem("level").getNodeValue();
-                    title.setLevel(level);
-
-                    switch (level) {
-                        case "s":
-                            titlesSeries.add(title);
-                            break;
-                        case "m":
-                            titlesMonographic.add(title);
-                            break;
-                        case "a":
-                            titlesAnalytic.add(title);
-                            break;
-                        default:
-                            titlesDefault.add(title);
-                    }
-                } else {
-                    titlesDefault.add(title);
+                switch (title.level()) {
+                    case "s":
+                        titlesSeries.add(title);
+                        break;
+                    case "m":
+                        titlesMonographic.add(title);
+                        break;
+                    case "a":
+                        titlesAnalytic.add(title);
+                        break;
+                    case null:
+                    default:
+                        titlesDefault.add(title);
                 }
             } catch (Exception e) {
                 logger.info("Could not parse titles for manuscript: " + manuscript.getId());
