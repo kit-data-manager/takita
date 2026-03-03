@@ -1,8 +1,0 @@
-/* A03 specifics */
-/* ------------------------------------*/
-
-/* display the linenumbers for lines of the root text */
-tei-lg[type="root"] > tei-l::before {
-	color: grey;
-	content: attr(n)". ";
-}
