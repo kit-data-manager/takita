@@ -15,7 +15,7 @@ build:
   image: eclipse-temurin:21.0.10_7-jdk
   stage: build
   tags:
-    - kgr1-instance-mini 
+    - kgr1-instance-standard
 ## only needed for integration test - disabled for now  
 #    - compose #run on gitlab runner suitable for docker
   rules:
@@ -36,7 +36,7 @@ coverage:
   image: eclipse-temurin:21.0.10_7-jdk
   stage: test
   tags:
-    - kgr1-instance-mini 
+    - kgr1-instance-standard
   rules:
     - if: '$CI_COMMIT_BRANCH == "development" && $CI_PIPELINE_SOURCE == "push"'
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"'
@@ -52,17 +52,18 @@ coverage:
       - ./tuhl/build/reports/jacoco/test/*
   coverage: "/Total.*?([0-9]{1,3})%/"
 
-npm-test:
-  image: node:latest
-  stage: test
-  variables:
-    APP_DIR: tuhl
-  tags:
-    - kgr1-instance-mini
-  script:
-    - cd "$APP_DIR"
-    - npm ci
-    - npm run test-all
+#already included in build task
+#npm-test:
+#  image: node:latest
+#  stage: test
+#  variables:
+#    APP_DIR: tuhl
+#  tags:
+#    - kgr1-instance-mini
+#  script:
+#    - cd "$APP_DIR"
+#    - npm ci
+#    - npm run test-all
 
 sast:
   stage: test
