@@ -8,6 +8,7 @@
     <teiHeader>
         <fileDesc>
             <titleStmt>
+                <author><persName>Sample Author</persName></author>
                 <title>
                     This is a sample title
                 </title>
@@ -49,6 +50,11 @@
                 </bibl>
             </sourceDesc>
         </fileDesc>
+        <profileDesc>
+            <creation>
+                <date when="2026">2026</date>
+            </creation>
+        </profileDesc>
     </teiHeader>
     <sourceDoc>
         <pb/>
