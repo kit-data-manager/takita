@@ -82,33 +82,33 @@ public class XmlUtilitiesTest {
 
         List<TeiTitle> teiSeriesTitles = manuscript.getTeiTitleSeries();
         assertEquals(7, teiSeriesTitles.size());
-        assertEquals("s", teiSeriesTitles.get(0).getLevel());
-        assertEquals("s", teiSeriesTitles.get(1).getLevel());
-        assertEquals("s", teiSeriesTitles.get(2).getLevel());
-        assertEquals("de", teiSeriesTitles.get(0).getLanguage());
-        assertEquals("Serien Titel", teiSeriesTitles.get(0).getContent());
-        assertEquals("series title", teiSeriesTitles.get(1).getContent());
-        assertEquals("main", teiSeriesTitles.get(2).getType());
-        assertEquals("sub", teiSeriesTitles.get(3).getType());
-        assertEquals("alt", teiSeriesTitles.get(4).getType());
-        assertEquals("short", teiSeriesTitles.get(5).getType());
-        assertEquals("desc", teiSeriesTitles.get(6).getType());
+        assertEquals("s", teiSeriesTitles.get(0).level());
+        assertEquals("s", teiSeriesTitles.get(1).level());
+        assertEquals("s", teiSeriesTitles.get(2).level());
+        assertEquals("de", teiSeriesTitles.get(0).language());
+        assertEquals("Serien Titel", teiSeriesTitles.get(0).content());
+        assertEquals("series title", teiSeriesTitles.get(1).content());
+        assertEquals("main", teiSeriesTitles.get(2).type());
+        assertEquals("sub", teiSeriesTitles.get(3).type());
+        assertEquals("alt", teiSeriesTitles.get(4).type());
+        assertEquals("short", teiSeriesTitles.get(5).type());
+        assertEquals("desc", teiSeriesTitles.get(6).type());
 
         List<TeiTitle> teiAnalyticTitles = manuscript.getTeiTitleAnalytic();
         assertEquals(1, teiAnalyticTitles.size());
-        assertEquals("a", teiAnalyticTitles.get(0).getLevel());
-        assertEquals("analytic title", teiAnalyticTitles.get(0).getContent());
+        assertEquals("a", teiAnalyticTitles.get(0).level());
+        assertEquals("analytic title", teiAnalyticTitles.get(0).content());
 
         List<TeiTitle> teiMonographicTitles = manuscript.getTeiTitleMonographic();
         assertEquals(1, teiMonographicTitles.size());
-        assertEquals("m", teiMonographicTitles.get(0).getLevel());
-        assertEquals("monographic title", teiMonographicTitles.get(0).getContent());
+        assertEquals("m", teiMonographicTitles.get(0).level());
+        assertEquals("monographic title", teiMonographicTitles.get(0).content());
 
         List<TeiTitle> teiDefaultTitles = manuscript.getTeiTitle();
         assertEquals(3, teiDefaultTitles.size());
-        assertEquals("journal title", teiDefaultTitles.get(0).getContent());
-        assertEquals("unpublished title", teiDefaultTitles.get(1).getContent());
-        assertEquals("title", teiDefaultTitles.get(2).getContent());
+        assertEquals("journal title", teiDefaultTitles.get(0).content());
+        assertEquals("unpublished title", teiDefaultTitles.get(1).content());
+        assertEquals("title", teiDefaultTitles.get(2).content());
     }
 
 // TODO: is this test necessary? When does it throw the exception anyways

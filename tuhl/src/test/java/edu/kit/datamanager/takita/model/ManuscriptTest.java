@@ -75,15 +75,15 @@ class ManuscriptTest {
     List<String> authorList = new ArrayList<String>();
     authorList.add("Author1");
     manuscript.setTeiAuthor(authorList);
-    assertEquals("Author1", manuscript.authorListToString(manuscript.getTeiAuthor()));
+    assertEquals("Author1", manuscript.getAuthorsAsString());
 
     authorList.add("Author2");
     manuscript.setTeiAuthor(authorList);
-    assertEquals("Author1, Author2", manuscript.authorListToString(manuscript.getTeiAuthor()));
+    assertEquals("Author1, Author2", manuscript.getAuthorsAsString());
 
     authorList.add("Author3");
     manuscript.setTeiAuthor(authorList);
-    assertEquals("Author1, Author2, Author3", manuscript.authorListToString(manuscript.getTeiAuthor()));
+    assertEquals("Author1, Author2, Author3", manuscript.getAuthorsAsString());
     assertEquals(3, manuscript.getTeiAuthor().size());
   }
 
@@ -92,17 +92,18 @@ class ManuscriptTest {
     Manuscript manuscript = new Manuscript("1", Instant.parse("2019-07-04T07:03:03Z"), "myManuscript", "Name", 2000);
 
     List<TeiTitle> titleList = new ArrayList<TeiTitle>();
-    titleList.add(new TeiTitle("Title1"));
+    titleList.add(new TeiTitle("Title1", null, null, "en"));
     manuscript.setTeiTitle(titleList);
-    assertEquals("Title1", manuscript.titleListToString(manuscript.getTeiTitle()));
+    assertEquals("Title1", manuscript.getDefaultTitlesAsString());
 
-    titleList.add(new TeiTitle("Title2"));
+    titleList.add(new TeiTitle("Title2", null, null, "en"));
     manuscript.setTeiTitle(titleList);
-    assertEquals("Title1 (Title2)", manuscript.titleListToString(manuscript.getTeiTitle()));
+    assertEquals("Title1 (Title2)", manuscript.getDefaultTitlesAsString());
 
-    titleList.add(new TeiTitle("Title3"));
+    titleList.add(new TeiTitle("Title3", null, null, "en"));
     manuscript.setTeiTitle(titleList);
-    assertEquals("Title1 (Title2; Title3)", manuscript.titleListToString(manuscript.getTeiTitle()));
+    assertEquals(3, manuscript.getTeiTitle().size());
+    assertEquals("Title1 (Title2; Title3)", manuscript.getDefaultTitlesAsString());
     assertEquals(3, manuscript.getTeiTitle().size());
   }
 }
