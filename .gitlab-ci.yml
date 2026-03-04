@@ -12,7 +12,7 @@ stages:
 #    command: ["--tls=false"]
 
 build:
-  image: eclipse-temurin:17.0.9_9-jdk
+  image: eclipse-temurin:21.0.10_7-jdk
   stage: build
   tags:
     - kgr1-instance-mini 
@@ -33,7 +33,7 @@ build:
       - ./tuhl/build/libs/*.jar
 
 coverage:
-  image: eclipse-temurin:17.0.9_9-jdk
+  image: eclipse-temurin:21.0.10_7-jdk
   stage: test
   tags:
     - kgr1-instance-mini 
