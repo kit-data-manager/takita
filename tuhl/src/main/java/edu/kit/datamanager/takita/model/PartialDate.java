@@ -3,6 +3,9 @@ package edu.kit.datamanager.takita.model;
 import java.time.LocalDate;
 import java.time.YearMonth;
 
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
+
 public record PartialDate(int year, Integer month, Integer day) implements Comparable<PartialDate> {
 
     public PartialDate {
@@ -33,19 +36,28 @@ public record PartialDate(int year, Integer month, Integer day) implements Compa
     }
 
     public static PartialDate parse(String s) {
-        if (s.matches("\\d{4}-\\d{2}-\\d{2}")) {
-            String[] p = s.split("-");
-            return new PartialDate(Integer.parseInt(p[0]), Integer.parseInt(p[1]), Integer.parseInt(p[2]));
+
+        if (s == null || s.isEmpty()) throw new IllegalArgumentException("Unable to parse empty string into date");
+
+        final Pattern PATTERN = Pattern.compile("^([+-]?\\d{4,})(?:-(\\d{2})(?:-(\\d{2}))?)?$");
+        Matcher m = PATTERN.matcher(s);
+
+        if (!m.matches()) throw new IllegalArgumentException("Unsupported date string: " + s);
+
+        int year = Integer.parseInt(m.group(1));
+
+        Integer month = null;
+        Integer day = null;
+
+        if (m.group(2) != null) {
+            month = Integer.parseInt(m.group(2));
         }
-        if (s.matches("\\d{4}-\\d{2}")) {
-            String[] p = s.split("-");
-            return new PartialDate(Integer.parseInt(p[0]), Integer.parseInt(p[1]), null);
+
+        if (m.group(3) != null) {
+            day = Integer.parseInt(m.group(3));
         }
-        if (s.matches("\\d{4}")) {
-            String[] p = s.split("-");
-            return new PartialDate(Integer.parseInt(p[0]), null, null);
-        }
-        throw new IllegalArgumentException("Unsupported partial date: " + s);
+
+        return new PartialDate(year, month, day);
     }
 
     /**

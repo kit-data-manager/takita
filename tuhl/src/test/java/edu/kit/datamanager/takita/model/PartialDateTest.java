@@ -9,6 +9,10 @@ class PartialDateTest {
     @Test
     void testParsePartialDates() {
         PartialDate date;
+        date = PartialDate.parse("-0031-12");
+
+        assertEquals(-31, date.year());
+
         date = PartialDate.parse("2024");
         date = PartialDate.parse("2024-12");
         date = PartialDate.parse("2024-12-31");

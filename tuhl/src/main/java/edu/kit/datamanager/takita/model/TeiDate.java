@@ -85,7 +85,7 @@ public class TeiDate {
 	 */
 	@Field(type = FieldType.Date, format = DateFormat.year_month_day, pattern ="uuuu-MM-dd")
 	public LocalDate getNotAfterDate() {
-		return notBefore.toLastLocalDate();
+		return notAfter.toLastLocalDate();
 	}
 
 	/**
@@ -108,7 +108,7 @@ public class TeiDate {
 	 */
 	@Field(type = FieldType.Date, format = DateFormat.year_month_day, pattern ="uuuu-MM-dd")
 	public LocalDate getFromDate() {
-		return notBefore.toFirstLocalDate();
+		return from.toFirstLocalDate();
 	}
 
 	/**
@@ -131,7 +131,7 @@ public class TeiDate {
 	 */
 	@Field(type = FieldType.Date, format = DateFormat.year_month_day, pattern ="uuuu-MM-dd")
 	public LocalDate getToDate() {
-		return notBefore.toLastLocalDate();
+		return to.toLastLocalDate();
 	}
 
 	/**
