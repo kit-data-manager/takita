@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
@@ -359,49 +360,65 @@ public class Manuscript {
   public void setTeiManuscriptCreationDate(List<TeiDate> teiManuscriptCreationDate) {
     this.teiManuscriptCreationDate =  teiManuscriptCreationDate;
   }
-  
+
+  public String getDefaultTitlesAsString() {
+    return titleListToString(teiTitle);
+  }
+
+  public String getMonographicTitlesAsString() {
+    return titleListToString(teiTitleMonographic);
+  }
+
+  public String getAnalyticTitlesAsString() {
+    return titleListToString(teiTitleAnalytic);
+  }
+
+  public String getSeriesTitlesAsString() {
+    return titleListToString(teiTitleSeries);
+  }
+
   // the following toString()-functions are called by the editor thymeleaf templates
   /**
-   * Concatenate a list of titles into a string, where all entries apart from
+   * Concatenate a list of TEI MD titles into a string, where all entries apart from
    * the first one are surrounded by brackets.
    * 
-   * @param List of titles to be concatenated
-   * @return concatenated List as String
+   * @param titleList to be concatenated
+   * @return concatenated List as String. First title followed by other titles in brackets
    */
-  public String titleListToString(List<TeiTitle> titleList) {
-	  String result = titleList.get(0).content();
-	  titleList.remove(0);
+  private String titleListToString(List<TeiTitle> titleList) {
+	if (titleList.isEmpty()) {
+      return "";
+    }
 
-	  if (titleList.size() >= 1) {
-		  List<String> titleContents = new ArrayList();
-		  // storing the titles to be able to join them
-		  for (TeiTitle title : titleList) {
-			  titleContents.add(title.content());
-		  }
-		  result = result + " (" + String.join("; ", titleContents) + ")";
-	  }
-	  return result;
+    String mainTitle = titleList.getFirst().content();
+
+    if (titleList.size() > 1) {
+      String remainingTitles = titleList.stream()
+              .skip(1)
+              .map(TeiTitle::content)
+              .collect(Collectors.joining("; "));
+      return mainTitle + " (" + remainingTitles + ")";
+    }
+    return mainTitle;
   }
   
   /**
-   * Concatenate a list of authors into a string
-   * 
-   * @param List of Strings to be concatenated
+   * Concatenate a list of TEI MD authors into a string
+   *
    * @return concatenated List as String
    */
-  public String authorListToString(List<String> authorList) {
-	  return String.join(", ", authorList);
+  public String getAuthorsAsString() {
+	  return String.join(", ", teiAuthor);
   }
   
   /**
-   * Concatenate a list of dates into a string
-   * 
-   * @param List of dates to be concatenated
+   * Concatenate a list of TEI MD creation dates into a string
+   *
    * @return concatenated List as String
    */
-  public String dateListToString(List<TeiDate> dateList) {
+  public String getCreationDatesAsString() {
 	  List<String> results = new ArrayList<String>();
-	  for (TeiDate date : dateList) {
+	  for (TeiDate date : teiManuscriptCreationDate) {
 		  String dateString = date.getContent();
 		  if (date.getType() != null) {
 			  dateString = dateString + " (" + date.getType() + ")";
