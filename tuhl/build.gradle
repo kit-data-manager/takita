@@ -23,7 +23,7 @@ node {
 	// Recommended: use a reproducible, locally managed Node distribution.
 	// See https://github.com/node-gradle/gradle-node-plugin for versions
 	download = true
-	version = '25.2.1' // pick your version
+	version = '24.14.0' // pick your version
 	npmInstallCommand = System.getenv("CI") ? 'ci' : 'install'
 }
 
