@@ -20,7 +20,7 @@
   },
   "peerDependencies": {
     "bootstrap": "^5.3.3",
-    "CETEIcean": "^1.9.2",
+    "CETEIcean": "1.9.4",
     "jquery": "^3.7.1",
     "jsonform": "^2.2.5",
     "lodash": "^4.17.21",
