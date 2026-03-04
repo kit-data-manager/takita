@@ -46,28 +46,8 @@ public class XmlUtilitiesTest {
                                     <persName>Fore name Middle name Last name</persName>
                                 </author>
                             </titleStmt>
-                            <publicationStmt>
-                                <ab/>
-                            </publicationStmt>
-                            <sourceDesc>
-                                <ab/>
-                            </sourceDesc>
                         </fileDesc>
-                        <profileDesc>
-                            <creation>
-                                <date type="file" when="2022-07-07">7. July 2022</date>
-                                <date type="distribution" when="2022-07-07">7. July 2022</date>
-                                <date type="manuscript" from="-0650" to="-0450">650-450 BCE</date>
-                                <date type="preaching" from="1555-12" to="1609">December 1539–1609</date>
-                                <date type="publication" notBefore="1539" notAfter="1609">ca. 1539–1609</date>
-                            </creation>
-                        </profileDesc>
                     </teiHeader>
-                    <text>
-                        <body>
-                            <ab/>
-                        </body>
-                    </text>
                 </TEI>
                 """;
         Manuscript manuscript = new Manuscript("1", Instant.parse("2019-07-04T07:03:03Z"), "myManuscript", "Name", 2000);
@@ -110,51 +90,6 @@ public class XmlUtilitiesTest {
         assertEquals("unpublished title", teiDefaultTitles.get(1).content());
         assertEquals("title", teiDefaultTitles.get(2).content());
     }
-
-// TODO: is this test necessary? When does it throw the exception anyways
-//    @Test
-//    public void testFailToAddTeiTitle() {
-//        String xmlString = """
-//                <?xml version="1.0" encoding="UTF-8"?>
-//                <?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
-//                <?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml"?>
-//                <TEI xmlns="http://www.tei-c.org/ns/1.0">
-//                    <teiHeader xml:lang="en" xmlns="http://www.tei-c.org/ns/1.0">
-//                        <fileDesc>
-//                            <titleStmt>
-//                                <title></title>
-//                                <author>
-//                                    <persName>Fore name Middle name Last name</persName>
-//                                </author>
-//                            </titleStmt>
-//                            <publicationStmt>
-//                                <ab/>
-//                            </publicationStmt>
-//                            <sourceDesc>
-//                                <ab/>
-//                            </sourceDesc>
-//                        </fileDesc>
-//                        <profileDesc>
-//                            <creation>
-//                                <date type="file" when="2022-07-07">7. July 2022</date>
-//                                <date type="distribution" when="2022-07-07">7. July 2022</date>
-//                                <date type="manuscript" from="-0650" to="-0450">650-450 BCE</date>
-//                                <date type="preaching" from="1555-12" to="1609">December 1539–1609</date>
-//                                <date type="publication" notBefore="1539" notAfter="1609">ca. 1539–1609</date>
-//                            </creation>
-//                        </profileDesc>
-//                    </teiHeader>
-//                    <text>
-//                        <body>
-//                            <ab/>
-//                        </body>
-//                    </text>
-//                </TEI>
-//                """;
-//        Manuscript manuscript = new Manuscript("1", Instant.parse("2019-07-04T07:03:03Z"), "myManuscript", "Name", 2000);
-//
-//        addTeiMetadata(manuscript, xmlString);
-//    }
 
     @Test
     public void testFailToAddTeiAuthor() {
