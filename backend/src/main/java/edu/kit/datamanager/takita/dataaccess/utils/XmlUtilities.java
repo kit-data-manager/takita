@@ -1,6 +1,7 @@
 package edu.kit.datamanager.takita.dataaccess.utils;
 
 import edu.kit.datamanager.takita.model.Manuscript;
+import edu.kit.datamanager.takita.model.PartialDate;
 import edu.kit.datamanager.takita.model.TeiDate;
 import edu.kit.datamanager.takita.model.TeiTitle;
 import org.slf4j.Logger;
@@ -120,35 +121,30 @@ public class XmlUtilities {
 
         for (int i = 0; i < titles.getLength(); i++) {
             try {
-                TeiTitle title = new TeiTitle(titles.item(i).getTextContent());
+                String titleType = titles.item(i).getAttributes().getNamedItem("type") != null ? titles.item(i).getAttributes().getNamedItem("type").getNodeValue() : null;
+                String titleLevel = titles.item(i).getAttributes().getNamedItem("level") != null ? titles.item(i).getAttributes().getNamedItem("level").getNodeValue() : null;
+                String titleLang = titles.item(i).getAttributes().getNamedItem("xml:lang") != null ? titles.item(i).getAttributes().getNamedItem("xml:lang").getNodeValue() : null;
 
-                // getting the values of the attribute of the title (title[@attribute])
-                if (titles.item(i).getAttributes().getNamedItem("type") != null) {
-                    title.setType(titles.item(i).getAttributes().getNamedItem("type").getNodeValue());
-                }
+                TeiTitle title = new TeiTitle(
+                        titles.item(i).getTextContent(),
+                        titleType,
+                        titleLevel,
+                        titleLang
+                );
 
-                if (titles.item(i).getAttributes().getNamedItem("xml:lang") != null) {
-                    title.setLanguage(titles.item(i).getAttributes().getNamedItem("xml:lang").getNodeValue());;
-                }
-
-                if (titles.item(i).getAttributes().getNamedItem("level") != null) {
-
-                    String level = titles.item(i).getAttributes().getNamedItem("level").getNodeValue();
-                    title.setLevel(level);
-
-                    switch (level) {
-                        case "s":
-                            titlesSeries.add(title);
-                            break;
-                        case "m":
-                            titlesMonographic.add(title);
-                            break;
-                        case "a":
-                            titlesAnalytic.add(title);
-                            break;
-                    }
-                } else {
-                    titlesDefault.add(title);
+                switch (title.level()) {
+                    case "s":
+                        titlesSeries.add(title);
+                        break;
+                    case "m":
+                        titlesMonographic.add(title);
+                        break;
+                    case "a":
+                        titlesAnalytic.add(title);
+                        break;
+                    case null:
+                    default:
+                        titlesDefault.add(title);
                 }
             } catch (Exception e) {
                 logger.info("Could not parse titles for manuscript: " + manuscript.getId());
@@ -232,32 +228,27 @@ public class XmlUtilities {
                 // set the various dates after the string a valid string, that can be parsed
                 if (dates.item(i).getAttributes().getNamedItem("when") != null) {
                     String whenValue = dates.item(i).getAttributes().getNamedItem("when").getNodeValue();
-                    whenValue = makeDateStringValid(whenValue, true);
-                    LocalDate when = LocalDate.parse(whenValue);
+                    PartialDate when = PartialDate.parse(whenValue);
                     date.setWhen(when);
                 }
                 if (dates.item(i).getAttributes().getNamedItem("notBefore") != null) {
                     String notBeforeValue = dates.item(i).getAttributes().getNamedItem("notBefore").getNodeValue();
-                    notBeforeValue = makeDateStringValid(notBeforeValue, true);
-                    LocalDate notBefore = LocalDate.parse(notBeforeValue);
+                    PartialDate notBefore = PartialDate.parse(notBeforeValue);
                     date.setNotBefore(notBefore);
                 }
                 if (dates.item(i).getAttributes().getNamedItem("notAfter") != null) {
                     String notAfterValue = dates.item(i).getAttributes().getNamedItem("notAfter").getNodeValue();
-                    notAfterValue = makeDateStringValid(notAfterValue, false);
-                    LocalDate notAfter = LocalDate.parse(notAfterValue);
+                    PartialDate notAfter = PartialDate.parse(notAfterValue);
                     date.setNotAfter(notAfter);
                 }
                 if (dates.item(i).getAttributes().getNamedItem("from") != null) {
                     String fromValue = dates.item(i).getAttributes().getNamedItem("from").getNodeValue();
-                    fromValue = makeDateStringValid(fromValue, true);
-                    LocalDate from = LocalDate.parse(fromValue);
+                    PartialDate from = PartialDate.parse(fromValue);
                     date.setFrom(from);
                 }
                 if (dates.item(i).getAttributes().getNamedItem("to") != null) {
                     String toValue = dates.item(i).getAttributes().getNamedItem("to").getNodeValue();
-                    toValue = makeDateStringValid(toValue, false);
-                    LocalDate to = LocalDate.parse(toValue);
+                    PartialDate to = PartialDate.parse(toValue);
                     date.setTo(to);
                 }
                 datesList.add(date);
@@ -270,64 +261,6 @@ public class XmlUtilities {
         if(!datesList.isEmpty()) {
             manuscript.setTeiManuscriptCreationDate(datesList);
         }
-    }
-
-    /**
-     * Helper function to make sure that the string passed is a valid date in
-     * YYYY-MM-DD format.
-     *
-     * @param dateString to be validated
-     * @param yearStart Boolean to decide if the date should be the start/end of a year
-     * @return valid dateString
-     */
-    private static String makeDateStringValid(String dateString, Boolean yearStart) {
-        // check if the data is in YYYY-MM-DD format
-        if (dateString.length() < 10) {
-            // add MM-DD if missing
-            if (dateString.length() <= 5) {
-                if (yearStart) {
-                    if (dateString.startsWith("-")) {
-                        dateString = dateString + "-12-31";
-                    } else {
-                        dateString = dateString + "-01-01";
-                    }
-                } else {
-                    if (dateString.startsWith("-")) {
-                        dateString = dateString + "-01-01";
-                    } else {
-                        dateString = dateString + "-12-31";
-                    }
-                }
-            }
-            // add DD if missing
-            if (dateString.length() <= 8 ) {
-                if (yearStart) {
-                    if (dateString.startsWith("-")) {
-                        dateString = dateString + "-12";
-                    } else {
-                        dateString = dateString + "-01";
-                    }
-                } else {
-                    if (dateString.startsWith("-")) {
-                        dateString = dateString + "-01";
-                    } else {
-                        dateString = dateString + "-31";
-                    }
-                }
-            }
-        }
-
-        // dates including a time have to be cut. They are longer than 11 characters
-        // and usually contain a "T" to mark the beginning of the time stamp
-        // (10 would be the length for YYYY-MM-DD AD dates, but BC dates include a leading "-")
-        if (dateString.length() > 11 && dateString.contains("T")) {
-            if (dateString.startsWith("-")) {
-                dateString = dateString.substring(0, 11);
-            } else {
-                dateString = dateString.substring(0, 10);
-            }
-        }
-        return dateString;
     }
 
     /**

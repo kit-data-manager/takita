@@ -11,15 +11,15 @@
             <tr>
                 <td width="10%"></td>
                 <td width="20%" th:text="#{col_name.author}"></td>
-                <td width="20%" th:text="${currentManuscript.teiAuthor} ? ${currentManuscript.authorListToString(currentManuscript.teiAuthor)} : 'UNKNOWN'"></td>
+                <td width="20%" th:text="${currentManuscript.teiAuthor} ? ${currentManuscript.getAuthorsAsString()} : 'UNKNOWN'"></td>
                 <td width="10%"></td>
                 <td width="20%" th:text="#{col_name.manuscriptCreationDate}"></td>
-                <td width="20%" th:text="${currentManuscript.teiManuscriptCreationDate} ? ${currentManuscript.dateListToString(currentManuscript.teiManuscriptCreationDate)} : 'UNKNOWN'"></td>
+                <td width="20%" th:text="${currentManuscript.teiManuscriptCreationDate} ? ${currentManuscript.getCreationDatesAsString()} : 'UNKNOWN'"></td>
             </tr>
             <tr th:if="${currentManuscript.teiTitle}">
                 <td></td>
                 <td th:text="#{col_name.title}"></td>
-                <td th:text="${currentManuscript.titleListToString(currentManuscript.teiTitle)}"></td>
+                <td th:text="${currentManuscript.getDefaultTitlesAsString()}"></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -27,7 +27,7 @@
             <tr th:if="${currentManuscript.teiTitleSeries}">
                 <td></td>
                 <td th:text="#{col_name.title}"></td>
-                <td th:text="${currentManuscript.titleListToString(currentManuscript.teiTitleSeries)}"></td>
+                <td th:text="${currentManuscript.getSeriesTitlesAsString()}"></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -35,7 +35,7 @@
             <tr  th:if="${currentManuscript.teiTitleMonographic}">
                 <td></td>
                 <td th:text="#{col_name.title}"></td>
-                <td th:text="${currentManuscript.titleListToString(currentManuscript.teiTitleMonographic)}"></td>
+                <td th:text="${currentManuscript.getMonographicTitlesAsString()}"></td>
                 <td></td>
                 <td></td>
                 <td></td>
@@ -43,7 +43,7 @@
             <tr th:if="${currentManuscript.teiTitleAnalytic}">
                 <td></td>
                 <td th:text="#{col_name.title}"></td>
-                <td th:text="${currentManuscript.titleListToString(currentManuscript.teiTitleAnalytic)}"></td>
+                <td th:text="${currentManuscript.getAnalyticTitlesAsString()}"></td>
                 <td></td>
                 <td></td>
                 <td></td>
