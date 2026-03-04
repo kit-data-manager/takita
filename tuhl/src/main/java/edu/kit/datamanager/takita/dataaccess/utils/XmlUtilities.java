@@ -146,6 +146,8 @@ public class XmlUtilities {
                         case "a":
                             titlesAnalytic.add(title);
                             break;
+                        default:
+                            titlesDefault.add(title);
                     }
                 } else {
                     titlesDefault.add(title);

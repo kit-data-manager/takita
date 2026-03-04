@@ -369,13 +369,14 @@ public class Manuscript {
    * @return concatenated List as String
    */
   public String titleListToString(List<TeiTitle> titleList) {
-	  String result = titleList.get(0).getContent();
-	  titleList.remove(0);
+	  ArrayList<TeiTitle> clonedList = new ArrayList<TeiTitle>(titleList);
+      String result = clonedList.get(0).getContent();
+      clonedList.remove(0);
 
-	  if (titleList.size() >= 1) {
+	  if (clonedList.size() >= 1) {
 		  List<String> titleContents = new ArrayList();
 		  // storing the titles to be able to join them
-		  for (TeiTitle title : titleList) {
+		  for (TeiTitle title : clonedList) {
 			  titleContents.add(title.getContent());
 		  }
 		  result = result + " (" + String.join("; ", titleContents) + ")";

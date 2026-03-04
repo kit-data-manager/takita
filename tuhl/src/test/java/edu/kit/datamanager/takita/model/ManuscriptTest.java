@@ -1,5 +1,6 @@
 package edu.kit.datamanager.takita.model;
 
+import edu.kit.datamanager.takita.dataaccess.utils.XmlUtilities;
 import edu.kit.datamanager.takita.model.page.ImagePage;
 import edu.kit.datamanager.takita.model.page.Page;
 import edu.kit.datamanager.takita.model.page.ResourceType;
@@ -58,5 +59,50 @@ class ManuscriptTest {
     pages.add(page2);
 
     return pages;
+  }
+
+  @Test
+  public void testSetAndGetDescription() {
+    Manuscript manuscript = new Manuscript("1", Instant.parse("2019-07-04T07:03:03Z"), "myManuscript", "Name", 2000);
+    manuscript.setDescription("Description");
+    assertEquals("Description", manuscript.getDescription());
+  }
+
+  @Test
+  public void testTEIAuthorFunctions() {
+    Manuscript manuscript = new Manuscript("1", Instant.parse("2019-07-04T07:03:03Z"), "myManuscript", "Name", 2000);
+
+    List<String> authorList = new ArrayList<String>();
+    authorList.add("Author1");
+    manuscript.setTeiAuthor(authorList);
+    assertEquals("Author1", manuscript.authorListToString(manuscript.getTeiAuthor()));
+
+    authorList.add("Author2");
+    manuscript.setTeiAuthor(authorList);
+    assertEquals("Author1, Author2", manuscript.authorListToString(manuscript.getTeiAuthor()));
+
+    authorList.add("Author3");
+    manuscript.setTeiAuthor(authorList);
+    assertEquals("Author1, Author2, Author3", manuscript.authorListToString(manuscript.getTeiAuthor()));
+    assertEquals(3, manuscript.getTeiAuthor().size());
+  }
+
+  @Test
+  public void testTEITitleFunctions() {
+    Manuscript manuscript = new Manuscript("1", Instant.parse("2019-07-04T07:03:03Z"), "myManuscript", "Name", 2000);
+
+    List<TeiTitle> titleList = new ArrayList<TeiTitle>();
+    titleList.add(new TeiTitle("Title1"));
+    manuscript.setTeiTitle(titleList);
+    assertEquals("Title1", manuscript.titleListToString(manuscript.getTeiTitle()));
+
+    titleList.add(new TeiTitle("Title2"));
+    manuscript.setTeiTitle(titleList);
+    assertEquals("Title1 (Title2)", manuscript.titleListToString(manuscript.getTeiTitle()));
+
+    titleList.add(new TeiTitle("Title3"));
+    manuscript.setTeiTitle(titleList);
+    assertEquals("Title1 (Title2; Title3)", manuscript.titleListToString(manuscript.getTeiTitle()));
+    assertEquals(3, manuscript.getTeiTitle().size());
   }
 }
