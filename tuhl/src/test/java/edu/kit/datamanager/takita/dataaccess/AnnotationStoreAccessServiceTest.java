@@ -493,6 +493,21 @@ class AnnotationStoreAccessServiceTest {
     annotationStoreAccessService.deleteAnnotation(annotation2.getString("id"), etags2.get(0));
   }
 
+  @Test
+  void normalizeWAPURI() {
+    String input = "http://localhost:80/wap/";
+
+    assertEquals("http://localhost/wap/", annotationStoreAccessService.normalizeAnnostoreURI(input));
+
+    input = "https://somehost:443";
+
+    assertEquals("https://somehost", annotationStoreAccessService.normalizeAnnostoreURI(input));
+
+    input = "http://somehost:8080/wap/";
+
+    assertEquals(input, annotationStoreAccessService.normalizeAnnostoreURI(input));
+  }
+
   private String readStringFromRelativePath(String relativePath) throws IOException {
     return Files.readString(Path.of("src/test/resources/annotationStoreAccessService/" + relativePath));
   }
