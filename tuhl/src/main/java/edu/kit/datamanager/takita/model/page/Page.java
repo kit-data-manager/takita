@@ -154,11 +154,5 @@ public abstract class Page {
   public void addAnnotation(Annotation annotation) {
     annotations.add(annotation);
   }
-
-  /**
-   * Type getter (for usage in thymeleaf, which cannot check the instance type of a page object)
-   * @return page type ("image" or "text")
-   */
-  public abstract String getType();
 }
 

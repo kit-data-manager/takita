@@ -16,7 +16,7 @@
 
                                 <!-- TODO: CUSTOMISE change icon, if wanted -->
                                 <!-- Switch on whether we should show thumbnails or icons -->
-                                <div th:switch="${showThumbnailsOrIcons}" th:with="iconPath=${page.type == 'image'} ? '/images/img_thumb.svg' : '/images/text_thumb.svg'">
+                                <div th:switch="${showThumbnailsOrIcons}" th:with="iconPath=${page.resourceType.name() == 'IMAGE'} ? '/images/img_thumb.svg' : '/images/text_thumb.svg'">
 
                                     <!-- ========================== -->
                                     <!-- Case 1: showThumbnails = true -->
@@ -24,7 +24,7 @@
                                     <div th:case="true">
 
                                         <!-- Case 1a: Thumbnail exists → show real thumbnail -->
-                                        <img th:if="${page.type == 'image' and page.thumbResourceUrl != null}"
+                                        <img th:if="${page.resourceType.name() == 'IMAGE' and page.thumbResourceUrl != null}"
                                              th:src="${page.thumbResourceUrl}"
                                              class="img-thumbnail"
                                              th:classappend="${page.id == currentPage.id} ? ' border border-danger-subtle'"
@@ -33,7 +33,7 @@
                                              loading="lazy" />
 
                                         <!-- Case 1b: No thumbnail → show icon based on type -->
-                                        <img th:if="${page.type != 'image' or page?.thumbResourceUrl == null}"
+                                        <img th:if="${page.resourceType.name() != 'IMAGE' or page?.thumbResourceUrl == null}"
                                              th:src="@{${iconPath}}"
                                              class="img-thumbnail"
                                              th:classappend="${page.id == currentPage.id} ? ' border border-danger-subtle'"
