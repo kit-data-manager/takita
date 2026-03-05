@@ -209,7 +209,7 @@ public class TableViewService implements IContentViewService {
         jsonObject.put("thumbNail", thumbNail);
         jsonObject.put("id", id);
         jsonObject.put("pageNumber", page.getPageNumber());
-        jsonObject.put("type", page.getType());
+        jsonObject.put("type", page.getResourceType().name());
         thumbnails.put(jsonObject);
       }
       

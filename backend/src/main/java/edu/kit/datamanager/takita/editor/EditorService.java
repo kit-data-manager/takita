@@ -51,6 +51,8 @@ public class EditorService implements IEditorService {
    *
    * @param assistanceService instance of IAssistanceService
    * @param searchIndexService instance of ISearchIndexService
+   * @param accessService instance of IAccessService
+   * @param repositoryAccessService instance of IRepositoryService
    */
   @Autowired
   public EditorService(IAssistanceService assistanceService,

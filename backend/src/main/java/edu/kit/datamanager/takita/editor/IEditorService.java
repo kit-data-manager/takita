@@ -123,6 +123,7 @@ public interface IEditorService {
    * @param title of the text card
    * @param subject of the text card
    * @param value of the text card
+   * @param source of the text card
    * @param purpose of the text card
    * @return added text card
    * @throws InterruptedException when the http request to database is interrupted
@@ -140,6 +141,7 @@ public interface IEditorService {
    * @param title of the tag
    * @param subject of the tag
    * @param value of the tag
+   * @param source of the tag
    * @return added tag
    * @throws InterruptedException when the http request to database is interrupted
    * @throws NoSuchIndexEntryException when there is no such annotation in the index
@@ -154,13 +156,15 @@ public interface IEditorService {
    *
    * @param textCardId of the text card which should be updated
    * @param title new title of the text card
+   * @param subject new subject of the text card
    * @param value new value of the text card
+   * @param source new source of the text card
    * @param purpose new purpose of the text card
    * @return updated text card
    * @throws InterruptedException when the http request to database is interrupted
    * @throws NoSuchIndexEntryException when there is no such text card in the index
    * @throws IOException when the http request to database was faulty
-     * @throws org.springframework.boot.configurationprocessor.json.JSONException
+   * @throws org.springframework.boot.configurationprocessor.json.JSONException
    */
   TextCard updateTextCard(String textCardId, String title, String subject, String value, String source, String purpose)
       throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException;
@@ -170,12 +174,14 @@ public interface IEditorService {
    *
    * @param tagId of the tag which should be updated
    * @param title new title of the tag
+   * @param subject new subject of the tag
    * @param value new value of the tag
+   * @param source new source of the tag
    * @return updated tag
    * @throws InterruptedException when the http request to database is interrupted
    * @throws NoSuchIndexEntryException when there is no such tag in the index
    * @throws IOException when the http request to database was faulty
-     * @throws org.springframework.boot.configurationprocessor.json.JSONException
+   * @throws JSONException
    */
   Tag updateTag(String tagId, String title, String subject, String value, String source)
       throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException;
@@ -258,19 +264,48 @@ public interface IEditorService {
    */
   JSONObject getAnnotationJson(String annotationId)
       throws InterruptedException, IOException;
-  
-  
- public List<JSONObject> getAnnotationsForPage(String pageId, String pageNumber)
+
+  /**
+   * Gets annotations belonging to a page from the annotation store
+   * @param pageId Id of the page the annotations belong to
+   * @param pageNumber number / name of the page the annotations belong to
+   * @return list of annotations as json
+   * @throws InterruptedException
+   * @throws IOException
+   * @throws JSONException
+   */
+  List<JSONObject> getAnnotationsForPage(String pageId, String pageNumber)
     throws InterruptedException, IOException, JSONException;
 
-
-public List<Annotation> getAnnotationsForId(String id)
+  /**
+   * Gets list of annotations belonging to a page from the search index
+   * @param id Id of the page the annotations belong to
+   * @return list of annotations as objects
+   * @throws NoSuchIndexEntryException if page cannot be found in the search index
+   * @throws InterruptedException
+   * @throws IOException
+   * @throws JSONException
+   */
+  List<Annotation> getAnnotationsForId(String id)
     throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException;
 
+  /**
+   * Set page as currently used page for editor
+   * @param pageId Id of the page to display in the editor
+   * @throws NoSuchIndexEntryException if page cannot be found in the search index
+   */
   void selectPage(String pageId) throws NoSuchIndexEntryException;
 
+  /**
+   * get manuscript the currently displayed page belongs to
+   * @return manuscript object
+   */
   Manuscript getCurrentManuscript();
 
+  /**
+   * get currently displayed page
+   * @return page object
+   */
   Page getCurrentPage();
 
 }

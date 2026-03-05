@@ -27,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
@@ -45,7 +46,10 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class  SearchIndexService implements ISearchIndexService {
-  
+
+  @Value("${annotationStore.defaultContainer:takitadefault}")
+  private String defaultContainer;
+
   private static final Logger logger = LoggerFactory.getLogger(SearchIndexService.class);
   public static final String INDEX_NAME = "search_index";
   private final IAccessService accessService;
@@ -276,7 +280,7 @@ public class  SearchIndexService implements ISearchIndexService {
     if (projectId != null && !projectId.equals(manuscriptPublisher)) {
         newAnnotation = accessService.addAnnotation(annotation, page.getPageNumber(), projectId);
     } else {
-        newAnnotation = accessService.addAnnotation(annotation, page.getPageNumber(), "takitadefault");
+        newAnnotation = accessService.addAnnotation(annotation, page.getPageNumber(), defaultContainer);
         logger.info("ProjectId could not be parsed from " + manuscriptPublisher + ", result: " + projectId);
     }
     
@@ -338,7 +342,7 @@ public class  SearchIndexService implements ISearchIndexService {
   }
 
   /**
-   * Updates an annotation in the search index AND THE DATABASE??? (PHILIPP).
+   * Updates an annotation in the search index and the annotation store
    *
    * @param annotation updated Annotation
    * @return updated annotation
@@ -390,7 +394,7 @@ public class  SearchIndexService implements ISearchIndexService {
     if (projectId != null && !projectId.equals(manuscriptPublisher)) {
         validatedAnnotation = accessService.validateAnnotation(annotation, page.getPageNumber(), projectId);
     } else {
-        validatedAnnotation = accessService.validateAnnotation(annotation, page.getPageNumber(), "takitadefault");
+        validatedAnnotation = accessService.validateAnnotation(annotation, page.getPageNumber(), defaultContainer);
         logger.info("ProjectId could not be parsed from " + manuscriptPublisher + ", result: " + projectId);
     }
     

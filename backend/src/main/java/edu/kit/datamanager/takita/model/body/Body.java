@@ -10,6 +10,10 @@ import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+/**
+ * Model class for anntoation bodies
+ * See <a href="https://www.w3.org/TR/annotation-model/#bodies-and-targets">WADM: Bodies and Targets</a>
+ */
 public abstract class Body {
   private String annotationId;
   
@@ -297,7 +301,12 @@ public abstract class Body {
   public void setFullJson(JSONObject json) {
     this.fullJson = json.toString();
   }
-  
+
+  /**
+  * Compare function for bodies
+  * @param body body, to compare the current body with
+  * @return true if bodies have equivalent json representation, false otherwise
+  */
   public boolean equals(Body body) {
       return (this.fullJson.equals(body.fullJson));
   }

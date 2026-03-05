@@ -83,6 +83,11 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
     this.repositoryAccessService = repositoryAccessService;
   }
 
+  /**
+   * Fail fast for application startup on missing essential properties that cannot be defaulted:
+   * annotationStore.url
+   * sparqlQuery.urlPrefix
+   */
   @PostConstruct
   public void checkProperty() {
     if (urlPrefix == null || urlPrefix.equals("")) {
@@ -557,8 +562,8 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   }
 
   /**
-   * Convert URI to one that can be handled by the wap server in all cases (REST & SPARQL)
-   * see: https://github.com/kit-data-manager/wap-server/issues/72
+   * Convert URI to one that can be handled by the wap server in all cases (REST and SPARQL)
+   * see: <a href="https://github.com/kit-data-manager/wap-server/issues/72">WAP Server Issue #72</a>
    * @param uri string of the URI to normalize
    * @return normalized URI as string
    */

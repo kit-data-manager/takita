@@ -148,10 +148,10 @@ public class SearchService implements ISearchService {
   /**
    * Searches the index and returns all annotation results
    *
-   * @return number of search results in list of annotations
+   * @return list of all annotations
    */
   @Override
-  public List<Annotation> searchAnno() {
+  public List<Annotation> queryAllAnnotations() {
 	//Generic criteria constructor to obtain all search results
 	Criteria criteria = new Criteria();
 	CriteriaQuery query = new CriteriaQuery(criteria);

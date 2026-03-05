@@ -127,7 +127,7 @@ public interface IRepositoryAccessService {
    * @param pageId page id in repo
    * @param pageNumber page number in repo (file name without extension)
    * @param linkType link to TEXT file or IMAGE file
-   * @return
+   * @return the resulting URL
    */
   String getLinkForPage(String pageId, String pageNumber, ResourceType linkType);
 }

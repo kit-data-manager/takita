@@ -11,6 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.annotation.SessionScope;
 
+/**
+ * Service for functionalities of the entry page to tAKITA
+ */
 @SessionScope
 @Service
 public class MainPageService implements IMainPageService {
@@ -34,6 +37,7 @@ public class MainPageService implements IMainPageService {
    *                         dependency injection system indicated by @autowired annotation.
    * @param searchService instance of the logic for search service. Injected with Springs
    *                      dependency injection system indicated by @autowired annotation.
+   * @param annoViewService instance of the logic for annoView service
    * @param tableViewService instance of the logic for table view service. Injected with Springs
    *                         dependency injection system indicated by @autowired annotation.
    */

@@ -321,7 +321,7 @@
             cardBody.setAttribute('class', 'card card-body no-wrap');
             let outerRow = document.createElement('div');
             outerRow.setAttribute('class', 'row');
-            // TODO: CUSTOMISE set displayThumbnailsOrIcons to "true", if you want to have images displayed
+            // TODO: CUSTOMISE set displayThumbnailsOrIcons to true to have images/icons displayed, false otherwise
             // in the DO-overview table
             const displayThumbnailsOrIcons = true;
             thumbnails.forEach(function (item, index) {
@@ -334,9 +334,8 @@
                     imgCol.setAttribute('class', 'col');
                     let img = document.createElement('img');
                     img.setAttribute('class', 'img-thumbnail');
-                    // adds text_thumb.jpg if no thumb is provided/found
                     if (item.thumbNail === undefined){
-                        if (item.type === "image") img.src = window.CONTEXTPATH + "images/img_thumb.svg";
+                        if (item.type === "IMAGE") img.src = window.CONTEXTPATH + "images/img_thumb.svg";
                         else img.src = window.CONTEXTPATH + "images/text_thumb.svg";
                     } else {
                         img.setAttribute('src', item.thumbNail);

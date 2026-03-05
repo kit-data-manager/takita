@@ -1,6 +1,5 @@
 package edu.kit.datamanager.takita.model.page;
 
-import java.util.ArrayList;
 import java.time.Instant;
 
 /**
@@ -48,13 +47,5 @@ public class TextPage extends Page {
   @Override
   public String getResourceUrl() {
     return resourceUrl;
-  }
-
-  /**
-   * @return page type ("image" or "text")
-   */
-  @Override
-  public String getType() {
-    return "text";
   }
 }

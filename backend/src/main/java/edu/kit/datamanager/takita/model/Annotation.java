@@ -57,6 +57,17 @@ public class Annotation {
     targets = new ArrayList<>();
   }
 
+  /**
+   * Constructor to initialize properties
+   * @param pageId id of page containing annotation
+   * @param creators list of creators
+   * @param created created date
+   * @param modified modified date
+   * @param linkToResource target source
+   * @param selectors Json Array of selectors
+   * @param motivation motivation
+   * @throws JSONException
+   */
   public Annotation(String pageId, List<String> creators, Instant created, Instant modified,
                     String linkToResource, JSONArray selectors, String motivation ) throws JSONException {
       this.textCards = new ArrayList<>();
@@ -73,6 +84,14 @@ public class Annotation {
       }
   }
 
+  /**
+   * Updates an annotation based on the provided properties
+   * @param creators list of creators to potentially add to the annotation
+   * @param linkToResource target source (should never change and would only change if selectors are also provided)
+   * @param selectors list of all selectors, will replace old selectors
+   * @param motivation will replace old motivation
+   * @throws JSONException
+   */
   public void update(List<String> creators, String linkToResource, JSONArray selectors, String motivation ) throws JSONException {
       for (String creator : creators) {
           if (!this.getCreators().contains(creator)) {
@@ -142,8 +161,7 @@ public class Annotation {
   
   /**
    * Sets name of the manuscripts that the Annotation belongs to.
-   *
-   * @return manuscriptName
+   * @param manuscriptTitle title to set
    */
   public void setManuscriptTitle(String manuscriptTitle) {
 	  this.manuscriptTitle = manuscriptTitle;
