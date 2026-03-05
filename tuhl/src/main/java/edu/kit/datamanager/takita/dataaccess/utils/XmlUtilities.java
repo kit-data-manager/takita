@@ -18,7 +18,6 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import java.io.StringReader;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -114,10 +113,10 @@ public class XmlUtilities {
      */
     private static void addTeiTitles(Manuscript manuscript, NodeList titles) {
 
-        List<TeiTitle> titlesSeries = new ArrayList<TeiTitle>();
-        List<TeiTitle> titlesMonographic = new ArrayList<TeiTitle>();
-        List<TeiTitle> titlesAnalytic = new ArrayList<TeiTitle>();
-        List<TeiTitle> titlesDefault = new ArrayList<TeiTitle>();
+        List<TeiTitle> titlesSeries = new ArrayList<>();
+        List<TeiTitle> titlesMonographic = new ArrayList<>();
+        List<TeiTitle> titlesAnalytic = new ArrayList<>();
+        List<TeiTitle> titlesDefault = new ArrayList<>();
 
         for (int i = 0; i < titles.getLength(); i++) {
             try {
@@ -174,14 +173,14 @@ public class XmlUtilities {
      */
     private static void addTeiAuthor(Manuscript manuscript, NodeList authors) {
 
-        List<String> authorList = new ArrayList<String>();
+        List<String> authorList = new ArrayList<>();
 
         for (int i = 0; i < authors.getLength(); i++) {
             try {
                 NodeList persNames = authors.item(i).getChildNodes();
 
                 // removing all the text nodes
-                List<Node> cleanedPersNames = new ArrayList<Node>();
+                List<Node> cleanedPersNames = new ArrayList<>();
                 for (int l = 0; l < persNames.getLength(); l++) {
                     if (persNames.item(l).getNodeType() != 3) {
                         cleanedPersNames.add(persNames.item(l));
@@ -191,7 +190,7 @@ public class XmlUtilities {
                 // getting the persNames text content, if available and adding them to the
                 // list of authors. Otherwise, add the content of the author element, if
                 // available
-                List<String> persNamesList = new ArrayList<String>();
+                List<String> persNamesList = new ArrayList<>();
                 if (!cleanedPersNames.isEmpty()) {
                     for (Node cleanedPersName : cleanedPersNames) {
                         persNamesList.add(cleanedPersName.getTextContent());
@@ -223,9 +222,10 @@ public class XmlUtilities {
 
     /*
      * Adds the date obtained from the metadata tei-xml-file to a manuscript.
+     * In exotic cases in date attributes such as "--09-11" or time without date,
      */
     private static void addTeiDate(Manuscript manuscript, NodeList dates) {
-        List<TeiDate> datesList = new ArrayList<TeiDate>();
+        List<TeiDate> datesList = new ArrayList<>();
 
         for (int i = 0; i < dates.getLength(); i++) {
             try {
@@ -241,27 +241,27 @@ public class XmlUtilities {
                 // set the various dates after the string a valid string, that can be parsed
                 if (dates.item(i).getAttributes().getNamedItem("when") != null) {
                     String whenValue = dates.item(i).getAttributes().getNamedItem("when").getNodeValue();
-                    PartialDate when = PartialDate.parse(whenValue);
+                    PartialDate when = parsePartialDateIfPossible(whenValue);
                     date.setWhen(when);
                 }
                 if (dates.item(i).getAttributes().getNamedItem("notBefore") != null) {
                     String notBeforeValue = dates.item(i).getAttributes().getNamedItem("notBefore").getNodeValue();
-                    PartialDate notBefore = PartialDate.parse(notBeforeValue);
+                    PartialDate notBefore = parsePartialDateIfPossible(notBeforeValue);
                     date.setNotBefore(notBefore);
                 }
                 if (dates.item(i).getAttributes().getNamedItem("notAfter") != null) {
                     String notAfterValue = dates.item(i).getAttributes().getNamedItem("notAfter").getNodeValue();
-                    PartialDate notAfter = PartialDate.parse(notAfterValue);
+                    PartialDate notAfter = parsePartialDateIfPossible(notAfterValue);
                     date.setNotAfter(notAfter);
                 }
                 if (dates.item(i).getAttributes().getNamedItem("from") != null) {
                     String fromValue = dates.item(i).getAttributes().getNamedItem("from").getNodeValue();
-                    PartialDate from = PartialDate.parse(fromValue);
+                    PartialDate from = parsePartialDateIfPossible(fromValue);
                     date.setFrom(from);
                 }
                 if (dates.item(i).getAttributes().getNamedItem("to") != null) {
                     String toValue = dates.item(i).getAttributes().getNamedItem("to").getNodeValue();
-                    PartialDate to = PartialDate.parse(toValue);
+                    PartialDate to = parsePartialDateIfPossible(toValue);
                     date.setTo(to);
                 }
                 datesList.add(date);
@@ -273,6 +273,16 @@ public class XmlUtilities {
 
         if(!datesList.isEmpty()) {
             manuscript.setTeiManuscriptCreationDate(datesList);
+        }
+    }
+
+    private static PartialDate parsePartialDateIfPossible(String datetimestring) {
+        try {
+            PartialDate pdate = PartialDate.parse(datetimestring.split("T")[0]);
+            return pdate;
+        } catch (IllegalArgumentException e) {
+            logger.info("Could not parse partial date: " + datetimestring);
+            return null;
         }
     }
 

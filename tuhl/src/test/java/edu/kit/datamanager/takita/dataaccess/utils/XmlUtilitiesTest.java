@@ -192,6 +192,8 @@ public class XmlUtilitiesTest {
                                 <creation>
                                     <date when="2015-11-16">16. November 2015</date>
                                     <date notBefore="2015">Likely 2015 or after</date>
+                                    <date when="-0300">A very long time ago</date>
+                                    <date to="2026-01-07T10:30:50Z">A very recent very precise point in time</date>
                                 </creation>
                             </profileDesc>
                     </teiHeader>
@@ -203,6 +205,38 @@ public class XmlUtilitiesTest {
         addTeiMetadata(manuscript, teiString);
 
         assertEquals("2015-11-16", manuscript.getTeiManuscriptCreationDate().getFirst().getWhenDate().toString());
-        assertEquals("2015-01-01", manuscript.getTeiManuscriptCreationDate().getLast().getNotBeforeDate().toString());
+        assertEquals("2015-01-01", manuscript.getTeiManuscriptCreationDate().get(1).getNotBeforeDate().toString());
+        assertEquals("-0300-01-01", manuscript.getTeiManuscriptCreationDate().get(2).getWhenDate().toString());
+        assertEquals("2026-01-07", manuscript.getTeiManuscriptCreationDate().get(3).getToDate().toString());
+    }
+
+    @Test
+    void testAddUnsuitableDates() {
+        String teiString = """
+                <TEI xmlns="http://www.tei-c.org/ns/1.0">
+                    <teiHeader xml:lang="en">
+                            <profileDesc>
+                                <creation>
+                                    <date when="--09-11">9/11</date>
+                                    <date when="--09">September</date>
+                                    <date when="---11">Eleventh of the month</date>
+                                </creation>
+                            </profileDesc>
+                    </teiHeader>
+                </TEI>
+                """;
+
+        Manuscript manuscript = new Manuscript("1234", Instant.now(), "", "", 2025);
+
+        addTeiMetadata(manuscript, teiString);
+
+        assertEquals("9/11", manuscript.getTeiManuscriptCreationDate().getFirst().getContent());
+        assertNull(manuscript.getTeiManuscriptCreationDate().getFirst().getWhenDate());
+
+        assertEquals("September", manuscript.getTeiManuscriptCreationDate().get(1).getContent());
+        assertNull(manuscript.getTeiManuscriptCreationDate().getFirst().getWhenDate());
+
+        assertEquals("Eleventh of the month", manuscript.getTeiManuscriptCreationDate().get(2).getContent());
+        assertNull(manuscript.getTeiManuscriptCreationDate().getFirst().getWhenDate());
     }
 }

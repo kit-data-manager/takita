@@ -38,16 +38,12 @@ public class TeiDate {
 	 * @return first of month and/or year if partial date is given
 	 */
 	@Field(type = FieldType.Date, format = DateFormat.year_month_day, pattern ="uuuu-MM-dd")
-	public LocalDate getWhenDate() {
-		return when.toFirstLocalDate();
-	}
+	public LocalDate getWhenDate() { return when != null ? when.toFirstLocalDate() : null;	}
 
 	/**
 	 * @param when the when to set
 	 */
-	public void setWhen(PartialDate when) {
-		this.when = when;
-	}
+	public void setWhen(PartialDate when) { this.when = when; }
 
 	/**
 	 * @return the notBefore
@@ -62,7 +58,7 @@ public class TeiDate {
 	 */
 	@Field(type = FieldType.Date, format = DateFormat.year_month_day, pattern ="uuuu-MM-dd")
 	public LocalDate getNotBeforeDate() {
-		return notBefore.toFirstLocalDate();
+		return notBefore != null ? notBefore.toFirstLocalDate() : null;
 	}
 
 	/**
@@ -85,7 +81,7 @@ public class TeiDate {
 	 */
 	@Field(type = FieldType.Date, format = DateFormat.year_month_day, pattern ="uuuu-MM-dd")
 	public LocalDate getNotAfterDate() {
-		return notAfter.toLastLocalDate();
+		return notAfter != null ? notAfter.toLastLocalDate() : null;
 	}
 
 	/**
@@ -107,9 +103,7 @@ public class TeiDate {
 	 * @return first of month and/or year if partial date is given
 	 */
 	@Field(type = FieldType.Date, format = DateFormat.year_month_day, pattern ="uuuu-MM-dd")
-	public LocalDate getFromDate() {
-		return from.toFirstLocalDate();
-	}
+	public LocalDate getFromDate() { return from != null ? from.toFirstLocalDate() : null;	}
 
 	/**
 	 * @param from the from to set
@@ -131,7 +125,7 @@ public class TeiDate {
 	 */
 	@Field(type = FieldType.Date, format = DateFormat.year_month_day, pattern ="uuuu-MM-dd")
 	public LocalDate getToDate() {
-		return to.toLastLocalDate();
+		return to != null ? to.toLastLocalDate() : null;
 	}
 
 	/**
