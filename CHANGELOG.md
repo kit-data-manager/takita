@@ -31,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Fix concurrency issue on quickly loading multiple editor tabs leading to annotations ending up in the wrong page (EditorService doesn't store currentPage as stored variable in the SessionScope anymore).
-
+- Fix opening the document navigation in editor screen shifts content slightly to the left due to horizontal scroll bar
 ### Security
 
 ### Dependencies
