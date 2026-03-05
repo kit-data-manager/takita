@@ -6,6 +6,11 @@
       "description": "The url of the annotation container in the annotation store."
     },
     {
+      "name": "annotationStore.defaultContainer",
+      "type": "java.lang.String",
+      "description": "Fallback default container takita will try to write to in annotation server"
+    },
+    {
       "name": "repository.staticPath",
       "type": "java.lang.String",
       "description": "The path to the manuscript repository."
