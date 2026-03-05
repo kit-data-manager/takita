@@ -121,6 +121,9 @@ public class XmlUtilities {
 
         for (int i = 0; i < titles.getLength(); i++) {
             try {
+                if (titles.item(i).getTextContent().isEmpty()) {
+                    throw new Exception("Empty title");
+                }
                 String titleType = titles.item(i).getAttributes().getNamedItem("type") != null ? titles.item(i).getAttributes().getNamedItem("type").getNodeValue() : null;
                 String titleLevel = titles.item(i).getAttributes().getNamedItem("level") != null ? titles.item(i).getAttributes().getNamedItem("level").getNodeValue() : null;
                 String titleLang = titles.item(i).getAttributes().getNamedItem("xml:lang") != null ? titles.item(i).getAttributes().getNamedItem("xml:lang").getNodeValue() : null;
@@ -185,15 +188,25 @@ public class XmlUtilities {
                     }
                 }
 
-                // getting the persNames text content and adding them to the
-                // list of authors
+                // getting the persNames text content, if available and adding them to the
+                // list of authors. Otherwise, add the content of the author element, if
+                // available
                 List<String> persNamesList = new ArrayList<String>();
-                for (int l = 0; l < cleanedPersNames.size(); l++) {
-                    persNamesList.add(cleanedPersNames.get(l).getTextContent());
+                if (!cleanedPersNames.isEmpty()) {
+                    for (Node cleanedPersName : cleanedPersNames) {
+                        persNamesList.add(cleanedPersName.getTextContent());
+                    }
+                } else {
+                    String textContent = authors.item(i).getTextContent();
+                    if (textContent.isEmpty()) {
+                        throw new Exception("Empty author");
+                    }
+                    persNamesList.add(authors.item(i).getTextContent());
                 }
+
                 if (persNamesList.size() > 1) {
-                    String concatedPersNames = concatList(persNamesList);
-                    authorList.add(concatedPersNames);
+                    String concatenatedPersNames = concatList(persNamesList);
+                    authorList.add(concatenatedPersNames);
                 } else {
                     authorList.add(persNamesList.get(0));
                 }
