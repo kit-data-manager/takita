@@ -1,6 +1,5 @@
 package edu.kit.datamanager.takita.mainpage.dashboard.annoview;
 
-import java.io.IOException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
@@ -10,18 +9,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.annotation.SessionScope;
 
-import ch.qos.logback.classic.Logger;
-import edu.kit.datamanager.takita.NoSuchIndexEntryException;
-import edu.kit.datamanager.takita.assistance.IAssistanceService;
-import edu.kit.datamanager.takita.dataaccess.AnnotationStoreAccessService;
-import edu.kit.datamanager.takita.dataaccess.RepositoryAccessService;
-import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import edu.kit.datamanager.takita.mainpage.search.ISearchService;
 import edu.kit.datamanager.takita.model.Annotation;
-import edu.kit.datamanager.takita.model.Manuscript;
 import edu.kit.datamanager.takita.model.body.Tag;
 import edu.kit.datamanager.takita.model.body.TextCard;
-import edu.kit.datamanager.takita.model.page.Page;
 import edu.kit.datamanager.takita.model.target.Target;
 
 /**
@@ -58,7 +49,7 @@ public class AnnoViewService implements IAnnoViewService {
    * @return List of Manuscripts
    */
   public List<Annotation> search() {
-    return searchService.searchAnno();
+    return searchService.queryAllAnnotations();
   }
   
   /**
