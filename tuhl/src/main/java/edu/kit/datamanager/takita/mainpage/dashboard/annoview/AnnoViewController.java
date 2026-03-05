@@ -1,7 +1,5 @@
 package edu.kit.datamanager.takita.mainpage.dashboard.annoview;
 
-import java.io.IOException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -9,16 +7,10 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import edu.kit.datamanager.takita.NoSuchIndexEntryException;
-import edu.kit.datamanager.takita.dataaccess.IAccessService;
-import edu.kit.datamanager.takita.dataaccess.IAnnotationStoreAccessService;
 import edu.kit.datamanager.takita.mainpage.IMainPageService;
-import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 
 /**
  * Implementation of ContentViewController. Handles http requests regarding the table view.
@@ -27,20 +19,20 @@ import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 @RequestMapping("/annoview")
 public class AnnoViewController {
 
-  private final AnnoViewService AnnoViewService;
+  private final AnnoViewService annoViewService;
   private final IMainPageService mainPageService;
 
   /**
    * Constructor for the AnnoViewController to autowire required instances.
    *
-   * @param AnnoViewService instance of the business logic for the table view. Injected with
+   * @param annoViewService instance of the business logic for the table view. Injected with
    *                         Springs dependency injection system indicated by @autowired annotation.
    * @param mainPageService instance of the business logic for the main page. Injected with
    *                        Springs dependency injection system indicated by @autowired annotation.
    */
   @Autowired
-  public AnnoViewController(AnnoViewService AnnoViewService, IMainPageService mainPageService) {
-    this.AnnoViewService = AnnoViewService;
+  public AnnoViewController(AnnoViewService annoViewService, IMainPageService mainPageService) {
+    this.annoViewService = annoViewService;
     this.mainPageService = mainPageService;
   }
 
@@ -66,10 +58,10 @@ public class AnnoViewController {
   @RequestMapping(value = "/data")
   @ResponseBody
   public String getData(Model model) {
-    AnnoViewService.search();
+    annoViewService.search();
     mainPageService.update(model);
     try {
-      JSONArray data = AnnoViewService.getData();
+      JSONArray data = annoViewService.getData();
       JSONObject newData = new JSONObject();
 
       newData.put("data", data);
