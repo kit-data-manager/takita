@@ -10,39 +10,44 @@
             <div style="padding: .2em 1em .2em 1em">
                 <div class="row gap-2">
                     <div class="col-auto" th:each="page : ${currentManuscript.pages}">
-                        <!-- TODO: CUSTOMISE set the boolean at the start of the "th:if"-clause to "true"/"false" to display/hide pictures -->
-                        <div class="row align-items-center justify-content-center">
+                        <!-- TODO: CUSTOMISE set showThumbnailsOrIcons to false to disable image thumbnails -->
+                        <div class="row align-items-center justify-content-center" th:with="showThumbnailsOrIcons=${true}">
                             <div class="col">
-                                <!-- 1. set boolean to true for the following to use the thumbnail image of a page -->
-                                <img th:src="${page.thumbResourceUrl}"
-                                     loading="lazy"
-                                     class="img-thumbnail"
-                                     th:if="${false and page.id != currentPage.id and page.thumbResourceUrl != null}"
-                                     th:data-field="${page.id}"
-                                     th:attr="onclick=|window.open('${page.id}')|">
-                                <img th:src="${page.thumbResourceUrl}"
-                                     loading="lazy"
-                                     class="img-thumbnail border border-danger-subtle"
-                                     th:if="${false and page.id == currentPage.id and page.thumbResourceUrl != null}">
-                                <!-- 2. set boolean to true for the following to use a default image, if there is no
-                                     thumbnail image of a page available -->
-                                <img th:src="@{/images/text_thumb.svg}"
-                                     class="img-thumbnail"
-                                     th:if="${false and page.id != currentPage.id and page.thumbResourceUrl == null}"
-                                     th:data-field="${page.id}"
-                                     th:attr="onclick=|window.open('${page.id}')|">
-                                <img th:src="@{/images/text_thumb.svg}"
-                                     class="img-thumbnail border border-danger-subtle"
-                                     th:if="${false and page.id == currentPage.id and page.thumbResourceUrl == null}">
-                                <!-- 3. set boolean to true for the following to always use a default image -->
-                                <img th:src="@{/images/text_thumb.svg}"
-                                     class="img-thumbnail"
-                                     th:if="${false and page.id != currentPage.id}"
-                                     th:data-field="${page.id}"
-                                     th:attr="onclick=|window.open('${page.id}')|">
-                                <img th:src="@{/images/text_thumb.svg}"
-                                     class="img-thumbnail border border-danger-subtle"
-                                     th:if="${false and page.id == currentPage.id}">
+
+                                <!-- TODO: CUSTOMISE change icon, if wanted -->
+                                <!-- Switch on whether we should show thumbnails or icons -->
+                                <div th:switch="${showThumbnailsOrIcons}" th:with="iconPath=${page.type == 'image'} ? '/images/img_thumb.svg' : '/images/text_thumb.svg'">
+
+                                    <!-- ========================== -->
+                                    <!-- Case 1: showThumbnails = true -->
+                                    <!-- ========================== -->
+                                    <div th:case="true">
+
+                                        <!-- Case 1a: Thumbnail exists → show real thumbnail -->
+                                        <img th:if="${page.type == 'image' and page.thumbResourceUrl != null}"
+                                             th:src="${page.thumbResourceUrl}"
+                                             class="img-thumbnail"
+                                             th:classappend="${page.id == currentPage.id} ? ' border border-danger-subtle'"
+                                             th:data-field="${page.id}"
+                                             th:attr="onclick=|window.open('${page.id}')|"
+                                             loading="lazy" />
+
+                                        <!-- Case 1b: No thumbnail → show icon based on type -->
+                                        <img th:if="${page.type != 'image' or page?.thumbResourceUrl == null}"
+                                             th:src="@{${iconPath}}"
+                                             class="img-thumbnail"
+                                             th:classappend="${page.id == currentPage.id} ? ' border border-danger-subtle'"
+                                             th:data-field="${page.id}"
+                                             th:attr="onclick=|window.open('${page.id}')|" />
+                                    </div>
+
+                                    <!-- ========================== -->
+                                    <!-- Case 2: showThumbnailsOrIcons = false -->
+                                    <!-- Do not show anything, only labels for pages -->
+                                    <!-- ========================== -->
+                                    <div th:case="false">
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="row align-items-center justify-content-center mt-2">

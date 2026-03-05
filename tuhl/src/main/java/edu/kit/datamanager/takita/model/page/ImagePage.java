@@ -42,4 +42,12 @@ public class ImagePage extends Page {
   public String getThumbResourceUrl() {
     return thumbResourceUrl;
   }
+
+  /**
+   * @return page type ("image" or "text")
+   */
+  @Override
+  public String getType() {
+    return "image";
+  }
 }
