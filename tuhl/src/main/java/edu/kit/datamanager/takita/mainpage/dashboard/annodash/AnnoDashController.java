@@ -28,6 +28,7 @@ public class AnnoDashController {
 	   * Constructor for the TableViewController to autowire required instances.
 	   * @param mainPageService instance of the business logic for the main page. Injected with
 	   *                        Springs dependency injection system indicated by @autowired annotation.
+	   * @param annotationStoreAccessService instance of access service to annotation store
 	   */
 	  @Autowired
 	  public AnnoDashController(IMainPageService mainPageService, AnnotationStoreAccessService annotationStoreAccessService) {

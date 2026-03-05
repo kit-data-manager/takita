@@ -22,9 +22,6 @@ public interface IThesaurusService {
      * settings.
      *  
      * @return
-     * @throws IOException
-     * @throws InterruptedException
-     * @throws JSONException
      */
     String getQueryUrl();
 

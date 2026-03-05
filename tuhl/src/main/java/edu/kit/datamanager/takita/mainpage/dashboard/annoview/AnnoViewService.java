@@ -80,7 +80,11 @@ public class AnnoViewService implements IAnnoViewService {
   public void updateModel(Model model) {
     model.addAttribute("annoResults", getResults());
   }
-  
+
+  /**
+  * Gets number of result pages from searchService
+  * @return number of pages
+  */
   public long getNumberOfResultsPages() {
     return searchService.getResultPagesCount();
   }

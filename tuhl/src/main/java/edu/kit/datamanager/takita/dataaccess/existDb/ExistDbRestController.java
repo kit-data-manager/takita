@@ -16,6 +16,9 @@ import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
 import java.util.Base64;
 
+/**
+ * Controller to allow communication of editors with XML database
+ */
 @Controller
 @RequestMapping("/exist")
 @ConditionalOnProperty(
@@ -23,16 +26,16 @@ import java.util.Base64;
         matchIfMissing = false)
 public class ExistDbRestController {
 
-    private final IExistDbAccessService existAccessService;
+    private final IXMLDbAccessService existAccessService;
 
     @Autowired
-    public ExistDbRestController(IExistDbAccessService existAccessService){
+    public ExistDbRestController(IXMLDbAccessService existAccessService){
         this.existAccessService = existAccessService;
     }
 
 
     /**
-     * Delegates the task to get the raw XML content of a page from an exist-db to IEditorStubService.
+     * Delegates the task to get the raw XML content of a page from an exist-db to IEditorService.
      *
      * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
      * @param request to access the headers from the HTTP request

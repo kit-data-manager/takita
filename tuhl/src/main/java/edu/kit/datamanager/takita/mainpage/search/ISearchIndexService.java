@@ -66,7 +66,13 @@ public interface ISearchIndexService {
    * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
    */
   Annotation getAnnotationById(String id) throws NoSuchIndexEntryException;
-  
+
+  /**
+   * Gets list of annotations by id of their containing page
+   * @param id id of the page
+   * @return list of annotation objects
+   * @throws NoSuchIndexEntryException
+   */
   List<Annotation> getAnnotationsForPageById(String id) throws NoSuchIndexEntryException;
 
   /**

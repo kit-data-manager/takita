@@ -28,6 +28,8 @@ public class HttpRequestHelper {
   /**
    * Overloaded constructor for the HttpRequestHelper. Creates the HttpClient instance with basic
    * authentication.
+   * @param user user for authentication
+   * @param password password for authentication
    */
   public HttpRequestHelper(String user, String password) {
         client = HttpClient.newBuilder()
@@ -57,6 +59,14 @@ public class HttpRequestHelper {
           HttpResponse.BodyHandlers.ofString());
   }
 
+  /**
+   * Performs a post request with json request body
+   * @param url url to post to
+   * @param requestBody request payload as json
+   * @return json response payload
+   * @throws IOException
+   * @throws InterruptedException
+   */
   public HttpResponse<String> postManuscript(String url, JSONObject requestBody)
       throws IOException, InterruptedException {
     HttpRequest request = HttpRequest.newBuilder()
@@ -118,6 +128,7 @@ public class HttpRequestHelper {
    *
    * @param url the url path specified as a String
    * @param requestBody jsonObject you want to put
+   * @param etag ETAG to match for update operation
    * @return the HttpResponse
    * @throws IOException if an error occurs while sending or receiving
    * @throws InterruptedException if the get request is interrupted
@@ -141,6 +152,7 @@ public class HttpRequestHelper {
    *
    * @param url the url path specified as a String
    * @return the HttpResponse
+   * @param etag ETAG to match for delete operation
    * @throws IOException if an error occurs while sending or receiving
    * @throws InterruptedException if the get request is interrupted
    */

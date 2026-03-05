@@ -1,7 +1,7 @@
 package edu.kit.datamanager.takita.dataaccess;
 
 import edu.kit.datamanager.takita.dataaccess.existDb.ExistDbAccessService;
-import edu.kit.datamanager.takita.dataaccess.existDb.IExistDbAccessService;
+import edu.kit.datamanager.takita.dataaccess.existDb.IXMLDbAccessService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -18,11 +18,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.http.HttpResponse;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(classes = ExistDbAccessService.class)
@@ -45,7 +41,7 @@ public class ExistDbAccessServiceTest {
     public HttpRequestHelper mockedRequestHelper;
 
     @Autowired
-    private IExistDbAccessService existDbAccessService;
+    private IXMLDbAccessService existDbAccessService;
 
     @BeforeEach
     void init() throws NoSuchFieldException {

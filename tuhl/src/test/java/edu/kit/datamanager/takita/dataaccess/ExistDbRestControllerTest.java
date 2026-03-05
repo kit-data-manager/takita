@@ -3,7 +3,7 @@ package edu.kit.datamanager.takita.dataaccess;
 import edu.kit.datamanager.takita.assistance.IAssistanceService;
 import edu.kit.datamanager.takita.configuration.SecurityConfiguration;
 import edu.kit.datamanager.takita.dataaccess.existDb.ExistDbRestController;
-import edu.kit.datamanager.takita.dataaccess.existDb.IExistDbAccessService;
+import edu.kit.datamanager.takita.dataaccess.existDb.IXMLDbAccessService;
 import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -31,7 +31,7 @@ public class ExistDbRestControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private IExistDbAccessService existDbAccessService;
+    private IXMLDbAccessService existDbAccessService;
 
     //necessary for the test to run, not used though
     @MockBean

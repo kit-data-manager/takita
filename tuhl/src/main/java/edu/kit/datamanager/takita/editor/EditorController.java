@@ -75,6 +75,7 @@ public class EditorController {
    * Changes the currently displayed page.
    *
    * @param pageId Identifier in the editor of the page that should be displayed
+   * @param model ui model to communicate with thymeleaf templates
    * @return name of html file to display editor
    */
   @GetMapping("/{pageId}")

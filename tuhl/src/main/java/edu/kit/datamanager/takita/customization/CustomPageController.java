@@ -21,6 +21,11 @@ public class CustomPageController {
     @Value("${takita.templates.addons:projectspecific}")
     private String prefix;
 
+    /**
+     * All matches with a template name will be routed to the template. Matches may contain subpaths after the template
+     * @param page template name
+     * @return template in project specific folder
+     */
     @GetMapping({"/{page}", "/{page}/**"})
     public String renderCustomPage(@PathVariable String page) {
 

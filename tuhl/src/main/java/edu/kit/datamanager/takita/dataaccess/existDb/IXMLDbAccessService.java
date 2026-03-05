@@ -11,10 +11,13 @@ import javax.xml.xpath.XPathExpressionException;
 import org.w3c.dom.DOMException;
 import org.xml.sax.SAXException;
 
-public interface IExistDbAccessService {
+/**
+ * Service for retrieving XML content from an xml database.
+ */
+public interface IXMLDbAccessService {
 
 	/**
-	 * Gets the content of a page that is given in the TEI standard from eXist.
+	 * Gets the content of a page that is given in the TEI standard from the xml database
 	 *
 	 * @param documentId the id of the document (usually the id of the pageDo in the base-repo)
 	 * @return the xml as a String
