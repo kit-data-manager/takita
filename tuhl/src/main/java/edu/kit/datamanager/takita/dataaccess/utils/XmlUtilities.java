@@ -4,19 +4,24 @@ import edu.kit.datamanager.takita.model.Manuscript;
 import edu.kit.datamanager.takita.model.PartialDate;
 import edu.kit.datamanager.takita.model.TeiDate;
 import edu.kit.datamanager.takita.model.TeiTitle;
+import jakarta.validation.constraints.Null;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -102,7 +107,8 @@ public class XmlUtilities {
                 addTeiDate(manuscript, dates);
             }
 
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | XPathExpressionException | SAXException | IOException |
+                 ParserConfigurationException | NullPointerException e) {
             logger.info("Could not convert manuscript metadata for"
                     + " elastic index for manuscript: " + manuscript.getId());
             e.printStackTrace();
@@ -122,7 +128,7 @@ public class XmlUtilities {
         for (int i = 0; i < titles.getLength(); i++) {
             try {
                 if (titles.item(i).getTextContent().isEmpty()) {
-                    throw new Exception("Empty title");
+                    throw new IllegalArgumentException("tei:title element is empty.");
                 }
                 String titleType = titles.item(i).getAttributes().getNamedItem("type") != null ? titles.item(i).getAttributes().getNamedItem("type").getNodeValue() : null;
                 String titleLevel = titles.item(i).getAttributes().getNamedItem("level") != null ? titles.item(i).getAttributes().getNamedItem("level").getNodeValue() : null;
@@ -149,7 +155,7 @@ public class XmlUtilities {
                     default:
                         titlesDefault.add(title);
                 }
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 logger.info("Could not parse titles for manuscript: " + manuscript.getId());
                 e.printStackTrace();
             }
@@ -194,12 +200,15 @@ public class XmlUtilities {
                 List<String> persNamesList = new ArrayList<>();
                 if (!cleanedPersNames.isEmpty()) {
                     for (Node cleanedPersName : cleanedPersNames) {
-                        persNamesList.add(cleanedPersName.getTextContent());
+                        String persNameTextContent = cleanedPersName.getTextContent();
+                        if (!persNameTextContent.isEmpty()){
+                            persNamesList.add(persNameTextContent);
+                        }
                     }
                 } else {
-                    String textContent = authors.item(i).getTextContent();
-                    if (textContent.isEmpty()) {
-                        throw new Exception("Empty author");
+                    String authorTextContent = authors.item(i).getTextContent();
+                    if (authorTextContent.isEmpty()) {
+                        throw new IllegalArgumentException("tei:author element is empty.");
                     }
                     persNamesList.add(authors.item(i).getTextContent());
                 }
@@ -210,7 +219,7 @@ public class XmlUtilities {
                 } else {
                     authorList.add(persNamesList.get(0));
                 }
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 logger.info("Could not parse authors for manuscript: " + manuscript.getId());
                 e.printStackTrace();
             }
@@ -266,7 +275,7 @@ public class XmlUtilities {
                     date.setTo(to);
                 }
                 datesList.add(date);
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 logger.info("Could not parse dates for manuscript: " + manuscript.getId());
                 e.printStackTrace();
             }
