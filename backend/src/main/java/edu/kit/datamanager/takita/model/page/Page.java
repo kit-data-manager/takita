@@ -128,15 +128,7 @@ public abstract class Page {
    * @return url as String
    */
   public abstract String getResourceUrl();
-  
-  /**
-   * Gets the url of the resource of a thumbnail.
-   *
-   * @return url as String
-   */
-  public abstract String getThumbResourceUrl();
-  
-  
+
   /**
    * Gets all annotations belonging to page.
    * @return list of annotations
@@ -162,5 +154,11 @@ public abstract class Page {
   public void addAnnotation(Annotation annotation) {
     annotations.add(annotation);
   }
+
+  /**
+   * Type getter (for usage in thymeleaf, which cannot check the instance type of a page object)
+   * @return page type ("image" or "text")
+   */
+  public abstract String getType();
 }
 

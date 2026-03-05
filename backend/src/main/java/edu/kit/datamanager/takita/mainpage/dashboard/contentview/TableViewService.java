@@ -5,6 +5,7 @@ import edu.kit.datamanager.takita.assistance.IAssistanceService;
 import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import edu.kit.datamanager.takita.mainpage.search.ISearchService;
 import edu.kit.datamanager.takita.model.Manuscript;
+import edu.kit.datamanager.takita.model.page.ImagePage;
 import edu.kit.datamanager.takita.model.page.Page;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -203,11 +204,12 @@ public class TableViewService implements IContentViewService {
       JSONArray thumbnails = new JSONArray();
       for (Page page : manuscript.getPages()) {
         JSONObject jsonObject = new JSONObject();
-        String thumbNail = page.getThumbResourceUrl();
+        String thumbNail = page instanceof ImagePage ? ((ImagePage) page).getThumbResourceUrl() : null;
         String id = page.getId();
         jsonObject.put("thumbNail", thumbNail);
         jsonObject.put("id", id);
         jsonObject.put("pageNumber", page.getPageNumber());
+        jsonObject.put("type", page.getType());
         thumbnails.put(jsonObject);
       }
       

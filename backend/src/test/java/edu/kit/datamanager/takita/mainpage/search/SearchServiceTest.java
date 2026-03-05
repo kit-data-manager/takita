@@ -118,7 +118,7 @@ class SearchServiceTest {
     Page page = result.getPages().get(0);
     assertEquals("3f3bf25b-e0b9-48a9-b344-20630f733f8b", page.getId());
     assertEquals("http://samplerepo.edu/api/v1/dataresources/" +
-        "3f3bf25b-e0b9-48a9-b344-20630f733f8b/data/076r.thumb.jpg", page.getThumbResourceUrl());
+        "3f3bf25b-e0b9-48a9-b344-20630f733f8b/data/076r.thumb.jpg", ((ImagePage) page).getThumbResourceUrl());
     assertEquals(Instant.parse("2019-04-11T14:13:45.000Z"), page.getCreated());
     assertEquals("http://samplerepo.edu/api/v1/dataresources/" +
         "3f3bf25b-e0b9-48a9-b344-20630f733f8b/data/076r.master.jpg", page.getResourceUrl());

@@ -181,73 +181,7 @@
     </div>
 
 	<!-- Part overview for the whole text onclick="window.open(${page.id})" no-wrap> -->
-    <div class="row d-none" id="pages">
-        <div class="card">
-            <div style="padding: .2em 1em .2em 1em">
-                <div class="row gap-2">
-                    <div class="col-auto" th:each="page : ${currentManuscript.pages}">
-                        <!-- TODO: CUSTOMISE set the boolean at the start of the "th:if"-clause to "true"/"false" to display/hide pictures -->
-                        <div class="row align-items-center justify-content-center">
-                            <div class="col">
-                                <!-- 1. set boolean to true for the following to use the thumbnail image of a page -->
-                                <img th:src="${page.thumbResourceUrl}"
-                                    loading="lazy"
-                                    class="img-thumbnail"
-                                    th:if="${false and page.id != currentPage.id and page.thumbResourceUrl != null}"
-                                    th:data-field="${page.id}"
-                                    th:attr="onclick=|window.open('${page.id}')|">
-                                <img th:src="${page.thumbResourceUrl}"
-                                    loading="lazy"
-                                    class="img-thumbnail border border-danger-subtle"
-                                    th:if="${false and page.id == currentPage.id and page.thumbResourceUrl != null}">
-                                <!-- 2. set boolean to true for the following to use a default image, if there is no
-                                        thumbnail image of a page available -->
-                                <img th:src="@{/images/text_thumb.svg}"
-                                    class="img-thumbnail"
-                                    th:if="${false and page.id != currentPage.id and page.thumbResourceUrl == null}"
-                                    th:data-field="${page.id}"
-                                    th:attr="onclick=|window.open('${page.id}')|">
-                                <img th:src="@{/images/text_thumb.svg}"
-                                    class="img-thumbnail border border-danger-subtle"
-                                    th:if="${false and page.id == currentPage.id and page.thumbResourceUrl == null}">
-                                <!-- 3. set boolean to true for the following to always use a default image -->
-                                <img th:src="@{/images/text_thumb.svg}"
-                                    class="img-thumbnail"
-                                    th:if="${false and page.id != currentPage.id}"
-                                    th:data-field="${page.id}"
-                                    th:attr="onclick=|window.open('${page.id}')|">
-                                <img th:src="@{/images/text_thumb.svg}"
-                                    class="img-thumbnail border border-danger-subtle"
-                                    th:if="${false and page.id == currentPage.id}">
-                            </div>
-                        </div>
-                        <div class="row align-items-center justify-content-center mt-2">
-                            <a class="btn btn-sm btn-secondary col-auto"
-                                id="pageThumbs"
-                                th:if="${page.id != currentPage.id}"
-                                th:data-field="${page.id}"
-                                th:attr="onclick=|window.open('${page.id}')|"
-                                data-bs-toggle="tooltip" data-bs-placement="top"
-                                th:data-bs-title="#{tooltips.pages_list.open}">
-                                <i class="fa fa-pencil"></i>
-                            </a>
-                            <a class="btn btn-sm btn-secondary col-auto disabled"
-                                th:if="${page.id == currentPage.id}">
-                                <i class="fa fa-pencil"></i>
-                            </a>
-                            <label class="col-auto" th:text="${page.pageNumber}"
-                                th:if="${page.id != currentPage.id}"
-                                th:attr="onclick=|window.open('${page.id}')|">
-                            </label>
-                            <label class="col-auto bg-light" th:text="${page.pageNumber}"
-                                th:if="${page.id == currentPage.id}">
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    <div th:replace="~{editor-documentnavigation.html :: doc_navigation}"></div>
 
     <div class="row d-none" id="annotationTableBottomDiv">
         <div class="card">

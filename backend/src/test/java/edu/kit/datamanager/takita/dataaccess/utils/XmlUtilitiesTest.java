@@ -92,8 +92,8 @@ public class XmlUtilitiesTest {
     }
 
     @Test
-    public void testFailToAddTeiAuthor() {
-        // the author can not be set as the author-element does not contain a persName element
+    public void testFailToAddTitleAndAddUnknownTeiAuthor() {
+        // the title can not be set as the title element is empty
         String xmlString = """
                 <?xml version="1.0" encoding="UTF-8"?>
                 <?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
@@ -102,7 +102,7 @@ public class XmlUtilitiesTest {
                     <teiHeader xml:lang="en" xmlns="http://www.tei-c.org/ns/1.0">
                         <fileDesc>
                             <titleStmt>
-                                <title>test</title>
+                                <title/>
                                 <author>Unknown</author>
                             </titleStmt>
                             <publicationStmt>
@@ -112,15 +112,48 @@ public class XmlUtilitiesTest {
                                 <ab/>
                             </sourceDesc>
                         </fileDesc>
-                        <profileDesc>
-                            <creation>
-                                <date type="file" when="2022-07-07">7. July 2022</date>
-                                <date type="distribution" when="2022-07-07">7. July 2022</date>
-                                <date type="manuscript" from="-0650" to="-0450">650-450 BCE</date>
-                                <date type="preaching" from="1555-12" to="1609">December 1539–1609</date>
-                                <date type="publication" notBefore="1539" notAfter="1609">ca. 1539–1609</date>
-                            </creation>
-                        </profileDesc>
+                        <profileDesc/>
+                    </teiHeader>
+                    <text>
+                        <body>
+                            <ab/>
+                        </body>
+                    </text>
+                </TEI>
+                """;
+        Manuscript manuscript = new Manuscript("1", Instant.parse("2019-07-04T07:03:03Z"), "myManuscript", "Name", 2000);
+
+        addTeiMetadata(manuscript, xmlString);
+
+        List<String> teiAuthors = manuscript.getTeiAuthor();
+        List<TeiTitle> teiTitle = manuscript.getTeiTitle();
+        assertEquals(1, teiAuthors.size());
+        assertEquals("Unknown", teiAuthors.get(0));
+        assertNull(teiTitle);
+    }
+
+    @Test
+    public void testFailToAddTeiAuthor() {
+        // the author can not be set as the author-element is empty
+        String xmlString = """
+                <?xml version="1.0" encoding="UTF-8"?>
+                <?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml" schematypens="http://relaxng.org/ns/structure/1.0"?>
+                <?xml-model href="http://www.tei-c.org/release/xml/tei/custom/schema/relaxng/tei_all.rng" type="application/xml"?>
+                <TEI xmlns="http://www.tei-c.org/ns/1.0">
+                    <teiHeader xml:lang="en" xmlns="http://www.tei-c.org/ns/1.0">
+                        <fileDesc>
+                            <titleStmt>
+                                <title/>
+                                <author/>
+                            </titleStmt>
+                            <publicationStmt>
+                                <ab/>
+                            </publicationStmt>
+                            <sourceDesc>
+                                <ab/>
+                            </sourceDesc>
+                        </fileDesc>
+                        <profileDesc/>
                     </teiHeader>
                     <text>
                         <body>
