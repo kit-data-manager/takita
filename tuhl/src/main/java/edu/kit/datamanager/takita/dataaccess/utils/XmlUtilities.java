@@ -21,6 +21,7 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class XmlUtilities {
 
@@ -43,7 +44,7 @@ public class XmlUtilities {
             }
 
             // Dummy implementation - not used!
-            public Iterator getPrefixes(String val) {
+            public Iterator<String> getPrefixes(String val) {
                 return null;
             }
 
@@ -290,12 +291,17 @@ public class XmlUtilities {
      * Helper function to concatenate a list into a string, where all entries apart from
      * the first are surrounded by brackets.
      */
-    private static String concatList(List list) {
-        String result = list.get(0).toString();
-        list.remove(0);
-        if (list.size() >= 1) {
-            result = result + " (" + String.join("; ", list) + ")";
+    private static String concatList(List<String> stringList) {
+        if (stringList.isEmpty()) return "";
+
+        String firstString = stringList.getFirst();
+
+        if (stringList.size() > 1) {
+            String remainingStrings = stringList.stream()
+                    .skip(1)
+                    .collect(Collectors.joining("; "));
+            return firstString + " (" + remainingStrings + ")";
         }
-        return result;
+        return firstString;
     }
 }
