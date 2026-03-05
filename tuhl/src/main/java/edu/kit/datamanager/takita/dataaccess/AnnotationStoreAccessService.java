@@ -3,6 +3,8 @@ package edu.kit.datamanager.takita.dataaccess;
 import java.io.IOException;
 import java.net.ConnectException;
 import java.io.StringReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
@@ -21,16 +23,7 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
-
-import static edu.kit.datamanager.takita.dataaccess.utils.XmlUtilities.getNamespaceContext;
+import org.springframework.web.util.UriBuilder;
 
 /**
  * Contains logic for accessing the annotation store with RestTemplate.
@@ -561,5 +554,61 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
         logger.info("Could not complete query: {} from SPARQL-ednpoint.", query);
     }
     return response.body();
+  }
+
+  /**
+   * Convert URI to one that can be handled by the wap server in all cases (REST & SPARQL)
+   * see: https://github.com/kit-data-manager/wap-server/issues/72
+   * @param uri string of the URI to normalize
+   * @return normalized URI as string
+   */
+  public String normalizeAnnostoreURI(String uri) {
+    // replacing the port, if wap-server is run at port 80 or 443. Otherwise, the query will not
+    // be completed properly as the wap-server will throw:
+    // Bad IRI: <http://localhost:80/wap/> Code: 13/DEFAULT_PORT_SHOULD_BE_OMITTED in PORT: If
+    //          the port is the default one for the scheme it should be omitted.
+    // Bad IRI: <http://localhost:80/wap/> Code: 14/PORT_SHOULD_NOT_BE_WELL_KNOWN in PORT: Ports
+    //          under 1024 should be accessed using the appropriate scheme name.
+    if (uri == null || uri.isEmpty()) {
+      throw new IllegalArgumentException("URI cannot be null or empty");
+    }
+
+    URI input;
+    try {
+      input = new URI(uri);
+    } catch (URISyntaxException e) {
+      throw new IllegalArgumentException("Invalid URI: " + uri);
+    }
+
+
+    String scheme = input.getScheme();
+    String userInfo = input.getUserInfo();
+    String host = input.getHost();
+    int port = input.getPort();
+    String path = input.getPath();
+    String query = input.getQuery();
+    String fragment = input.getFragment();
+
+    if ("http".equalsIgnoreCase(scheme) && input.getPort() == 80) {
+      port = -1;
+    }
+    if ("https".equalsIgnoreCase(scheme) && input.getPort() == 443) {
+      port = -1;
+    }
+
+    try {
+      URI normalized = new URI(
+              scheme.toLowerCase(),       // normalize scheme casing
+                  userInfo,
+                  host,
+                  port,
+                  path,
+                  query,
+                  fragment
+      );
+      return normalized.toString();
+    } catch (URISyntaxException e) {
+      throw new IllegalArgumentException("URI could not be normalized: " + uri);
+    }
   }
 }

@@ -1,5 +1,7 @@
 package edu.kit.datamanager.takita.actuator;
 
+import edu.kit.datamanager.takita.dataaccess.AnnotationStoreAccessService;
+import edu.kit.datamanager.takita.dataaccess.IAnnotationStoreAccessService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -20,16 +22,12 @@ public class WapServerSPARQLHealthCheck implements HealthIndicator {
     @Value("${sparqlQuery.urlPrefix:#{null}}")
     private String sparqlQueryUrlPrefix;
 
-    private String sparqlQuery = """
-            SELECT ?s ?p ?o {
-              GRAPH ?g {
-                ?s ?p ?o
-              }
-            } LIMIT 1
-            """;
     private HttpClient httpClient;
 
-    public WapServerSPARQLHealthCheck() {
+    private final IAnnotationStoreAccessService annotationStoreAccessService;
+
+    public WapServerSPARQLHealthCheck(IAnnotationStoreAccessService annotationStoreAccessService) {
+        this.annotationStoreAccessService = annotationStoreAccessService;
         this.httpClient = HttpClient.newHttpClient();
     }
 
@@ -44,15 +42,12 @@ public class WapServerSPARQLHealthCheck implements HealthIndicator {
     @Override
     public Health health() {
         Health.Builder builder = new Health.Builder();
-        // replacing the port, if wap-server is run at port 80. Otherwise, the query will not
-        // be completed properly as the wap-server will throw:
-        // Bad IRI: <http://localhost:80/wap/> Code: 13/DEFAULT_PORT_SHOULD_BE_OMITTED in PORT: If
-        //          the port is the default one for the scheme it should be omitted.
-        // Bad IRI: <http://localhost:80/wap/> Code: 14/PORT_SHOULD_NOT_BE_WELL_KNOWN in PORT: Ports
-        //          under 1024 should be accessed using the appropriate scheme name.
-        if (annoContainerURI.contains("localhost:80/wap")) {
-            annoContainerURI = annoContainerURI.replace("localhost:80/wap", "localhost/wap");
+
+        //This normalization is likely WAP Server specific, therefore we check if we rely on this implementation
+        if (annotationStoreAccessService instanceof AnnotationStoreAccessService wapServerAccessService) {
+            annoContainerURI = wapServerAccessService.normalizeAnnostoreURI(annoContainerURI);
         }
+
         try {
             String sparqlQueryContainer = String.format("""
             SELECT ?s ?p ?o
