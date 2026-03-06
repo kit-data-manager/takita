@@ -35,6 +35,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Security
 
 ### Dependencies
+- Spring Boot to 3.5.11
+- Spring Doc to 2.8.16
+- com.google.code.gson:gson:2.13.2
+- jakarta.json:jakarta.json-api:2.1.3
 
 ## [1.0.0] - 2024-10-25
 
