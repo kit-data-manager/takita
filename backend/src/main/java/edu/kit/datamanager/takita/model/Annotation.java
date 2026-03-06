@@ -6,6 +6,7 @@ import edu.kit.datamanager.takita.model.target.Target;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
@@ -20,16 +21,16 @@ public class Annotation {
 
   private String pageId;
   private String manuscriptTitle;
-  
+
   @Field(type = FieldType.Nested, includeInParent = true)
-  private List<TextCard> textCards;
+  private List<TextCard> textCards = new ArrayList<>();
 
   //Annotation ID is whole link to annotationStore - format = DateFormat.custom, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSSZ"
   @Id
   private String id;
   @Field(type = FieldType.Date)
   private Instant modified;
-  private List<String> creators;
+  private List<String> creators = new ArrayList<>();
   @Field(type = FieldType.Date)
   private Instant created;
   //contains old Annotation url, for validated annotations only
@@ -37,25 +38,20 @@ public class Annotation {
   //same as via
   private String canonical;
 
-  private List<Target> targets;
+  private List<Target> targets = new ArrayList<>();
 
   private String motivation;
   
   @Field(type = FieldType.Nested, includeInParent = true)
-  private List<Tag> tags;
+  private List<Tag> tags = new ArrayList<>();
 
   private boolean isAlgorithmAnnotation;
   private String etag;
 
   /**
-   * Constructor, initializes lists.
+   * Non args constructor (empty)
    */
-  public Annotation() {
-    textCards = new ArrayList<>();
-    tags = new ArrayList<>();
-    creators = new ArrayList<>();
-    targets = new ArrayList<>();
-  }
+  public Annotation() {}
 
   /**
    * Constructor to initialize properties
@@ -66,12 +62,11 @@ public class Annotation {
    * @param linkToResource target source
    * @param selectors Json Array of selectors
    * @param motivation motivation
+   * @param via via field
    * @throws JSONException
    */
   public Annotation(String pageId, List<String> creators, Instant created, Instant modified,
-                    String linkToResource, JSONArray selectors, String motivation ) throws JSONException {
-      this.textCards = new ArrayList<>();
-      this.tags = new ArrayList<>();
+                    String linkToResource, JSONArray selectors, String motivation, String via) throws JSONException {
       this.pageId = pageId;
       this.creators = creators;
       this.created = created;
@@ -82,6 +77,7 @@ public class Annotation {
       if (motivation != null) {
         this.motivation = motivation;
       }
+      this.via = via;
   }
 
   /**
@@ -149,7 +145,7 @@ public class Annotation {
   public void setPageId(String id) {
     pageId = id;
   }
-  
+
   /**
    * Gets name of the manuscripts that the Annotation belongs to.
    *
@@ -158,7 +154,7 @@ public class Annotation {
   public String getManuscriptTitle() {
     return manuscriptTitle;
   }
-  
+
   /**
    * Sets name of the manuscripts that the Annotation belongs to.
    * @param manuscriptTitle title to set
@@ -183,7 +179,8 @@ public class Annotation {
    * @param textCardIds to be set
    */
   public void setTextCards(List<TextCard> textCardIds) {
-    this.textCards = textCardIds;
+    //we ensure that textCards is always a list so that adding a new element and updating is always possible
+    textCards = Objects.requireNonNullElseGet(textCardIds, ArrayList::new);
   }
 
   /**
@@ -192,11 +189,7 @@ public class Annotation {
    * @param textCard to be added to text card list
    */
   public void addTextCard(TextCard textCard) {
-    if (textCards == null) {
-      textCards = new ArrayList<>();
-    }
     this.textCards.add(textCard);
-    
   }
   
     /**
@@ -208,10 +201,8 @@ public class Annotation {
     for (TextCard existingTextCard : this.textCards) {
         if (existingTextCard.getId().equals(textCard.getId())) {
             this.textCards.set(this.textCards.indexOf(existingTextCard), textCard);
-            
         }
     }
-    
   }
 
   /**
@@ -352,7 +343,7 @@ public class Annotation {
   public void setTargets(List<Target> targets) {
     this.targets = targets;
   }
-  
+
   /**
    * Adds one target to the annotation.
    *
@@ -398,7 +389,8 @@ public class Annotation {
    * @param tags to be set
    */
   public void setTags(List<Tag> tags) {
-    this.tags = tags;
+    //we ensure that tags is always a list so that adding a new element and updating is always possible.
+    this.tags = Objects.requireNonNullElseGet(tags, ArrayList::new);
   }
 
   /**
@@ -407,9 +399,6 @@ public class Annotation {
    * @param tag to be added
    */
   public void addTag(Tag tag) {
-    if (tags == null) {
-      tags = new ArrayList<>();
-    }
     this.tags.add(tag);
   }
   
@@ -422,10 +411,8 @@ public class Annotation {
     for (Tag existingTag : this.tags) {
         if (existingTag.getId().equals(tag.getId())) {
             this.tags.set(this.tags.indexOf(existingTag), tag);
-            
         }
     }
-    
   }
   
 

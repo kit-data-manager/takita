@@ -101,11 +101,15 @@ public class RestController {
             JSONObject json = new JSONObject(jsonString);
             String pageId = json.getString("pageId");
             JSONArray selectors = null;
+            String via = null;
             if (json.has("selectors")) {
             	selectors = (JSONArray) json.get("selectors");
             }
             String motivation = json.getString("motivation");
-            Annotation annotation = editorService.addAnnotation(pageId, selectors, motivation);
+            if (json.has("via")) {
+                via = json.getString("via");
+            }
+            Annotation annotation = editorService.addAnnotation(pageId, selectors, motivation, via);
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
             mapper.registerModule(new JavaTimeModule());
