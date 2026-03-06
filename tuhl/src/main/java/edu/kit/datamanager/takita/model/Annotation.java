@@ -49,6 +49,11 @@ public class Annotation {
   private String etag;
 
   /**
+   * Non args constructor (empty)
+   */
+  public Annotation() {}
+
+  /**
    * Constructor to initialize properties
    * @param pageId id of page containing annotation
    * @param creators list of creators
