@@ -27,13 +27,14 @@ public interface IEditorService {
    * @param pageId ID of the page on which the annotation is located
    * @param selectors 1-n selectors (part of the target) of the annotation
    * @param motivation motivation of the annotation
+   * @param via via field of annotation
    * @return the added annotation
    * @throws InterruptedException when the http request to database is interrupted
    * @throws NoSuchIndexEntryException when there is no such page in the index
    * @throws IOException when the http request to database was faulty and on connection error
    * @throws JSONException when server returns non success code or response payload does not contain annotation
    */
-  Annotation addAnnotation(String pageId, JSONArray selectors, String motivation)
+  Annotation addAnnotation(String pageId, JSONArray selectors, String motivation, String via)
       throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException;
 
   /**

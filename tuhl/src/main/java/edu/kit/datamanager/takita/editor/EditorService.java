@@ -72,6 +72,7 @@ public class EditorService implements IEditorService {
    * @param pageId ID of the page on which the annotation is located
    * @param selectors 1-n selectors (part of the target) of the annotation
    * @param motivation motivation of the annotation
+   * @param via via field of annotation
    * @return the added annotation
    * @throws InterruptedException when the http request to database is interrupted
    * @throws NoSuchIndexEntryException when there is no such page in the index
@@ -79,14 +80,14 @@ public class EditorService implements IEditorService {
    * @throws JSONException when there is a problem with the JSON object holding the selector
    */
   @Override
-  public Annotation addAnnotation(String pageId, JSONArray selectors, String motivation)
+  public Annotation addAnnotation(String pageId, JSONArray selectors, String motivation, String via)
       throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException {
     List<String> creators = Collections.singletonList(
               assistanceService.getCurrentUser().getName());
     Instant currentTime = Instant.now();
     Page page = searchIndexService.getPageById(pageId);
     String linkToResource = repositoryAccessService.getLinkForPage(pageId, page.getPageNumber(), page.getResourceType());
-    Annotation newAnnotation = new Annotation(pageId, creators, currentTime, currentTime, linkToResource, selectors, motivation);
+    Annotation newAnnotation = new Annotation(pageId, creators, currentTime, currentTime, linkToResource, selectors, motivation, via);
     try {
       logger.info("EditorService: " + newAnnotation.toString());
       newAnnotation = searchIndexService.addAnnotation(newAnnotation);

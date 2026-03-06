@@ -62,10 +62,11 @@ public class Annotation {
    * @param linkToResource target source
    * @param selectors Json Array of selectors
    * @param motivation motivation
+   * @param via via field
    * @throws JSONException
    */
   public Annotation(String pageId, List<String> creators, Instant created, Instant modified,
-                    String linkToResource, JSONArray selectors, String motivation) throws JSONException {
+                    String linkToResource, JSONArray selectors, String motivation, String via) throws JSONException {
       this.pageId = pageId;
       this.creators = creators;
       this.created = created;
@@ -76,6 +77,7 @@ public class Annotation {
       if (motivation != null) {
         this.motivation = motivation;
       }
+      this.via = via;
   }
 
   /**

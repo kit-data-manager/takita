@@ -78,12 +78,13 @@ class EditorServiceTest {
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
+          assertEquals(annotation.getVia(), thisAnnotation.getVia());
           return annotation;
          });
 
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
-    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), targets, annotation.getMotivation().toString());
+    Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(), targets, annotation.getMotivation(), annotation.getVia());
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
 
@@ -104,13 +105,14 @@ class EditorServiceTest {
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
+          assertEquals(annotation.getVia(), thisAnnotation.getVia());
           return annotation;
         });
     
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(),
-        targets, annotation.getMotivation().toString());
+        targets, annotation.getMotivation(), annotation.getVia());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -132,13 +134,14 @@ class EditorServiceTest {
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
+          assertEquals(annotation.getVia(), thisAnnotation.getVia());
           return annotation;
         });
 
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(),
-        targets, annotation.getMotivation().toString());
+        targets, annotation.getMotivation(), annotation.getVia());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -160,13 +163,14 @@ class EditorServiceTest {
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
+          assertEquals(annotation.getVia(), thisAnnotation.getVia());
           return annotation;
         });
 
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(),
-        targets, annotation.getMotivation().toString());
+        targets, annotation.getMotivation(), annotation.getVia());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -188,13 +192,14 @@ class EditorServiceTest {
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
+          assertEquals(annotation.getVia(), thisAnnotation.getVia());
           return annotation;
         });
 
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(),
-        targets, annotation.getMotivation().toString());
+        targets, annotation.getMotivation(), annotation.getVia());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -216,13 +221,14 @@ class EditorServiceTest {
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
+          assertEquals(annotation.getVia(), thisAnnotation.getVia());
           return annotation;
         });
 
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(),
-        targets, annotation.getMotivation().toString());
+        targets, annotation.getMotivation(), annotation.getVia());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -243,13 +249,14 @@ class EditorServiceTest {
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
+          assertEquals(annotation.getVia(), thisAnnotation.getVia());
           return annotation;
         });
 
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(),
-        targets, annotation.getMotivation().toString());
+        targets, annotation.getMotivation(), annotation.getVia());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -271,13 +278,14 @@ class EditorServiceTest {
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
+          assertEquals(annotation.getVia(), thisAnnotation.getVia());
           return annotation;
         });
 
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(),
-        targets, annotation.getMotivation().toString());
+        targets, annotation.getMotivation(), annotation.getVia());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -299,13 +307,14 @@ class EditorServiceTest {
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
+          assertEquals(annotation.getVia(), thisAnnotation.getVia());
           return annotation;
         });
 
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(),
-       targets, annotation.getMotivation().toString());
+       targets, annotation.getMotivation(), annotation.getVia());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -326,13 +335,14 @@ class EditorServiceTest {
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
+          assertEquals(annotation.getVia(), thisAnnotation.getVia());
           return annotation;
         });
 
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(),
-        targets, annotation.getMotivation().toString());
+        targets, annotation.getMotivation(), annotation.getVia());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -354,13 +364,14 @@ class EditorServiceTest {
           assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
           assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
           assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
+          assertEquals(annotation.getVia(), thisAnnotation.getVia());
           return annotation;
         });
 
     JSONArray targets = new JSONArray();
     targets.put(annotation.getTargets().get(0).getSelector().getWADMSerialization());
     Annotation actualAnnotation = EditorService.addAnnotation(annotation.getPageId(),
-        targets, annotation.getMotivation().toString());
+        targets, annotation.getMotivation(), annotation.getVia());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
   }
@@ -396,6 +407,7 @@ class EditorServiceTest {
       assertEquals(annotation.getPageId(), thisAnnotation.getPageId());
       assertEquals(annotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
       assertEquals(annotation.getMotivation(), thisAnnotation.getMotivation());
+      assertEquals(annotation.getVia(), thisAnnotation.getVia());
       return updatedAnnotation;
     });
 
