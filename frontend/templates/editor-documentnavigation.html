@@ -28,7 +28,7 @@
                                             <img th:if="${page.resourceType.name() == 'IMAGE' and page.thumbResourceUrl != null}"
                                                  th:src="${page.thumbResourceUrl}"
                                                  class="img-thumbnail"
-                                                 th:classappend="${page.id == currentPage.id} ? ' border border-danger-subtle'"
+                                                 th:classappend="${page.id == currentPage.id} ? ' border border-danger'"
                                                  th:data-field="${page.id}"
                                                  th:attr="onclick=|window.open('${page.id}')|"
                                                  loading="lazy" />
@@ -37,7 +37,7 @@
                                             <img th:if="${page.resourceType.name() != 'IMAGE' or page?.thumbResourceUrl == null}"
                                                  th:src="@{${iconPath}}"
                                                  class="img-thumbnail"
-                                                 th:classappend="${page.id == currentPage.id} ? ' border border-danger-subtle'"
+                                                 th:classappend="${page.id == currentPage.id} ? ' border border-danger'"
                                                  th:data-field="${page.id}"
                                                  th:attr="onclick=|window.open('${page.id}')|" />
                                         </div>
