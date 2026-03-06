@@ -47,7 +47,6 @@ public abstract class Page {
     this.pageNumber = pageNumber;
     this.created = created;
     this.resourceUrl = resourceUrl;
-    this.annotations = new ArrayList<>();
   }
 
   /**

@@ -66,8 +66,6 @@ public class Annotation {
    */
   public Annotation(String pageId, List<String> creators, Instant created, Instant modified,
                     String linkToResource, JSONArray selectors, String motivation) throws JSONException {
-      this.textCards = new ArrayList<>();
-      this.tags = new ArrayList<>();
       this.pageId = pageId;
       this.creators = creators;
       this.created = created;
