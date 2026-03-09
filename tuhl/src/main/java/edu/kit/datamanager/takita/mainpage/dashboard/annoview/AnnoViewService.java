@@ -82,14 +82,6 @@ public class AnnoViewService implements IAnnoViewService {
   }
 
   /**
-  * Gets number of result pages from searchService
-  * @return number of pages
-  */
-  public long getNumberOfResultsPages() {
-    return searchService.getResultPagesCount();
-  }
-  
-  /**
    * Gets results and formats them in JSON Array for table to read.
    *
    * @return table data as JSONArray
