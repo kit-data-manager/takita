@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Additional application.properties (!TODO!)
 
 ### Changed
+- Minimal java version changed from 17 to 21
 - Dockerization: we now ship a docker compose stack that includes all components necessary to set up tAKITA (in addition to the basic setup with tAKITA and elastic only).
 - "Show Annotations" table now shows all annotations available on a page / document part (only displayed image annotations without specific selector before)
 - Frontend now utilizes npm. The necessary steps to install and build are included in the gradle build chain.

@@ -14,7 +14,7 @@ Currently, tAKITA's features are limited to image annotation, annotation of text
 - Elasticsearch 
 
 ### Installation requirements
-- Java Runtime Environment 17 or higher
+- Java Runtime Environment 21 or higher
 
 ## Installation
 
