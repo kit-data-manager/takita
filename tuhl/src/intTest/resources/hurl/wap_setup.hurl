@@ -10,7 +10,7 @@ HTTP 200
 POST {{host}}/wap/
 Content-Type: application/ld+json; profile="http://www.w3.org/ns/anno.jsonld"
 Link: <http://www.w3.org/ns/ldp\#BasicContainer>; rel="type"
-Slug: elf
+Slug: self
 {
   "@context": [ "http://www.w3.org/ns/anno.jsonld", "http://www.w3.org/ns/ldp.jsonld" ],
   "@type": [ "ldp:Container", "ldp:BasicContainer", "AnnotationCollection"],
@@ -21,7 +21,7 @@ HTTP *
 ################################################################################
 # 1) Create takita container
 ################################################################################
-POST {{host}}/wap/elf/
+POST {{host}}/wap/self/
 Content-Type: application/ld+json; profile="http://www.w3.org/ns/anno.jsonld"
 Link: <http://www.w3.org/ns/ldp\#BasicContainer>; rel="type"
 Slug: takita

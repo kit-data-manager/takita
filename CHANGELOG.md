@@ -38,6 +38,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix: concurrency issue on quickly loading multiple editor tabs leading to annotations ending up in the wrong page (EditorService doesn't store currentPage as stored variable in the SessionScope anymore).
 - Fix: creation of an additional annotation body on modification of annotation shape
 - Fix: updating an image annotation may lead to wrapping of selector value in multiple `<svg></svg>` elements
+- Fix: annotation container name may miss first character in comparison to repo publisher field content
 
 ### Security
 - Authentication / AAI (Keycloak) support
