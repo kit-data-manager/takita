@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -43,13 +43,13 @@ class SearchIndexServiceTest {
   @Autowired
   private ISearchIndexService searchIndexService;
 
-  @MockBean
+  @MockitoBean
   private IAccessService mockedAccessService;
 
-  @MockBean
+  @MockitoBean
   private ManuscriptRepository mockedManuscriptRepository;
 
-  @MockBean
+  @MockitoBean
   private ElasticsearchOperations mockedElasticsearchOperations;
 
   private List<Manuscript> manuscriptList;

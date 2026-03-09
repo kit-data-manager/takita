@@ -22,7 +22,7 @@ import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 import java.io.IOException;
@@ -48,19 +48,19 @@ class AccessServiceTest {
   @Autowired
   private IAccessService accessService;
   
-  @MockBean
+  @MockitoBean
   private IRepositoryAccessService mockedRepositoryAccessService;
   
-  @MockBean
+  @MockitoBean
   private IAnnotationStoreAccessService mockedAnnotationStoreAccessService;
 
-  @MockBean
+  @MockitoBean
   private ISearchIndexService mockedSearchIndexService;
 
-  @MockBean
+  @MockitoBean
   private ManuscriptConverter mockedManuscriptConverter;
 
-  @MockBean
+  @MockitoBean
   private AnnotationConverter mockedAnnotationConverter;
   
   @BeforeEach

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.IndexOperations;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
@@ -39,16 +39,16 @@ class SearchServiceTest {
   @Autowired
   private ISearchService searchService;
   
-  @MockBean
+  @MockitoBean
   private IFilterService mockedFilterService;
   
-  @MockBean
+  @MockitoBean
   private ElasticsearchOperations mockedOperations;
 
-  @MockBean
+  @MockitoBean
   private IndexOperations mockedIndexOperations;
   
-  @MockBean
+  @MockitoBean
   private ManuscriptRepository mockedManuscriptRepository;
   
   

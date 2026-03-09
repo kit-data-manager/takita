@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.ui.Model;
 
@@ -40,13 +40,13 @@ class TableViewServiceTest {
   @Autowired
   private TableViewService tableViewService;
   
-  @MockBean
+  @MockitoBean
   private ISearchService mockedSearchService;
   
-  @MockBean
+  @MockitoBean
   private ISearchIndexService mockedSearchIndexService;
   
-  @MockBean
+  @MockitoBean
   private IAssistanceService mockedAssistanceService;
   
   @Test

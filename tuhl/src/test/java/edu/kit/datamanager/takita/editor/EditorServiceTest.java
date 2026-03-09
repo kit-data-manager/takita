@@ -25,7 +25,7 @@ import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.TestPropertySource;
 
 import java.io.IOException;
@@ -49,16 +49,16 @@ class EditorServiceTest {
   @Autowired
   private AnnotationConverter annotationConverter;
 
-  @MockBean
+  @MockitoBean
   private IAssistanceService mockedAssistanceService;
 
-  @MockBean
+  @MockitoBean
   private ISearchIndexService mockedSearchIndexService;
 
-  @MockBean
+  @MockitoBean
   private IRepositoryAccessService mockRepositoryAccessService;
 
-  @MockBean
+  @MockitoBean
   private IAnnotationStoreAccessService mockAnnotationStoreAccessService;
 
   @Test

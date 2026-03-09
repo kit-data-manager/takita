@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
@@ -30,14 +30,14 @@ public class ExistDbRestControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
+    @MockitoBean
     private IXMLDbAccessService existDbAccessService;
 
     //necessary for the test to run, not used though
-    @MockBean
+    @MockitoBean
     private IAssistanceService mockedAssistanceService;
     //necessary for the test to run, not used though
-    @MockBean
+    @MockitoBean
     private ISearchIndexService mockedSearchIndexService;
 
     // all xml documents in this test class are based on the texts from "Stigel, Johann: Ioannis Stigelii Elegia, Qua Celebratur Dignitas Et Fructus Legitimi coniugij.
