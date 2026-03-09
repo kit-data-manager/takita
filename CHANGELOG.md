@@ -39,6 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix: creation of an additional annotation body on modification of annotation shape
 - Fix: updating an image annotation may lead to wrapping of selector value in multiple `<svg></svg>` elements
 - Fix: annotation container name may miss first character in comparison to repo publisher field content
+- Fix: after creating a page annotation for an image other annotations cannot be selected or edited (mode not reset to view)
 
 ### Security
 - Authentication / AAI (Keycloak) support
