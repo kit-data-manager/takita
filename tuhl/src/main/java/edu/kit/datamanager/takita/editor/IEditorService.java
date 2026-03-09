@@ -74,18 +74,6 @@ public interface IEditorService {
   Annotation updateWADMAnnotation(String annotationId, String jsonString) throws JSONException, NoSuchIndexEntryException, IOException, InterruptedException;
 
   /**
-   * Validates an annotation in the search index and the database.
-   *
-   * @param annotationId ID of the annotation to be validated
-   * @return validated annotation
-   * @throws NoSuchIndexEntryException when there is no such annotation in the index
-   * @throws InterruptedException when the http request to database is interrupted
-   * @throws IOException when the http request to database was faulty
-   */
-  Annotation validateAnnotation(String annotationId)
-      throws NoSuchIndexEntryException, InterruptedException, IOException;
-
-  /**
    * Deletes an annotation from the search index and the database.
    *
    * @param annotationId of the annotation to delete

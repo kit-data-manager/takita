@@ -84,19 +84,6 @@ public interface IAnnotationStoreAccessService {
       throws JSONException, IOException, InterruptedException;
 
   /**
-   * Adds a validated annotation to validated container in the annotation store.
-   *
-   * @param jsonAnnotation validated annotation
-   * @param projectId container for annotation
-   * @return annotation in validated container with etag
-   * @throws IOException if an I/O error occurs when sending or receiving http request
-   * @throws InterruptedException if the http request is interrupted
-   * @throws JSONException if the response body could not be parsed to json
-   */
-  JSONObject validateAnnotation(JSONObject jsonAnnotation, String projectId)
-      throws IOException, InterruptedException, JSONException;
-
-  /**
    * Updates an annotation already in the annotation store.
    *
    * @param annotationId annotation identifier as String

@@ -133,23 +133,6 @@ class SearchIndexServiceTest {
   }
 
   @Test
-  void validateAnnotation() throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException {
-    Annotation annotation = manuscriptList.get(0).getPages().get(0).getAnnotations().get(0);
-
-    Mockito.when(mockedAccessService.validateAnnotation(annotation, manuscriptList.get(0).getPages().get(0).getPageNumber(), "a04/"))
-        .thenReturn(annotation);
-    Mockito.when(mockedManuscriptRepository.findById(Mockito.anyString()))
-        .thenAnswer(invocation -> {
-          String thisManuscriptId = invocation.getArgument(0);
-          assertEquals(manuscriptList.get(0).getId(), thisManuscriptId);
-          return java.util.Optional.ofNullable(manuscriptList.get(0));
-        });
-    mockSearchHits(manuscriptList.get(0));
-
-    assertEqualsAnnotations(annotation, searchIndexService.validateAnnotation(annotation));
-  }
-
-  @Test
   void deleteAnnotationById() throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException {
     Annotation annotation = manuscriptList.get(0).getPages().get(0).getAnnotations().get(0);
 

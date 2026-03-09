@@ -448,29 +448,6 @@ class EditorServiceTest {
   }
 
   @Test
-  void validateAnnotation() throws NoSuchIndexEntryException, InterruptedException, JSONException, IOException {
-    Annotation validatedAnnotation = buildMockAnnotation("tagging");
-    Annotation unvalidatedAnnotation = buildMockAnnotation("tagging");
-    unvalidatedAnnotation.setId(validatedAnnotation.getVia());
-    unvalidatedAnnotation.setVia("");
-    unvalidatedAnnotation.setCanonical("");
-    User currentUser = new User("Nicoletta Pütz");
-    validatedAnnotation.addCreator(currentUser.getName());
-
-    Mockito.when(mockedSearchIndexService.getAnnotationById(unvalidatedAnnotation.getId())).thenReturn(unvalidatedAnnotation);
-    Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
-    Mockito.when(mockedSearchIndexService.validateAnnotation(Mockito.any(Annotation.class))).thenAnswer(invocation -> {
-      Annotation thisAnnotation = invocation.getArgument(0);
-      assertEquals(validatedAnnotation.getPageId(), thisAnnotation.getPageId());
-      assertEquals(validatedAnnotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
-      assertEquals(validatedAnnotation.getMotivation(), thisAnnotation.getMotivation());
-      return validatedAnnotation;
-    });
-
-    assertEqualsAnnotations(validatedAnnotation, EditorService.validateAnnotation(unvalidatedAnnotation.getId()));
-  }
-
-  @Test
   void deleteAnnotation() throws NoSuchIndexEntryException, IOException, InterruptedException {
     Annotation annotation = buildMockAnnotation("questioning");
 

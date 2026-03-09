@@ -365,43 +365,6 @@ public class  SearchIndexService implements ISearchIndexService {
     
     return newAnnotation;
   }
-
-  /**
-   * Validates an annotation in the search index and notifies the dataaccess package.
-   *
-   * @param annotation unvalidated annotation
-   * @return validated annotation
-   * @throws IOException if an error occurs while sending/receiving http request to annotation store
-   * @throws InterruptedException if http request is interrupted
-   * @throws JSONException when the object couldn't be parsed to JSON
-   * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
-   */
-  @Override
-  public Annotation validateAnnotation(Annotation annotation)
-      throws IOException, InterruptedException, JSONException, NoSuchIndexEntryException {
-
-    // TODO: same code lines for addAnnotation and validateAnnotation, create new method for that
-    Page page = getPageById(annotation.getPageId());
-    String manuscriptPublisher = getManuscriptById(page.getManuscriptId()).getPublisher();
-        
-    // bad string magic, take everything after the last occurence of "-", 
-    // omit the space and convert it to lower case to use this as a subfolder 
-    // in the annotion store
-    String projectId = manuscriptPublisher.substring(manuscriptPublisher.lastIndexOf("-") + 2).toLowerCase() + "/";
-    Annotation validatedAnnotation;
-    
-    // if a parsing error occurs then store the annotation to a default subfolder
-    if (projectId != null && !projectId.equals(manuscriptPublisher)) {
-        validatedAnnotation = accessService.validateAnnotation(annotation, page.getPageNumber(), projectId);
-    } else {
-        validatedAnnotation = accessService.validateAnnotation(annotation, page.getPageNumber(), defaultContainer);
-        logger.info("ProjectId could not be parsed from " + manuscriptPublisher + ", result: " + projectId);
-    }
-    
-    applyChangedAnnotation(page, annotation, validatedAnnotation);
-    
-    return validatedAnnotation;
-  }
   
   private void applyChangedAnnotation(Page page, Annotation annotation,
                                       Annotation changedAnnotation)

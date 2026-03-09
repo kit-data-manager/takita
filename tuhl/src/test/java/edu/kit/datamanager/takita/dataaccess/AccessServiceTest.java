@@ -178,23 +178,6 @@ class AccessServiceTest {
   }
   
   @Test
-  void validateAnnotation() throws IOException, ParseException, JSONException, InterruptedException, NoSuchIndexEntryException {
-
-    JSONObject jsonAnnotation2 = new JSONObject(readStringFromRelativePath("addAnnotation/annotation2.json"));
-    JSONObject validatedJsonAnnotation2 = new JSONObject((readStringFromRelativePath("addAnnotation/validatedAnnotation2.json")));
-    List<Annotation> annotations = buildAnnotations();
-    Annotation expectedAnnotation = annotations.get(0);
-    Annotation actualAnnotationBefore = annotations.get(1);
-
-    Mockito.when(mockedAnnotationStoreAccessService.validateAnnotation(jsonAnnotation2, "a04/")).thenReturn(validatedJsonAnnotation2);
-    Mockito.when(mockedAnnotationConverter.buildAnnotationFromJson(validatedJsonAnnotation2)).thenReturn(expectedAnnotation);
-    Mockito.when(mockedAnnotationConverter.buildJsonFromAnnotation(actualAnnotationBefore, "082r")).thenReturn(jsonAnnotation2);
-
-    Annotation actualAnnotationAfter = accessService.validateAnnotation(actualAnnotationBefore, "082r", "a04/");
-    assertEqualsAnnotations(expectedAnnotation, actualAnnotationAfter);
-  }
-  
-  @Test
   void updateAnnotation() throws IOException, JSONException, ParseException, InterruptedException, NoSuchIndexEntryException {
     JSONObject jsonAnnotation2 = new JSONObject(readStringFromRelativePath("addAnnotation/annotation2.json"));
     JSONObject validatedJsonAnnotation2 = new JSONObject((readStringFromRelativePath("addAnnotation/validatedAnnotation2.json")));

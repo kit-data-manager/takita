@@ -159,29 +159,6 @@ public class EditorService implements IEditorService {
   }
 
   /**
-   * Validates an annotation in the search index and the database.
-   *
-   * @param annotationId ID of the annotation to be validated
-   * @return validated annotation
-   * @throws NoSuchIndexEntryException when there is no such annotation in the index
-   * @throws InterruptedException when the http request to database is interrupted
-   * @throws IOException when the http request to database was faulty
-   */
-  @Override
-  public Annotation validateAnnotation(String annotationId)
-      throws NoSuchIndexEntryException, InterruptedException, IOException {
-    Annotation annotation = searchIndexService.getAnnotationById(annotationId);
-    annotation.setModified(Instant.now());
-    annotation.addCreator(assistanceService.getCurrentUser().getName());
-    try {
-      annotation = searchIndexService.validateAnnotation(annotation);
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-    return annotation;
-  }
-
-  /**
    * Deletes an annotation from the search index and the database.
    *
    * @param annotationId of the annotation to delete

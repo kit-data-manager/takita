@@ -379,37 +379,6 @@ class AnnotationStoreAccessServiceTest {
   }
 
   @Test
-  void validateAnnotationTest() throws IOException, JSONException, InterruptedException {
-    JSONObject newAnnotation1 = new JSONObject(readStringFromRelativePath("addAnnotation/annotation1.json"));
-    JSONObject newAnnotation2 = new JSONObject(readStringFromRelativePath("addAnnotation/annotation2.json"));
-    JSONObject expectedUnvalidatedAnnotation = new JSONObject(readStringFromRelativePath("addAnnotation/annotation1.json"));
-
-    //Builds body for mock response
-    Mockito.when(mockedAnnotation1.body()).thenReturn(newAnnotation1.toString());
-    Mockito.when(mockedAnnotation2.body()).thenReturn(newAnnotation2.toString());
-
-    //Mock headers
-    List<String> etags = new ArrayList<>();
-    etags.add("ktcnefhkbtgdqobilpvs");
-    Map<String, List<String>> headersPage1 = new HashMap<>();
-    headersPage1.put("etag", etags);
-    Mockito.when(mockedAnnotation2.headers())
-        .thenReturn(HttpHeaders.of(headersPage1, (a, b) -> true));
-
-    //Define mock response to get requests
-    Mockito.when(mockedRequestHelper.postAnnotations("http://sampleannoserver.edu/wap/a04/validated/", newAnnotation1))
-        .thenReturn(mockedAnnotation2);
-
-    JSONObject actualAnnotation = annotationStoreAccessService.validateAnnotation(newAnnotation1, "a04/");
-    JSONObject expectedAnnotation = newAnnotation2;
-    expectedAnnotation.put("via", expectedUnvalidatedAnnotation.getString("id"));
-    expectedAnnotation.put("canonical", expectedUnvalidatedAnnotation.getString("id"));
-    expectedAnnotation.put("etag", etags.get(0));
-
-    assertEquals(expectedAnnotation.toString(), actualAnnotation.toString());
-  }
-
-  @Test
   void updateAnnotation() throws IOException, JSONException, InterruptedException, org.json.JSONException {
     JSONObject originalAnnotation = new JSONObject(readStringFromRelativePath("addAnnotation/annotation1.json"));
     JSONObject newAnnotation1 = new JSONObject((readStringFromRelativePath("addAnnotation/annotation1.json")));
