@@ -9,6 +9,7 @@ import { selectAnnotation } from '../annotationCard';
 import { createBodyData, createAnnotationData, getAnnotationData } from '../data';
 import { initializeAnnotationTable, defaultDisplayAnnotationFunction } from '../annotationTable';
 import { extractInformationFromSvg } from '../../imageeditor-ng/highlighting';
+import { Mode } from '../mode';
 /**
  *
  * @param {Object} annotationData the data necessary for annotation creation
@@ -88,6 +89,7 @@ export async function resetFormAndUpdateDisplay(annotation, hooks = {}) {
     document.getElementById('createRectangleButton').parentElement.classList.remove('active');
     document.getElementById('createPolygonButton').parentElement.classList.remove('active');
     resetImageVariables();
+    window.MODE = Mode.View;
   }
 }
 

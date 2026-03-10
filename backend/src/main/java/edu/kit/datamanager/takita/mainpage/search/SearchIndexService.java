@@ -16,13 +16,7 @@ import java.net.ConnectException;
 import java.text.ParseException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -270,10 +264,12 @@ public class  SearchIndexService implements ISearchIndexService {
       throw e;
     }
         
-    // bad string magic, take everything after the last occurence of "-", 
-    // omit the space and convert it to lower case to use this as a subfolder 
-    // in the annotion store
-    String projectId = manuscriptPublisher.substring(manuscriptPublisher.lastIndexOf("-") + 2).toLowerCase() + "/";
+    // extract publisher info from repo MD and convert to wap server container
+    // "Project - Subproject" will be converted to container name "subproject"
+    // "Proect" will be converted to container name "project"
+    //TODO: this functionality is very ol/dd behaviour and should be improved
+    List<String> publisherElements = Arrays.stream(manuscriptPublisher.split("-")).toList();
+    String projectId = publisherElements.getLast().trim().toLowerCase() + "/";
     Annotation newAnnotation;
     
     // if a parsing error occurs then store the annotation to a default subfolder
@@ -364,43 +360,6 @@ public class  SearchIndexService implements ISearchIndexService {
     applyChangedAnnotation(page, annotation, newAnnotation);
     
     return newAnnotation;
-  }
-
-  /**
-   * Validates an annotation in the search index and notifies the dataaccess package.
-   *
-   * @param annotation unvalidated annotation
-   * @return validated annotation
-   * @throws IOException if an error occurs while sending/receiving http request to annotation store
-   * @throws InterruptedException if http request is interrupted
-   * @throws JSONException when the object couldn't be parsed to JSON
-   * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
-   */
-  @Override
-  public Annotation validateAnnotation(Annotation annotation)
-      throws IOException, InterruptedException, JSONException, NoSuchIndexEntryException {
-
-    // TODO: same code lines for addAnnotation and validateAnnotation, create new method for that
-    Page page = getPageById(annotation.getPageId());
-    String manuscriptPublisher = getManuscriptById(page.getManuscriptId()).getPublisher();
-        
-    // bad string magic, take everything after the last occurence of "-", 
-    // omit the space and convert it to lower case to use this as a subfolder 
-    // in the annotion store
-    String projectId = manuscriptPublisher.substring(manuscriptPublisher.lastIndexOf("-") + 2).toLowerCase() + "/";
-    Annotation validatedAnnotation;
-    
-    // if a parsing error occurs then store the annotation to a default subfolder
-    if (projectId != null && !projectId.equals(manuscriptPublisher)) {
-        validatedAnnotation = accessService.validateAnnotation(annotation, page.getPageNumber(), projectId);
-    } else {
-        validatedAnnotation = accessService.validateAnnotation(annotation, page.getPageNumber(), defaultContainer);
-        logger.info("ProjectId could not be parsed from " + manuscriptPublisher + ", result: " + projectId);
-    }
-    
-    applyChangedAnnotation(page, annotation, validatedAnnotation);
-    
-    return validatedAnnotation;
   }
   
   private void applyChangedAnnotation(Page page, Annotation annotation,

@@ -447,23 +447,6 @@ public class AnnotationConverter {
     }
   }
 
-
-  
-  /* function to check if a string is a valid XPATH
-   * 
-   * 
-   */
-  private boolean validateXPATH(String target) {
-	  XPath xPath = XPathFactory.newInstance().newXPath();
-	  boolean isValid = false;
-	  try {
-		    xPath.compile(target);
-		    isValid = true;
-      } catch (Exception e) {
-		    e.printStackTrace();
-	  } 
-	  return isValid;
-  }
   /*
    * Puts target JSONObject with svg code and page image resource in JSONObject annotation.
    */

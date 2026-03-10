@@ -25,17 +25,14 @@ import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.TestPropertySource;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,16 +46,16 @@ class EditorServiceTest {
   @Autowired
   private AnnotationConverter annotationConverter;
 
-  @MockBean
+  @MockitoBean
   private IAssistanceService mockedAssistanceService;
 
-  @MockBean
+  @MockitoBean
   private ISearchIndexService mockedSearchIndexService;
 
-  @MockBean
+  @MockitoBean
   private IRepositoryAccessService mockRepositoryAccessService;
 
-  @MockBean
+  @MockitoBean
   private IAnnotationStoreAccessService mockAnnotationStoreAccessService;
 
   @Test
@@ -377,6 +374,32 @@ class EditorServiceTest {
   }
 
   @Test
+  void addAnnotation12() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
+    User creator = new User("creator");
+    Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(creator);
+    Page page = new ImagePage("1234", ResourceType.IMAGE, "42", Instant.now(), "http://example.com", "http://example.com");
+    Mockito.when(mockedSearchIndexService.getPageById("1234")).thenReturn(page);
+    Annotation actualAnnotation = EditorService.addAnnotation(
+            page.getId(),
+            null,
+            "describing",
+            null
+    );
+
+    Mockito.when(mockedSearchIndexService.addAnnotation(Mockito.any(Annotation.class)))
+            .thenAnswer(invocation -> {
+              Annotation thisAnnotation = invocation.getArgument(0);
+              assertEquals(actualAnnotation.getPageId(), thisAnnotation.getPageId());
+              assertEquals(actualAnnotation.getTargets().getFirst().getLinkToResource(), thisAnnotation.getTargets().getFirst().getLinkToResource());
+              assertEquals(actualAnnotation.getTargets().getFirst().getType(), thisAnnotation.getTargets().getFirst().getType());
+              assertEquals(actualAnnotation.getTargets().getFirst().getSelector(), thisAnnotation.getTargets().getFirst().getSelector());
+              assertEquals(actualAnnotation.getMotivation(), thisAnnotation.getMotivation());
+              assertEquals(actualAnnotation.getVia(), thisAnnotation.getVia());
+              return actualAnnotation;
+            });
+  }
+
+  @Test
   void getAnnotation() throws NoSuchIndexEntryException {
     Annotation annotation = buildMockAnnotation("highlighting");
 
@@ -445,29 +468,6 @@ class EditorServiceTest {
         targets, updatedAnnotation.getMotivation().toString());
 
     assertEqualsAnnotations(updatedAnnotation, actualAnnotation);
-  }
-
-  @Test
-  void validateAnnotation() throws NoSuchIndexEntryException, InterruptedException, JSONException, IOException {
-    Annotation validatedAnnotation = buildMockAnnotation("tagging");
-    Annotation unvalidatedAnnotation = buildMockAnnotation("tagging");
-    unvalidatedAnnotation.setId(validatedAnnotation.getVia());
-    unvalidatedAnnotation.setVia("");
-    unvalidatedAnnotation.setCanonical("");
-    User currentUser = new User("Nicoletta Pütz");
-    validatedAnnotation.addCreator(currentUser.getName());
-
-    Mockito.when(mockedSearchIndexService.getAnnotationById(unvalidatedAnnotation.getId())).thenReturn(unvalidatedAnnotation);
-    Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(currentUser);
-    Mockito.when(mockedSearchIndexService.validateAnnotation(Mockito.any(Annotation.class))).thenAnswer(invocation -> {
-      Annotation thisAnnotation = invocation.getArgument(0);
-      assertEquals(validatedAnnotation.getPageId(), thisAnnotation.getPageId());
-      assertEquals(validatedAnnotation.getTargets().get(0).getSelector().toString(), thisAnnotation.getTargets().get(0).getSelector().toString());
-      assertEquals(validatedAnnotation.getMotivation(), thisAnnotation.getMotivation());
-      return validatedAnnotation;
-    });
-
-    assertEqualsAnnotations(validatedAnnotation, EditorService.validateAnnotation(unvalidatedAnnotation.getId()));
   }
 
   @Test

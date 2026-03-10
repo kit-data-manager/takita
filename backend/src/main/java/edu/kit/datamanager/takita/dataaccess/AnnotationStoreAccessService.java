@@ -413,33 +413,6 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   }
 
   /**
-   * Adds a validated annotation to validated container in the annotation store.
-   *
-   * @param jsonAnnotation validated annotation
-   * @return annotation in validated container with etag
-   * @throws IOException if an I/O error occurs when sending or receiving http request
-   * @throws InterruptedException if the http request is interrupted
-   * @throws JSONException if the response body could not be parsed to json
-   */
-  @Override
-  public JSONObject validateAnnotation(JSONObject jsonAnnotation, String projectId)
-      throws IOException, InterruptedException, JSONException {
-    jsonAnnotation.put(AnnotationStoreStrings.VIA.getName(), jsonAnnotation.getString(
-        AnnotationStoreStrings.ID.getName()));
-    jsonAnnotation.put(AnnotationStoreStrings.CANONICAL.getName(), jsonAnnotation.getString(
-        AnnotationStoreStrings.ID.getName()));
-    jsonAnnotation.remove(AnnotationStoreStrings.ID.getName());
-    HttpResponse<String> response = httpRequestHelper.postAnnotations(urlPrefix
-        + projectId + VALIDATED_URL, jsonAnnotation);
-  
-    JSONObject result = new JSONObject(response.body());
-  
-    putEtag(response, result);
-    
-    return result;
-  }
-
-  /**
    * Updates an annotation already in the annotation store.
    *
    * @param annotationId annotation identifier as String
