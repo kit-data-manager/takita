@@ -1,6 +1,5 @@
 package edu.kit.datamanager.takita.model;
 
-import edu.kit.datamanager.takita.dataaccess.utils.XmlUtilities;
 import edu.kit.datamanager.takita.model.page.ImagePage;
 import edu.kit.datamanager.takita.model.page.Page;
 import edu.kit.datamanager.takita.model.page.ResourceType;
@@ -11,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.text.ParseException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -105,5 +105,48 @@ class ManuscriptTest {
     assertEquals(3, manuscript.getTeiTitle().size());
     assertEquals("Title1 (Title2; Title3)", manuscript.getDefaultTitlesAsString());
     assertEquals(3, manuscript.getTeiTitle().size());
+  }
+
+  @Test
+  public void testPersistenceConstructor() {
+    String id = "id";
+    Instant created = Instant.parse("2019-07-04T07:03:03Z");
+    String title = "title";
+    String publisher = "publisher";
+    int publicationYear = 2000;
+    Instant lastModified = Instant.parse("2019-07-04T07:03:03Z");
+    int noPages = 100;
+    List<Page> pages = new ArrayList<>();
+
+    Manuscript manuscript = new Manuscript(id, created, title, publisher, publicationYear, lastModified, noPages, pages);
+    assertEquals(id, manuscript.getId());
+    assertEquals(created, manuscript.getCreated());
+    assertEquals(title, manuscript.getTitle());
+    assertEquals(publisher, manuscript.getPublisher());
+    assertEquals(publicationYear, manuscript.getPublicationYear());
+    assertEquals(lastModified, manuscript.getLastModified());
+    assertEquals(noPages, manuscript.getNoPages());
+    assertEquals(pages.size(), manuscript.getPages().size());
+  }
+
+  @Test
+  public void getCreationDatesAsString() {
+    Manuscript manuscript = new Manuscript(
+            "id",
+            Instant.parse("2019-07-04T07:03:03Z"),
+            "title",
+            "publisher",
+            2000);
+    TeiDate date1 = new TeiDate();
+    date1.setContent("Before 2012");
+    date1.setType("creation");
+    TeiDate date2 = new TeiDate();
+    date2.setContent("1. December 2012");
+    date2.setType("publication");
+    TeiDate date3 = new TeiDate();
+    date3.setContent("12. December 2012");
+
+    manuscript.setTeiManuscriptCreationDate(Arrays.asList(date1, date2, date3));
+    assertEquals("Before 2012 (creation), 1. December 2012 (publication), 12. December 2012", manuscript.getCreationDatesAsString());
   }
 }
