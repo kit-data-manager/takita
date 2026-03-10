@@ -32,10 +32,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -374,6 +371,32 @@ class EditorServiceTest {
         targets, annotation.getMotivation(), annotation.getVia());
 
     assertEqualsAnnotations(annotation, actualAnnotation);
+  }
+
+  @Test
+  void addAnnotation12() throws InterruptedException, NoSuchIndexEntryException, JSONException, IOException {
+    User creator = new User("creator");
+    Mockito.when(mockedAssistanceService.getCurrentUser()).thenReturn(creator);
+    Page page = new ImagePage("1234", ResourceType.IMAGE, "42", Instant.now(), "http://example.com", "http://example.com");
+    Mockito.when(mockedSearchIndexService.getPageById("1234")).thenReturn(page);
+    Annotation actualAnnotation = EditorService.addAnnotation(
+            page.getId(),
+            null,
+            "describing",
+            null
+    );
+
+    Mockito.when(mockedSearchIndexService.addAnnotation(Mockito.any(Annotation.class)))
+            .thenAnswer(invocation -> {
+              Annotation thisAnnotation = invocation.getArgument(0);
+              assertEquals(actualAnnotation.getPageId(), thisAnnotation.getPageId());
+              assertEquals(actualAnnotation.getTargets().getFirst().getLinkToResource(), thisAnnotation.getTargets().getFirst().getLinkToResource());
+              assertEquals(actualAnnotation.getTargets().getFirst().getType(), thisAnnotation.getTargets().getFirst().getType());
+              assertEquals(actualAnnotation.getTargets().getFirst().getSelector(), thisAnnotation.getTargets().getFirst().getSelector());
+              assertEquals(actualAnnotation.getMotivation(), thisAnnotation.getMotivation());
+              assertEquals(actualAnnotation.getVia(), thisAnnotation.getVia());
+              return actualAnnotation;
+            });
   }
 
   @Test
