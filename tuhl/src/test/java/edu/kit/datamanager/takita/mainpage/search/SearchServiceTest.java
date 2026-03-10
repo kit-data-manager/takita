@@ -14,30 +14,29 @@ import edu.kit.datamanager.takita.model.page.ResourceType;
 //import org.elasticsearch.action.search.SearchResponse;
 //import org.elasticsearch.client.RestHighLevelClient;
 import edu.kit.datamanager.takita.model.page.TextPage;
+import edu.kit.datamanager.takita.model.target.SVGSelector;
+import edu.kit.datamanager.takita.model.target.XPathSelector;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.elasticsearch.core.*;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
-import org.springframework.data.elasticsearch.core.IndexOperations;
 import org.springframework.data.elasticsearch.core.mapping.IndexCoordinates;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.data.elasticsearch.core.suggest.response.Suggest;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.ui.Model;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
@@ -183,7 +182,8 @@ class SearchServiceTest {
             Instant.parse("2019-03-11T14:13:45Z"),
             "http://example.org/doc1",
             selectors,
-            "describing");
+            "describing",
+            "via");
     annotation1.setId("annoId1");
     Tag tag1 = new Tag(
             "tag1",
@@ -227,7 +227,8 @@ class SearchServiceTest {
             Instant.parse("2019-03-11T14:13:45Z"),
             "http://example.org/doc1",
             selectors2,
-            "describing");
+            "describing",
+            "via");
     annotation2.setId("annoId2");
     TextCard textCard = new TextCard(
             "textCard2",
@@ -271,6 +272,14 @@ class SearchServiceTest {
         return 0;
       }
 
+      /**
+       * @return
+       */
+      @Override
+      public Duration getExecutionDuration() {
+        return null;
+      }
+
       @Override
       public SearchHit<Manuscript> getSearchHit(int index) {
         return null;
@@ -312,6 +321,14 @@ class SearchServiceTest {
       public String getPointInTimeId() {
         return "";
       }
+
+      /**
+       * @return
+       */
+      @Override
+      public SearchShardStatistics getSearchShardStatistics() {
+        return null;
+      }
     };
   }
 
@@ -324,7 +341,35 @@ class SearchServiceTest {
     List<Annotation> actualAnnotations = searchService.queryAllAnnotations();
     // expected values can be found in the objects created by setUpMockedSearchHits()
     assertEquals(2, actualAnnotations.size());
-    assertEquals("annoId1", actualAnnotations.get(0).getId());
-    assertEquals("annoId2", actualAnnotations.get(1).getId());
+
+    Annotation actualAnnotation1 = actualAnnotations.get(0);
+    assertEquals("annoId1", actualAnnotation1.getId());
+    assertTrue(actualAnnotation1.getCreators().contains("Creator1"));
+    assertTrue(actualAnnotation1.getCreators().contains("Creator2"));
+    assertEquals(Instant.parse("2019-03-11T14:13:45Z"), actualAnnotation1.getModified());
+    assertEquals(Instant.parse("2019-03-11T14:13:45Z"), actualAnnotation1.getCreated());
+    assertEquals("Vatikan Vat Gr 247", actualAnnotation1.getManuscriptTitle());
+    assertEquals(2, actualAnnotation1.getTags().size());
+    assertEquals(0, actualAnnotation1.getTextCards().size());
+    assertEquals("value1", actualAnnotation1.getTags().get(0).getValue());
+    assertEquals("value2", actualAnnotation1.getTags().get(1).getValue());
+    assertEquals("source1", actualAnnotation1.getTags().get(0).getSource());
+    assertEquals("source2", actualAnnotation1.getTags().get(1).getSource());
+    assertEquals("<svg:svg>...</svg:svg>", ((SVGSelector) actualAnnotation1.getTargets().getFirst().getSelector()).getValue());
+    assertEquals("page1", actualAnnotation1.getPageId());
+
+    Annotation actualAnnotation2 = actualAnnotations.get(1);
+    assertEquals("annoId2", actualAnnotation2.getId());
+    assertTrue(actualAnnotation2.getCreators().contains("Creator1"));
+    assertFalse(actualAnnotation2.getCreators().contains("Creator2"));
+    assertEquals(Instant.parse("2019-03-11T14:13:45Z"), actualAnnotation2.getModified());
+    assertEquals(Instant.parse("2019-03-11T14:13:45Z"), actualAnnotation2.getCreated());
+    assertEquals("Vatikan Vat Gr 247", actualAnnotation2.getManuscriptTitle());
+    assertEquals(0, actualAnnotation2.getTags().size());
+    assertEquals(1, actualAnnotation2.getTextCards().size());
+    assertEquals("value", actualAnnotation2.getTextCards().getFirst().getValue());
+    assertEquals("source", actualAnnotation2.getTextCards().getFirst().getSource());
+    assertEquals("id(\"w.1\")", ((XPathSelector) actualAnnotation2.getTargets().getFirst().getSelector()).getValue());
+    assertEquals("page2", actualAnnotation2.getPageId());
   }
 }
