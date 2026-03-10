@@ -2,13 +2,12 @@ package edu.kit.datamanager.takita.mainpage.dashboard.annoView;
 
 import edu.kit.datamanager.takita.dataaccess.AnnotationStoreStrings;
 import edu.kit.datamanager.takita.mainpage.dashboard.annoview.AnnoViewService;
-import edu.kit.datamanager.takita.mainpage.search.SearchService;
+import edu.kit.datamanager.takita.mainpage.search.ISearchService;
 import edu.kit.datamanager.takita.model.Annotation;
 import edu.kit.datamanager.takita.model.body.Tag;
 import edu.kit.datamanager.takita.model.body.TextCard;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +15,7 @@ import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.ui.Model;
 
 import java.time.Instant;
@@ -38,11 +38,8 @@ public class AnnoViewServiceTest {
     private static String xPath = "id(\"w.1\")";
     private static List<Annotation> annotations;
 
-    @Autowired
-    private AnnoViewService searchService;
-
-    @Mock
-    private SearchService searchServiceMock;
+    @MockitoBean
+    private ISearchService searchServiceMock;
     @Autowired
     private AnnoViewService annoViewService;
 
