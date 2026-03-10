@@ -6,17 +6,15 @@ import edu.kit.datamanager.takita.mainpage.search.SearchService;
 import edu.kit.datamanager.takita.model.Annotation;
 import edu.kit.datamanager.takita.model.body.Tag;
 import edu.kit.datamanager.takita.model.body.TextCard;
-import edu.kit.datamanager.takita.model.page.ImagePage;
-import edu.kit.datamanager.takita.model.page.ResourceType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.skyscreamer.jsonassert.JSONAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.ui.Model;
 
@@ -43,7 +41,7 @@ public class AnnoViewServiceTest {
     @Autowired
     private AnnoViewService searchService;
 
-    @MockBean
+    @Mock
     private SearchService searchServiceMock;
     @Autowired
     private AnnoViewService annoViewService;
@@ -62,7 +60,8 @@ public class AnnoViewServiceTest {
                 Instant.parse("2019-03-11T14:13:45Z"),
                 "http://example.org/doc1",
                 selectors,
-                "describing");
+                "describing",
+                "via");
         annotation1.setId("annoId1");
         annotation1.setManuscriptTitle("Vatikan Vat Gr 247");
         Tag tag1 = new Tag(
@@ -101,7 +100,8 @@ public class AnnoViewServiceTest {
                 Instant.parse("2019-03-11T14:13:45Z"),
                 "http://example.org/doc1",
                 selectors2,
-                "describing");
+                "describing",
+                "via");
         annotation2.setId("annoId2");
         annotation2.setManuscriptTitle("Vatikan Vat Gr 247");
         TextCard textCard = new TextCard(
