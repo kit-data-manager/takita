@@ -34,6 +34,123 @@ export const bodyTemplate = {
   TEXTBODY: 'Textbody',
 };
 
+// assigns data model needed for MetadataEditor to specific template
+// the actual thing where templating is done
+// TODO: CUSTOMISE available annotations and their structure/content (dataModel)
+// and how they are displayed in the modal (uiForm)
+/**
+ * gets data model needed for MetadataEditor/JSONForm of specific template
+ *
+ * @param {String} chosenTemplate the template that was chosen
+ * @returns {[Object]} dataModel, uiForm associated with the template
+ */
+function getFormModel(chosenTemplate) {
+  let dataModel;
+  let uiForm;
+
+  switch (chosenTemplate) {
+    case 'EXAMPLE':
+      dataModel = {
+        type: 'object',
+        properties: {
+          freetext: {
+            type: 'string',
+            title: 'free text input',
+          },
+          enum: {
+            type: 'string',
+            title: 'enum input',
+            enum: ['', 'Term1', 'Term2', 'Term3'],
+          },
+          tag: {
+            type: 'string',
+            title: 'tag input',
+          },
+        },
+      };
+      uiForm = {
+        type: 'fieldset',
+        items: [
+          {
+            key: 'freetext',
+          },
+          {
+            key: 'enum',
+          },
+          {
+            key: 'tag',
+          },
+        ],
+      };
+      break;
+
+    case 'NOTEMPLATE':
+      dataModel = {
+        type: 'object',
+        properties: {
+          hidden: {
+            type: 'string',
+            title: 'hiddenObject',
+          },
+        },
+      };
+      uiForm = {
+        type: 'fieldset',
+        items: [],
+      };
+      break;
+
+    case 'TAG':
+      dataModel = {
+        type: 'object',
+        properties: {
+          value: {
+            type: 'string',
+            title: 'value',
+          },
+        },
+        required: ['value'],
+      };
+      break;
+
+    case 'TEXTBODY':
+      dataModel = {
+        type: 'object',
+        properties: {
+          purpose: {
+            type: 'string',
+            title: 'purpose',
+            enum: [
+              'assessing',
+              'bookmarking',
+              'classifying',
+              'commenting',
+              'describing',
+              'editing',
+              'highlighting',
+              'identifying',
+              'linking',
+              'moderating',
+              'questioning',
+              'replying',
+              'tagging',
+            ],
+          },
+          value: {
+            type: 'string',
+            title: 'value',
+          },
+        },
+        required: ['purpose', 'value'],
+      };
+      break;
+  }
+
+  console.log('dataModel: ', dataModel);
+  console.log('uiForm: ', uiForm);
+  return [dataModel, uiForm];
+}
+
 /**
  * returns the ui form for the jsonForm object to create new annotation.
  * Upon choosing the corresponding MetadataEditor CREATE form is built
@@ -180,123 +297,6 @@ export function getFormObjectCreateBody(encodedAnnoId) {
       },
     ],
   };
-}
-
-// assigns data model needed for MetadataEditor to specific template
-// the actual thing where templating is done
-// TODO: CUSTOMISE available annotations and their structure/content (dataModel)
-// and how they are displayed in the modal (uiForm)
-/**
- * gets data model needed for MetadataEditor/JSONForm of specific template
- *
- * @param {String} chosenTemplate the template that was chosen
- * @returns {[Object]} dataModel, uiForm associated with the template
- */
-function getFormModel(chosenTemplate) {
-  let dataModel;
-  let uiForm;
-
-  switch (chosenTemplate) {
-    case 'EXAMPLE':
-      dataModel = {
-        type: 'object',
-        properties: {
-          freetext: {
-            type: 'string',
-            title: 'free text input',
-          },
-          enum: {
-            type: 'string',
-            title: 'enum input',
-            enum: ['', 'Term1', 'Term2', 'Term3'],
-          },
-          tag: {
-            type: 'string',
-            title: 'tag input',
-          },
-        },
-      };
-      uiForm = {
-        type: 'fieldset',
-        items: [
-          {
-            key: 'freetext',
-          },
-          {
-            key: 'enum',
-          },
-          {
-            key: 'tag',
-          },
-        ],
-      };
-      break;
-
-    case 'NOTEMPLATE':
-      dataModel = {
-        type: 'object',
-        properties: {
-          hidden: {
-            type: 'string',
-            title: 'hiddenObject',
-          },
-        },
-      };
-      uiForm = {
-        type: 'fieldset',
-        items: [],
-      };
-      break;
-
-    case 'TAG':
-      dataModel = {
-        type: 'object',
-        properties: {
-          value: {
-            type: 'string',
-            title: 'value',
-          },
-        },
-        required: ['value'],
-      };
-      break;
-
-    case 'TEXTBODY':
-      dataModel = {
-        type: 'object',
-        properties: {
-          purpose: {
-            type: 'string',
-            title: 'purpose',
-            enum: [
-              'assessing',
-              'bookmarking',
-              'classifying',
-              'commenting',
-              'describing',
-              'editing',
-              'highlighting',
-              'identifying',
-              'linking',
-              'moderating',
-              'questioning',
-              'replying',
-              'tagging',
-            ],
-          },
-          value: {
-            type: 'string',
-            title: 'value',
-          },
-        },
-        required: ['purpose', 'value'],
-      };
-      break;
-  }
-
-  console.log('dataModel: ', dataModel);
-  console.log('uiForm: ', uiForm);
-  return [dataModel, uiForm];
 }
 
 /**
