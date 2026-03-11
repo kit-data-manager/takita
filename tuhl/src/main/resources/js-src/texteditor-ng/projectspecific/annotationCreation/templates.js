@@ -20,8 +20,8 @@ import { createBodyData } from '../../../common/data';
 // for adding new: include name here and add dataModel in
 // getFormModel(chosenTemplate)
 export const annotationTemplate = {
-  EXAMPLE: 'example',
-  NOTEMPLATE: 'notemplate',
+  EXAMPLE: 'Example',
+  NOTEMPLATE: 'No template',
 };
 
 // enum for different body templates to create simple dropdown to choose body template
@@ -30,8 +30,8 @@ export const annotationTemplate = {
 // for adding new: include name here and add dataModel in
 // getFormModel(chosenTemplate)
 export const bodyTemplate = {
-  TAG: 'tag',
-  TEXTBODY: 'textbody',
+  TAG: 'Tag',
+  TEXTBODY: 'Textbody',
 };
 
 /**
@@ -85,7 +85,7 @@ export function getFormObjectCreateAnnotation(selectors) {
             const annotation = await createAnnotation(annotationData, hooks);
           });
         },
-        titleMap: {},
+        titleMap: annotationTemplate,
       },
     ],
   };
@@ -176,7 +176,7 @@ export function getFormObjectCreateBody(encodedAnnoId) {
             }
           });
         },
-        titleMap: {},
+        titleMap: bodyTemplate,
       },
     ],
   };
@@ -329,19 +329,6 @@ export function pickTemplate(selectors, encodedAnnoId, createFormId, pickFormId,
   while (formContent.firstChild) {
     formContent.firstChild.remove();
   }
-
-  // Philipp doesn't understand why this is necessary. Everything works without it.
-  // The titleMap only contains the words (annotationTemplate or bodyTemplate)
-  // split into a titleMap (index: letter -> 0:a, 1:n ...). The actual values used in
-  // the dropdown selection are taken from getFormObjectCreateAnnotation().schema.template.enum.
-  // creates title map needed for the dropdown selection
-  // for (const tName in Object.keys(template)) {
-  //   if (template === 'bodyTemplate') {
-  //     getFormObjectCreateBody().form[0].titleMap[Object.keys(template)[tName]] = Object.values(template)[tName];
-  //   } else {
-  //     getFormObjectCreateAnnotation().form[0].titleMap[Object.keys(template)[tName]] = Object.values(template)[tName];
-  //   }
-  // }
 
   // creates dropdown from enum objects defined at the top
   if (template === 'bodyTemplate') {
