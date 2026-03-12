@@ -29,6 +29,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.TestPropertySource;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
@@ -641,6 +642,85 @@ class EditorServiceTest {
     JSONAssert.assertEquals(annotation.toString(), EditorService.getAnnotationJson(annotationId).toString(), true);
   }
 
+  @Test
+  public void testConvertDisplayableAnnotationsToJson() throws JSONException, UnsupportedEncodingException, org.json.JSONException {
+      // create mock annotation with some bodies
+      Annotation annotation1 = buildMockAnnotation("describing");
+      Tag tag1 = buildMockTag();
+      Tag tag2 = buildMockTag();
+      TextCard textCard = buildMockTextCard("replying");
+      annotation1.addTag(tag1);
+      annotation1.addTag(tag2);
+      annotation1.addTextCard(textCard);
+
+      // create mock "page" annotation with only textCard bodies. When using the buildMockAnnotation(), a target
+      // will be created, which has to be replaced to create a "page" annotation
+      Annotation annotation2 = buildMockAnnotation("identifying");
+      TextCard textCard2 = buildMockTextCard("commenting");
+      TextCard textCard3 = buildMockTextCard("classifying");
+      Target target = new Target("https://example.com/test", null);
+      annotation2.setTargets(List.of(target));
+      annotation2.addTextCard(textCard2);
+      annotation2.addTextCard(textCard3);
+
+      JSONArray actual = EditorService.convertDisplayableAnnotationsToJson(Arrays.asList(annotation1, annotation2));
+      JSONArray expected = new JSONArray("""
+              [
+                  {
+                      "id": "http://sampleannoserver.edu/wap/a04/validated/fc2f1c02-5b48-4a5e-8fda-83b2e15ae825",
+                      "idEncoded": "http%253A%252F%252Fsampleannoserver.edu%252Fwap%252Fa04%252Fvalidated%252Ffc2f1c02-5b48-4a5e-8fda-83b2e15ae825",
+                      "targets": [
+                          {
+                              "selector": {
+                                  "type": "SvgSelector",
+                                  "value": "<svg xmlns=\\"http://www.w3.org/2000/svg\\"><rect x=\\"279\\" y=\\"48\\" width=\\"2951\\" height=\\"4500\\"/></svg>"
+                              }
+                          }
+                      ],
+                      "visible": true,
+                      "created": "2019-03-11T14:13:45Z",
+                      "creator": "[Leonie Schmidt]",
+                      "modified": "2019-03-11T14:13:45Z",
+                      "motivation": "describing",
+                      "via": "http://sampleannoserver.edu/wap/a04/deinterpretatione/c3aeb1ef-af1e-41fe-823c-76ea3761ee89",
+                      "tags": [
+                          {"value": "value"},
+                          {"value": "value"}
+                      ],
+                      "textCards": [
+                          {
+                              "value": "value",
+                              "purpose": "replying"
+                          }
+                      ]
+                  },
+                  {
+                      "id": "http://sampleannoserver.edu/wap/a04/validated/fc2f1c02-5b48-4a5e-8fda-83b2e15ae825",
+                      "idEncoded": "http%253A%252F%252Fsampleannoserver.edu%252Fwap%252Fa04%252Fvalidated%252Ffc2f1c02-5b48-4a5e-8fda-83b2e15ae825",
+                      "targets": [],
+                      "visible": true,
+                      "created": "2019-03-11T14:13:45Z",
+                      "creator": "[Leonie Schmidt]",
+                      "modified": "2019-03-11T14:13:45Z",
+                      "motivation": "identifying",
+                      "via": "http://sampleannoserver.edu/wap/a04/deinterpretatione/c3aeb1ef-af1e-41fe-823c-76ea3761ee89",
+                      "tags": [],
+                      "textCards": [
+                          {
+                              "value": "value",
+                              "purpose": "commenting"
+                          },
+                          {
+                              "value": "value",
+                              "purpose": "classifying"
+                          }
+                      ]
+                  }
+              ]
+              """);
+      JSONAssert.assertEquals(expected.toString(), actual.toString().replace("\r\n", "\n"), true);
+  }
+
   private Annotation buildMockAnnotation(String motivation) {
     List<String> creators = new ArrayList<>();
     creators.add("Leonie Schmidt");
@@ -649,8 +729,8 @@ class EditorServiceTest {
 
     mockAnnotation.setId("http://sampleannoserver.edu/wap/a04/validated/fc2f1c02-5b48-4a5e-8fda-83b2e15ae825");
     mockAnnotation.setPageId("758735a2-8e0d-4ac7-815e-bba2060217c3");
-    mockAnnotation.setCreated(Instant.now());
-    mockAnnotation.setModified(Instant.now());
+    mockAnnotation.setCreated(Instant.parse("2019-03-11T14:13:45Z"));
+    mockAnnotation.setModified(Instant.parse("2019-03-11T14:13:45Z"));
     List<Target> mockTargets = new ArrayList<>();
     Target mockTarget = new Target();
     SVGSelector mockSvgSelector = new SVGSelector("<svg xmlns=\"http://www.w3.org/2000/svg\"><rect x=\"279\" y=\"48\" width=\"2951\" height=\"4500\"/></svg>");
@@ -673,8 +753,8 @@ class EditorServiceTest {
     creators.add("Leonie Schmidt");
 
     textCard.setAnnotationId("http://sampleannoserver.edu/wap/a04/validated/fc2f1c02-5b48-4a5e-8fda-83b2e15ae825");
-    textCard.setCreated(Instant.now());
-    textCard.setModified(Instant.now());
+    textCard.setCreated(Instant.parse("2019-03-11T14:13:45Z"));
+    textCard.setModified(Instant.parse("2019-03-11T14:13:45Z"));
     textCard.setValue("value");
     textCard.setTitle("title");
     textCard.setPurpose(motivation);
@@ -689,8 +769,8 @@ class EditorServiceTest {
     creators.add("Leonie Schmidt");
 
     tag.setAnnotationId("http://sampleannoserver.edu/wap/a04/validated/fc2f1c02-5b48-4a5e-8fda-83b2e15ae825");
-    tag.setCreated(Instant.now());
-    tag.setModified(Instant.now());
+    tag.setCreated(Instant.parse("2019-03-11T14:13:45Z"));
+    tag.setModified(Instant.parse("2019-03-11T14:13:45Z"));
     tag.setValue("value");
     tag.setTitle("title");
     tag.setCreators(creators);
