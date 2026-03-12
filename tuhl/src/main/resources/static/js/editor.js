@@ -1,11 +1,32 @@
+// gets the describing body of an annotation (mrw-annotation)
+async function getMRWAnnoSelectedText(annoId) {
+  console.log('Trying to get annotation ', annoId, ' which is linked to ', globalSelectedAnnotation);
+  const response = await fetch(window.CONTEXTPATH + 'editor_rest/annotations/' + encodeAnnoId(annoId), {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  });
+  if (response.ok) {
+    const mrwAnno = await response.json();
+    const describingBody = mrwAnno.textCards.filter((textCard) => textCard.purpose === 'describing')[0];
+    return describingBody.value;
+  } else {
+    // if the mrw-annotation linked to the metaphor-annotation got deleted the code will end up here
+    return 'ERROR: Something is wrong with the linked mrw-annotation; most likely it got deleted, please contact the developers.';
+  }
+}
+
+// called when you select an annotation to display the textCard.
 function selectAnnotation(event, annoId) {
-    $ .ajax({
-        type: 'GET',
-        url: '/editor_rest/annotations/' + annoId,
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'
-        },
+  $.ajax({
+    type: 'GET',
+    url: window.CONTEXTPATH + 'editor_rest/annotations/' + annoId,
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
 
         success: function(responseJson) {
             console.log(responseJson);
@@ -214,26 +235,52 @@ function deleteBodyFromAnnotation(annoId, bodyId) {
             type: 'DELETE',
             url: '/editor_rest/annotations/' + annoIdEncoded + '/bodies/' + bodyId,
 
-            success: function(responseData) {
-                console.log(responseData);
-                selectAnnotation(null, annoIdEncoded);
-            },
-        
-            error: function(errorData) {
-                console.log(errorData);
-            
-                $ .ajax({
-                    type: 'DELETE',
-                    url: '/editor_rest/annotations/' + annoIdEncoded + '/tags/' + bodyId,
+  if (confirmation) {
 
-                    success: function(responseData) {
-                        console.log(responseData);
-                        selectAnnotation(null, annoIdEncoded);
-                    }
-                });    
+    let annoIdEncoded = encodeAnnoId(annoId);
+
+    $.ajax({
+      type: 'DELETE',
+      url: window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + '/bodies/' + bodyId,
+
+      success: function (responseData) {
+        //console.log(responseData);
+        selectAnnotation(null, annoIdEncoded);
+        // updating the display for text annotation
+        // checking if TEI-element is null. it is defined for text annotation,
+        // but not for image annotation
+        if (document.getElementById('TEI') != null) {
+          // redrawing all annotations
+          updateDisplay();
+        }
+      },
+
+      error: function (errorData) {
+        //console.log(errorData);
+
+        $.ajax({
+          type: 'DELETE',
+          url: window.CONTEXTPATH + 'editor_rest/annotations/' + annoIdEncoded + '/tags/' + bodyId,
+
+          success: function (responseData) {
+            //console.log(responseData);
+            selectAnnotation(null, annoIdEncoded);
+            // TODO: this is just a bandaid for now as it empties the tags array completly
+            // so if there would be multiple tags none would be left, even if only one got
+            // deleted. For now in (CRC1475) an annotation only has one tag anyways.
+
+            // updating the display for text annotation
+            // checking if TEI-element is null. it is defined for text annotation,
+            // but not for image annotation
+            if (document.getElementById('TEI') != null) {
+              // redrawing all annotations
+              updateDisplay();
             }
+          },
         });
-    }; 
+      },
+    });
+  }
 }
 
 function encodeAnnoId(annoId) {
@@ -250,7 +297,7 @@ function deleteAnnotation(annoId) {
         
         $ .ajax({
             type : 'DELETE',
-            url : '/editor_rest/annotations/' + annoIdEncoded,
+            url : window.CONTEXTPATH + '/editor_rest/annotations/' + annoIdEncoded,
             
             success: function(responseData) {
                 console.log(responseData);
@@ -275,9 +322,10 @@ function deleteAnnotation(annoId) {
                 console.log(annoJson);
                 fillMetaDataEditorTable(annoJson);
             }
-        });
+          });
+        };
     };
-};
+    
 
 function completeFormDataModel (responseJson, formDataModel, addition, omitFields) {
     if (Array.isArray(responseJson[addition])) {
@@ -347,39 +395,85 @@ function completeFormDataModel (responseJson, formDataModel, addition, omitField
             };
         
         };
-    return formDataModel;    
-};
+      }
+    }
+
+    formDataModel.properties[addition] = objectProperties;
+  } else {
+    // changes to work for the "quick-view"
+    let title = addition;
+    // if the formDataModel entry for the "value" of the body is created
+    // relpace the title with the "purpose" of the body
+    if (addition === 'value') {
+      // title = responseJson.purpose;
+      // TODO: CUSTOMISE the text to be displayed on the "quick-view" of the
+      // textCard
+      switch (responseJson.purpose) {
+        case 'tagging':
+          title = 'Tag: ';
+          break;
+        case 'linking':
+          title = 'Linked mrw-annotation: ';
+          break;
+        case 'classifying':
+          title = 'Classification: ';
+          break;
+        case 'describing':
+          title = 'Selected text: ';
+          break;
+        case 'identifying':
+          title = 'Label: ';
+          break;
+        case 'assessing':
+          title = 'Analysis: ';
+          break;
+        case 'commenting':
+          title = 'Comment: ';
+          break;
+        default:
+          title = responseJson.purpose + ': ';
+      }
+    }
+    // console.log(title);
+    if (omitFields.indexOf(addition) === -1) {
+      formDataModel.properties[addition] = {
+        type: 'string',
+        title: title,
+      };
+    }
+  }
+  return formDataModel;
+}
 
 // returning to table view of repository data
 function goHome() {
-    location.href="/";
-};
+  location.href = window.CONTEXTPATH;
+}
 
 // toggling the side bar
 // all text elements should not be hoverable when side bar is collapsed
 function toggleAnnoSideBar() {
-    let sideBar = document.querySelector('.anno-side-bar');
-    let arrowCollapse = document.querySelector('#logo-name__icon');
-    let textElements = document.querySelectorAll('.features-item-text');
-    sideBar.classList.toggle('annocollapse');
-    arrowCollapse.classList.toggle('annocollapse');
-    if (arrowCollapse.classList.contains('annocollapse')) {
-      arrowCollapse.classList =
-        'bx bx-arrow-from-left logo-name__icon annocollapse';
-        for (let element in textElements) {
-            if (textElements[element].classList) {
-               textElements[element].classList.add('annocollapse'); 
-            };  
-        };   
-    } else {
-      arrowCollapse.classList = 'bx bx-arrow-from-right logo-name__icon';
-      for (let element in textElements) {
-          if(textElements[element].classList) {
-              textElements[element].classList.remove('annocollapse');
-          };
-        };
-    };
-};
+  let sideBar = document.querySelector('.anno-side-bar');
+  let arrowCollapse = document.querySelector('#logo-name__icon');
+  let textElements = document.querySelectorAll('.features-item-text');
+  sideBar.classList.toggle('annocollapse');
+  arrowCollapse.classList.toggle('annocollapse');
+  if (arrowCollapse.classList.contains('annocollapse')) {
+    arrowCollapse.classList = 'bx bx-arrow-from-left logo-name__icon annocollapse';
+    for (let element in textElements) {
+      if (textElements[element].classList) {
+        textElements[element].classList.add('annocollapse');
+      }
+    }
+  } else {
+    arrowCollapse.classList = 'bx bx-arrow-from-right logo-name__icon';
+    for (let element in textElements) {
+      if (textElements[element].classList) {
+        textElements[element].classList.remove('annocollapse');
+      }
+    }
+  }
+}
 
 // toggle for book and annotation overwiew
 // can be used for all divs / cards

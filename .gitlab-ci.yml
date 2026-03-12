@@ -12,19 +12,15 @@ stages:
 #    command: ["--tls=false"]
 
 build:
-  image: eclipse-temurin:17.0.9_9-jdk
+  image: eclipse-temurin:21.0.10_7-jdk
   stage: build
   tags:
-    - kgr1-instance-mini 
+    - kgr1-instance-standard
 ## only needed for integration test - disabled for now  
 #    - compose #run on gitlab runner suitable for docker
   rules:
-    - if: '$CI_COMMIT_BRANCH == "development" && $CI_PIPELINE_SOURCE == "push"'
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"'
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "development" && $CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master" && $CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "github-mirror" && $CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "merge_request_event"'
+  - if: '$CI_PIPELINE_SOURCE == "push"'
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   script:
     - cd tuhl
     - ./gradlew clean build  --exclude-task integrationTest
@@ -33,15 +29,13 @@ build:
       - ./tuhl/build/libs/*.jar
 
 coverage:
-  image: eclipse-temurin:17.0.9_9-jdk
+  image: eclipse-temurin:21.0.10_7-jdk
   stage: test
   tags:
-    - kgr1-instance-mini 
+    - kgr1-instance-standard
   rules:
-    - if: '$CI_COMMIT_BRANCH == "development" && $CI_PIPELINE_SOURCE == "push"'
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"'
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "development" && $CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   script:
     - cd tuhl
     - ./gradlew check jacocoTestReport --exclude-task integrationTest
@@ -51,6 +45,19 @@ coverage:
     paths:
       - ./tuhl/build/reports/jacoco/test/*
   coverage: "/Total.*?([0-9]{1,3})%/"
+
+#already included in build task
+#npm-test:
+#  image: node:latest
+#  stage: test
+#  variables:
+#    APP_DIR: tuhl
+#  tags:
+#    - kgr1-instance-mini
+#  script:
+#    - cd "$APP_DIR"
+#    - npm ci
+#    - npm run test-all
 
 sast:
   stage: test

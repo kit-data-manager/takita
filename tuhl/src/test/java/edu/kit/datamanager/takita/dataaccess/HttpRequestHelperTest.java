@@ -7,6 +7,8 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import edu.kit.datamanager.takita.dataaccess.HttpRequestHelper;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;

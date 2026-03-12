@@ -2,11 +2,13 @@ package edu.kit.datamanager.takita.editor;
 
 import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 import edu.kit.datamanager.takita.assistance.IAssistanceService;
+import edu.kit.datamanager.takita.configuration.SecurityConfiguration;
 import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import edu.kit.datamanager.takita.model.Annotation;
-import edu.kit.datamanager.takita.model.Color;
 import edu.kit.datamanager.takita.model.body.Tag;
 import edu.kit.datamanager.takita.model.body.TextCard;
+import edu.kit.datamanager.takita.model.target.SVGSelector;
+import edu.kit.datamanager.takita.model.target.Target;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -16,7 +18,7 @@ import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
@@ -38,22 +40,23 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 
 @WebMvcTest(RestController.class)
-@Import(RestController.class)
+@Import({RestController.class, SecurityConfiguration.class})
 @TestPropertySource("classpath:application-test.properties")
 class RestControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
 
-  @MockBean
+  @MockitoBean
   private IEditorService mockedEditorService;
-  @MockBean
+  @MockitoBean
   private IAssistanceService mockedAssistanceService;
-  @MockBean
+  @MockitoBean
   private ISearchIndexService mockedSearchIndexService;
 
 
@@ -70,11 +73,16 @@ class RestControllerTest {
     //TODO: think about moving this to the specific methods
     mockAnno = new Annotation();
     mockAnno.setId(annoId);
-    mockAnno.setColor(Color.TEXT_REGION);
-    mockAnno.setSvgCode("");
+    List<Target> mockTargets = new ArrayList<>();
+    Target mockTarget = new Target();
+    SVGSelector mockSvgSelector = new SVGSelector("");
+    mockTarget.setSelector(mockSvgSelector);
+    mockTargets.add(mockTarget);
+    mockAnno.setTargets(mockTargets);
     mockAnno.setMotivation("editing");
     mockAnno.setCreated(Instant.now().truncatedTo(ChronoUnit.DAYS));
     mockAnno.setModified(Instant.now().truncatedTo(ChronoUnit.DAYS));
+    mockAnno.setVia("http://example.com");
 
     //TODO: think about moving this to the specific methods
     mockCard = new TextCard(bodyId);
@@ -129,11 +137,12 @@ class RestControllerTest {
   
   @Test
   void testCreateAnnotation() throws Exception {
-
-    Mockito.when(mockedEditorService.addAnnotation(pageId, "TEXT_REGION", "", "editing")).thenReturn(mockAnno);
-    Mockito.when(mockedEditorService.addAnnotation(pageId + "nf", "TEXT_REGION", "", "editing")).thenThrow(NoSuchIndexEntryException.class);
-    Mockito.when(mockedEditorService.addAnnotation(pageId + "io", "TEXT_REGION", "", "editing")).thenThrow(IOException.class);
-    Mockito.when(mockedEditorService.addAnnotation(pageId + "int", "TEXT_REGION", "", "editing")).thenThrow(InterruptedException.class);
+	JSONArray targets = new JSONArray();
+    Mockito.when(mockedEditorService.addAnnotation(pageId, targets, "editing", "http://example.com")).thenReturn(mockAnno);
+    Mockito.when(mockedEditorService.addAnnotation(pageId, targets, "editing", null)).thenReturn(mockAnno); //at the point of the test mockAnno is edited to fit
+    Mockito.when(mockedEditorService.addAnnotation(pageId + "nf", targets, "editing", "http://example.com")).thenThrow(NoSuchIndexEntryException.class);
+    Mockito.when(mockedEditorService.addAnnotation(pageId + "io", targets, "editing", "http://example.com")).thenThrow(IOException.class);
+    Mockito.when(mockedEditorService.addAnnotation(pageId + "int", targets, "editing", "http://example.com")).thenThrow(InterruptedException.class);
 
     ObjectMapper mapper = new ObjectMapper(); 
     mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
@@ -145,26 +154,36 @@ class RestControllerTest {
         .andExpect(status().isInternalServerError())
         .andDo(MockMvcResultHandlers.print());
     
-    String notfound = "{\"pageId\":\"" + pageId + "nf\",\"color\":\"TEXT_REGION\",\"svgCode\":\"\",\"motivation\":\"editing\"}";
+    String notfound = "{\"pageId\":\"" + pageId + "nf\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"editing\",\"via\":\"http://example.com\"}";
     this.mockMvc.perform(post("/editor_rest/annotations").contentType(MediaType.APPLICATION_JSON).content(notfound))
         .andExpect(status().isNotFound())
         .andDo(MockMvcResultHandlers.print());
 
-    String io = "{\"pageId\":\"" + pageId + "io\",\"color\":\"TEXT_REGION\",\"svgCode\":\"\",\"motivation\":\"editing\"}";
+    String io = "{\"pageId\":\"" + pageId + "io\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"editing\",\"via\":\"http://example.com\"}";
     this.mockMvc.perform(post("/editor_rest/annotations").contentType(MediaType.APPLICATION_JSON).content(io))
         .andExpect(status().isInternalServerError())
         .andDo(MockMvcResultHandlers.print());
 
-    String inter = "{\"pageId\":\"" + pageId + "int\",\"color\":\"TEXT_REGION\",\"svgCode\":\"\",\"motivation\":\"editing\"}";
+    String inter = "{\"pageId\":\"" + pageId + "int\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"editing\",\"via\":\"http://example.com\"}";
     this.mockMvc.perform(post("/editor_rest/annotations").contentType(MediaType.APPLICATION_JSON).content(inter))
         .andExpect(status().isInternalServerError())
         .andDo(MockMvcResultHandlers.print());
 
-    String valid = "{\"pageId\":\"" + pageId + "\",\"color\":\"TEXT_REGION\",\"svgCode\":\"\",\"motivation\":\"editing\"}";
+    String valid = "{\"pageId\":\"" + pageId + "\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"editing\",\"via\":\"http://example.com\"}";
     this.mockMvc.perform(post("/editor_rest/annotations").contentType(MediaType.APPLICATION_JSON).content(valid).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json(mockAnnoSerialized))
+        .andDo(MockMvcResultHandlers.print());
+
+    //Testing if Controller still works if no via field is provided in the payload
+    String validWOvia = "{\"pageId\":\"" + pageId + "\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"editing\"}";
+    mockAnno.setVia(null);
+    String mockAnnoSerialized2 = mapper.writeValueAsString(mockAnno);
+    this.mockMvc.perform(post("/editor_rest/annotations").contentType(MediaType.APPLICATION_JSON).content(validWOvia).accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json(mockAnnoSerialized2))
         .andDo(MockMvcResultHandlers.print());
   }
 
@@ -232,8 +251,12 @@ class RestControllerTest {
   void testUpdateAnnotationById() throws Exception {
     Annotation mockAnnoUpdated = new Annotation();
     mockAnnoUpdated.setId(annoId);
-    mockAnnoUpdated.setColor(Color.TEXT_REGION);
-    mockAnnoUpdated.setSvgCode("");
+    List<Target> mockTargets = new ArrayList<>();
+    Target mockTarget = new Target();
+    SVGSelector mockSvgSelector = new SVGSelector("");
+    mockTarget.setSelector(mockSvgSelector);
+    mockTargets.add(mockTarget);
+    mockAnnoUpdated.setTargets(mockTargets);
     mockAnnoUpdated.setMotivation("bookmarking");
     mockAnnoUpdated.setCreated(Instant.now().truncatedTo(ChronoUnit.DAYS));
     mockAnnoUpdated.setModified(Instant.now().truncatedTo(ChronoUnit.DAYS));
@@ -243,12 +266,17 @@ class RestControllerTest {
     mapper.registerModule(new JavaTimeModule());
     String mockAnnoUpdatedSerialized = mapper.writeValueAsString(mockAnnoUpdated);
 
-    Mockito.when(mockedEditorService.updateAnnotation(annoId, "TEXT_REGION", "", "bookmarking")).thenReturn(mockAnnoUpdated);
-    Mockito.when(mockedEditorService.updateAnnotation(annoId + "nf", "TEXT_REGION", "", "bookmarking")).thenThrow(NoSuchIndexEntryException.class);
-    Mockito.when(mockedEditorService.updateAnnotation(annoId + "io", "TEXT_REGION", "", "bookmarking")).thenThrow(IOException.class);
-    Mockito.when(mockedEditorService.updateAnnotation(annoId + "int", "TEXT_REGION", "", "bookmarking")).thenThrow(InterruptedException.class);
-
-    String notfound = "{\"annoId\":\"" + annoId + "nf\",\"color\":\"TEXT_REGION\",\"svgCode\":\"\",\"motivation\":\"bookmarking\"}";
+    JSONArray targets = new JSONArray();
+    Mockito.when(mockedEditorService.updateAnnotation(annoId, targets, "bookmarking")).thenReturn(mockAnnoUpdated);
+    Mockito.when(mockedEditorService.updateAnnotation(Mockito.eq(annoId + "nf"), Mockito.any(), Mockito.eq("bookmarking")))
+    	.thenThrow(NoSuchIndexEntryException.class);
+    Mockito.when(mockedEditorService.updateAnnotation(Mockito.eq(annoId + "io"), Mockito.any(), Mockito.eq("bookmarking")))
+    	.thenThrow(IOException.class);
+    Mockito.when(mockedEditorService.updateAnnotation(Mockito.eq(annoId + "int"), Mockito.any(), Mockito.eq("bookmarking")))
+    	.thenThrow(InterruptedException.class);
+    
+    String notfound = "{\"annoId\":\"" + annoId + "nf\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"bookmarking\"}";
+    
     this.mockMvc.perform(put("/editor_rest/annotations/" + URLEncoder.encode(URLEncoder.encode(annoId + "nf", StandardCharsets.UTF_8.name()), StandardCharsets.UTF_8.name())).contentType(MediaType.APPLICATION_JSON).content(notfound).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isNotFound())
         .andDo(MockMvcResultHandlers.print());
@@ -261,7 +289,7 @@ class RestControllerTest {
         .andExpect(status().isInternalServerError())
         .andDo(MockMvcResultHandlers.print()); 
 
-    String valid = "{\"annoId\":\"" + annoId + "nf\",\"color\":\"TEXT_REGION\",\"svgCode\":\"\",\"motivation\":\"bookmarking\"}";
+    String valid = "{\"annoId\":\"" + annoId + "nf\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"bookmarking\"}";
     this.mockMvc.perform(put("/editor_rest/annotations/" + URLEncoder.encode(URLEncoder.encode(annoId, StandardCharsets.UTF_8.name()), StandardCharsets.UTF_8.name())).contentType(MediaType.APPLICATION_JSON).content(valid).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))

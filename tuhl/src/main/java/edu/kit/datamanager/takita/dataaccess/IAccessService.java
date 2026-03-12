@@ -67,20 +67,6 @@ public interface IAccessService {
       throws JSONException, IOException, InterruptedException;
 
   /**
-   * Converts annotation to JSONObject so it can be added to database more easily,
-   * then tells AnnotationStoreAccess to add it to validated container.
-   *
-   * @param annotation validated annotation
-   * @param pageNumber number of the page on which the annotation is
-   * @return validated Annotation
-   * @throws JSONException if an error occurs while parsing json
-   * @throws IOException if an error occurs while sending or receiving http request
-   * @throws InterruptedException if the http request is interrupted
-   */
-  Annotation validateAnnotation(Annotation annotation, String pageNumber, String projectId)
-      throws JSONException, IOException, InterruptedException;
-
-  /**
    * Converts annotation to JSONObject so it can be updated in database more easily,
    * then tells AnnotationStoreAccess to update it.
    *
@@ -151,4 +137,16 @@ public interface IAccessService {
    * @throws InterruptedException if the http request is interrupted
    */
   String getRawManuscriptXml(String manuscriptId) throws IOException, InterruptedException;
+
+  /**
+   * Gets the XML content given in the TEI standard of a page as the raw XML String.
+   *
+   * @param pageId the id of the manuscript
+   * @param fileName identifies the file associated to a page
+   * @return the raw xml as a String
+   * @throws IOException if an error occurs while sending or receiving http request
+   * @throws InterruptedException if the http request is interrupted
+   */
+  String getRawPageContentXml(String pageId, String fileName) throws IOException, InterruptedException;
+
 }

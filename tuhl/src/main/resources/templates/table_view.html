@@ -43,9 +43,18 @@
 
 <div id="searchresults"></div>
 
-
-<script src="js/table_view.js"></script>
 <script th:inline="javascript">
+    /*<![CDATA[*/
+    // setting contextpath
+    window.CONTEXTPATH = /*[[@{/}]]*/ "/";
+    const csrfTokenTV = document.querySelector("meta[name='_csrf']").getAttribute('content');
+    /*]]>*/
+</script>
+<script th:src="@{js/table_view.js}"></script>
+<script th:inline="javascript">
+
+    // "replacing" the search/filter bars
+    showBars(false, false, true);
 
     /*<![CDATA[*/
     //define columns
@@ -66,10 +75,17 @@
             {
                 title: [[#{col_name.id}]],
                 field: "id",
+                visible: false,
             },
             {
                 title: [[#{col_name.title}]],
                 field: "title",
+                headerMenu: headerMenu(),
+                visible: true,
+            },
+            {
+                title: [[#{col_name.description}]],
+                field: "description",
                 headerMenu: headerMenu(),
                 visible: true,
             },
@@ -98,13 +114,6 @@
                 visible: true,
             },
             {
-                title: [[#{col_name.hasAlgoAnnos}]],
-                field: "hasAlgorithmAnnotations",
-                headerMenu: headerMenu(),
-                visible: true,
-                formatter:"tickCross"
-            },
-            {
                 title: [[#{col_name.created}]],
                 field: "created",
                 headerMenu: headerMenu(),
@@ -119,7 +128,7 @@
         /*<![CDATA[*/
         return [
             {
-                label: "<i class='fa fa-eye-slash mr-1'> </i>" + [[#{menu.hideCol}]],
+                label: "<i class='fa fa-eye-slash me-1'> </i>" + [[#{menu.hideCol}]],
                 action: function (e, column) {
                     column.hide();
                     document.getElementById('check_' + column.getField()).checked = false;
@@ -160,14 +169,15 @@
                 url: 'assistance/saveTable' + type,
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfTokenTV
                 },
                 dataType: 'text',
                 data: JSON.stringify(data),
                 success: function (responseData) {
                     if(responseData === "error"){
                         /*<![CDATA[*/
-                        location.href = "/error/" + [[${errorMessage}]];
+                        location.href = window.CONTEXTPATH + "error/" + [[${errorMessage}]];
                         /*]]>*/
                     }
                 }
@@ -188,11 +198,11 @@
         height: 800,
         pagination:"remote",
         movableColumns: true, //enable user movable columns
-        ajaxURL:"/tableview/sort", //set url for ajax request
+        ajaxURL: window.CONTEXTPATH + "tableview/sort", //set url for ajax request
         ajaxResponse:function(url, params, response){
             if(response === "error"){
                 /*<![CDATA[*/
-                location.href = "/error/" + [[${errorMessage}]];
+                location.href = window.CONTEXTPATH + "error/" + [[${errorMessage}]];
                 /*]]>*/
             }
             return response; //return the response data to tabulator
@@ -224,7 +234,8 @@
                     url: 'assistance/saveTablecolumns',
                     headers: {
                         'Accept': 'application/json',
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfTokenTV
                     },
                     dataType: 'text',
                     data: JSON.stringify(window.table.getColumnLayout()),
@@ -253,6 +264,7 @@
                 "columns":{
                     "id":[[#{col_name.id}]],
                     "title":[[#{col_name.title}]],
+                    "description":[[#{col_name.description}]],
                     "publisher":[[#{col_name.publisher}]],
                     "publicationYear":[[#{col_name.publicationYear}]],
                     "lastModified":[[#{col_name.lastModified}]],
@@ -299,7 +311,7 @@
     /*]]>*/
 
     function showThumbnails(row){
-        $.get( "/assistance/addRow/" + row.getData().id, function( data ) {
+        $.get( "./assistance/addRow/" + row.getData().id, function( data ) {
             let thumbnails = row.getData().thumbnails;
             let id = row.getData().id;
             let holder = document.createElement('div');
@@ -309,23 +321,34 @@
             cardBody.setAttribute('class', 'card card-body no-wrap');
             let outerRow = document.createElement('div');
             outerRow.setAttribute('class', 'row');
+            // TODO: CUSTOMISE set displayThumbnailsOrIcons to true to have images/icons displayed, false otherwise
+            // in the DO-overview table
+            const displayThumbnailsOrIcons = true;
             thumbnails.forEach(function (item, index) {
                 let col = document.createElement('div');
                 col.setAttribute('class', 'mx-1 col-auto');
-                let imgRow = document.createElement('div');
-                imgRow.setAttribute('class', 'row');
-                let imgCol = document.createElement('div');
-                imgCol.setAttribute('class', 'col');
-                let img = document.createElement('img');
-                img.setAttribute('class', 'img-thumbnail');
-                img.setAttribute('src', item.thumbNail);
-                imgCol.appendChild(img);
-                imgRow.appendChild(imgCol);
+                if (displayThumbnailsOrIcons) {
+                    let imgRow = document.createElement('div');
+                    imgRow.setAttribute('class', 'row');
+                    let imgCol = document.createElement('div');
+                    imgCol.setAttribute('class', 'col');
+                    let img = document.createElement('img');
+                    img.setAttribute('class', 'img-thumbnail');
+                    if (item.thumbNail === undefined){
+                        if (item.type === "IMAGE") img.src = window.CONTEXTPATH + "images/img_thumb.svg";
+                        else img.src = window.CONTEXTPATH + "images/text_thumb.svg";
+                    } else {
+                        img.setAttribute('src', item.thumbNail);
+                    }
+                    imgCol.appendChild(img);
+                    imgRow.appendChild(imgCol);
+                    col.appendChild(imgRow);
+                }
                 let subtitleRow = document.createElement('div');
                 subtitleRow.setAttribute('class', 'row mb-2 mt-1 justify-content-center');
                 let link = document.createElement('a');
                 link.setAttribute('class', 'btn-sm btn-secondary col-auto')
-                link.setAttribute('href', '/editor/' + item.id);
+                link.setAttribute('href', window.CONTEXTPATH + 'editor/' + item.id);
                 let icon = document.createElement('i');
                 icon.setAttribute('class', 'fa fa-pencil');
                 link.appendChild(icon);
@@ -334,7 +357,6 @@
                 label.innerText = item.pageNumber;
                 subtitleRow.appendChild(link);
                 subtitleRow.appendChild(label);
-                col.appendChild(imgRow);
                 col.appendChild(subtitleRow);
                 outerRow.appendChild(col);
             })
@@ -345,7 +367,7 @@
     }
 
     function hideThumbnails(row) {
-        $.get( "/assistance/removeRow/" + row.getData().id, function( data ) {
+        $.get( window.CONTEXTPATH + "assistance/removeRow/" + row.getData().id, function( data ) {
             let id = row.getData().id;
             document.getElementById('holder' + id).remove();
         });
@@ -373,13 +395,13 @@ function setHeaderMenues(){
 function callEditor(manId){
     $.ajax({
         type: 'GET',
-        url: '/tableview/getFirstPage/' + manId,
+        url: window.CONTEXTPATH + 'tableview/getFirstPage/' + manId,
         dataType: 'text',
 
         success: function (responseData) {
             if(responseData === "error"){
                 /*<![CDATA[*/
-                location.href = "/error/" + [[${errorMessage}]];
+                location.href = window.CONTEXTPATH + "error/" + [[${errorMessage}]];
                 /*]]>*/
             }
             location.href = "editor/" + responseData;
@@ -397,13 +419,11 @@ function callEditor(manId){
         let checkbox;
         let label;
         let tbl = window.table.getColumns();
-        for (let i = 1; i < table.getColumns().length - 1; i++) {
-            //tbl[i] = table.getColumns()[i + 1];
-        }
+
         tbl.forEach(function (col, index) {
             if(col.getField() !== "id" && index > 0) {
                 cont = document.createElement("div");
-                cont.className = "form-check ml-1"
+                cont.className = "form-check ms-1"
                 checkbox = document.createElement("input");
                 checkbox.type = "checkbox";
                 checkbox.className = "form-check-input";
@@ -426,7 +446,7 @@ function callEditor(manId){
         divider.className = "dropdown-divider";
         container.append(divider);
         let applyBtn = document.createElement("button");
-        applyBtn.className = "btn btn-primary btn-sm ml-1";
+        applyBtn.className = "btn btn-primary btn-sm ms-1";
         applyBtn.type = "submit";
         applyBtn.innerHTML = [[#{buttons.apply}]];
         applyBtn.addEventListener("click", function (e) {

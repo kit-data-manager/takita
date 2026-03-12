@@ -2,6 +2,9 @@ package edu.kit.datamanager.takita.dataaccess;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.io.StringReader;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
@@ -9,6 +12,7 @@ import java.time.Instant;
 import java.util.*;
 
 import edu.kit.datamanager.takita.MissingPropertyException;
+import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +23,7 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.UriBuilder;
 
 /**
  * Contains logic for accessing the annotation store with RestTemplate.
@@ -78,6 +83,11 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
     this.repositoryAccessService = repositoryAccessService;
   }
 
+  /**
+   * Fail fast for application startup on missing essential properties that cannot be defaulted:
+   * annotationStore.url
+   * sparqlQuery.urlPrefix
+   */
   @PostConstruct
   public void checkProperty() {
     if (urlPrefix == null || urlPrefix.equals("")) {
@@ -176,15 +186,28 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
    * @throws InterruptedException if the http request is interrupted
    * @throws JSONException if the response body could not be parsed to json
    */
-  @Override
+@Override
   public List<JSONObject> getAnnotationsByPageId(String pageId, String pageNumber)
       throws IOException, InterruptedException, JSONException {
-    //Sparql query to get only the annotations modified after date
-    HttpResponse<String> response = httpRequestHelper.get(sparqlQueryUrlPrefix
-        + SPARQL_QUERY_ANNOTATION_BY_PAGE_1 + URLEncoder.encode(repositoryAccessService.getBaseUrl()
-        + repositoryAccessService.getStaticPath()+ pageId + RepositoryAccessService.DATA_PATH + pageNumber
-        + RepositoryAccessService.MASTER_JPG, Charset.defaultCharset())
-        + SPARQL_QUERY_ANNOTATION_BY_PAGE_2);
+
+	  HttpResponse<String> response = null;
+	  String resourceTypeGeneral = repositoryAccessService.getTypeGeneralByPageId(pageId);
+	  // the page URL differs depending on the typeGeneral of a page
+	  if (resourceTypeGeneral.equals(RepositoryStrings.TEXT.getName())) {
+		  //Sparql query to get only the annotations modified after date
+		  response = httpRequestHelper.get(sparqlQueryUrlPrefix
+			        + SPARQL_QUERY_ANNOTATION_BY_PAGE_1 + URLEncoder.encode(repositoryAccessService.getBaseUrl()
+			        + repositoryAccessService.getStaticPath()+ pageId + RepositoryAccessService.DATA_PATH + pageNumber
+			        + RepositoryAccessService.FILE_EXTENSION_XML, Charset.defaultCharset())
+			        + SPARQL_QUERY_ANNOTATION_BY_PAGE_2);
+	  } else if (resourceTypeGeneral.equals(RepositoryStrings.IMAGE.getName())) {
+		  //Sparql query to get only the annotations modified after date
+		  response = httpRequestHelper.get(sparqlQueryUrlPrefix
+			        + SPARQL_QUERY_ANNOTATION_BY_PAGE_1 + URLEncoder.encode(repositoryAccessService.getBaseUrl()
+			        + repositoryAccessService.getStaticPath()+ pageId + RepositoryAccessService.DATA_PATH + pageNumber
+			        + RepositoryAccessService.MASTER_JPG, Charset.defaultCharset())
+			        + SPARQL_QUERY_ANNOTATION_BY_PAGE_2);
+	  }
 
     //Extracts annotations from response and adds them to the list
     return getAnnotationsFromXml(response.body());
@@ -390,33 +413,6 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
   }
 
   /**
-   * Adds a validated annotation to validated container in the annotation store.
-   *
-   * @param jsonAnnotation validated annotation
-   * @return annotation in validated container with etag
-   * @throws IOException if an I/O error occurs when sending or receiving http request
-   * @throws InterruptedException if the http request is interrupted
-   * @throws JSONException if the response body could not be parsed to json
-   */
-  @Override
-  public JSONObject validateAnnotation(JSONObject jsonAnnotation, String projectId)
-      throws IOException, InterruptedException, JSONException {
-    jsonAnnotation.put(AnnotationStoreStrings.VIA.getName(), jsonAnnotation.getString(
-        AnnotationStoreStrings.ID.getName()));
-    jsonAnnotation.put(AnnotationStoreStrings.CANONICAL.getName(), jsonAnnotation.getString(
-        AnnotationStoreStrings.ID.getName()));
-    jsonAnnotation.remove(AnnotationStoreStrings.ID.getName());
-    HttpResponse<String> response = httpRequestHelper.postAnnotations(urlPrefix
-        + projectId + VALIDATED_URL, jsonAnnotation);
-  
-    JSONObject result = new JSONObject(response.body());
-  
-    putEtag(response, result);
-    
-    return result;
-  }
-
-  /**
    * Updates an annotation already in the annotation store.
    *
    * @param annotationId annotation identifier as String
@@ -519,5 +515,78 @@ public class AnnotationStoreAccessService implements IAnnotationStoreAccessServi
       }
     }
     return allAnnotations;
+  }
+
+  /**
+   * generic function to post a SPARQL query to the database.
+   *
+   * @param query the query to be executed
+   * @return result of the query as JSONString
+   * @throws InterruptedException when the http request to database is interrupted
+   * @throws IOException when the http request to database was faulty
+   */
+  public String postQuery(String query) throws IOException, InterruptedException {
+    HttpResponse<String> response = httpRequestHelper.postSPARQLQuery(sparqlQueryUrlPrefix, query);
+
+    if (response.statusCode() != 200) {
+        logger.info("Could not complete query: {} from SPARQL-ednpoint.", query);
+    }
+    return response.body();
+  }
+
+  /**
+   * Convert URI to one that can be handled by the wap server in all cases (REST and SPARQL)
+   * see: <a href="https://github.com/kit-data-manager/wap-server/issues/72">WAP Server Issue #72</a>
+   * @param uri string of the URI to normalize
+   * @return normalized URI as string
+   */
+  public String normalizeAnnostoreURI(String uri) {
+    // replacing the port, if wap-server is run at port 80 or 443. Otherwise, the query will not
+    // be completed properly as the wap-server will throw:
+    // Bad IRI: <http://localhost:80/wap/> Code: 13/DEFAULT_PORT_SHOULD_BE_OMITTED in PORT: If
+    //          the port is the default one for the scheme it should be omitted.
+    // Bad IRI: <http://localhost:80/wap/> Code: 14/PORT_SHOULD_NOT_BE_WELL_KNOWN in PORT: Ports
+    //          under 1024 should be accessed using the appropriate scheme name.
+    if (uri == null || uri.isEmpty()) {
+      throw new IllegalArgumentException("URI cannot be null or empty");
+    }
+
+    URI input;
+    try {
+      input = new URI(uri);
+    } catch (URISyntaxException e) {
+      throw new IllegalArgumentException("Invalid URI: " + uri);
+    }
+
+
+    String scheme = input.getScheme();
+    String userInfo = input.getUserInfo();
+    String host = input.getHost();
+    int port = input.getPort();
+    String path = input.getPath();
+    String query = input.getQuery();
+    String fragment = input.getFragment();
+
+    if ("http".equalsIgnoreCase(scheme) && input.getPort() == 80) {
+      port = -1;
+    }
+    if ("https".equalsIgnoreCase(scheme) && input.getPort() == 443) {
+      port = -1;
+    }
+
+    try {
+      URI normalized = new URI(
+              scheme.toLowerCase(),       // normalize scheme casing
+                  userInfo,
+                  host,
+                  port,
+                  path,
+                  query,
+                  fragment
+      );
+      return normalized.toString();
+    } catch (URISyntaxException e) {
+      throw new IllegalArgumentException("URI could not be normalized: " + uri);
+    }
   }
 }

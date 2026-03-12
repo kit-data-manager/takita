@@ -2,8 +2,12 @@ package edu.kit.datamanager.takita.mainpage.search;
 
 import static edu.kit.datamanager.takita.mainpage.search.SearchIndexService.INDEX_NAME;
 
+import edu.kit.datamanager.takita.model.Annotation;
 import edu.kit.datamanager.takita.model.Manuscript;
+import edu.kit.datamanager.takita.model.body.Tag;
+import edu.kit.datamanager.takita.model.body.TextCard;
 import edu.kit.datamanager.takita.model.filter.Filter;
+import edu.kit.datamanager.takita.model.page.Page;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -23,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.context.annotation.SessionScope;
 
-
 /**
  * SearchService contains all business logic to search the index provided by Spring.Data.
  */
@@ -36,6 +39,7 @@ public class SearchService implements ISearchService {
   private final ElasticsearchOperations elasticsearchOperations;
   
   private List<Manuscript> results;
+  private List<Annotation> annoResults;
   private long resultPagesCount;
   
   private int pageSize;
@@ -91,7 +95,6 @@ public class SearchService implements ISearchService {
                             .or("pages.resourceType").contains(singleSearchTerm)
                             .or("pages.annotations.title").contains(singleSearchTerm)
                             .or("pages.annotations.creators").contains(singleSearchTerm)
-                            .or("pages.annotations.color").contains(singleSearchTerm)
                             .or("pages.annotations.tags.creators").contains(singleSearchTerm)
                             .or("pages.annotations.tags.purpose").contains(singleSearchTerm)
                             .or("pages.annotations.tags.value").contains(singleSearchTerm)
@@ -142,6 +145,44 @@ public class SearchService implements ISearchService {
     return searchResults;
   }
   
+  /**
+   * Searches the index and returns all annotation results
+   *
+   * @return list of all annotations
+   */
+  @Override
+  public List<Annotation> queryAllAnnotations() {
+	//Generic criteria constructor to obtain all search results
+	Criteria criteria = new Criteria();
+	CriteriaQuery query = new CriteriaQuery(criteria);
+    
+    //Perform the search
+    SearchHits<Manuscript> searchHits = elasticsearchOperations.search(query, Manuscript.class);
+	
+    // Extract the annotations from the search results, which only return the full manuscripts
+    List<Annotation> searchAnnoResults = new ArrayList<>();
+    for (SearchHit<Manuscript> manuscript : searchHits.getSearchHits()) {
+    	try {
+    		List<Page> pages = manuscript.getContent().getPages();
+    		for (Page page : pages) {
+    			List<Annotation> annotations = page.getAnnotations();
+    			// the title of the manuscript has to be added manually as they are not present in the index
+    			String manuscriptTitle =  manuscript.getContent().getTitle();
+    			for (Annotation annotation : annotations) {
+    				annotation.setManuscriptTitle(manuscriptTitle);
+    			}
+    			searchAnnoResults.addAll(annotations);
+    		}
+    	} catch (Exception e) {
+    		System.out.println("Could not get annotations for manuscript: " + manuscript.getContent().getTitle() + " " + manuscript.getContent().getId());
+    		e.printStackTrace();
+    	}	    
+	}
+    
+	this.annoResults = searchAnnoResults;
+	return searchAnnoResults;
+  }
+  
   private long calculatePageCount(Query query) {
     //Making sure integer division is ceiled
     long count = elasticsearchOperations.count(query, IndexCoordinates.of(INDEX_NAME));
@@ -176,6 +217,16 @@ public class SearchService implements ISearchService {
   @Override
   public List<Manuscript> getResults() {
     return results;
+  }
+  
+  /**
+   * Gets list of search results.
+   *
+   * @return search results in list of manuscripts
+   */
+  @Override
+  public List<Annotation> getAnnoResults() {
+    return annoResults;
   }
   
   /**

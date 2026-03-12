@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.time.Instant;
 import java.util.List;
 
+import edu.kit.datamanager.takita.model.page.ResourceType;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -76,6 +77,17 @@ public interface IRepositoryAccessService {
       throws InterruptedException, JSONException, IOException, ParseException;
 
   /**
+   * Returns the typeGeneral of a page.
+   *
+   * @param pageId page identifier as String
+   * @return typeGeneral of a page
+   * @throws JSONException if the response body could not be parsed to JSON
+   * @throws IOException if an error occurs while sending or receiving
+   * @throws InterruptedException if the get request is interrupted
+   */
+  String getTypeGeneralByPageId(String pageId) throws InterruptedException, JSONException, IOException;
+  
+  /**
    * Gets the metadata of a manuscript that is given in the TEI standard.
    *
    * @param manuscriptId the id of the manuscript
@@ -85,6 +97,17 @@ public interface IRepositoryAccessService {
    */
   String getXmlByManuscriptId(String manuscriptId) throws IOException, InterruptedException;
 
+  /**
+   * Gets the content of a page that is given in the TEI standard.
+   *
+   * @param pageId the id of the page
+   * @param fileName identifies the file associated to a page
+   * @return the xml as a String
+   * @throws IOException if an error occurs while sending or receiving
+   * @throws InterruptedException if the get request is interrupted
+   */
+  String getXmlByPageId(String pageId, String fileName) throws IOException, InterruptedException;
+  
   /**
    * Gets base url for manuscript repository.
    *
@@ -98,4 +121,13 @@ public interface IRepositoryAccessService {
    * @return static path String
    */
   String getStaticPath();
+
+  /**
+   * Construct page link from page id, number and linkType
+   * @param pageId page id in repo
+   * @param pageNumber page number in repo (file name without extension)
+   * @param linkType link to TEXT file or IMAGE file
+   * @return the resulting URL
+   */
+  String getLinkForPage(String pageId, String pageNumber, ResourceType linkType);
 }

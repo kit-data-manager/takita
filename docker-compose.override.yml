@@ -10,7 +10,7 @@ services:
         "annotationStore.url": "http://annoserver/annoserver/wap/",
         "sparqlQuery.urlPrefix": "http://annoserver:4330/wap/sparql?query=",
         "management.endpoints.web.exposure.include": "searchindex,health",
-        "management.endpoint.searchindex.enabled": "true"
+        "management.endpoint.searchindex.access": "unrestricted"
       }'
     healthcheck:
       test: "curl --fail --silent takita:8080/ || exit 1"

@@ -1,0 +1,42 @@
+/* A01 specifics */
+/* ------------------------------------*/
+
+/* color quotes from different sources differently */
+tei-q[type="Quran"] {
+	color: green;	
+}
+
+tei-q[type="Hadith"] {
+	color: red;	
+}
+
+tei-q[type="Poetry"] {
+	color: rgb(160, 160, 0);
+}
+
+/* Masnavi */ 
+/* half verse markers for the Masnavi */
+tei-body[n="Mas̱nawī"] tei-seg[n="a"]::after {
+	content: "\00a0**\00a0";
+	white-space: pre-warp;
+}
+
+/* displaying line number for every 5th line
+	for the Masnavi
+	see: http://masnavi.net/ */
+tei-body[n="Mas̱nawī"] tei-div[type=chapter] tei-l:nth-of-type(5n)::before {
+	display: inline-block;
+	min-width: 10px;
+	padding: 3px 7px;
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1;
+	color: #fff;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: baseline;
+	background-color: #269abc;
+	border-radius: 10px;
+	content: attr(n);
+	margin-left: 0.4em;
+  }

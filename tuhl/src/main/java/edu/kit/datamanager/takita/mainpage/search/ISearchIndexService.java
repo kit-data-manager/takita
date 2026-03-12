@@ -66,7 +66,13 @@ public interface ISearchIndexService {
    * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
    */
   Annotation getAnnotationById(String id) throws NoSuchIndexEntryException;
-  
+
+  /**
+   * Gets list of annotations by id of their containing page
+   * @param id id of the page
+   * @return list of annotation objects
+   * @throws NoSuchIndexEntryException
+   */
   List<Annotation> getAnnotationsForPageById(String id) throws NoSuchIndexEntryException;
 
   /**
@@ -80,19 +86,6 @@ public interface ISearchIndexService {
    * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
    */
   Annotation updateAnnotation(Annotation annotation)
-      throws IOException, InterruptedException, JSONException, NoSuchIndexEntryException;
-
-  /**
-   * Validates an annotation in the search index and notifies the dataaccess package.
-   *
-   * @param annotation unvalidated annotation
-   * @return validated annotation
-   * @throws IOException if an error occurs while sending/receiving http request to annotation store
-   * @throws InterruptedException if http request is interrupted
-   * @throws JSONException when the object couldn't be parsed to JSON
-   * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
-   */
-  Annotation validateAnnotation(Annotation annotation)
       throws IOException, InterruptedException, JSONException, NoSuchIndexEntryException;
 
   /**
@@ -231,6 +224,18 @@ public interface ISearchIndexService {
    * @throws InterruptedException if http request is interrupted
    */
   String getRawManuscriptXml(String manuscriptId) throws IOException, InterruptedException;
+
+  /**
+   * Gets the XML content of a page as the raw XML String.
+   *
+   * @param pageId the id of the page
+   * @param fileName identifies the file associated to a page
+   * @return the raw xml as a String
+   * @throws IOException if an error occurs while sending/receiving http request to annotation store
+   * @throws InterruptedException if http request is interrupted
+   * 
+   */
+  String getRawPageContentXml(String pageId, String fileName) throws IOException, InterruptedException;
   
   /**
    * Starts the update cycle of the search index with the specified parameters.
@@ -249,5 +254,6 @@ public interface ISearchIndexService {
    * @throws NoSuchIndexEntryException when there is no body with this ID in the annotation
    */
   Body getBodyFromAnnotationAndId(Annotation annotation, String bodyId) throws NoSuchIndexEntryException;
+
 }
 

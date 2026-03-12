@@ -2,6 +2,8 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="_csrf" th:if="${securityEnabled}" th:content="${_csrf.token}"/>
+    <meta name="_csrf" th:if="!${securityEnabled} " th:content="notAvailableCSRFProtectionMightBeDisabled"/>
     <!-- generic script loading in fragment -->
     <th:block th:replace="~{head :: baseContent}"></th:block>
 
@@ -18,12 +20,33 @@
 <body class="container-fluid p-0">
     <div th:replace="~{pseudonym.html :: pseudonym_modal}"></div>
 
-<div class="row mx-auto pr-3 bg-light">
+<div class="row mx-auto pe-3 bg-light">
     <div class="col-sm-5 col-md-4 col-lg-3 col-xl-2 p-6 align-self-center">
         <h1 class="text-center display-4" th:text="#{label.main}"> </h1>
     </div>
-    <div class="col-sm-4 p-3 my-1 align-self-center">
-        <form onsubmit="setSearchTerm(event)">
+    <div class="col-sm-4 p-6 my-1 align-self-center">
+        <form id="annotationSearchbar" onsubmit="setAnnotationSearchTerm(event)" class="d-none">
+            <div class="input-group">
+                <input id="annotationSearchTerm"
+                       type="text"
+                       class="form-control"
+                       th:placeholder="#{hint.search_term}"
+                       th:if="${searchterm != null}"
+                       th:value="${searchterm}">
+                <input id="annotationSearchTerm"
+                       type="text"
+                       class="form-control"
+                       th:if="${searchterm == null}"
+                       th:placeholder="#{hint.search_term}">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-primary"
+                            type="submit"
+                            th:text="#{buttons.search}">
+                    </button>
+                </div>
+            </div>
+        </form>
+        <form id="manuscriptSearchbar" onsubmit="setSearchTerm(event, csrfTokenMP)">
             <div class="input-group">
                 <input id="searchTerm"
                        type="text"
@@ -51,13 +74,19 @@
 
 
 <div class="row mx-auto fill-height">
-    <div class="col-xs-12 col-sm-5 col-md-4 col-lg-3 col-xl-2 p-0 pr-2 bg-light container-fluid"
+    <div class="col-xs-12 col-sm-5 col-md-4 col-lg-3 col-xl-2 p-0 pe-2 bg-light container-fluid"
          th:insert="~{filter_selection.html :: filterSelection}"></div>
     <div class="col-xs-12 col-sm-7 col-md-8 col-lg-9 col-xl-10 p-0 container-fluid"
          id="dashboard"
          th:insert="~{table_view.html :: tableView}"></div>
 </div>
-
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    // setting contextpath
+    window.CONTEXTPATH = /*[[@{/}]]*/ "/";
+    const csrfTokenMP = document.querySelector("meta[name='_csrf']").getAttribute('content');
+    /*]]>*/
+</script>
 <script th:inline="javascript">
     document.addEventListener('pseudonymUpdate', function(event) {
         location.reload();

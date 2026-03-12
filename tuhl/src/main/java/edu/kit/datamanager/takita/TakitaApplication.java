@@ -29,7 +29,6 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 @Configuration
 public class TakitaApplication implements ApplicationRunner, WebMvcConfigurer {
   private static final Logger logger = LoggerFactory.getLogger(TakitaApplication.class);
-
   @Autowired
   private ISearchIndexService searchIndexService;
 

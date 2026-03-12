@@ -5,6 +5,7 @@ import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import edu.kit.datamanager.takita.model.Annotation;
 import edu.kit.datamanager.takita.model.Manuscript;
 import edu.kit.datamanager.takita.model.page.Page;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.Instant;
@@ -13,7 +14,6 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -107,7 +107,6 @@ public class AccessService implements IAccessService {
    * @throws JSONException if an error occurs while parsing json
    * @throws IOException if an error occurs while sending or receiving http request
    * @throws ParseException if an error occurs while parsing the date
-   * @throws NoSuchIndexEntryException if there is a problem finding a modified manuscript in the
    * index
    */
   @Override
@@ -207,25 +206,6 @@ public class AccessService implements IAccessService {
   }
 
   /**
-   * Converts annotation to JSONObject so it can be added to database more easily,
-   * then tells AnnotationStoreAccess to add it to validated container.
-   *
-   * @param annotation validated annotation
-   * @param pageNumber number of the page on which the annotation is
-   * @return validated Annotation for replacing the old one
-   * @throws JSONException if an error occurs while parsing json
-   * @throws IOException if an error occurs while sending or receiving http request
-   * @throws InterruptedException if the http request is interrupted
-   */
-  @Override
-  public Annotation validateAnnotation(Annotation annotation, String pageNumber, String projectId)
-      throws JSONException, IOException, InterruptedException {
-    JSONObject validatedAnnotation = annotationStoreAccessService
-        .validateAnnotation(annotationConverter.buildJsonFromAnnotation(annotation, pageNumber), projectId);
-    return annotationConverter.buildAnnotationFromJson(validatedAnnotation);
-  }
-
-  /**
    * Converts annotation to JSONObject so it can be updated in database more easily,
    * then tells AnnotationStoreAccess to update it.
    *
@@ -317,7 +297,20 @@ public class AccessService implements IAccessService {
   public String getRawManuscriptXml(String manuscriptId) throws IOException, InterruptedException {
     return repositoryAccessService.getXmlByManuscriptId(manuscriptId);
   }
-
+  
+  /**
+   * Gets the XML content given in the TEI standard of a page as the raw XML String.
+   *
+   * @param pageId the id of the manuscript
+   * @param fileName identifies the file associated to a page
+   * @return the raw xml as a String
+   * @throws IOException if an error occurs while sending or receiving http request
+   * @throws InterruptedException if the http request is interrupted
+   */
+  @Override
+  public String getRawPageContentXml(String pageId, String fileName) throws IOException, InterruptedException {
+	    return repositoryAccessService.getXmlByPageId(pageId, fileName);
+  }
 
   private Map<String, List<Annotation>> getAllAnnotationsSorted(
       List<JSONObject> jsonAnnotations) {

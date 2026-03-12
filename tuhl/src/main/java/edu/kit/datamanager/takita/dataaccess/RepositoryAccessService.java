@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import edu.kit.datamanager.takita.MissingPropertyException;
+import edu.kit.datamanager.takita.model.page.ResourceType;
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,8 @@ public class RepositoryAccessService implements IRepositoryAccessService {
   public static final String DATA_PATH = "/data/";
   public static final String THUMB_JPG = ".thumb.jpg";
   public static final String MASTER_JPG = ".master.jpg";
+  // or the xml file
+  public static final String FILE_EXTENSION_XML = ".xml";
   private static final String MANUSCRIPT_PATTERN = "<(.*?)>; rel=\"next\",";
   private static final String MANUSCRIPT_METADATA_FILE = "manuscript_metadata.xml";
   private static final String PAGES_JSON = "pages.json";
@@ -138,11 +141,14 @@ public class RepositoryAccessService implements IRepositoryAccessService {
     int pageCounter = 0;
     List<JSONObject> manuscriptsJson = new ArrayList<>();
     String nextUri = baseUrl + staticPath + SEARCH_URL + pageCounter + SEARCH_SIZE_URL;
-  
     JSONObject resourceType = new JSONObject();
     JSONObject typeGeneral = new JSONObject();
-    typeGeneral.put(RepositoryStrings.TYPE_GENERAL.getName(), RepositoryStrings.TEXT.getName());
+    
+    // fetch all the manuscript DOs independently of typeGeneral
+    // by using resourceType/value (which distinguishes between manuscript and pages)
+    typeGeneral.put(RepositoryStrings.VALUE.getName(), RepositoryStrings.MANUSCRIPT_METADATA.getName());
     resourceType.put(RepositoryStrings.RESOURCE_TYPE.getName(), typeGeneral);
+    
     HttpResponse<String> pageResponse = httpRequestHelper.postManuscript(
         nextUri + pageSize, resourceType);
     Optional<String> link;
@@ -158,11 +164,11 @@ public class RepositoryAccessService implements IRepositoryAccessService {
         JSONObject resource = responseBodyJson.getJSONObject(i);
         //Adds all resources which are manuscripts and not pages to the list
         manuscriptsJson.add(resource);
-  
         // Check if number of required manuscripts already reached
         if (numberManuscripts != -1 && manuscriptsJson.size() >= numberManuscripts) {
-          return manuscriptsJson;
+        	return manuscriptsJson;
         }
+        
       }
       if (link.isPresent()) {
         //Extracts next link from response header
@@ -239,7 +245,29 @@ public class RepositoryAccessService implements IRepositoryAccessService {
     //return manuscriptDate.after(isAfterDate);
   }
 
+  /**
+   * Returns the typeGeneral of a page.
+   *
+   * @param pageId page identifier as String
+   * @return typeGeneral of a page
+   * @throws JSONException if the response body could not be parsed to JSON
+   * @throws IOException if an error occurs while sending or receiving
+   * @throws InterruptedException if the get request is interrupted
+   */
+  @Override
+  public String getTypeGeneralByPageId(String pageId)
+      throws InterruptedException, JSONException, IOException {
+	  
+      HttpResponse<String> response = httpRequestHelper.get(this.getBaseUrl()
+	            + this.getStaticPath()+ pageId);
+      JSONObject pageJson = new JSONObject(response.body());
+      String resourceTypeGeneral = pageJson.getJSONObject(RepositoryStrings.RESOURCE_TYPE.getName())
+    	        .getString(RepositoryStrings.TYPE_GENERAL.getName());
 
+      return resourceTypeGeneral;
+  }
+  
+  
   /**
    * Gets the metadata of a manuscript that is given in the TEI standard.
    *
@@ -253,12 +281,28 @@ public class RepositoryAccessService implements IRepositoryAccessService {
     return httpRequestHelper.get(baseUrl + staticPath + manuscriptId + DATA_PATH
         + MANUSCRIPT_METADATA_FILE).body();
   }
-
+  
+  /**
+   * Gets the content of a page that is given in the TEI standard.
+   *
+   * @param pageId the id of the page
+   * @param fileName identifies the file associated to a page
+   * @return the xml as a String
+   * @throws IOException if an error occurs while sending or receiving
+   * @throws InterruptedException if the get request is interrupted
+   */
+  @Override
+  public String getXmlByPageId(String pageId, String fileName) throws IOException, InterruptedException {
+	    return httpRequestHelper.get(baseUrl + staticPath + pageId + DATA_PATH
+	        + fileName).body();
+  }
+  
   /**
    * Gets base url for manuscript repository.
    *
    * @return base url String
    */
+  @Override
   public String getBaseUrl() {
     return baseUrl;
   }
@@ -268,7 +312,28 @@ public class RepositoryAccessService implements IRepositoryAccessService {
    *
    * @return static path String
    */
+  @Override
   public String getStaticPath() {
     return staticPath;
+  }
+
+  @Override
+  public String getLinkForPage(String pageId, String pageNumber, ResourceType linkType) {
+    //reconstruct repo link from pageID
+      return switch (linkType) {
+          case TEXT -> getBaseUrl()
+                  + getStaticPath()
+                  + pageId + DATA_PATH + pageNumber
+                  + FILE_EXTENSION_XML;
+          case IMAGE -> getBaseUrl()
+                  + getStaticPath()
+                  + pageId + DATA_PATH + pageNumber
+                  + MASTER_JPG;
+          default -> {
+              // TODO: this should throw an exception
+              logger.error("Target is neither an image, a text file nor a page.");
+              yield null;
+          }
+      };
   }
 }

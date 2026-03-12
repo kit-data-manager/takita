@@ -48,14 +48,4 @@ public class TextPage extends Page {
   public String getResourceUrl() {
     return resourceUrl;
   }
-
-  /**
-   * Gets the URL of the thumbnail resource.
-   *
-   * @return URL as String
-   */
-  @Override
-  public String getThumbResourceUrl() {
-    return thumbResourceUrl;
-  }
 }

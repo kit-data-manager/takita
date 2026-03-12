@@ -2,9 +2,14 @@ package edu.kit.datamanager.takita.model;
 
 import edu.kit.datamanager.takita.model.body.Tag;
 import edu.kit.datamanager.takita.model.body.TextCard;
+import edu.kit.datamanager.takita.model.target.Target;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+
+import org.springframework.boot.configurationprocessor.json.JSONArray;
+import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
@@ -15,16 +20,17 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 public class Annotation {
 
   private String pageId;
-  
+  private String manuscriptTitle;
+
   @Field(type = FieldType.Nested, includeInParent = true)
-  private List<TextCard> textCards;
+  private List<TextCard> textCards = new ArrayList<>();
 
   //Annotation ID is whole link to annotationStore - format = DateFormat.custom, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSSZ"
   @Id
   private String id;
   @Field(type = FieldType.Date)
   private Instant modified;
-  private List<String> creators;
+  private List<String> creators = new ArrayList<>();
   @Field(type = FieldType.Date)
   private Instant created;
   //contains old Annotation url, for validated annotations only
@@ -32,24 +38,94 @@ public class Annotation {
   //same as via
   private String canonical;
 
-  private Color color;
-  private String svgCode;
+  private List<Target> targets = new ArrayList<>();
 
   private String motivation;
   
   @Field(type = FieldType.Nested, includeInParent = true)
-  private List<Tag> tags;
+  private List<Tag> tags = new ArrayList<>();
 
   private boolean isAlgorithmAnnotation;
   private String etag;
 
   /**
-   * Constructor, initializes lists.
+   * Non args constructor (empty)
    */
-  public Annotation() {
-    textCards = new ArrayList<>();
-    tags = new ArrayList<>();
-    creators = new ArrayList<>();
+  public Annotation() {}
+
+  /**
+   * Constructor to initialize properties
+   * @param pageId id of page containing annotation
+   * @param creators list of creators
+   * @param created created date
+   * @param modified modified date
+   * @param linkToResource target source
+   * @param selectors Json Array of selectors
+   * @param motivation motivation
+   * @param via via field
+   * @throws JSONException
+   */
+  public Annotation(String pageId, List<String> creators, Instant created, Instant modified,
+                    String linkToResource, JSONArray selectors, String motivation, String via) throws JSONException {
+      this.pageId = pageId;
+      this.creators = creators;
+      this.created = created;
+      if (modified != null) {
+          this.modified = modified;
+      }
+      this.targets = createTargetsFromSelectors(linkToResource, selectors);
+      if (motivation != null) {
+        this.motivation = motivation;
+      }
+      this.via = via;
+  }
+
+  /**
+   * Updates an annotation based on the provided properties
+   * @param creators list of creators to potentially add to the annotation
+   * @param linkToResource target source (should never change and would only change if selectors are also provided)
+   * @param selectors list of all selectors, will replace old selectors
+   * @param motivation will replace old motivation
+   * @throws JSONException
+   */
+  public void update(List<String> creators, String linkToResource, JSONArray selectors, String motivation ) throws JSONException {
+      for (String creator : creators) {
+          if (!this.getCreators().contains(creator)) {
+              this.addCreator(creator);
+          }
+      }
+      this.setModified(Instant.now());
+      if (selectors != null) {
+          this.setTargets(createTargetsFromSelectors(linkToResource, selectors));
+      }
+      if (motivation != null) {
+          this.setMotivation(motivation);
+      }
+  }
+
+    /**
+     * helper function to extract all selectors from an array and creates a target for each. If
+     * there are no selectors, one target targeting the whole "page" will be created.
+     * @param selectors 0 (null) to n JSONObjects holding information about the selector
+     * @return list of targets
+     * @throws JSONException when there is a problem with the JSON object holding the selector
+     */
+  private List<Target> createTargetsFromSelectors(String linkToResource, JSONArray selectors) throws JSONException {
+      List<Target> targets = new ArrayList<>();
+      if (selectors != null) {
+          for (int i = 0; i < selectors.length(); i++) {
+              Target target = new Target(linkToResource, selectors.getJSONObject(i));
+              targets.add(target);
+          }
+      } else {
+          // this branch should get reached when users create a "page"-annotation, i.e.
+          // an annotation targeting the whole document/image
+          // TODO: this has to be tested by someone who works with page-annotations.
+          // Philipp tested it and it seems to work.
+          Target target = new Target(linkToResource, null);
+          targets.add(target);
+      }
+      return targets;
   }
 
   /**
@@ -70,6 +146,23 @@ public class Annotation {
     pageId = id;
   }
 
+  /**
+   * Gets name of the manuscripts that the Annotation belongs to.
+   *
+   * @return manuscriptName
+   */
+  public String getManuscriptTitle() {
+    return manuscriptTitle;
+  }
+
+  /**
+   * Sets name of the manuscripts that the Annotation belongs to.
+   * @param manuscriptTitle title to set
+   */
+  public void setManuscriptTitle(String manuscriptTitle) {
+	  this.manuscriptTitle = manuscriptTitle;
+  }
+
 
   /**
    * Gets all Ids of text cards that belong to the annotation.
@@ -86,7 +179,8 @@ public class Annotation {
    * @param textCardIds to be set
    */
   public void setTextCards(List<TextCard> textCardIds) {
-    this.textCards = textCardIds;
+    //we ensure that textCards is always a list so that adding a new element and updating is always possible
+    textCards = Objects.requireNonNullElseGet(textCardIds, ArrayList::new);
   }
 
   /**
@@ -95,11 +189,7 @@ public class Annotation {
    * @param textCard to be added to text card list
    */
   public void addTextCard(TextCard textCard) {
-    if (textCards == null) {
-      textCards = new ArrayList<>();
-    }
     this.textCards.add(textCard);
-    
   }
   
     /**
@@ -111,10 +201,8 @@ public class Annotation {
     for (TextCard existingTextCard : this.textCards) {
         if (existingTextCard.getId().equals(textCard.getId())) {
             this.textCards.set(this.textCards.indexOf(existingTextCard), textCard);
-            
         }
     }
-    
   }
 
   /**
@@ -239,39 +327,33 @@ public class Annotation {
   }
 
   /**
-   * Gets color of annotation.
+   * Gets targets of annotation.
    *
-   * @return color
+   * @return targets
    */
-  public Color getColor() {
-    return color;
+  public List<Target> getTargets() {
+    return this.targets;
   }
 
   /**
-   * Sets color of annotation.
+   * Sets all targets of annotation.
    *
-   * @param color to be set
+   * @param targets to be set
    */
-  public void setColor(Color color) {
-    this.color = color;
+  public void setTargets(List<Target> targets) {
+    this.targets = targets;
   }
 
   /**
-   * Gets SVG code of annotation.
+   * Adds one target to the annotation.
    *
-   * @return svg code
+   * @param target to be added
    */
-  public String getSvgCode() {
-    return svgCode;
-  }
-
-  /**
-   * Sets SVG code of annotation.
-   *
-   * @param svgCode to be set
-   */
-  public void setSvgCode(String svgCode) {
-    this.svgCode = svgCode;
+  public void addTarget(Target target) {
+    if (this.targets == null) {
+        this.targets = new ArrayList<>();
+      }
+      this.targets.add(target);
   }
 
   /**
@@ -307,7 +389,8 @@ public class Annotation {
    * @param tags to be set
    */
   public void setTags(List<Tag> tags) {
-    this.tags = tags;
+    //we ensure that tags is always a list so that adding a new element and updating is always possible.
+    this.tags = Objects.requireNonNullElseGet(tags, ArrayList::new);
   }
 
   /**
@@ -316,9 +399,6 @@ public class Annotation {
    * @param tag to be added
    */
   public void addTag(Tag tag) {
-    if (tags == null) {
-      tags = new ArrayList<>();
-    }
     this.tags.add(tag);
   }
   
@@ -331,10 +411,8 @@ public class Annotation {
     for (Tag existingTag : this.tags) {
         if (existingTag.getId().equals(tag.getId())) {
             this.tags.set(this.tags.indexOf(existingTag), tag);
-            
         }
     }
-    
   }
   
 
@@ -379,7 +457,7 @@ public class Annotation {
       return getClass().getSimpleName() + id + ": { " + "pageId: " + pageId + 
               ", modified: " + modified + ", created: " + created +
               ", via: " + via + ", canonical: " + canonical +
-              ", color: " + color + ", svgCode: " + svgCode + 
+              ", svgCode: " + targets.toString() +
               ", motivation: " + motivation + ", etag: " + etag +
               ", isAlgorithmAnnotation: " + isAlgorithmAnnotation +
               ", creators: " + creators.toString() + 

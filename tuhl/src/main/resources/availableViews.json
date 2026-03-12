@@ -1,5 +1,11 @@
 [
   {
-    "id": "tableview"
+    "id": "tableview" 
+  },
+  {
+    "id": "annoview"
+  },
+  {
+    "id": "annodash"
   }
 ]

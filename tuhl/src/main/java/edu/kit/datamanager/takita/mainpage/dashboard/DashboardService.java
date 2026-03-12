@@ -30,6 +30,11 @@ public class DashboardService implements IDashboardService {
   private final Map<String, String> availableContentViews;
   private String currentContentView;
 
+  /**
+   * Constructor to initialize Dashboard with available views
+   * @throws IOException
+   * @throws JSONException
+   */
   public DashboardService() throws IOException, JSONException {
     this.currentContentView = "tableview";
     this.availableContentViews = readAvailableViews();

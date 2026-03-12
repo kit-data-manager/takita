@@ -3,13 +3,15 @@ package edu.kit.datamanager.takita.mainpage.search;
 import edu.kit.datamanager.takita.ControllerTestHelper;
 import edu.kit.datamanager.takita.assistance.IAssistanceService;
 import edu.kit.datamanager.takita.assistance.User;
+import edu.kit.datamanager.takita.configuration.SecurityConfiguration;
 import edu.kit.datamanager.takita.mainpage.IMainPageService;
 import edu.kit.datamanager.takita.mainpage.dashboard.contentview.TableViewService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
@@ -22,21 +24,22 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(FilterController.class)
 @TestPropertySource("classpath:application-test.properties")
+@Import(SecurityConfiguration.class)
 class FilterControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
 
 
-  @MockBean
+  @MockitoBean
   private IFilterService mockedFilterService;
-  @MockBean
+  @MockitoBean
   private TableViewService mockedTableViewService;
-  @MockBean
+  @MockitoBean
   private IMainPageService mockedMainPageService;
-  @MockBean
+  @MockitoBean
   private IAssistanceService mockedAssistanceService;
-  @MockBean
+  @MockitoBean
   private ISearchIndexService mockedSearchIndexService;
 
   @Test

@@ -11,12 +11,17 @@ import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static edu.kit.datamanager.takita.dataaccess.utils.XmlUtilities.addTeiMetadata;
 
 /**
  * Class responsible for converting manuscripts from JSON to Manuscript Object.
@@ -62,6 +67,14 @@ class ManuscriptConverter {
           .getString(RepositoryStrings.VALUE.getName());
     }
 
+    String description = null;
+    if (manuscriptJson.has(RepositoryStrings.DESCRIPTIONS.getName())) {
+    	JSONArray descriptionsJson = manuscriptJson.getJSONArray(RepositoryStrings.DESCRIPTIONS.getName());
+    	if (descriptionsJson.length() > 0) {
+    		description = descriptionsJson.getJSONObject(0).getString(RepositoryStrings.DESCRIPTION.getName());
+    	}
+    }
+    
     Instant created = extractInstantFromJsonManuscript(manuscriptJson,
         RepositoryStrings.CREATED.getName());
     Instant modified;
@@ -75,6 +88,9 @@ class ManuscriptConverter {
 
     Manuscript manuscript = new Manuscript(id, created, title, publisher, publicationYear);
     manuscript.setLastModified(modified);
+    if (description != null) {
+    	manuscript.setDescription(description);
+    }
 
     //Retrieves pages from the page assignment.
     // Adds the pages after their creation to the manuscript.
@@ -97,6 +113,10 @@ class ManuscriptConverter {
     }
 
     manuscript.setPages(pages);
+
+    String teiString = repositoryAccessService.getXmlByManuscriptId(manuscript.getId());
+    addTeiMetadata(manuscript, teiString);
+    
     return manuscript;
   }
 
@@ -129,7 +149,7 @@ class ManuscriptConverter {
     }
     return date;
   }
-
+  
   /**
    * Builds the page with the accompanying annotations from sortedAnnotations.
    * If sortedAnnotations is null the annotations will be obtained by getAnnotationsByPage().
@@ -167,9 +187,19 @@ class ManuscriptConverter {
     } else if (resourceTypeString.equals(RepositoryStrings.TEXT.getName())) {
 
       // Here comes the URL to the resource of the page
-      String resourceUrl = "";
+      // just a copy of the image code from above and added "RepositoryAccessService.FILE_EXTENSION_XML"
+      // and using a TextPage object instead of ImagePage
+      String resourceUrl = repositoryAccessService.getBaseUrl() + repositoryAccessService.getStaticPath() + id
+              + RepositoryAccessService.DATA_PATH + pageNumber + RepositoryAccessService.FILE_EXTENSION_XML;
 
-      page = new TextPage(id, ResourceType.TEXT, pageNumber, created, resourceUrl);
+      TextPage textPage = new TextPage(id, ResourceType.TEXT, pageNumber, created, resourceUrl);
+      if (sortedAnnotations == null) {
+          textPage.setAnnotations(getAnnotationsByPage(textPage));
+        } else {
+          textPage.setAnnotations(sortedAnnotations.get(textPage.getId()));
+        }
+
+      page = textPage;
     } else {
       throw new IllegalStateException("Unexpected value: " + resourceTypeString);
     }

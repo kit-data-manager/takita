@@ -3,6 +3,7 @@ package edu.kit.datamanager.takita.model.page;
 import edu.kit.datamanager.takita.model.Annotation;
 
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Field;
@@ -25,7 +26,7 @@ public abstract class Page {
   private Instant lastModified;
   
   @Field(type = FieldType.Nested, includeInParent = true)
-  protected List<Annotation> annotations;
+  protected List<Annotation> annotations = new ArrayList<>();
 
   protected String resourceUrl;
   protected String thumbResourceUrl;
@@ -126,15 +127,7 @@ public abstract class Page {
    * @return url as String
    */
   public abstract String getResourceUrl();
-  
-  /**
-   * Gets the url of the resource of a thumbnail.
-   *
-   * @return url as String
-   */
-  public abstract String getThumbResourceUrl();
-  
-  
+
   /**
    * Gets all annotations belonging to page.
    * @return list of annotations

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.PersistenceCreator;
@@ -48,6 +49,25 @@ public class Manuscript {
   private Instant lastModified;
   
   private boolean hasAlgorithmAnnotations;
+  
+  @Field(type = FieldType.Keyword)
+  private String description;
+
+  // variables obtained from manuscript_metadata.xml
+  // for the various title levels consult:
+  // https://tei-c.org/release/doc/tei-p5-doc/en/html/ref-title.html
+  private List<TeiTitle> teiTitleSeries;
+  
+  private List<TeiTitle> teiTitleMonographic;
+  
+  private List<TeiTitle> teiTitleAnalytic;
+  
+  // default title used when no title levels are used
+  private List<TeiTitle> teiTitle;
+  
+  private List<String> teiAuthor;
+  
+  private List<TeiDate> teiManuscriptCreationDate;
   
   /**
    * Constructor for Manuscript.
@@ -154,6 +174,22 @@ public class Manuscript {
   }
 
   /**
+   * Gets description of manuscript.
+   *
+   * @return description
+   */
+  public String getDescription() {
+	  return description;
+  }
+
+  /**
+   * Sets description of manuscript.
+   * @param description description of the manuscript
+   */
+  public void setDescription(String description) {
+	  this.description = description;
+  }
+/**
    * Gets publisher of manuscript.
    *
    * @return publisher
@@ -215,4 +251,198 @@ public class Manuscript {
   public void setNoPages(int noPages) {
     this.noPages = noPages;
   }
+  
+  /**
+   * Gets series title of manuscript.
+   *
+   * @return List of TEI titles classified as series titles
+   */
+  public List<TeiTitle> getTeiTitleSeries() {
+    return teiTitleSeries;
+  }
+  
+  /**
+   * Sets series title of manuscript.
+   *
+   * @param teiTitleSeries List of TEI titles classified as series titles
+   */
+  public void setTeiTitleSeries(List<TeiTitle> teiTitleSeries) {
+    this.teiTitleSeries =  teiTitleSeries;
+  }
+  
+  /**
+   * Gets monographic title of manuscript.
+   *
+   * @return List of TEI titles classified as monographic titles
+   */
+  public List<TeiTitle> getTeiTitleMonographic() {
+    return teiTitleMonographic;
+  }
+  
+  /**
+   * Sets monographic title of manuscript.
+   *
+   * @param teiTitleMonographic List of TEI titles classified as monographic
+   */
+  public void setTeiTitleMonographic(List<TeiTitle> teiTitleMonographic) {
+    this.teiTitleMonographic =  teiTitleMonographic;
+  }
+  
+  /**
+   * Gets analytic title of manuscript.
+   *
+   * @return List of TEI titles classified as analytical
+   */
+  public List<TeiTitle> getTeiTitleAnalytic() {
+    return teiTitleAnalytic;
+  }
+  
+  /**
+   * Sets analytic title of manuscript.
+   *
+   * @param teiTitleAnalytic List of TEI titles classified as analytical
+   */
+  public void setTeiTitleAnalytic(List<TeiTitle> teiTitleAnalytic) {
+    this.teiTitleAnalytic =  teiTitleAnalytic;
+  }
+  
+  /**
+   * Gets default title of manuscript.
+   *
+   * @return List of TEI titles not classified
+   */
+  public List<TeiTitle> getTeiTitle() {
+	return teiTitle;
+  }
+	
+  /**
+   * Sets default title of manuscript.
+   *
+   * @param teiTitle List of TEI titles not classified
+   */
+  public void setTeiTitle(List<TeiTitle> teiTitle) {
+	this.teiTitle = teiTitle;
+  }
+
+/**
+   * Gets author of manuscript.
+   *
+   * @return List of authors as String
+   */
+  public List<String> getTeiAuthor() {
+    return teiAuthor;
+  }
+  
+  /**
+   * Sets author of manuscript.
+   *
+   * @param teiAuthor List of TEI authors
+   */
+  public void setTeiAuthor(List<String> teiAuthor) {
+    this.teiAuthor =  teiAuthor;
+  }
+  
+  /**
+   * Gets creation date of manuscript.
+   *
+   * @return List of TEI dates
+   */
+  public List<TeiDate> getTeiManuscriptCreationDate() {
+    return teiManuscriptCreationDate;
+  }
+  
+  /**
+   * Sets creation date of manuscript.
+   *
+   * @param teiManuscriptCreationDate List of TEI dates
+   */
+  public void setTeiManuscriptCreationDate(List<TeiDate> teiManuscriptCreationDate) {
+    this.teiManuscriptCreationDate =  teiManuscriptCreationDate;
+  }
+
+  /**
+   * Gets the list of default TEI titles in String format
+   * @return Main title + additional titles in brackets
+   */
+  public String getDefaultTitlesAsString() {
+    return titleListToString(teiTitle);
+  }
+
+  // the following AsString()-functions are called by the editor thymeleaf templates
+  /**
+   * Gets the list of monographic TEI titles in String format
+   * @return Main title + additional titles in brackets
+   */
+  public String getMonographicTitlesAsString() {
+    return titleListToString(teiTitleMonographic);
+  }
+
+  /**
+   * Gets the list of analytical TEI titles in String format
+   * @return Main title + additional titles in brackets
+   */
+  public String getAnalyticTitlesAsString() {
+    return titleListToString(teiTitleAnalytic);
+  }
+
+  /**
+   * Gets the list of series TEI titles in String format
+   * @return Main title + additional titles in brackets
+   */
+  public String getSeriesTitlesAsString() {
+    return titleListToString(teiTitleSeries);
+  }
+
+  /**
+   * Concatenate a list of TEI MD titles into a string, where all entries apart from
+   * the first one are surrounded by brackets.
+   * 
+   * @param titleList to be concatenated
+   * @return concatenated List as String. First title followed by other titles in brackets
+   */
+  private String titleListToString(List<TeiTitle> titleList) {
+	if (titleList.isEmpty()) {
+      return "";
+    }
+
+    String mainTitle = titleList.getFirst().content();
+
+    if (titleList.size() > 1) {
+      String remainingTitles = titleList.stream()
+              .skip(1)
+              .map(TeiTitle::content)
+              .collect(Collectors.joining("; "));
+      return mainTitle + " (" + remainingTitles + ")";
+    }
+    return mainTitle;
+  }
+  
+  /**
+   * Concatenate a list of TEI MD authors into a string
+   *
+   * @return concatenated List as String
+   */
+  public String getAuthorsAsString() {
+	  return String.join(", ", teiAuthor);
+  }
+  
+  /**
+   * Concatenate a list of TEI MD creation dates into a string
+   *
+   * @return concatenated List as String
+   */
+  public String getCreationDatesAsString() {
+	  List<String> results = new ArrayList<String>();
+	  for (TeiDate date : teiManuscriptCreationDate) {
+		  String dateString = date.getContent();
+		  if (date.getType() != null) {
+			  dateString = dateString + " (" + date.getType() + ")";
+		  }
+		  results.add(dateString);
+		  
+	  }
+	  return String.join(", ", results);
+  }
 }
+
+	

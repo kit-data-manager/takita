@@ -20,7 +20,6 @@ import org.springframework.boot.configurationprocessor.json.JSONObject;
 
 
 
-
 /**
  * Stores user specific information such as Settings and Pseudonym.
  * Provides methods to modify settings.

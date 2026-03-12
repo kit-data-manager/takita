@@ -8,6 +8,10 @@
     "type": "MATCH"
   },
   {
+    "field": "description",
+    "type": "MATCH"
+  },
+  {
     "field": "publisher",
     "type": "MATCH"
   },

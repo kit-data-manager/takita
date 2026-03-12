@@ -1,0 +1,1 @@
+export { PropositionList } from './propositionList';

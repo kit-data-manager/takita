@@ -16,17 +16,12 @@ import java.net.ConnectException;
 import java.text.ParseException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
@@ -45,7 +40,10 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class  SearchIndexService implements ISearchIndexService {
-  
+
+  @Value("${annotationStore.defaultContainer:takitadefault}")
+  private String defaultContainer;
+
   private static final Logger logger = LoggerFactory.getLogger(SearchIndexService.class);
   public static final String INDEX_NAME = "search_index";
   private final IAccessService accessService;
@@ -266,17 +264,19 @@ public class  SearchIndexService implements ISearchIndexService {
       throw e;
     }
         
-    // bad string magic, take everything after the last occurence of "-", 
-    // omit the space and convert it to lower case to use this as a subfolder 
-    // in the annotion store
-    String projectId = manuscriptPublisher.substring(manuscriptPublisher.lastIndexOf("-") + 2).toLowerCase() + "/";
+    // extract publisher info from repo MD and convert to wap server container
+    // "Project - Subproject" will be converted to container name "subproject"
+    // "Proect" will be converted to container name "project"
+    //TODO: this functionality is very ol/dd behaviour and should be improved
+    List<String> publisherElements = Arrays.stream(manuscriptPublisher.split("-")).toList();
+    String projectId = publisherElements.getLast().trim().toLowerCase() + "/";
     Annotation newAnnotation;
     
     // if a parsing error occurs then store the annotation to a default subfolder
     if (projectId != null && !projectId.equals(manuscriptPublisher)) {
         newAnnotation = accessService.addAnnotation(annotation, page.getPageNumber(), projectId);
     } else {
-        newAnnotation = accessService.addAnnotation(annotation, page.getPageNumber(), "takitadefault");
+        newAnnotation = accessService.addAnnotation(annotation, page.getPageNumber(), defaultContainer);
         logger.info("ProjectId could not be parsed from " + manuscriptPublisher + ", result: " + projectId);
     }
     
@@ -338,7 +338,7 @@ public class  SearchIndexService implements ISearchIndexService {
   }
 
   /**
-   * Updates an annotation in the search index.
+   * Updates an annotation in the search index and the annotation store
    *
    * @param annotation updated Annotation
    * @return updated annotation
@@ -360,43 +360,6 @@ public class  SearchIndexService implements ISearchIndexService {
     applyChangedAnnotation(page, annotation, newAnnotation);
     
     return newAnnotation;
-  }
-
-  /**
-   * Validates an annotation in the search index and notifies the dataaccess package.
-   *
-   * @param annotation unvalidated annotation
-   * @return validated annotation
-   * @throws IOException if an error occurs while sending/receiving http request to annotation store
-   * @throws InterruptedException if http request is interrupted
-   * @throws JSONException when the object couldn't be parsed to JSON
-   * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
-   */
-  @Override
-  public Annotation validateAnnotation(Annotation annotation)
-      throws IOException, InterruptedException, JSONException, NoSuchIndexEntryException {
-
-    // TODO: same code lines for addAnnotation and validateAnnotation, create new method for that
-    Page page = getPageById(annotation.getPageId());
-    String manuscriptPublisher = getManuscriptById(page.getManuscriptId()).getPublisher();
-        
-    // bad string magic, take everything after the last occurence of "-", 
-    // omit the space and convert it to lower case to use this as a subfolder 
-    // in the annotion store
-    String projectId = manuscriptPublisher.substring(manuscriptPublisher.lastIndexOf("-") + 2).toLowerCase() + "/";
-    Annotation validatedAnnotation;
-    
-    // if a parsing error occurs then store the annotation to a default subfolder
-    if (projectId != null && !projectId.equals(manuscriptPublisher)) {
-        validatedAnnotation = accessService.validateAnnotation(annotation, page.getPageNumber(), projectId);
-    } else {
-        validatedAnnotation = accessService.validateAnnotation(annotation, page.getPageNumber(), "takitadefault");
-        logger.info("ProjectId could not be parsed from " + manuscriptPublisher + ", result: " + projectId);
-    }
-    
-    applyChangedAnnotation(page, annotation, validatedAnnotation);
-    
-    return validatedAnnotation;
   }
   
   private void applyChangedAnnotation(Page page, Annotation annotation,
@@ -514,7 +477,9 @@ public class  SearchIndexService implements ISearchIndexService {
   private TextCard findTextCardInManuscriptById(Manuscript manuscript, String id)
       throws NoSuchIndexEntryException {
     for (Page page : manuscript.getPages()) {
-      if (page.getResourceType() == ResourceType.IMAGE) {
+      // the reasoning for this if-clause remains unclear (29.03.2023)
+      // TODO: investigate, if this if-clause is necessary
+      if (page.getResourceType() == ResourceType.IMAGE || page.getResourceType() == ResourceType.TEXT) {
         for (Annotation annotation : page.getAnnotations()) {
           for (TextCard card : annotation.getTextCards()) {
             if (card.getId().equals(id)) {
@@ -780,7 +745,22 @@ public class  SearchIndexService implements ISearchIndexService {
   public String getRawManuscriptXml(String manuscriptId) throws IOException, InterruptedException {
     return accessService.getRawManuscriptXml(manuscriptId);
   }
-
+  
+  /**
+   * Gets the XML content of a page as the raw XML String.
+   *
+   * @param pageId the id of the page
+   * @param fileName identifies the file associated to a page
+   * @return the raw xml as a String
+   * @throws IOException if an error occurs while sending/receiving http request to annotation store
+   * @throws InterruptedException if http request is interrupted
+   * 
+   */
+  @Override
+  public String getRawPageContentXml(String pageId, String fileName) throws IOException, InterruptedException {
+	    return accessService.getRawPageContentXml(pageId, fileName);
+  }
+  
   /**
    * Starts the update cycle of the search index with the specified parameters.
    *

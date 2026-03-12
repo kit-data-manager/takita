@@ -9,7 +9,7 @@ services:
       - NGINXPROXY=${COMPOSE_PROXYHOST:-localhost}:${COMPOSE_PROXYPORT:-7777}
     command: ["/bin/bash", "-c", "export NGINXPROXY && envsubst '$$NGINXPROXY' < /etc/nginx/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
     ports:
-      - "${COMPOSE_PROXYPORT}:80"
+      - "${COMPOSE_PROXYPORT:-7777}:80"
     volumes:
       - ./docker/reverseproxy/nginx.conf:/etc/nginx/default.conf.template
     depends_on:

@@ -1,0 +1,1 @@
+export { appendTEIDocument } from './textloader';

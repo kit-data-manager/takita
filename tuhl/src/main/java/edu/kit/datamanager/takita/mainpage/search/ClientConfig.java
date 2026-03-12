@@ -96,6 +96,10 @@ public class ClientConfig extends ElasticsearchConfiguration{
     }
   }
 
+  /**
+   * Fail fast for application startup on missing application property that cannot be defaulted:
+   * elasticsearch.ip
+   */
   @PostConstruct
   public void checkProperty() {
     if (elasticsearchIP == null || elasticsearchIP.equals("")) {

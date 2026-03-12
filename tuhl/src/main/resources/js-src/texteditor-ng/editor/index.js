@@ -1,0 +1,1 @@
+export { initializeTextEditor } from './editor';

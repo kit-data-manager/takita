@@ -1,10 +1,10 @@
 package edu.kit.datamanager.takita.dataaccess;
 
 import edu.kit.datamanager.takita.model.Annotation;
-import edu.kit.datamanager.takita.model.Color;
 import edu.kit.datamanager.takita.model.body.Body;
 import edu.kit.datamanager.takita.model.body.Tag;
 import edu.kit.datamanager.takita.model.body.TextCard;
+import edu.kit.datamanager.takita.model.target.Target;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
@@ -16,9 +16,16 @@ import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathFactory;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Converter to transform JSON into annotation objects and to build json from annotation objects
+ */
 public class AnnotationConverter {
 
   private static final Logger logger = LoggerFactory.getLogger(AnnotationConverter.class);
@@ -65,11 +72,6 @@ public class AnnotationConverter {
       annotation.setEtag(jsonAnnotation.getString(AnnotationStoreStrings.ETAG.getName()));
     }
 
-    //set color
-    if (jsonAnnotation.has(AnnotationStoreStrings.BODY.getName())) {
-      buildColor(jsonAnnotation, annotation);
-    }
-
     //set created date
     if (jsonAnnotation.has(AnnotationStoreStrings.CREATED.getName())) {
       annotation.setCreated(extractDateFromJsonAnnotation(jsonAnnotation,
@@ -96,33 +98,11 @@ public class AnnotationConverter {
             .getString(AnnotationStoreStrings.MOTIVATION.getName()));
     }
     
-    //set svg code
-    String svgString;
-    if (jsonAnnotation.has(AnnotationStoreStrings.TARGET.getName())
-        && jsonAnnotation
-        .getJSONObject(AnnotationStoreStrings.TARGET.getName())
-        .has(AnnotationStoreStrings.SELECTOR.getName())
-        && jsonAnnotation
-        .getJSONObject(AnnotationStoreStrings.TARGET.getName())
-        .getJSONObject(AnnotationStoreStrings.SELECTOR.getName())
-        .has(AnnotationStoreStrings.TYPE.getName())
-        && jsonAnnotation
-        .getJSONObject(AnnotationStoreStrings.TARGET.getName())
-        .getJSONObject(AnnotationStoreStrings.SELECTOR.getName())
-        .getString(AnnotationStoreStrings.TYPE.getName())
-        .equals(AnnotationStoreStrings.SVG_SELECTOR.getName())) {
-
-      String fullSvg = jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName())
-        .getJSONObject(AnnotationStoreStrings.SELECTOR.getName()).getString(
-          AnnotationStoreStrings.VALUE.getName());
-      
-      if (!fullSvg.contains("</svg>")) {
-        svgString = "invalid";
-      } else {
-        svgString = fullSvg.substring(fullSvg.indexOf('>') + 1, fullSvg.lastIndexOf('<'));
-      }
-      annotation.setSvgCode(svgString);
-    } 
+    //set targets
+    if (jsonAnnotation.has(AnnotationStoreStrings.TARGET.getName())) {
+      buildTargetsFromJson(jsonAnnotation, annotation);
+    }
+    
     //else {
     //  svgString = "invalid";
     //}
@@ -139,33 +119,25 @@ public class AnnotationConverter {
     }
 
     //set page ID - either from target-source or target-id
-    if (jsonAnnotation.has(AnnotationStoreStrings.TARGET.getName()) && (jsonAnnotation.getJSONObject(
-        AnnotationStoreStrings.TARGET.getName()).has(AnnotationStoreStrings.SOURCE.getName()) ||
-        jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName()).has(AnnotationStoreStrings.ID.getName()))) {
-      buildPageId(jsonAnnotation, annotation);
-    }
-    
-    return annotation;
-  }
-
-  private void buildColor(JSONObject jsonAnnotation, Annotation annotation) throws JSONException {
-    //if annotation has multiple bodies
-    if (isJsonArray(jsonAnnotation.getString(AnnotationStoreStrings.BODY.getName()))) {
-      JSONArray bodies = jsonAnnotation.getJSONArray(AnnotationStoreStrings.BODY.getName());
-      for (int i = 0; i < bodies.length(); i++) {
-        if (bodies.getJSONObject(i).has(AnnotationStoreStrings.DC_SUBJECT.getName())) {
-          annotation.setColor(Color.stringToColor(bodies.getJSONObject(i).getString(
-              AnnotationStoreStrings.DC_SUBJECT.getName())));
+    // after multitargetchange, it needs to be checked if the target is a multi target, i.e. is a JSONArray
+    // this check needs to be done only once i guess
+    if (jsonAnnotation.has(AnnotationStoreStrings.TARGET.getName())){
+        if (isJsonArray(jsonAnnotation.getString(AnnotationStoreStrings.TARGET.getName()))){
+        	JSONArray array = new JSONArray(jsonAnnotation.getString(AnnotationStoreStrings.TARGET.getName()));
+        	if (array.getJSONObject(0).has(AnnotationStoreStrings.SOURCE.getName()) || 
+        			array.getJSONObject(0).has(AnnotationStoreStrings.ID.getName()) ) {
+        		buildPageId(jsonAnnotation, annotation);
+        	}
+        } else {
+            if (jsonAnnotation.has(AnnotationStoreStrings.TARGET.getName()) && (jsonAnnotation.getJSONObject(
+                    AnnotationStoreStrings.TARGET.getName()).has(AnnotationStoreStrings.SOURCE.getName()) ||
+                    jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName()).has(AnnotationStoreStrings.ID.getName()))) {
+                  buildPageId(jsonAnnotation, annotation);
+                }
         }
-      }
-      //if annotation has single body
-    } else {
-      if (jsonAnnotation.getJSONObject(AnnotationStoreStrings.BODY.getName())
-          .has(AnnotationStoreStrings.DC_SUBJECT.getName())) {
-            annotation.setColor(Color.stringToColor(jsonAnnotation.getJSONObject(AnnotationStoreStrings.BODY.getName()).getString(
-            AnnotationStoreStrings.DC_SUBJECT.getName())));
-      }
     }
+
+    return annotation;
   }
 
   /*
@@ -175,19 +147,37 @@ public class AnnotationConverter {
     Pattern pattern = Pattern.compile(SOURCE_PATTERN_STRING);
     Matcher matcher;
     // only works for targets url stored in either source or id
-    if (jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName()).has(AnnotationStoreStrings.SOURCE.getName())) {
-        matcher = pattern.matcher(jsonAnnotation.getJSONObject(
-        AnnotationStoreStrings.TARGET.getName())
-        .getString(AnnotationStoreStrings.SOURCE.getName()));
+    //System.out.print(jsonAnnotation);
+    // after multitargetchange, it needs to be checked if the target is a multi target, i.e. is a JSONArray
+    if (isJsonArray(jsonAnnotation.getString(AnnotationStoreStrings.TARGET.getName()))){
+    	JSONArray array = new JSONArray(jsonAnnotation.getString(AnnotationStoreStrings.TARGET.getName()));
+    	if (array.getJSONObject(0).has(AnnotationStoreStrings.SOURCE.getName())) {
+    		matcher = pattern.matcher(array.getJSONObject(0).
+    				getString(AnnotationStoreStrings.SOURCE.getName()));
+    	} else {
+    		matcher = pattern.matcher(array.getJSONObject(0).
+    				getString(AnnotationStoreStrings.ID.getName()));
+    	}
+    	
+        if (matcher.find()) {
+            annotation.setPageId(matcher.group(1));
+        }
     } else {
-        matcher = pattern.matcher(jsonAnnotation.getJSONObject(
-        AnnotationStoreStrings.TARGET.getName())
-        .getString(AnnotationStoreStrings.ID.getName()));
+        if (jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName()).has(AnnotationStoreStrings.SOURCE.getName())) {
+            matcher = pattern.matcher(jsonAnnotation.getJSONObject(
+            AnnotationStoreStrings.TARGET.getName())
+            .getString(AnnotationStoreStrings.SOURCE.getName()));
+        } else {
+            matcher = pattern.matcher(jsonAnnotation.getJSONObject(
+            AnnotationStoreStrings.TARGET.getName())
+            .getString(AnnotationStoreStrings.ID.getName()));
+        }
+         
+        if (matcher.find()) {
+          annotation.setPageId(matcher.group(1));
+        }
     }
-     
-    if (matcher.find()) {
-      annotation.setPageId(matcher.group(1));
-    }
+
   }
 
   /*
@@ -234,96 +224,117 @@ public class AnnotationConverter {
   }
 
   /*
+   * Builds target objects from JSON annotation.
+   */
+  private void buildTargetsFromJson(JSONObject jsonAnnotation, Annotation annotation)
+      throws JSONException {
+	  
+	  List<Target> targets = new ArrayList<>();
+	  JSONArray targetsJson = new JSONArray();
+	  // extract target(s) json
+	  if (isJsonArray(jsonAnnotation.getString(AnnotationStoreStrings.TARGET.getName()))) {
+		  targetsJson = jsonAnnotation.getJSONArray(AnnotationStoreStrings.TARGET.getName());
+	  } else {
+		  targetsJson.put(jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName()));
+	  }
+	  
+	  // create target(s)
+	  for (int i = 0; i < targetsJson.length(); i++) {
+		  String linkToResource = "";
+		  JSONObject targetJson = targetsJson.getJSONObject(i);
+		  // this is basically the code from above (Set page ID)
+		  if (targetJson.has(AnnotationStoreStrings.SOURCE.getName()) 
+					||targetJson.has(AnnotationStoreStrings.ID.getName())) {
+			  if (targetJson.has(AnnotationStoreStrings.SOURCE.getName())){
+				  linkToResource = targetJson.getString(AnnotationStoreStrings.SOURCE.getName());
+			  }
+			  if (targetJson.has(AnnotationStoreStrings.ID.getName())){
+				  linkToResource = targetJson.getString(AnnotationStoreStrings.ID.getName());
+			  }
+		  }
+		  Target target;
+
+          if (targetJson.has(AnnotationStoreStrings.SELECTOR.getName())){
+              target  = new Target(linkToResource, targetJson.getJSONObject(AnnotationStoreStrings.SELECTOR.getName()));
+          } else {
+              target = new Target(linkToResource, null);
+          }
+
+		  targets.add(target);
+	  }
+	  
+	  annotation.setTargets(targets);
+  }
+  
+  /*
    * Builds body objects from JSON annotation if JSON for bodies is JSONArray.
    */
-  private void buildBodiesFromJson(JSONObject jsonAnnotation, Annotation annotation)
-      throws JSONException {
-    //ensure body json is json array
-    JSONArray bodyJson = new JSONArray();
-    if (isJsonArray(jsonAnnotation.getString(AnnotationStoreStrings.BODY.getName()))) {
-      bodyJson = jsonAnnotation.getJSONArray(AnnotationStoreStrings.BODY.getName());
-    } else {
-      bodyJson.put(jsonAnnotation.getJSONObject(AnnotationStoreStrings.BODY.getName()));
+    private void buildBodiesFromJson(JSONObject jsonAnnotation, Annotation annotation)
+            throws JSONException {
+        //ensure body json is json array
+        JSONArray bodyJson = new JSONArray();
+        if (isJsonArray(jsonAnnotation.getString(AnnotationStoreStrings.BODY.getName()))) {
+            bodyJson = jsonAnnotation.getJSONArray(AnnotationStoreStrings.BODY.getName());
+        } else {
+            bodyJson.put(jsonAnnotation.getJSONObject(AnnotationStoreStrings.BODY.getName()));
+        }
+
+        List<Tag> tags = new ArrayList<>();
+        List<TextCard> textCards = new ArrayList<>();
+        for (int i = 0; i < bodyJson.length(); i++) {
+            //extract body json
+            JSONObject thisJson = bodyJson.getJSONObject(i);
+            createBody(thisJson, tags, textCards, annotation);
+
+        }
+        annotation.setTags(tags);
+        annotation.setTextCards(textCards);
     }
 
-    List<Tag> tags = new ArrayList<>();
-    List<TextCard> textCards = new ArrayList<>();
-    for (int i = 0; i < bodyJson.length(); i++) {
-      //extract body json
-      JSONObject thisJson = bodyJson.getJSONObject(i);
+    /*
+     * Creates tags/text cards for body and adds them to list.
+     */
+    private void createBody(JSONObject jsonBody, List<Tag> tags, List<TextCard> textCards, Annotation annotation)
+            throws JSONException {
+        Body thisBody;
+        String annotationId = annotation.getId();
+        List<String> creators = jsonBody.has(AnnotationStoreStrings.CREATOR.getName()) ?
+                buildCreatorList(jsonBody, annotation) : new ArrayList<>();
+        Instant created = jsonBody.has(AnnotationStoreStrings.CREATED.getName()) ?
+                extractDateFromJsonAnnotation(jsonBody, AnnotationStoreStrings.CREATED.getName()) : null;
+        Instant modified = jsonBody.has(AnnotationStoreStrings.MODIFIED.getName()) ?
+                extractDateFromJsonAnnotation(jsonBody, AnnotationStoreStrings.MODIFIED.getName()) : null;
+        String title = jsonBody.has(AnnotationStoreStrings.DC_TITLE.getName()) ?
+                jsonBody.getString(AnnotationStoreStrings.DC_TITLE.getName()) : null;
+        String subject = jsonBody.has(AnnotationStoreStrings.DC_SUBJECT.getName()) ?
+                jsonBody.getString(AnnotationStoreStrings.DC_SUBJECT.getName()) : null;
+        String value = jsonBody.has(AnnotationStoreStrings.VALUE.getName()) ?
+                jsonBody.getString(AnnotationStoreStrings.VALUE.getName()) : null;
+        String source = jsonBody.has(AnnotationStoreStrings.SOURCE.getName()) ?
+                jsonBody.getString(AnnotationStoreStrings.SOURCE.getName()) : null;
+        String purpose = jsonBody.has(AnnotationStoreStrings.PURPOSE.getName()) ?
+                jsonBody.getString(AnnotationStoreStrings.PURPOSE.getName()) : null;
 
-      //create body
-      Body thisBody = createBody(thisJson, tags, textCards);
+        if (purpose != null) {
+            if (purpose.equals(AnnotationStoreStrings.TAGGING.getName())) {
+                Tag tag = new Tag(UUID.randomUUID().toString(), annotationId, creators,
+                        created, modified, source, subject, title, value);
+                tag.setFullJson(jsonBody);
+                tags.add(tag);
+            } else {
+                TextCard textCard = new TextCard(UUID.randomUUID().toString(), annotationId, creators,
+                        created, modified, source, subject, title, value, purpose);
+                textCard.setFullJson(jsonBody);
+                textCards.add(textCard);
+            }
+        } else {
+            TextCard textCard = new TextCard(UUID.randomUUID().toString(), annotationId, creators,
+                    created, modified, source, subject, title, value, purpose);
+            textCard.setFullJson(jsonBody);
+            textCards.add(textCard);
+        }
 
-      //set annotation id
-      thisBody.setAnnotationId(annotation.getId());
-
-      //set full json
-      thisBody.setFullJson(thisJson);
-
-      //set creators
-      if (thisJson.has(AnnotationStoreStrings.CREATOR.getName())) {
-        thisBody.setCreators(buildCreatorList(thisJson, annotation));
-      }
-
-      //set created date
-      if (thisJson.has(AnnotationStoreStrings.CREATED.getName())) {
-        thisBody.setCreated(extractDateFromJsonAnnotation(thisJson,
-            AnnotationStoreStrings.CREATED.getName()));
-      }
-
-      //set modified date
-      if (thisJson.has(AnnotationStoreStrings.MODIFIED.getName())) {
-        thisBody.setModified(extractDateFromJsonAnnotation(thisJson,
-            AnnotationStoreStrings.MODIFIED.getName()));
-      }
-
-      //set title
-      if (thisJson.has(AnnotationStoreStrings.DC_TITLE.getName())) {
-        thisBody.setTitle(thisJson.getString(AnnotationStoreStrings.DC_TITLE.getName()));
-      }
-      
-     //set subject
-      if (thisJson.has(AnnotationStoreStrings.DC_SUBJECT.getName())) {
-        thisBody.setSubject(thisJson.getString(AnnotationStoreStrings.DC_SUBJECT.getName()));
-      } 
-
-      //set value
-      if (thisJson.has(AnnotationStoreStrings.VALUE.getName())) {
-        thisBody.setValue(thisJson.getString(AnnotationStoreStrings.VALUE.getName()));
-      }
-      
-      //set source
-      if (thisJson.has(AnnotationStoreStrings.SOURCE.getName())) {
-        thisBody.setSource(thisJson.getString(AnnotationStoreStrings.SOURCE.getName()));
-      }
     }
-    annotation.setTags(tags);
-    annotation.setTextCards(textCards);
-  }
-
-  /*
-   * Creates tags/text cards for body and adds them to list.
-   */
-  private Body createBody(JSONObject jsonBody, List<Tag> tags, List<TextCard> textCards)
-      throws JSONException {
-    Body thisBody;
-    if (jsonBody.has(AnnotationStoreStrings.PURPOSE.getName()) && jsonBody.getString(
-        AnnotationStoreStrings.PURPOSE.getName()).equals(
-        AnnotationStoreStrings.TAGGING.getName())) {
-      thisBody = new Tag(UUID.randomUUID().toString());
-      tags.add((Tag) thisBody);
-    } else {
-      thisBody = new TextCard(UUID.randomUUID().toString());
-      if (jsonBody.has(AnnotationStoreStrings.PURPOSE.getName()) && 
-          jsonBody.getString(AnnotationStoreStrings.PURPOSE.getName()) != null) {
-        thisBody.setPurpose(jsonBody.getString(
-            AnnotationStoreStrings.PURPOSE.getName()));
-      }
-      textCards.add((TextCard) thisBody);
-    }
-    return thisBody;
-  }
 
   /**
    * Builds a JSONObject from an existing annotation.
@@ -384,7 +395,6 @@ public class AnnotationConverter {
     //put bodies
     if (!(annotation.getTextCards().isEmpty() && annotation.getTags().isEmpty())) {
         // annotation.getTextCards() != null && annotation.getTags() != null
-      
       putBodies(jsonAnnotation, annotation);
     }
   
@@ -406,16 +416,16 @@ public class AnnotationConverter {
   }
 
   /*
-   * Puts bodies and color from annotation in JSONObject form in JSON annotation
+   * Puts bodies from annotation in JSONObject form in JSON annotation
    */
   private void putBodies(JSONObject jsonAnnotation, Annotation annotation) throws JSONException {
-    if (annotation.getTextCards().size() + annotation.getTags().size() == 1
-        && annotation.getColor() == null) {
+    if (annotation.getTextCards().size() + annotation.getTags().size() == 1) {
       jsonAnnotation.put(AnnotationStoreStrings.BODY.getName(), buildJsonFromBody(annotation));
     } else {
       jsonAnnotation.put(AnnotationStoreStrings.BODY.getName(), buildJsonFromBodies(annotation));
-
-      if (annotation.getColor() != null) {
+      // TODO: the following lines are commented out, because they create a new body when the shape of an annotation
+      //	is modified. This needs more investigation. What is the purpose/function of the following code?
+      /*if (annotation.getColor() != null) {
         JSONArray bodyArray = jsonAnnotation.getJSONArray(AnnotationStoreStrings.BODY.getName());
         boolean hasColor = false;
         for (int i = 0; i < bodyArray.length(); i++) {
@@ -433,7 +443,7 @@ public class AnnotationConverter {
           buildCreator(annotation, colorBody);
           jsonAnnotation.getJSONArray(AnnotationStoreStrings.BODY.getName()).put(colorBody);
         }
-      }
+      }*/
     }
   }
 
@@ -442,55 +452,15 @@ public class AnnotationConverter {
    */
   private void putTarget(JSONObject jsonAnnotation, Annotation annotation, String pageNumber)
       throws JSONException {
-    JSONObject target = new JSONObject();
-    JSONObject selector = new JSONObject();
-    if (jsonAnnotation.has(AnnotationStoreStrings.TARGET.getName())) {
-      // if target is no object and just contains the target URL
-      if (jsonAnnotation.get(AnnotationStoreStrings.TARGET.getName()) instanceof String) {
-          target.put(AnnotationStoreStrings.ID.getName(), jsonAnnotation.getString(AnnotationStoreStrings.TARGET.getName()));
-      } else {
-          target = jsonAnnotation.getJSONObject(AnnotationStoreStrings.TARGET.getName()); 
-      }
-      
-      if (target.has(AnnotationStoreStrings.SELECTOR.getName())) {
-        selector = target.getJSONObject(AnnotationStoreStrings.SELECTOR.getName());
-      }
+
+	JSONArray targetArray = new JSONArray();
+	for (Target target : annotation.getTargets()) {
+		// the targets' linkToResource needs to be set, as this is the first time it is present in takita core
+		// the targets' linkToResource differs for text and image file regarding their extensions
+        targetArray.put(target.getWADMSerialization());
     }
-
-    if (annotation.getSvgCode() != null && !annotation.getSvgCode().trim().equals("")) {
-      selector.put(AnnotationStoreStrings.TYPE.getName(),
-          AnnotationStoreStrings.SVG_SELECTOR.getName());
-
-      if (!annotation.getSvgCode().contains("<svg>")) {
-        selector.put(AnnotationStoreStrings.VALUE.getName(), "<svg xmlns=\"http://www.w3.org/2000/svg\">" + annotation.getSvgCode() + "</svg>");
-      } else {
-        String svgString = annotation.getSvgCode().substring(annotation.getSvgCode().indexOf('>') + 1, annotation.getSvgCode().lastIndexOf('<'));
-        selector.put(AnnotationStoreStrings.VALUE.getName(), "<svg xmlns=\"http://www.w3.org/2000/svg\">" + svgString + "</svg>");
-      };
-          
-      target.put(AnnotationStoreStrings.SELECTOR.getName(), selector);
-      
-      // source is url of page image
-      if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
-        target.put(AnnotationStoreStrings.TYPE.getName(),
-          AnnotationStoreStrings.SPECIFIC_RESOURCE.getName());
-        target.put(AnnotationStoreStrings.SOURCE.getName(), repositoryAccessService.getBaseUrl()
-          + repositoryAccessService.getStaticPath()
-          + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
-          + RepositoryAccessService.MASTER_JPG);
-      }
-    } else {
-       
-        if (annotation.getPageId() != null && !annotation.getPageId().trim().equals("")) {
-            target.put(AnnotationStoreStrings.ID.getName(), repositoryAccessService.getBaseUrl()
-          + repositoryAccessService.getStaticPath()
-          + annotation.getPageId() + RepositoryAccessService.DATA_PATH + pageNumber
-          + RepositoryAccessService.MASTER_JPG);
-        }
-        
-    }
-
-    jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), target);
+	// add the targets to the JSON annotation
+	jsonAnnotation.put(AnnotationStoreStrings.TARGET.getName(), targetArray);
   }
 
   /*
@@ -513,7 +483,7 @@ public class AnnotationConverter {
   private JSONArray buildJsonFromBodies(Annotation annotation)
       throws JSONException {
     JSONArray jsonBodies = new JSONArray();
-
+    //logger.error("Number of bodies: " + (annotation.getTags().size() + annotation.getTextCards().size()));
     if (!annotation.getTextCards().isEmpty()) {
       for (Body body : annotation.getTextCards()) {
         jsonBodies.put(bodyToJson(body));
@@ -524,12 +494,16 @@ public class AnnotationConverter {
         jsonBodies.put(bodyToJson(body));
       }
     }
+    //logger.error("JsonBodies: " + jsonBodies);
     return jsonBodies;
   }
 
-  /*
+  /**
    * Converts single body object to JSONObject.
-   */
+   * @param body body to convert to json
+   * @return json representation of body
+   * @throws JSONException
+   **/
   public JSONObject bodyToJson(Body body) throws JSONException {
     JSONObject jsonBody = new JSONObject();
     if (body.getFullJson() != null) {
@@ -696,7 +670,7 @@ public class AnnotationConverter {
           newCreators.put(person);
         }
       }
-      logger.info(Integer.toString(newCreators.length()));
+      //logger.info(Integer.toString(newCreators.length()));
       if (newCreators.length() == 1) {
           jsonBody.put(AnnotationStoreStrings.CREATOR.getName(), newCreators.get(0));
       } else {

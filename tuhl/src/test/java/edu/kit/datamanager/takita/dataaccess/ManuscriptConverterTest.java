@@ -4,6 +4,9 @@ import edu.kit.datamanager.takita.TestUtils;
 import edu.kit.datamanager.takita.model.Annotation;
 import edu.kit.datamanager.takita.model.Manuscript;
 import edu.kit.datamanager.takita.model.page.ResourceType;
+import edu.kit.datamanager.takita.model.target.SVGSelector;
+import edu.kit.datamanager.takita.model.target.Target;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -96,7 +99,12 @@ public class ManuscriptConverterTest {
         expectedAnnotation1.setId("http://wap/testContainer/1234");
         expectedAnnotation1.setCreated(Instant.parse("2019-07-04T06:57:35.961Z"));
         expectedAnnotation1.setPageId(page1.getString("id"));
-        expectedAnnotation1.setSvgCode("");
+        List<Target> targets1 = new ArrayList<>();
+        Target target1 = new Target();
+        SVGSelector svgSelector1 = new SVGSelector("<svg xmlns=\\\"http://www.w3.org/2000/svg\\\"><rect x=\\\"0\\\" y=\\\"3307\\\" width=\\\"587\\\" height=\\\"1047\\\"/></svg>");
+    	target1.setSelector(svgSelector1);
+    	targets1.add(target1);
+        expectedAnnotation1.setTargets(targets1);
         expectedAnnotation1.setIsAlgorithmAnnotation(true);
         annoList.add(expectedAnnotation1);
         annoMap.put(page1.getString("id"), annoList);
