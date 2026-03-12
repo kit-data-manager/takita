@@ -193,3 +193,4 @@ tAKITA is licensed under the Apache License, Version 2.0.
 ## Acknowledgement
     
 Development of this software product was funded by the German Research Foundation (DFG)—CRC 980 Episteme in Motion, Project-ID 191249397
+and by the CRC 1475 Metaphors of Religion. Religious Meaning-Making in Language Use, Project-ID 441126958.
