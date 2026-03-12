@@ -1,7 +1,6 @@
 package edu.kit.datamanager.takita.model.page;
 
 import java.time.Instant;
-import java.util.ArrayList;
 
 
 /**
@@ -13,6 +12,7 @@ public class ImagePage extends Page {
    * Constructor for the image page.
    *
    * @param id the id of the page
+   * @param resourceType resourceType of the page
    * @param pageNumber number of the page
    * @param created the date the page was created
    * @param resourceUrl URL of the image of the page
@@ -21,7 +21,6 @@ public class ImagePage extends Page {
   public ImagePage(String id, ResourceType resourceType, String pageNumber, Instant created,
                    String resourceUrl, String thumbResourceUrl) {
     super(id, resourceType, pageNumber, created, resourceUrl);
-    annotations = new ArrayList<>();
     this.thumbResourceUrl = thumbResourceUrl;
   }
 

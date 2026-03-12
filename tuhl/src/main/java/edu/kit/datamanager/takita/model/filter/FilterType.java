@@ -14,6 +14,10 @@ public enum FilterType {
     this.className = className;
   }
 
+  /**
+   * Gets type of filter class
+   * @return cls name
+   */
   public String getClassName() {
     return className;
   }

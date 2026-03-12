@@ -1,0 +1,35 @@
+
+#imageWorkspace {
+    position: relative;
+    display: inline-block;  /*shrinks container to image size */
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+#imageWorkspace img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    max-width: none;
+}
+
+#canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+
+/*
+   Optional. Prevent the accidential selection of the image (or other elements).
+   Old, but still works at least in Firefox, might be better to find a new method for this.
+   Very old source: https://stackoverflow.com/questions/5915023/preventing-images-and-text-to-be-selected
+*/
+.unselectable {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}

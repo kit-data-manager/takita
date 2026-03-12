@@ -3,7 +3,6 @@ package edu.kit.datamanager.takita.editor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-
 import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 import edu.kit.datamanager.takita.model.Annotation;
 import edu.kit.datamanager.takita.model.body.Tag;
@@ -13,8 +12,10 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.http.ResponseEntity;
@@ -99,18 +100,22 @@ public class RestController {
         try {
             JSONObject json = new JSONObject(jsonString);
             String pageId = json.getString("pageId");
-            String color = json.getString("color");
-            String svgCode = "";
-            if (json.has("svgCode")) {
-                svgCode = json.getString("svgCode");
+            JSONArray selectors = null;
+            String via = null;
+            if (json.has("selectors")) {
+            	selectors = (JSONArray) json.get("selectors");
             }
             String motivation = json.getString("motivation");
-            Annotation annotation = editorService.addAnnotation(pageId, color, svgCode, motivation);
+            if (json.has("via")) {
+                via = json.getString("via");
+            }
+            Annotation annotation = editorService.addAnnotation(pageId, selectors, motivation, via);
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
             mapper.registerModule(new JavaTimeModule());
             annotationJson = mapper.writeValueAsString(annotation);
         } catch (IOException | JSONException e) {
+            e.printStackTrace();
             return ResponseEntity.status(500).body(e.getMessage());
         } catch (NoSuchIndexEntryException e) {
             return ResponseEntity.status(404).body(e.getMessage());
@@ -123,6 +128,7 @@ public class RestController {
 
   /**
    * Delegates the task to read an annotation to IEditorService.
+   * Default mapping if no Accept header or Accept header 'application/json' is provided
    *
    * @param id identifies the annotation to get
    * @param request to access the headers from the HTTP request
@@ -181,6 +187,7 @@ public class RestController {
 
   /**
    * Delegates the task to update an annotation to IEditorService.
+   * Default mapping if no Content-Type header or Content-Type header 'application/json' is provided
    *
    * @param id identifies the annotation to update
    * @param jsonString holds the values for specifying the updated annotation
@@ -191,17 +198,15 @@ public class RestController {
    *    internal error occurs
    */
 
-    @RequestMapping(value = "/annotations/{id}", method = RequestMethod.PUT)
+    @RequestMapping(value = "/annotations/{id}", method = RequestMethod.PUT, consumes = "application/json")
     @ResponseBody
     public ResponseEntity updateAnnotationById(@PathVariable("id") final String id, @RequestBody final String jsonString, final WebRequest request, final HttpServletResponse response) {
         String annotationJson;
         try {
             JSONObject json = new JSONObject(jsonString);
-            String color = json.getString("color");
-            String svgCode = json.getString("svgCode");
+            JSONArray selectors = (JSONArray) json.get("selectors");
             String motivation = json.getString("motivation");
-            Annotation annotation = editorService
-              .updateAnnotation(decodeURL(id), color, svgCode, motivation);
+            Annotation annotation = editorService.updateAnnotation(decodeURL(id), selectors, motivation);
             ObjectMapper mapper = new ObjectMapper();
             mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
             mapper.registerModule(new JavaTimeModule());
@@ -215,6 +220,38 @@ public class RestController {
             return ResponseEntity.status(500).body(e.getMessage());
         }
         return ResponseEntity.ok().body(annotationJson);
+    }
+
+    /**
+     * This request mapping functions as direct PUT based on WADM data, therefore receiving full WADM json and overriding the existing anno data
+     *
+     * @param id identifies the annotation to update
+     * @param jsonString WADM json
+     * @param request to access the headers from the HTTP request
+     * @param response to access the headers for the HTTP response
+     * @return HTTP entity sent back, either ok for a success including the
+     *    annotation or 404 if the annotation cannot be found or 500 if an
+     *    internal error occurs
+     */
+    @RequestMapping(value = "/annotations/{id}", method = RequestMethod.PUT, consumes = "application/ld+json")
+    @ResponseBody
+    public ResponseEntity updateAnnotationByIdWadm(@PathVariable("id") final String id, @RequestBody final String jsonString, final WebRequest request, final HttpServletResponse response) {
+        String rawJson;
+        try {
+            Annotation annotation = editorService.updateWADMAnnotation(decodeURL(id), jsonString);
+            rawJson = editorService
+                    .getAnnotationJson(annotation.getId())
+                    .toString(2)
+                    .replace("\\/", "/");
+        } catch (IOException | JSONException e) {
+            return ResponseEntity.status(500).body(e.getMessage());
+        } catch (NoSuchIndexEntryException e) {
+            return ResponseEntity.status(404).body(e.getMessage());
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            return ResponseEntity.status(500).body(e.getMessage());
+        }
+        return ResponseEntity.ok().body(rawJson);
     }
 
   /**
@@ -735,6 +772,31 @@ public class RestController {
             return ResponseEntity.status(500).body(e.getMessage());
         }
         return ResponseEntity.ok().body(rawXml);
+    }
+    /**
+     * Delegates the task to get the raw XML file to a page to IEditorService.
+     *
+     * @param pageId identifies the page to get the content of
+     * @param fileName identifies the file associated to a page
+     * @param request to access the headers from the HTTP request
+     * @param response to access the headers for the HTTP response
+     * @return HTTP entity sent back, either ok for a success including the 
+     *    XML or 500 for an internal error
+     */
+
+    @RequestMapping(value = "/content/{pageId}/{fileName}", method = RequestMethod.GET, produces = "application/xml")
+    @ResponseBody
+    public ResponseEntity getPageContentXml(@PathVariable("pageId") String pageId, @PathVariable("fileName") String fileName, final WebRequest request, final HttpServletResponse response) {
+	    String rawXml;
+	    try {
+	        rawXml = editorService.getPageContentXml(pageId, fileName);
+	        } catch (IOException e) {
+	            return ResponseEntity.status(500).body(e.getMessage());
+	        } catch (InterruptedException e) {
+	            Thread.currentThread().interrupt();
+	            return ResponseEntity.status(500).body(e.getMessage());
+	        }
+	    return ResponseEntity.ok().body(rawXml);
     }
 
     private String decodeURL(String url) throws UnsupportedEncodingException {

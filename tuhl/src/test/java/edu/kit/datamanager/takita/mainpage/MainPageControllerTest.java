@@ -1,12 +1,14 @@
 package edu.kit.datamanager.takita.mainpage;
 
 import edu.kit.datamanager.takita.ControllerTestHelper;
+import edu.kit.datamanager.takita.configuration.SecurityConfiguration;
 import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
@@ -18,14 +20,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(MainPageController.class)
 @TestPropertySource("classpath:application-test.properties")
+@Import(SecurityConfiguration.class)
 class MainPageControllerTest {
 
   @Autowired
   private MockMvc mockMvc;
 
-  @MockBean
+  @MockitoBean
   private IMainPageService mockedMainPageService;
-  @MockBean
+  @MockitoBean
   private ISearchIndexService mockedSearchIndexService;
 
   @Test

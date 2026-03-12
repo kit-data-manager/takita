@@ -30,6 +30,7 @@ public class FilterService implements IFilterService {
   
   private List<Filter> currentFilters;
   private final Map<String, Filter> possibleFilters;
+  private final Map<String, Filter> possibleAnnotationFilters;
   
   /**
    * Constructor, initializes the list of current filters and the hashmap of possible filters.
@@ -37,38 +38,52 @@ public class FilterService implements IFilterService {
   public FilterService() {
     currentFilters = new ArrayList<>();
     possibleFilters = new LinkedHashMap<>();
+    possibleAnnotationFilters = new LinkedHashMap<>();
     readPossibleFilters();
   }
   
   private void readPossibleFilters() {
+	  // getting the possible filters for manuscripts and annotations
+	  readPossibleFiltersFromPath("/possibleFilters.json", possibleFilters);
+	  readPossibleFiltersFromPath("/possibleAnnotationFilters.json", possibleAnnotationFilters);
+  }
+  
+  /**
+   * Helper used to fill either the possible filters for manuscripts
+   * or annotations.
+   * 
+   * @param path path to the file
+   * @param possibleFilters map of filters (of this FilterServie) to be filled
+   */
+  private void readPossibleFiltersFromPath(String path, Map<String, Filter> possibleFilters) {
     try {
-      JSONArray possibleFiltersJson =
-          new JSONArray(readFromFile("/possibleFilters.json"));
-      
-      //Go through each filter representation and create Filter object
-      for (int i = 0; i < possibleFiltersJson.length(); i++) {
-        JSONObject filterJson = possibleFiltersJson.getJSONObject(i);
-        if (filterJson.has("field") && filterJson.has("type")) {
-          String field = filterJson.getString("field");
-          String typeString = filterJson.getString("type");
-          Filter filter;
-          if (typeString.equals("MATCH")) {
-            filter = new MatchFilter(field);
-          } else if (typeString.equals("RANGE")) {
-            filter = new RangeFilter(field);
+        JSONArray possibleFiltersJson =
+            new JSONArray(readFromFile(path));
+        
+        //Go through each filter representation and create Filter object
+        for (int i = 0; i < possibleFiltersJson.length(); i++) {
+          JSONObject filterJson = possibleFiltersJson.getJSONObject(i);
+          if (filterJson.has("field") && filterJson.has("type")) {
+            String field = filterJson.getString("field");
+            String typeString = filterJson.getString("type");
+            Filter filter;
+            if (typeString.equals("MATCH")) {
+              filter = new MatchFilter(field);
+            } else if (typeString.equals("RANGE")) {
+              filter = new RangeFilter(field);
+            } else {
+              throw new IllegalArgumentException("Cannot resolve FilterType " + typeString);
+            }
+            //Put them in the map of possible filters
+            possibleFilters.put(field, filter);
           } else {
-            throw new IllegalArgumentException("Cannot resolve FilterType " + typeString);
+            throw new IllegalArgumentException("The file possibleFilter.json does not match the "
+                + "required structure.");
           }
-          //Put them in the map of possible filters
-          possibleFilters.put(field, filter);
-        } else {
-          throw new IllegalArgumentException("The file possibleFilter.json does not match the "
-              + "required structure.");
         }
+      } catch (IOException | JSONException e) {
+        e.printStackTrace();
       }
-    } catch (IOException | JSONException e) {
-      e.printStackTrace();
-    }
   }
   
   private String readFromFile(String filename)
@@ -115,6 +130,16 @@ public class FilterService implements IFilterService {
   @Override
   public Map<String, Filter> getPossibleFilters() {
     return possibleFilters;
+  }
+  
+  /**
+   * Gets the map  of possible filters.
+   *
+   * @return list of possible filters
+   */
+  @Override
+  public Map<String, Filter> getPossibleAnnotationFilters() {
+    return possibleAnnotationFilters;
   }
   
   /**
@@ -167,6 +192,7 @@ public class FilterService implements IFilterService {
   public void updateModel(Model model) {
     model.addAttribute("currentFilters", getCurrentFilters());
     model.addAttribute("possibleFilters", getPossibleFilters());
+    model.addAttribute("possibleAnnotationFilters", getPossibleAnnotationFilters());
     model.addAttribute("filterSelection", new FilterSelection());
     model.addAttribute("filterConfigurationHolder",
         new FilterConfigurationHolder(getCurrentFilters()));

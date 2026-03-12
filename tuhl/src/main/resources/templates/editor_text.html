@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org" style="overflow-x: hidden;">
+<head>
+    <meta charset="UTF-8">
+    <!-- storing the token in the meta-element so the modularized code can access it from there -->
+    <meta name="_csrf" th:if="${securityEnabled}" th:content="${_csrf.token}"/>
+    <meta name="_csrf" th:if="!${securityEnabled} " th:content="notAvailableCSRFProtectionMightBeDisabled"/>
+    <title th:text="#{label.editor}"> </title>
+    <!-- define common scripts in head fragment to include here; the text editor can not use the head:baseContent fragment
+        as the jQuery instance imported there will override the jQuery instance used in the modularised code
+        and will break functionality. Hence thecontents of the head:baseContent fragment need to be copied in
+        manually for the textEditor -->
+    <!-- <th:block th:replace="~{head :: baseContent}"></th:block> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js"
+    integrity="sha512-ykZ1QQr0Jy/4ZkvKuqWn4iF3lqPZyij9iRv6sGqLRdTPkY69YX6+7wvVGmsdBbiIfN/8OdsI7HABjvEok6ZopQ=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- external/framework css-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" 
+    integrity="sha512-jnSuA4Ss2PkkikSOLtYs8BlYIeeIK1h99ty4YfvRPAlzr377vr3CXDb7sb7eEEBYjDtcYj+AjBH3FLv5uSJuXg==" 
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://unpkg.com/tabulator-tables@4.7.1/dist/css/tabulator.min.css" rel="stylesheet"
+    th:href="@{https://unpkg.com/tabulator-tables@4.7.1/dist/css/tabulator.min.css}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabulator/4.9.3/css/bootstrap/tabulator_bootstrap4.min.css"
+    integrity="sha512-pXZ8FsuOBAyDmJ3OWob4V2UgZWQ8zs8f99MrNv0sBG8VLzuucajpzJ3BIiVNzTpfIYgzWGUq0QPJ3Y/9Gr4h7Q=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- internal css-->
+    <link rel="stylesheet" th:href="@{/css/editor_sidebar.css}">
+    <link rel="stylesheet" th:href="@{/css/editor_shared.css}">
+    <link rel="stylesheet" th:href="@{/css/editor_text.css}">
+    <!-- loading the stylesheet associated with the project -->
+    <link rel="stylesheet" th:href="@{'/css/projectSpecific/'+${currentProject}+'.css'}">
+</head>
+<body class="container-fluid p-0" th:data-field="${currentAnnotationsJson}">
+
+<div id="sideBar" class="anno-side-bar annocollapse">
+    <div class="logo-name-wrapper">
+        <div class="logo-name">
+          <span class="logo-name__name">tAkita 1.0</span>
+        </div>
+        <div class="logo-name__button"
+            data-bs-toggle="tooltip" data-bs-placement="right"
+            th:data-bs-title="#{tooltips.expand_sidebar}">
+          <i
+            class="bx bx-arrow-from-left logo-name__icon annocollapse"
+            id="logo-name__icon"
+          ></i>
+        </div>
+      </div>
+
+  <div class="features-list">
+      <div class="category-header d-none">View Mode</div>
+    <li class="features-item draft"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.increase_fontSize}">
+      <i id="fontIncreaseButton" class="bx bx-zoom-in features-item-icon"></i>
+      <span id="fontIncreaseSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.increase_fontSize}">Increase Font Size</span>
+    </li>
+    <li class="features-item draft"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.decrease_fontSize}">
+      <i id="fontDecreaseButton" class="bx bx-zoom-out features-item-icon"></i>
+      <span id="fontDecreaseSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.decrease_fontSize}">Decrease Font Size</span>
+    </li>
+    <li class="features-item draft"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.reset_fontSize}">
+      <i id="resetFontButton" class="bx bx-font-size features-item-icon"></i>
+      <span id="resetFontSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.reset_fontSize}">Reset Font Size</span>
+    </li>
+    <li id="toggleViews" class="features-item draft d-none"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.toggle_views}">
+      <i id="toggleViewsButton" class="bx bx-toggle-left features-item-icon"></i>
+      <span id="toggleViewsSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.toggle_views}">Toggle Views</span>
+    </li>
+  </div>
+  <div class="features-list">
+      <div class="category-header d-none">Create Mode</div>
+	<li id="selectTextListItem" class="features-item draft"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.annotate}">
+      <i id="selectTextButton" class="bx bx-highlight features-item-icon"></i>
+      <span class="features-item-text annocollapse"
+        th:text="#{tooltips.annotate}">Select Text</span>
+    </li>
+   </div>
+   <!--<div class="features-list">
+       <div class="category-header">Modify Mode</div>
+    <li class="features-item star">
+      <i id="modifyButton" class="bx bx-edit features-item-icon" onclick="hideExpandedSidebar(); modifySelection();"></i>
+      <span class="features-item-text annocollapse" onclick="hideExpandedSidebar(); modifySelection();">Modify Selection</span>
+      <span class="tooltip">Modify Selection</span>
+    </li>
+    <li id="saveModificationListItem" class="features-item star">
+      <i id="saveButton" class="bx bx-save features-item-icon"></i>
+      <span class="features-item-text annocollapse">Save</span>
+      <span class="tooltip">Save</span>
+    </li>
+  </div>-->
+    <div class="features-list">
+    <li class="features-item star"
+        data-bs-toggle="tooltip" data-bs-placement="right"
+        th:data-bs-title="#{tooltips.pages_list}">
+      <i id="pagesButton" class="bx bx-book-open features-item-icon"></i>
+      <span id="pagesSpan" class="features-item-text annocollapse"
+        th:text="#{tooltips.pages_list}">Show Parts</span>
+    </li>
+        <li class="features-item star"
+            data-bs-toggle="tooltip" data-bs-placement="right"
+            th:data-bs-title="#{tooltips.annotation_table}">
+        <i id="annotationTableBottomButton" class="bx bx-list-ul features-item-icon"></i>
+        <span id="annotationTableBottomSpan" class="features-item-text annocollapse"
+            th:text="#{tooltips.annotation_table}">Show Annotations</span>
+    </li>
+  </div>
+</div>
+<div th:replace="~{header_editor.html :: header_editor}"></div>
+<!-- metadata obtained from manuscript_metadata.xml-->
+<div th:replace="~{tei_header_editor.html :: tei_header_editor}"></div>
+
+	<div id="textNavBar" class="textNavBar row d-none">
+        <div class="col-1"></div>
+        <div class="col-1"><button type="button" class="btn btn-secondary" id="prevChaptButton">Previous chapter</button></div>
+        <div class="col-2">
+	        <div class="row">
+	                <div class="col-7">
+	                    <button type="button" class="btn btn-secondary" id="goToChaptButton">Go to chapter</button>
+	                </div>
+	                <select class="col-5" id="chapterSelect">
+	                </select>
+	        </div>
+        </div>
+        <div class="col-1"><button type="button" class="btn btn-secondary" id="nextChaptButton">Next chapter</button></div>
+        <div class="col-1"><button type="button" class="btn btn-secondary" id="toggleShowAllButton">Show all</button></div>
+        <div class="col-6"></div>
+    </div>
+    <div id="textNavBarLow" class="textNavBar row d-none">
+        <div class="col-1"></div>
+        <div class="col-1"><button type="button" class="btn btn-secondary" id="prevChaptButtonLow">Previous chapter</button></div>
+        <div class="col-2">
+	        <div class="row">
+	                <div class="col-7">
+	                    <button type="button" class="btn btn-secondary" id="goToChaptButtonLow">Go to chapter</button>
+	                </div>
+	                <select class="col-5" id="chapterSelectLow">
+	                </select>
+	        </div>
+        </div>
+        <div class="col-1"><button type="button" class="btn btn-secondary" id="nextChaptButtonLow">Next chapter</button></div>
+        <div class="col-1"><button type="button" class="btn btn-secondary" id="toggleShowAllButtonLow">Show all</button></div>
+        <div class="col-6"></div>
+    </div>
+
+    <div id="editor">
+    <!-- th:fragment="editor -->
+    <!-- manuscript page -->
+    <div class="row">
+        <div class="col-7">
+            <div id="textWorkspace">
+                <div id="TEI" th:if="${currentPage.resourceType == (T(edu.kit.datamanager.takita.model.page.ResourceType).TEXT)}">Please wait until your text is loaded. If it doesn´t load, contact the developers.
+                </div>
+                <div th:if="${currentPage.resourceType != (T(edu.kit.datamanager.takita.model.page.ResourceType).TEXT)}">
+                	Something went wrong. Most likely you want to display something, that is not text.
+                </div>
+            </div>
+        </div>
+        <!-- bodies and annotations -->
+        <div class="col-5" id="annotationCardColumn">
+            <div class="row mx-auto" id="viewerHolder">
+                <div class="card card-body row-gap-2 invisible" id="annotationCard">
+                </div>
+            </div>
+        </div>
+    </div>
+
+	<!-- Part overview for the whole text onclick="window.open(${page.id})" no-wrap> -->
+    <div th:replace="~{editor-documentnavigation.html :: doc_navigation}"></div>
+
+    <div class="row d-none" id="annotationTableBottomDiv">
+        <div class="card">
+            <div style="padding: .2em .2em">
+                <div id="annotationTableBottom"></div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+    <!-- <div class="modal" id="createBody">
+        <div class="modal-content">
+            <span class="close-button" id="closeButton">&times;</span>
+            <form id="pickBodyTemplateForm"></form>
+            <form id="createForm"></form>
+        </div>
+    </div>
+
+    <div class="modal" id="createAnnotation">
+        <div class="modal-content">
+            <span class="close-button" id="closeButtonAnno">&times;</span>
+            <form id="pickAnnotationTemplateForm"></form>
+            <form id="createAnnotationForm"></form>
+        </div>
+    </div> -->
+
+    <div class="modal" tabindex="-1" role="dialog" id="createBody" data-bs-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New Body</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="pickBodyTemplateForm"></form>
+                    <form id="createForm"></form>   
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" tabindex="-1" role="dialog" id="createAnnotation" data-bs-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New Annotation</h5>
+                    <button type="button" id="dismissAnnotation" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="pickAnnotationTemplateForm"></form>
+                    <form id="createAnnotationForm"></form>    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="updateSelection" data-bs-backdrop="static">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Update Seleted Text</h5>
+                    <button type="button" id="dismissTargetUpdate" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div id="oldSelectedText"></div>
+                    <div id="newSelectedText"></div>
+                    <input class="btn btn-success" type="submit" value="Update + Save" id="updateTargetButton">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="loading" data-bs-backdrop="static">
+        <div class="modal-dialog modal-sm" role="document">
+            <div class="modal-content">
+                <div class="modal-body text-center">
+                    <i class='bx bx-loader-alt bx-spin'></i>
+                    <span>... loading ...</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <div class="modal" id="loading">
+        <div class="modal-loading">
+            <img th:src="@{/images/Book.gif}"/>
+        </div>
+    </div> -->
+    <div th:replace="~{pseudonym.html :: pseudonym_modal}"></div>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        // setting contextpath
+        window.CONTEXTPATH = /*[[@{/}]]*/ "/";
+        /*]]>*/
+    </script>
+
+    <script th:src="@{/js/texteditor-ng.js}" type="module"></script>
+	<script th:inline="javascript">
+        // thymeleaf template variables
+        /*<![CDATA[*/
+        window.TL_VARIABLES = {
+            "user" : {
+                "name" : /*[[${user.getName()}]]*/ 'default'
+            },
+            "buttons" : {
+                "edit" :[[#{buttons.edit}]],
+                "ok" : [[#{buttons.ok}]]
+            },
+            "tooltips": {
+                "add_body":[[#{tooltips.add_body}]],
+                "delete_annotation":[[#{tooltips.delete_annotation}]],
+                "expand_body":[[#{tooltips.expand_body}]],
+                "delete_body":[[#{tooltips.delete_body}]],
+                "annotation_table": {
+                    "display_annotation":[[#{tooltips.annotation_table.display_annotation}]],
+                }
+            }
+        }
+        /*]]>*/
+        
+        // storing currentPageNumber as its needed for the label of a metaphor annotation
+        window.CURRENTPAGENUMBER = /*[[${currentPage.pageNumber}]]*/ "default.number";
+        // storing currentPageUrl as its needed for the target creation
+        window.CURRENTPAGEURL = /*[[${currentPage.getResourceUrl()}]]*/ "default.url";
+        // storing currentPageId as its needed for getting the updated annoJson
+        window.CURRENTPAGEID = /*[[${currentPage.getId()}]]*/ "default.id";
+        const linkToResource = window.CONTEXTPATH + "editor_rest/content/" + window.CURRENTPAGEID + "/" + [[${fileName}]];
+
+        document.addEventListener("DOMContentLoaded", (_event) => {
+            const annotationsString = document.body.getAttribute('data-field');
+            window.textEditor.initializeTextEditorComponent(linkToResource, annotationsString, window.TL_VARIABLES);
+        });
+
+	   
+    </script>
+
+</body>
+
+</html>

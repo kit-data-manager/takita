@@ -42,6 +42,13 @@ public interface IFilterService {
   Map<String, Filter> getPossibleFilters();
   
   /**
+   * Gets all possible annotation filters.
+   *
+   * @return list of possible annotation filters
+   */
+  Map<String, Filter> getPossibleAnnotationFilters();
+  
+  /**
    * Adds filters to the list of currently used filters.
    *
    * @param fields new filters to add indicated by their fields
@@ -66,4 +73,5 @@ public interface IFilterService {
    * @param model the holder for model attributes, used to pass attributes back to the view
    */
   void updateModel(Model model);
+
 }

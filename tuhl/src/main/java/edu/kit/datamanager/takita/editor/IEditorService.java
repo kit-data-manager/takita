@@ -8,8 +8,10 @@ import edu.kit.datamanager.takita.model.page.Page;
 import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
+import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -24,16 +26,17 @@ public interface IEditorService {
    * Adds an annotation to the search index and the database.
    *
    * @param pageId ID of the page on which the annotation is located
-   * @param color color of the annotation
-   * @param svgCode svg code of the shape of the annotation
+   * @param selectors 1-n selectors (part of the target) of the annotation
    * @param motivation motivation of the annotation
+   * @param via via field of annotation
    * @return the added annotation
    * @throws InterruptedException when the http request to database is interrupted
    * @throws NoSuchIndexEntryException when there is no such page in the index
-   * @throws IOException when the http request to database was faulty
+   * @throws IOException when the http request to database was faulty and on connection error
+   * @throws JSONException when server returns non success code or response payload does not contain annotation
    */
-  Annotation addAnnotation(String pageId, String color, String svgCode, String motivation)
-      throws InterruptedException, NoSuchIndexEntryException, IOException;
+  Annotation addAnnotation(String pageId, JSONArray selectors, String motivation, String via)
+      throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException;
 
   /**
    * Gets an annotation from the searchIndexService by its ID.
@@ -48,28 +51,28 @@ public interface IEditorService {
    * Updates an annotation in the search index and the database.
    *
    * @param annotationId ID of the annotation to update
-   * @param color new color of the annotation
-   * @param svgCode new svg code of the annotation
+   * @param selectors 1-n selectors (part of the target) of the annotation
    * @param motivation new motivation of the annotation
    * @return updated annotation
    * @throws NoSuchIndexEntryException when there is no such annotation in the index
    * @throws InterruptedException when the http request to database is interrupted
    * @throws IOException when the http request to database was faulty
+   * @throws JSONException when there is a problem with the JSON object holding the selector
    */
-  Annotation updateAnnotation(String annotationId, String color, String svgCode, String motivation)
-      throws NoSuchIndexEntryException, InterruptedException, IOException;
+  Annotation updateAnnotation(String annotationId, JSONArray selectors, String motivation)
+      throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException;
 
   /**
-   * Validates an annotation in the search index and the database.
-   *
-   * @param annotationId ID of the annotation to be validated
-   * @return validated annotation
-   * @throws NoSuchIndexEntryException when there is no such annotation in the index
-   * @throws InterruptedException when the http request to database is interrupted
-   * @throws IOException when the http request to database was faulty
+   * Updates an annotation in the search index and the database, based on new WADM version
+   * @param annotationId ID of the annotation to update
+   * @param jsonString WADM compliant json-ld string
+   * @return updated annotation
+   * @throws JSONException
+   * @throws NoSuchIndexEntryException
+   * @throws IOException
+   * @throws InterruptedException
    */
-  Annotation validateAnnotation(String annotationId)
-      throws NoSuchIndexEntryException, InterruptedException, IOException;
+  Annotation updateWADMAnnotation(String annotationId, String jsonString) throws JSONException, NoSuchIndexEntryException, IOException, InterruptedException;
 
   /**
    * Deletes an annotation from the search index and the database.
@@ -110,6 +113,7 @@ public interface IEditorService {
    * @param title of the text card
    * @param subject of the text card
    * @param value of the text card
+   * @param source of the text card
    * @param purpose of the text card
    * @return added text card
    * @throws InterruptedException when the http request to database is interrupted
@@ -127,6 +131,7 @@ public interface IEditorService {
    * @param title of the tag
    * @param subject of the tag
    * @param value of the tag
+   * @param source of the tag
    * @return added tag
    * @throws InterruptedException when the http request to database is interrupted
    * @throws NoSuchIndexEntryException when there is no such annotation in the index
@@ -141,13 +146,15 @@ public interface IEditorService {
    *
    * @param textCardId of the text card which should be updated
    * @param title new title of the text card
+   * @param subject new subject of the text card
    * @param value new value of the text card
+   * @param source new source of the text card
    * @param purpose new purpose of the text card
    * @return updated text card
    * @throws InterruptedException when the http request to database is interrupted
    * @throws NoSuchIndexEntryException when there is no such text card in the index
    * @throws IOException when the http request to database was faulty
-     * @throws org.springframework.boot.configurationprocessor.json.JSONException
+   * @throws org.springframework.boot.configurationprocessor.json.JSONException
    */
   TextCard updateTextCard(String textCardId, String title, String subject, String value, String source, String purpose)
       throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException;
@@ -157,12 +164,14 @@ public interface IEditorService {
    *
    * @param tagId of the tag which should be updated
    * @param title new title of the tag
+   * @param subject new subject of the tag
    * @param value new value of the tag
+   * @param source new source of the tag
    * @return updated tag
    * @throws InterruptedException when the http request to database is interrupted
    * @throws NoSuchIndexEntryException when there is no such tag in the index
    * @throws IOException when the http request to database was faulty
-     * @throws org.springframework.boot.configurationprocessor.json.JSONException
+   * @throws JSONException
    */
   Tag updateTag(String tagId, String title, String subject, String value, String source)
       throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException;
@@ -225,6 +234,17 @@ public interface IEditorService {
       throws InterruptedException, IOException;
 
   /**
+   * Gets the raw XML of a page.
+   *
+   * @param pageId of the manuscript to which the raw XML should be gotten
+   * @param fileName identifies the file associated to a page
+   * @return page as XML as String
+   * @throws IOException when the http request to database was faulty
+   * @throws InterruptedException when the http request to database is interrupted
+   */
+  String getPageContentXml(String pageId, String fileName) throws IOException, InterruptedException;
+
+  /**
    * Gets the raw JSON of an annotation.
    *
    * @param annotationId of the annotation to which the raw JSON should be gotten
@@ -234,19 +254,57 @@ public interface IEditorService {
    */
   JSONObject getAnnotationJson(String annotationId)
       throws InterruptedException, IOException;
-  
-  
- public List<JSONObject> getAnnotationsForPage(String pageId, String pageNumber)
+
+  /**
+   * Gets annotations belonging to a page from the annotation store
+   * @param pageId Id of the page the annotations belong to
+   * @param pageNumber number / name of the page the annotations belong to
+   * @return list of annotations as json
+   * @throws InterruptedException
+   * @throws IOException
+   * @throws JSONException
+   */
+  List<JSONObject> getAnnotationsForPage(String pageId, String pageNumber)
     throws InterruptedException, IOException, JSONException;
 
-
-public List<Annotation> getAnnotationsForId(String id)
+  /**
+   * Gets list of annotations belonging to a page from the search index
+   * @param id Id of the page the annotations belong to
+   * @return list of annotations as objects
+   * @throws NoSuchIndexEntryException if page cannot be found in the search index
+   * @throws InterruptedException
+   * @throws IOException
+   * @throws JSONException
+   */
+  List<Annotation> getAnnotationsForId(String id)
     throws NoSuchIndexEntryException, InterruptedException, IOException, JSONException;
 
+  /**
+   * Set page as currently used page for editor
+   * @param pageId Id of the page to display in the editor
+   * @throws NoSuchIndexEntryException if page cannot be found in the search index
+   */
   void selectPage(String pageId) throws NoSuchIndexEntryException;
 
+  /**
+   * get manuscript the currently displayed page belongs to
+   * @return manuscript object
+   */
   Manuscript getCurrentManuscript();
 
+  /**
+   * get currently displayed page
+   * @return page object
+   */
   Page getCurrentPage();
 
+  /**
+   * Converts all given annotation to JSON. The JSON is used by the annotation
+   * editors in the frontend.
+   *
+   * @param annotations all annotations of a page
+   * @return JSONArray containing all annotations of a page
+   * @throws UnsupportedEncodingException
+   */
+  JSONArray convertDisplayableAnnotationsToJson(List<Annotation> annotations) throws UnsupportedEncodingException;
 }

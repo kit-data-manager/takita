@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 
+import edu.kit.datamanager.takita.model.filter.MatchFilter;
+
 import java.util.ArrayList;
 import java.util.List;
 

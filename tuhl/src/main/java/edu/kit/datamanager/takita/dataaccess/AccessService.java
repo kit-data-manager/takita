@@ -5,6 +5,7 @@ import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import edu.kit.datamanager.takita.model.Annotation;
 import edu.kit.datamanager.takita.model.Manuscript;
 import edu.kit.datamanager.takita.model.page.Page;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.time.Instant;
@@ -13,7 +14,6 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -30,9 +30,6 @@ public class AccessService implements IAccessService {
   private ISearchIndexService searchIndexService;
   private AnnotationConverter annotationConverter;
   private ManuscriptConverter manuscriptConverter;
-
-  @Value(("${devIndex.size}"))
-  private int devIndexSize;
 
   /**
    * Constructor, initializes instances of used interfaces.
@@ -62,20 +59,33 @@ public class AccessService implements IAccessService {
    * Gets all manuscripts from repository and fuses them with all annotations
    * from the annotation store.
    *
+   * @param numberManuscripts number of manuscripts to get. Set to -1 for all manuscripts
    * @return list of all manuscripts
    * @throws InterruptedException if the http request is interrupted
    * @throws JSONException if an error occurs while parsing json
    * @throws IOException if an error occurs while sending or receiving http request
    */
   @Override
-  public List<Manuscript> getAllManuscripts()
+  public List<Manuscript> getManuscripts(int numberManuscripts)
       throws InterruptedException, JSONException, IOException {
     List<Manuscript> manuscripts = new ArrayList<>();
-    Map<String, List<Annotation>> sortedAnnotations =
-        getAllAnnotationsSorted(annotationStoreAccessService.getAllAnnotations());
+
+    Map<String, List<Annotation>> sortedAnnotations = null;
+
+    /*
+     * Performance seems to be better for full index build if annotations are traversed first instead of getting them page by page
+     * This assessment depend on the data - if there are a lot of annotations in the anno server not related to the page DOs, this might not be true
+     * On build of limited index (numberManuscripts set), it is generally more useful to get the manuscripts first
+     * and to add the relevant annotations on the fly (handled by ManuscriptConverter).
+     * It might be beneficial in the future to unify the behaviour more to avoid accessing the annotation store in very different ways on index build.
+     */
+    if (numberManuscripts < 0) {
+      sortedAnnotations =
+          getAllAnnotationsSorted(annotationStoreAccessService.getAllAnnotations());
+    }
 
     logger.info("Getting all manuscripts.");
-    for (JSONObject manuscriptJson : repositoryAccessService.getAllManuscripts(-1)) {
+    for (JSONObject manuscriptJson : repositoryAccessService.getAllManuscripts(numberManuscripts)) {
       try {
         manuscripts.add(manuscriptConverter.buildManuscriptFromJson(manuscriptJson, sortedAnnotations));
       } catch (Exception e) {
@@ -97,13 +107,11 @@ public class AccessService implements IAccessService {
    * @throws JSONException if an error occurs while parsing json
    * @throws IOException if an error occurs while sending or receiving http request
    * @throws ParseException if an error occurs while parsing the date
-   * @throws NoSuchIndexEntryException if there is a problem finding a modified manuscript in the
    * index
    */
   @Override
   public List<Manuscript> getAllManuscriptsModifiedAfter(Instant timestamp)
-      throws InterruptedException, JSONException, IOException, ParseException,
-      NoSuchIndexEntryException {
+      throws InterruptedException, JSONException, IOException, ParseException {
     logger.info("Getting all manuscripts modified after {}.", timestamp);
     Set<Manuscript> manuscripts = new HashSet<>();
     List<Annotation> newAnnotations = new ArrayList<>();
@@ -176,27 +184,6 @@ public class AccessService implements IAccessService {
   }
 
   /**
-   * Gets a limited number of manuscripts with pages and annotations specified above.
-   *
-   * @return List of some manuscripts
-   * @throws InterruptedException when http request is interrupted
-   * @throws JSONException when there is a problem with parsing the JSON files
-   * @throws IOException when the http request is faulty
-   */
-  @Override
-  public List<Manuscript> getFewManuscripts()
-      throws InterruptedException, JSONException, IOException {
-    List<JSONObject> manuscriptsJson = repositoryAccessService.getAllManuscripts(devIndexSize);
-
-    List<Manuscript> reducedManuscripts = new ArrayList<>();
-    for (JSONObject manuscript : manuscriptsJson) {
-      reducedManuscripts.add(manuscriptConverter.buildManuscriptFromJson(manuscript, null));
-    }
-
-    return reducedManuscripts;
-  }
-
-  /**
    * Converts annotation to JSONObject so it can be added to database more easily,
    * then tells AnnotationStoreAccess to add it.
    *
@@ -216,25 +203,6 @@ public class AccessService implements IAccessService {
         .addAnnotation(annotationConverter.buildJsonFromAnnotation(annotation, pageNumber), projectId);
       logger.info("Nach Speicherung: " + response.toString());
     return annotationConverter.buildAnnotationFromJson(response);
-  }
-
-  /**
-   * Converts annotation to JSONObject so it can be added to database more easily,
-   * then tells AnnotationStoreAccess to add it to validated container.
-   *
-   * @param annotation validated annotation
-   * @param pageNumber number of the page on which the annotation is
-   * @return validated Annotation for replacing the old one
-   * @throws JSONException if an error occurs while parsing json
-   * @throws IOException if an error occurs while sending or receiving http request
-   * @throws InterruptedException if the http request is interrupted
-   */
-  @Override
-  public Annotation validateAnnotation(Annotation annotation, String pageNumber, String projectId)
-      throws JSONException, IOException, InterruptedException {
-    JSONObject validatedAnnotation = annotationStoreAccessService
-        .validateAnnotation(annotationConverter.buildJsonFromAnnotation(annotation, pageNumber), projectId);
-    return annotationConverter.buildAnnotationFromJson(validatedAnnotation);
   }
 
   /**
@@ -329,7 +297,20 @@ public class AccessService implements IAccessService {
   public String getRawManuscriptXml(String manuscriptId) throws IOException, InterruptedException {
     return repositoryAccessService.getXmlByManuscriptId(manuscriptId);
   }
-
+  
+  /**
+   * Gets the XML content given in the TEI standard of a page as the raw XML String.
+   *
+   * @param pageId the id of the manuscript
+   * @param fileName identifies the file associated to a page
+   * @return the raw xml as a String
+   * @throws IOException if an error occurs while sending or receiving http request
+   * @throws InterruptedException if the http request is interrupted
+   */
+  @Override
+  public String getRawPageContentXml(String pageId, String fileName) throws IOException, InterruptedException {
+	    return repositoryAccessService.getXmlByPageId(pageId, fileName);
+  }
 
   private Map<String, List<Annotation>> getAllAnnotationsSorted(
       List<JSONObject> jsonAnnotations) {
@@ -341,7 +322,7 @@ public class AccessService implements IAccessService {
         annotation = annotationConverter.buildAnnotationFromJson(jsonAnnotation);
       } catch (JSONException e) {
         logger.error("JSON Error on Annotation conversion. Skipping Annotation");
-        logger.error("Unparsable annotation: ", jsonAnnotation.optString(AnnotationStoreStrings.ID.getName()));
+        logger.error("Unparsable annotation: " + jsonAnnotation.optString(AnnotationStoreStrings.ID.getName()));
         logger.error(e.getMessage(), e);
         e.printStackTrace();
         continue;

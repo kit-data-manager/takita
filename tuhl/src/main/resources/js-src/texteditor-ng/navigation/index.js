@@ -1,0 +1,1 @@
+export { initializeNavigation } from './navigation';

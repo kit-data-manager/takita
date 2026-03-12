@@ -1,13 +1,15 @@
 import com.bmuschko.gradle.docker.tasks.image.Dockerfile
+import com.github.gradle.node.npm.task.NpmTask
 
 plugins {
-	id 'org.springframework.boot' version '3.2.2'
-	id 'io.spring.dependency-management' version '1.1.4'
-	id 'com.github.jk1.dependency-license-report' version '1.17'
-	id 'net.researchgate.release' version '3.0.2'
+	id 'org.springframework.boot' version '3.5.11'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id 'com.github.jk1.dependency-license-report' version '1.19'
+	id 'net.researchgate.release' version '3.1.0'
 	id 'java'
 	id 'jacoco'
 	id 'com.bmuschko.docker-spring-boot-application' version '9.4.0'
+	id 'com.github.node-gradle.node' version '7.1.0'
 }
 
 group = 'de.pse'
@@ -17,9 +19,31 @@ repositories {
 	mavenCentral()
 }
 
+node {
+	// Recommended: use a reproducible, locally managed Node distribution.
+	// See https://github.com/node-gradle/gradle-node-plugin for versions
+	download = true
+	version = '24.14.0' // pick your version
+	npmInstallCommand = System.getenv("CI") ? 'ci' : 'install'
+}
+
+tasks.register('npmBuild', NpmTask) {
+	dependsOn('npmInstall')
+	args = ['run', 'build']
+}
+
+tasks.register('npmTest', NpmTask) {
+	dependsOn('npmBuild')
+	args = ['run', 'test']
+}
+
+tasks.named('processResources') {
+	dependsOn('npmTest')
+}
+
 java {
 	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
+		languageVersion = JavaLanguageVersion.of(21)
 	}
 }
 
@@ -45,8 +69,9 @@ configurations {
 	intTestRuntimeOnly.extendsFrom runtimeOnly
 }
 ext {
-	set('testcontainersVersion', "1.20.0")
-	set('springDocVersion', "2.6.0")
+	set('testcontainersVersion', "1.21.4")
+	set('springDocVersion', "2.8.16")
+	set('keycloakVersion', "24.0.5")
 }
 
 dependencyManagement {
@@ -57,19 +82,28 @@ dependencyManagement {
 
 dependencies {
 	implementation 'org.webjars:bootstrap:5.3.8'
-	implementation 'org.mockito:mockito-core:5.9.0'
+	implementation 'org.mockito:mockito-core:5.22.0'
 	implementation 'org.springframework.data:spring-data-elasticsearch'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
 
 	// springdoc
 	//implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springDocVersion}"
 	implementation "org.springdoc:springdoc-openapi-starter-common:${springDocVersion}"
 	implementation "org.springdoc:springdoc-openapi-starter-webmvc-api:${springDocVersion}"
 
-	implementation 'com.google.code.gson:gson:2.10.1'
-	implementation 'jakarta.json:jakarta.json-api:2.1.0'
+	// AAI
+	// oauth client
+	implementation "org.springframework.boot:spring-boot-starter-oauth2-client"
+	// thymeleaf
+	implementation "org.thymeleaf.extras:thymeleaf-extras-springsecurity6"
+
+
+	implementation 'com.google.code.gson:gson:2.13.2'
+	implementation 'jakarta.json:jakarta.json-api:2.1.3'
 	implementation 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 	runtimeOnly 'com.h2database:h2'
 	implementation 'org.springframework.boot:spring-boot-configuration-processor'
@@ -87,6 +121,7 @@ dependencies {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 	intTestImplementation 'org.junit.jupiter:junit-jupiter'
+	intTestImplementation 'io.rest-assured:rest-assured'
 	intTestRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
@@ -136,9 +171,11 @@ check.dependsOn integrationTest
 tasks.register('createDockerfile', Dockerfile) {
 	def basename = tasks.named('bootJar').get().archiveFileName.get()
 	destFile = project.file('../Dockerfile')
-	from 'eclipse-temurin:17.0.12_7-jdk'
+	from 'eclipse-temurin:21.0.10_7-jdk'
 	exposePort 8080
 	entryPoint '/takita/start.sh'
+	/* Install dependency for Node (Debian-based images) */
+	runCommand 'apt-get update && apt-get install -y --no-install-recommends libatomic1 && rm -rf /var/lib/apt/lists/*'
 	runCommand 'mkdir -p /takita'
 	workingDir '/takita'
 	copyFile './build.sh', '/takita/build.sh'
@@ -161,5 +198,9 @@ jar {
 }
 
 tasks.withType(Copy).all {
+	duplicatesStrategy 'exclude'
+}
+
+tasks.withType(Jar).all {
 	duplicatesStrategy 'exclude'
 }

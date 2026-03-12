@@ -1,5 +1,6 @@
 package edu.kit.datamanager.takita.mainpage.search;
 
+import edu.kit.datamanager.takita.model.Annotation;
 import edu.kit.datamanager.takita.model.Manuscript;
 import java.util.List;
 import org.springframework.stereotype.Service;
@@ -22,12 +23,26 @@ public interface ISearchService {
   List<Manuscript> search(int pageNumber, String sortField, boolean sortAsc);
 
   /**
+   * Searches the index and returns all annotation results
+   *
+   * @return number of search results in list of annotations
+   */
+  List<Annotation> queryAllAnnotations();
+  
+  /**
    * Gets list of search results.
    *
    * @return search results in list of manuscripts
    */
   List<Manuscript> getResults();
   
+  /**
+   * Gets list of search results for annotation.
+   *
+   * @return search results in list of annotations
+   */
+  List<Annotation> getAnnoResults();
+
   /**
    * Gets the number of pages needed to contain all results.
    *
@@ -62,4 +77,6 @@ public interface ISearchService {
    * @param model the holder for model attributes, used to pass attributes back to the view
    */
   void updateModel(Model model);
-}
+
+
+  }

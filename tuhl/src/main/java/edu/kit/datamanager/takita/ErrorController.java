@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+/**
+ * Controller to bring error messages to the frontend and to display an error message
+ */
 @Controller
 @RequestMapping("/error")
 public class ErrorController extends BasicErrorController {

@@ -26,9 +26,14 @@ public class ControllerTestHelper {
       currentFilters.add(titleFilter);
       Map<String, Filter> possibleFilters = new HashMap<>();
       possibleFilters.put("title", titleFilter);
+      
+      Filter manuscriptTitleFilter = new MatchFilter("manuscriptTitle");
+      Map<String, Filter> possibleAnnotationFilters = new HashMap<>();
+      possibleAnnotationFilters.put("manuscriptTitle", manuscriptTitleFilter);
 
       model.addAttribute("currentFilters", currentFilters);
       model.addAttribute("possibleFilters", possibleFilters);
+      model.addAttribute("possibleAnnotationFilters", possibleAnnotationFilters);
       model.addAttribute("filterSelection", new FilterSelection());
       model.addAttribute("filterConfigurationHolder",
           new FilterConfigurationHolder(new ArrayList<Filter>()));

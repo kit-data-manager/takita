@@ -12,6 +12,7 @@ import edu.kit.datamanager.takita.editor.IEditorService;
 import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
 import edu.kit.datamanager.takita.model.Annotation;
 import edu.kit.datamanager.takita.model.Manuscript;
+import io.restassured.RestAssured;
 import io.specto.hoverfly.junit.core.Hoverfly;
 import io.specto.hoverfly.junit.core.HoverflyMode;
 import io.specto.hoverfly.junit.core.model.RequestFieldMatcher;
@@ -25,7 +26,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -94,6 +97,9 @@ class BackendITTest {
     @Value("classpath:hoverfly/repo/pages.json")
     Resource pagesjson;
 
+    @Value("classpath:hoverfly/repo/manuscript_metadata.xml")
+    Resource manuscriptxml;
+
     String manuscriptID;
     String pageID;
 
@@ -134,6 +140,12 @@ class BackendITTest {
                         .willReturn(success()
                                 .body(dataresourcesArray.get(1).toString())
                         )),
+                //Repo xml metadata
+                dsl(service(repositoryAccessService.getBaseUrl())
+                        .get(repositoryAccessService.getStaticPath() + manuscriptID + "/data/manuscript_metadata.xml")
+                        .willReturn(success()
+                                .body(manuscriptxml.getContentAsString(StandardCharsets.UTF_8))
+                        )),
                 //WAP root
                 dsl(service(environment.getProperty("intTest_annotationStore.baseurl"))
                         .get(environment.getProperty("intTest_annotationStore.root"))
@@ -171,7 +183,7 @@ class BackendITTest {
     @Test
     public void buildindexTest(Hoverfly hoverfly) throws IOException, JSONException, InterruptedException, NoSuchIndexEntryException {
 
-        searchIndexService.buildIndex();
+        searchIndexService.buildIndex(-1);
         Manuscript manuscript = searchIndexService.getManuscriptById(manuscriptID);
         List<Annotation> annos = searchIndexService.getAnnotationsForPageById(pageID);
 
@@ -184,7 +196,7 @@ class BackendITTest {
     }
 
     @Test
-    public void addAnnotationTest (Hoverfly hoverfly) throws NoSuchIndexEntryException, IOException, InterruptedException {
+    public void addAnnotationTest (Hoverfly hoverfly) throws NoSuchIndexEntryException, IOException, InterruptedException, JSONException {
 
         Instant testDate = Instant.now();
         Manuscript manuscript = searchIndexService.getManuscriptById(manuscriptID);
@@ -192,7 +204,7 @@ class BackendITTest {
         assertEquals(1, manuscript.getNoPages());
         assertEquals(1, annos.size());
 
-        editorService.addAnnotation(pageID, null, null, "testing");
+        editorService.addAnnotation(pageID, null, "testing", null);
         annos = searchIndexService.getAnnotationsForPageById(pageID);
         assertEquals(2, annos.size());
         assertTrue(annos.get(1).getCreated().isAfter(testDate));
@@ -200,6 +212,37 @@ class BackendITTest {
 
     public void editAnnotationTest (Hoverfly hoverfly) {
         //TODO: manipulate annotation
+    }
+
+    public void updateByWADMAnnotation (Hoverfly hoverfly) {
+        String annoString1 = """
+                {
+                  "@context": "http://www.w3.org/ns/anno.jsonld",
+                  "id": "http://example.org/anno18",
+                  "type": "Annotation",
+                  "target": {
+                    "id": "http://example.org/photo1",
+                    "type": "SpecificResource"
+                  }
+                }
+                """;
+
+        String annoString2 = """
+                {
+                  "@context": "http://www.w3.org/ns/anno.jsonld",
+                  "id": "http://example.org/anno18",
+                  "type": "Annotation",
+                  "body": {"value": "testing"},
+                  "target": {
+                    "id": "http://example.org/photo1",
+                    "type": "SpecificResource"
+                  }
+                }
+                """;
+
+
+
+
     }
 
     public void deleteAnnotationTest (Hoverfly hoverfly) {

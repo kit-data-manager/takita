@@ -7,6 +7,7 @@ import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -28,9 +29,12 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 @Configuration
 public class TakitaApplication implements ApplicationRunner, WebMvcConfigurer {
   private static final Logger logger = LoggerFactory.getLogger(TakitaApplication.class);
-
   @Autowired
   private ISearchIndexService searchIndexService;
+
+  @Value(("${devIndex.size}"))
+  private int devIndexSize;
+
 
   /**
    * Entry point of the program. Runs the application.
@@ -59,9 +63,13 @@ public class TakitaApplication implements ApplicationRunner, WebMvcConfigurer {
   private void handleArguments(ApplicationArguments args) {
     try {
       if (args.getNonOptionArgs().contains("buildDevIndex")) {
-        searchIndexService.buildSmallIndex();
+        searchIndexService.buildIndex(devIndexSize);
       }
-  
+
+      if (args.getNonOptionArgs().contains("buildIndex")) {
+        searchIndexService.buildIndex(-1);
+      }
+
       if (args.getNonOptionArgs().contains("updateIndex")) {
         searchIndexService.updateIndex();
       }
@@ -77,10 +85,6 @@ public class TakitaApplication implements ApplicationRunner, WebMvcConfigurer {
           updateIndexHour = Integer.parseInt(args.getOptionValues("hour").get(0));
         }
         searchIndexService.startIndexUpdateCycle(updateIndexDayInterval, updateIndexHour);
-      }
-  
-      if (args.getNonOptionArgs().contains("buildIndex")) {
-        searchIndexService.buildIndex();
       }
       
     } catch (InterruptedException e) {

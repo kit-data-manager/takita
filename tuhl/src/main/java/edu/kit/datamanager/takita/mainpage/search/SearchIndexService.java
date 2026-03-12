@@ -12,20 +12,16 @@ import edu.kit.datamanager.takita.model.page.Page;
 import edu.kit.datamanager.takita.model.page.ResourceType;
 import edu.kit.datamanager.takita.model.page.TextPage;
 import java.io.IOException;
+import java.net.ConnectException;
 import java.text.ParseException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
@@ -44,7 +40,10 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class  SearchIndexService implements ISearchIndexService {
-  
+
+  @Value("${annotationStore.defaultContainer:takitadefault}")
+  private String defaultContainer;
+
   private static final Logger logger = LoggerFactory.getLogger(SearchIndexService.class);
   public static final String INDEX_NAME = "search_index";
   private final IAccessService accessService;
@@ -79,15 +78,19 @@ public class  SearchIndexService implements ISearchIndexService {
   /**
    * Builds a new search index from scratch.
    *
+   * @param indexSize number of manuscripts for index build, -1 for all
    * @throws IOException if an error occurs while sending/receiving http request to annotation store
    * @throws InterruptedException if http request is interrupted
    * @throws JSONException if an error occurs while parsing the JSON
    */
   @Override
-  public void buildIndex() throws InterruptedException, IOException, JSONException {
+  public void buildIndex(int indexSize) throws InterruptedException, IOException, JSONException {
     IndexOperations indexOp = elasticsearchOperations.indexOps(Manuscript.class);
 
     logger.info("Index rebuild started. Deleting old index.");
+    if (indexSize > 0) {
+      logger.info("Index will be limited to " + indexSize + " manuscripts.");
+    }
     final Instant startBuild = Instant.now();
     lastUpdatedIndex = Instant.now();
     deleteIndex(indexOp);
@@ -101,19 +104,30 @@ public class  SearchIndexService implements ISearchIndexService {
     
     createMappings(indexOp);
     logger.info("Mappings created.");
-    
-    List<Manuscript> allManuscripts = accessService.getAllManuscripts();
-    for (Manuscript m : allManuscripts) {
-      logger.info("Finished. Indexing manuscript {}", m.getId());
-      manuscriptRepository.save(m);
+
+    List<Manuscript> allManuscripts;
+    try {
+      allManuscripts = accessService.getManuscripts(indexSize);
+
+      for (Manuscript m : allManuscripts) {
+        logger.info("Finished. Indexing manuscript {}", m.getId());
+        manuscriptRepository.save(m);
+      }
+
+      indexOp.refresh();
+
+      Duration duration = Duration.between(startBuild, Instant.now());
+      logger.info("Finished index build in {} minutes and {} seconds",
+              duration.toMinutes(),
+              duration.getSeconds() % 60);
+
+    } catch (ConnectException ce) {
+      logger.error("Aborting index build due to connection error.");
+      Duration duration = Duration.between(startBuild, Instant.now());
+      logger.error("Failed index build in {} minutes and {} seconds",
+              duration.toMinutes(),
+              duration.getSeconds() % 60);
     }
-    
-    indexOp.refresh();
-    
-    Duration duration = Duration.between(startBuild, Instant.now());
-    logger.info("Finished index build in {} minutes and {} seconds",
-        duration.toMinutes(),
-        duration.getSeconds() % 60);
   }
   
   private void deleteIndex(IndexOperations indexOp) {
@@ -143,7 +157,7 @@ public class  SearchIndexService implements ISearchIndexService {
 
     if (!indexOp.exists()) {
       logger.info("Index does not exist yet. Starting build.");
-      buildIndex();
+      buildIndex(-1);
     } else {
       logger.info("Index update started. This may take a while.");
       Instant timestamp = lastUpdatedIndex;
@@ -209,44 +223,6 @@ public class  SearchIndexService implements ISearchIndexService {
 
 }
   
-  /**
-   * Builds a new search index from scratch. This search index is limited to 5 manuscripts.
-   *
-   * @throws IOException if an error occurs while sending/receiving http request to annotation store
-   * @throws InterruptedException if http request is interrupted
-   * @throws JSONException if an error occurs while parsing the JSON
-   */
-  @Override
-  public void buildSmallIndex() throws InterruptedException, IOException, JSONException {
-    IndexOperations indexOp = elasticsearchOperations.indexOps(Manuscript.class);
-
-    logger.info("Limited Index rebuild started. Deleting old index.");
-    final Instant startBuild = Instant.now();
-    deleteIndex(indexOp);
-
-    Document settings = Document.create();
-    settings.put("index.mapping.nested_objects.limit", 1000000); //might be overkill on dev index. maybe limit number of annotations on small index creation instead
-    logger.info("Building new small index.");
-
-    indexOp.create(settings);
-    logger.info("Index created.");
-
-    createMappings(indexOp);
-    logger.info("Mappings created.");
-    
-    List<Manuscript> allManuscripts = accessService.getFewManuscripts();
-    logger.info("Indexing Manuscripts.");
-    
-    for (Manuscript manuscript : allManuscripts) {
-      manuscriptRepository.save(manuscript);
-    }
-    indexOp.refresh();
-    
-    Duration duration = Duration.between(startBuild, Instant.now());
-    logger.info("Finished limited index build in {} minutes and {} seconds", duration.toMinutes(),
-        duration.getSeconds() % 60);
-  }
-  
   private void createMappings(IndexOperations indexOp) {
     indexOp.putMapping(indexOp.createMapping(Manuscript.class));
     indexOp.putMapping(indexOp.createMapping(ImagePage.class));
@@ -271,21 +247,36 @@ public class  SearchIndexService implements ISearchIndexService {
   @Override
   public Annotation addAnnotation(Annotation annotation) throws InterruptedException, IOException,
       JSONException, NoSuchIndexEntryException {
-   
-    Page page = getPageById(annotation.getPageId());
-    String manuscriptPublisher = getManuscriptById(page.getManuscriptId()).getPublisher();
+
+    Page page;
+    try {
+      page = getPageById(annotation.getPageId());
+    } catch (NoSuchIndexEntryException e) { //log reason and rethrow
+      logger.error("Page " + annotation.getPageId() + " not found in index");
+      throw e;
+    }
+
+    String manuscriptPublisher;
+    try {
+      manuscriptPublisher = getManuscriptById(page.getManuscriptId()).getPublisher();
+    } catch (NoSuchIndexEntryException e) { //log reason and rethrow
+      logger.error("Manuscript " + page.getManuscriptId() + " not found in index");
+      throw e;
+    }
         
-    // bad string magic, take everything after the last occurence of "-", 
-    // omit the space and convert it to lower case to use this as a subfolder 
-    // in the annotion store
-    String projectId = manuscriptPublisher.substring(manuscriptPublisher.lastIndexOf("-") + 2).toLowerCase() + "/";
+    // extract publisher info from repo MD and convert to wap server container
+    // "Project - Subproject" will be converted to container name "subproject"
+    // "Proect" will be converted to container name "project"
+    //TODO: this functionality is very ol/dd behaviour and should be improved
+    List<String> publisherElements = Arrays.stream(manuscriptPublisher.split("-")).toList();
+    String projectId = publisherElements.getLast().trim().toLowerCase() + "/";
     Annotation newAnnotation;
     
     // if a parsing error occurs then store the annotation to a default subfolder
     if (projectId != null && !projectId.equals(manuscriptPublisher)) {
         newAnnotation = accessService.addAnnotation(annotation, page.getPageNumber(), projectId);
     } else {
-        newAnnotation = accessService.addAnnotation(annotation, page.getPageNumber(), "takitadefault");
+        newAnnotation = accessService.addAnnotation(annotation, page.getPageNumber(), defaultContainer);
         logger.info("ProjectId could not be parsed from " + manuscriptPublisher + ", result: " + projectId);
     }
     
@@ -347,7 +338,7 @@ public class  SearchIndexService implements ISearchIndexService {
   }
 
   /**
-   * Updates an annotation in the search index.
+   * Updates an annotation in the search index and the annotation store
    *
    * @param annotation updated Annotation
    * @return updated annotation
@@ -369,43 +360,6 @@ public class  SearchIndexService implements ISearchIndexService {
     applyChangedAnnotation(page, annotation, newAnnotation);
     
     return newAnnotation;
-  }
-
-  /**
-   * Validates an annotation in the search index and notifies the dataaccess package.
-   *
-   * @param annotation unvalidated annotation
-   * @return validated annotation
-   * @throws IOException if an error occurs while sending/receiving http request to annotation store
-   * @throws InterruptedException if http request is interrupted
-   * @throws JSONException when the object couldn't be parsed to JSON
-   * @throws NoSuchIndexEntryException when there is no object with this ID in the search index
-   */
-  @Override
-  public Annotation validateAnnotation(Annotation annotation)
-      throws IOException, InterruptedException, JSONException, NoSuchIndexEntryException {
-
-    // TODO: same code lines for addAnnotation and validateAnnotation, create new method for that
-    Page page = getPageById(annotation.getPageId());
-    String manuscriptPublisher = getManuscriptById(page.getManuscriptId()).getPublisher();
-        
-    // bad string magic, take everything after the last occurence of "-", 
-    // omit the space and convert it to lower case to use this as a subfolder 
-    // in the annotion store
-    String projectId = manuscriptPublisher.substring(manuscriptPublisher.lastIndexOf("-") + 2).toLowerCase() + "/";
-    Annotation validatedAnnotation;
-    
-    // if a parsing error occurs then store the annotation to a default subfolder
-    if (projectId != null && !projectId.equals(manuscriptPublisher)) {
-        validatedAnnotation = accessService.validateAnnotation(annotation, page.getPageNumber(), projectId);
-    } else {
-        validatedAnnotation = accessService.validateAnnotation(annotation, page.getPageNumber(), "takitadefault");
-        logger.info("ProjectId could not be parsed from " + manuscriptPublisher + ", result: " + projectId);
-    }
-    
-    applyChangedAnnotation(page, annotation, validatedAnnotation);
-    
-    return validatedAnnotation;
   }
   
   private void applyChangedAnnotation(Page page, Annotation annotation,
@@ -523,7 +477,9 @@ public class  SearchIndexService implements ISearchIndexService {
   private TextCard findTextCardInManuscriptById(Manuscript manuscript, String id)
       throws NoSuchIndexEntryException {
     for (Page page : manuscript.getPages()) {
-      if (page.getResourceType() == ResourceType.IMAGE) {
+      // the reasoning for this if-clause remains unclear (29.03.2023)
+      // TODO: investigate, if this if-clause is necessary
+      if (page.getResourceType() == ResourceType.IMAGE || page.getResourceType() == ResourceType.TEXT) {
         for (Annotation annotation : page.getAnnotations()) {
           for (TextCard card : annotation.getTextCards()) {
             if (card.getId().equals(id)) {
@@ -789,7 +745,22 @@ public class  SearchIndexService implements ISearchIndexService {
   public String getRawManuscriptXml(String manuscriptId) throws IOException, InterruptedException {
     return accessService.getRawManuscriptXml(manuscriptId);
   }
-
+  
+  /**
+   * Gets the XML content of a page as the raw XML String.
+   *
+   * @param pageId the id of the page
+   * @param fileName identifies the file associated to a page
+   * @return the raw xml as a String
+   * @throws IOException if an error occurs while sending/receiving http request to annotation store
+   * @throws InterruptedException if http request is interrupted
+   * 
+   */
+  @Override
+  public String getRawPageContentXml(String pageId, String fileName) throws IOException, InterruptedException {
+	    return accessService.getRawPageContentXml(pageId, fileName);
+  }
+  
   /**
    * Starts the update cycle of the search index with the specified parameters.
    *

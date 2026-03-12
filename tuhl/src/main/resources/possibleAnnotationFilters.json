@@ -1,0 +1,30 @@
+[
+  {
+    "field": "creator",
+    "type": "MATCH"
+  },
+  {
+    "field": "lastModified",
+    "type": "RANGE"
+  },
+  {
+    "field": "created",
+    "type": "RANGE"
+  },
+  {
+    "field": "label",
+    "type": "MATCH"
+  },
+  {
+    "field": "manuscriptTitle",
+    "type": "MATCH"
+  },
+  {
+    "field": "textCards",
+    "type": "MATCH"
+  },
+  {
+    "field": "tags",
+    "type": "MATCH"
+  }
+]

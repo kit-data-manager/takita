@@ -1,0 +1,42 @@
+/* C04 specifics */
+/* ------------------------------------*/
+
+tei-div[type=replies] {
+    margin-left: 1em;
+    border-left: 1px solid gray;
+    padding-left: .5em;
+}
+
+tei-div[type=orphan-posts]::before {
+    content: "Orphan Posts: "
+}
+
+tei-post {
+    display: block;
+    border-bottom: 1px solid purple;
+    padding: .5em 0;
+    margin-bottom: 1em;
+}
+
+tei-post:before {
+    content: attr(who);
+    color: gray;
+}
+
+tei-numeric::before {
+    content: "Score: " attr(value);
+    padding-bottom: 1em;
+    color: gray;
+}
+
+/* block quotes */
+tei-quote:has(tei-ab) {
+	border-left: medium solid purple;
+	display: block;
+	padding-left: .2em;
+}
+
+tei-quote:has(tei-ab)::before,
+tei-quote:has(tei-ab)::after {
+	content: none;
+}

@@ -3,36 +3,89 @@
     {
       "name": "annotationStore.url",
       "type": "java.lang.String",
-      "description": "The url of the annotation container in the annotation store."
+      "description": "The url of the annotation container in the annotation store (required)"
+    },
+    {
+      "name": "annotationStore.defaultContainer",
+      "type": "java.lang.String",
+      "description": "Fallback default container takita will try to write to in annotation server"
     },
     {
       "name": "repository.staticPath",
       "type": "java.lang.String",
-      "description": "The path to the manuscript repository."
+      "description": "The path to the manuscript repository"
     },
     {
       "name": "repository.baseUrl",
       "type": "java.lang.String",
-      "description": "The base URL of the manuscript repository server."
+      "description": "The base URL of the manuscript repository server (required)"
     },
     {
       "name": "elasticsearch.port",
       "type": "java.lang.String",
-      "description": "Port of the elasticsearch server."
+      "description": "Port of the elasticsearch server (required)"
     },
     {
       "name": "elasticsearch.ip",
       "type": "java.lang.String",
-      "description": "IP of the elasticsearch server."
+      "description": "IP of the elasticsearch server (required)"
     },
     {
       "name": "sparqlQuery.urlPrefix",
       "type": "java.lang.String",
-      "description": "The url prefix of the sparql query used for the http request."
+      "description": "The url prefix of the sparql query used for the http request (required)"
     },
     {
       "name": "devIndex.size",
       "type": "java.lang.String",
       "description": "The size of the dev index. It represents the number of manuscripts."
+    },
+    {
+      "name": "takita.feedbackLink",
+      "type": "java.lang.String",
+      "description": "Link to provide user with functionality behind feedback button in UI (for example a mailto: link)"
+    },
+    {
+      "name": "exist.baseUrl",
+      "type": "java.lang.String",
+      "description": "baseUrl of your exist-db instance (optional)"
+    },
+    {
+      "name": "exist.restEndpoint",
+      "type": "java.lang.String",
+      "description": "staticPath to the REST endpoint (optional)"
+    },
+    {
+      "name": "exist.idPrefix",
+      "type": "java.lang.String",
+      "description": "sometimes the xml:ids have been prefixed with a String (optional)"
+    },
+    {
+      "name": "exist.user.name",
+      "type": "java.lang.String",
+      "description": "db user (optional)"
+    },
+    {
+      "name": "exist.user.password",
+      "type": "java.lang.String",
+      "description": "db password (optional)"
+    },    {
+      "name": "takita.security.enabled",
+      "type": "java.lang.String",
+      "description": "Enable/disable (default) authentication"
+    },    {
+      "name": "takita.security.success-url",
+      "type": "java.lang.String",
+      "description": "url to open on successful authentication"
+    },
+    {
+      "name": "takita.security.redirect-uri",
+      "type": "java.lang.String",
+      "description": "uri to open on logout"
+    },
+    {
+      "name": "takita.templates.addons",
+      "type": "java.lang.String",
+      "description": "folder to lookup custom thymeleaf templates within templates folder (default: 'projectspecific')"
     }
   ] }

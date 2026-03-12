@@ -1129,6 +1129,40 @@ function init(annotations) {
     // Drawing anno svgs on first opening of page
     annoJson = JSON.parse(annotations);
     drawAnnos(annoJson);
+
+    // Showing the annotation and highlighting the shape on first opening of page
+    const editorURL = new URL(window.location);
+    if (editorURL.searchParams.size > 0){
+        selectAnnotationOnLoad(editorURL);
+    }
+}
+
+/* function to be called on load of the editor;
+    simulates a click on the annotations shape on the canvas.
+    The annotation id gets parsed from the search parameter of the
+    url.
+*/
+function selectAnnotationOnLoad(editorURL){
+
+    const annotationId = editorURL.searchParams.get("annotationId");
+    let targetShape = undefined;
+    // getting the shape corresponding to the annotation
+    // raphael doesn't offer a filter()-function
+    paper.forEach(shape => {
+        if (shape.annoId === annotationId){
+            targetShape = shape;
+        }
+    });
+
+    if (targetShape){
+        // display the annotation with the id stored in the url
+        selectAnnotation(null, encodeAnnoId(annotationId));
+        if (document.getElementById('annotationCard').classList.contains('is-hidden')) {
+            toggleOverview('annotationCard');
+        }
+        // highlight the shape on the canvas
+        toggleShapeSelect(targetShape);
+    }
 }
 
 function confirmDiscardChanges() {

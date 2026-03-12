@@ -49,7 +49,15 @@ public interface IAnnotationStoreAccessService {
    */
   List<JSONObject> getAnnotationsByPageId(String pageId, String pageNumber)
       throws IOException, InterruptedException, JSONException;
-  
+
+  /**
+   * Gets annotations with specific target source
+   * @param target value of the target source
+   * @return List of annotations belonging to a target
+   * @throws IOException if an I/O error occurs when sending or receiving http request
+   * @throws InterruptedException if the http request is interrupted
+   * @throws JSONException if the response body could not be parsed to json
+   */
   List<JSONObject> getAnnotationsByTarget(String target)
       throws IOException, InterruptedException, JSONException;
 
@@ -74,18 +82,6 @@ public interface IAnnotationStoreAccessService {
    */
   List<JSONObject> getAnnotationsModifiedAfter(Instant timestamp)
       throws JSONException, IOException, InterruptedException;
-
-  /**
-   * Adds a validated annotation to validated container in the annotation store.
-   *
-   * @param jsonAnnotation validated annotation
-   * @return annotation in validated container with etag
-   * @throws IOException if an I/O error occurs when sending or receiving http request
-   * @throws InterruptedException if the http request is interrupted
-   * @throws JSONException if the response body could not be parsed to json
-   */
-  JSONObject validateAnnotation(JSONObject jsonAnnotation, String projectId)
-      throws IOException, InterruptedException, JSONException;
 
   /**
    * Updates an annotation already in the annotation store.
