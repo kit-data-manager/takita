@@ -570,11 +570,11 @@ class AccessServiceTest {
     manuscript3.setLastModified(Instant.parse("2019-03-11T14:09:50Z"));
 
 
-    List<String> creatorListAkita = new ArrayList<>();
-    creatorListAkita.add("M. K.");
-    creatorListAkita.add("Akita");
-    List<String> creatorList = new ArrayList<>();
-    creatorList.add("M. K.");
+    List<String> creatorMichaelAkita = new ArrayList<>();
+    creatorMichaelAkita.add("M. K.");
+    creatorMichaelAkita.add("Akita");
+    List<String> creatorMichael = new ArrayList<>();
+    creatorMichael.add("M. K.");
 
     List<String> creatorAlgorithm = new ArrayList<>();
     creatorAlgorithm.add("urn:uuid:c4dbcb3f-f03f-3ff6-8c6d-c0cdb44a06ac");
@@ -606,7 +606,7 @@ class AccessServiceTest {
     Annotation annotation3 = new Annotation();
     annotation3.setId("http://sampleannoserver.edu/wap/a04/validated/7a82a8b2-0398-4b59-aed3-ab6597b26d39");
     annotation3.setCreated(Instant.parse("2019-07-04T09:23:24.014Z"));
-    annotation3.setCreators(creatorList);
+    annotation3.setCreators(creatorMichael);
     annotation3.setModified(Instant.parse("2019-07-04T09:25:56Z"));
     annotation3.setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/471a5c9c-25a5-4485-a213-7b51221dba9b");
     annotation3.setColor(Color.DEFAULT);
@@ -619,7 +619,7 @@ class AccessServiceTest {
     Annotation annotation4 = new Annotation();
     annotation4.setId("http://sampleannoserver.edu/wap/a04/validated/cd9267d1-5402-4f48-ae99-8b5559ccc456");
     annotation4.setCreated(Instant.parse("2019-07-04T07:00:54.634Z"));
-    annotation4.setCreators(creatorList);
+    annotation4.setCreators(creatorMichael);
     annotation4.setModified(Instant.parse("2019-07-04T09:14:59Z"));
     annotation4.setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/c6c83ff9-3b68-4965-9e7a-359abad3eb9d");
     annotation4.setColor(Color.TEXT_REGION);
@@ -655,7 +655,7 @@ class AccessServiceTest {
     textCard3.setAnnotationId(annotation3.getId());
     textCard3.setCreated(annotation3.getCreated());
     textCard3.setModified(annotation3.getModified());
-    textCard3.setCreators(creatorList);
+    textCard3.setCreators(creatorMichael);
     textCard3.setFullJson(
         new JSONObject(readStringFromRelativePath("getManuscripts/textCard3.json")));
     annotation3.addTextCard(textCard3);
@@ -664,7 +664,7 @@ class AccessServiceTest {
     tag1.setAnnotationId(annotation4.getId());
     tag1.setCreated(annotation4.getCreated());
     tag1.setModified(annotation4.getModified());
-    tag1.setCreators(creatorList);
+    tag1.setCreators(creatorMichael);
     tag1.setValue("16a8");
     tag1.setFullJson(
         new JSONObject(readStringFromRelativePath("getManuscripts/tag1.json")));
@@ -890,15 +890,15 @@ class AccessServiceTest {
 
   private List<Annotation> buildAnnotations() throws ParseException, NoSuchIndexEntryException, JSONException {
     DateFormat dateFormat = TimeStampFormats.TIMESTAMP_FORMAT_ANNO.getDateFormat();
-    List<String> creatorList = new ArrayList<>();
-    creatorList.add("M. K.");
-    creatorList.add("Elizabeth Bennet");
+    List<String> creatorMichael = new ArrayList<>();
+    creatorMichael.add("M. K.");
+    creatorMichael.add("Elizabeth Bennet");
 
     List<Annotation> annotations = new ArrayList<>();
     annotations.add(new Annotation());
     annotations.get(0).setId("http://sampleannoserver.edu/wap/a04/validated/fc2f1c02-5b48-4a5e-8fda-83b2e15ae825");
     annotations.get(0).setCreated(Instant.parse("2019-07-04T06:59:33.33Z"));
-    annotations.get(0).setCreators(creatorList);
+    annotations.get(0).setCreators(creatorMichael);
     annotations.get(0).setModified(Instant.parse("2019-07-04T07:05:57Z"));
     annotations.get(0).setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/c3aeb1ef-af1e-41fe-823c-76ea3761ee89");
     annotations.get(0).setColor(Color.PAGE_REGION);
@@ -909,7 +909,7 @@ class AccessServiceTest {
     annotations.get(0).setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/c3aeb1ef-af1e-41fe-823c-76ea3761ee89");
     annotations.get(0).setEtag("def");
     TextCard expectedTextCard1 = new TextCard(UUID.randomUUID().toString());
-    expectedTextCard1.setCreators(creatorList);
+    expectedTextCard1.setCreators(creatorMichael);
     expectedTextCard1.setFullJson(new JSONObject("{\n" +
         "    \"dc:subject\" : \"PageRegion\",\n" +
         "    \"creator\" : [ {\n" +
@@ -922,7 +922,7 @@ class AccessServiceTest {
         "  }"));
     annotations.get(0).addTextCard(expectedTextCard1);
     TextCard expectedTextCard2 = new TextCard(UUID.randomUUID().toString());
-    expectedTextCard2.setCreators(creatorList);
+    expectedTextCard2.setCreators(creatorMichael);
     expectedTextCard2.setValue("Questionable text block");
     expectedTextCard2.setPurpose("questioning");
     expectedTextCard2.setFullJson(new JSONObject("{\n" +
@@ -942,7 +942,7 @@ class AccessServiceTest {
     annotations.add(new Annotation());
     annotations.get(1).setId("http://sampleannoserver.edu/wap/a04/deinterpretatione/c3aeb1ef-af1e-41fe-823c-76ea3761ee89");
     annotations.get(1).setCreated(Instant.parse("2019-07-04T06:59:33.33Z"));
-    annotations.get(1).setCreators(creatorList);
+    annotations.get(1).setCreators(creatorMichael);
     annotations.get(1).setModified(Instant.parse("2019-07-04T07:05:57Z"));
     annotations.get(1).setColor(Color.PAGE_REGION);
     annotations.get(1).setIsAlgorithmAnnotation(false);
@@ -967,13 +967,13 @@ class AccessServiceTest {
   }
 
   private Annotation createAnnotation1() throws JSONException{
-    List<String> creatorList = new ArrayList<>();
-    creatorList.add("M. K.");
+    List<String> creatorMichael = new ArrayList<>();
+    creatorMichael.add("M. K.");
 
     Annotation expectedAnnotation1 = new Annotation();
     expectedAnnotation1.setId("http://sampleannoserver.edu/wap/a04/validated/bb43925c-9903-43f6-92c4-0b3ed4b1d3d9");
     expectedAnnotation1.setCreated(Instant.parse("2019-07-04T06:57:35.961Z"));
-    expectedAnnotation1.setCreators(creatorList);
+    expectedAnnotation1.setCreators(creatorMichael);
     expectedAnnotation1.setModified(Instant.parse("2019-07-04T07:03:03Z"));
     expectedAnnotation1.setCanonical("http://sampleannoserver.edu/wap/a04/deinterpretatione/1749ce9c-a79a-4929-8299-edc9c0388fcc");
     expectedAnnotation1.setIsAlgorithmAnnotation(false);
@@ -983,7 +983,7 @@ class AccessServiceTest {
     expectedAnnotation1.setVia("http://sampleannoserver.edu/wap/a04/deinterpretatione/1749ce9c-a79a-4929-8299-edc9c0388fcc");
     expectedAnnotation1.setEtag("abc");
     TextCard expectedTextCard = new TextCard(UUID.randomUUID().toString());
-    expectedTextCard.setCreators(creatorList);
+    expectedTextCard.setCreators(creatorMichael);
     expectedTextCard.setValue("Questionable text block");
     expectedTextCard.setPurpose("questioning");
     expectedTextCard.setFullJson(new JSONObject("{\n" +
@@ -997,7 +997,7 @@ class AccessServiceTest {
         "  }"));
     expectedAnnotation1.addTextCard(expectedTextCard);
     Tag expectedTag = new Tag(UUID.randomUUID().toString());
-    expectedTag.setCreators(creatorList);
+    expectedTag.setCreators(creatorMichael);
     expectedTag.setValue("Questionable tag");
     expectedTag.setPurpose("tagging");
     expectedTag.setFullJson(new JSONObject("{\n" +
