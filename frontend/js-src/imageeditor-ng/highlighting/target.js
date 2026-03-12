@@ -11,7 +11,7 @@ export function drawRectangle(x, y, width, height, color, id, idEncoded, hooks =
   rectangle.attr({
     stroke: color,
     'stroke-opacity': 1,
-    'stroke-width': 10,
+    'stroke-width': 4,
     fill: color,
     'fill-opacity': 0.01,
   });
@@ -63,7 +63,7 @@ export function drawRectangle(x, y, width, height, color, id, idEncoded, hooks =
 export function drawPolygon(path, color, id, idEncoded, hooks = {}) {
   let polygon = window.paper.path(path).attr({
     stroke: color,
-    'stroke-width': 10,
+    'stroke-width': 4,
     fill: color,
     'fill-opacity': 0.01,
   });

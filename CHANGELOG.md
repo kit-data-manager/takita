@@ -51,10 +51,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - com.google.code.gson:gson:2.13.2
 - jakarta.json:jakarta.json-api:2.1.3
 
-## rejected for changelog (?)
-- repo description in search index und UI
-- via field can not be set from UI
-
 ## [1.0.0] - 2024-10-25
 
 ### Added

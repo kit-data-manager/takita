@@ -8,6 +8,7 @@ import edu.kit.datamanager.takita.model.page.Page;
 import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import org.springframework.boot.configurationprocessor.json.JSONArray;
@@ -297,4 +298,13 @@ public interface IEditorService {
    */
   Page getCurrentPage();
 
+  /**
+   * Converts all given annotation to JSON. The JSON is used by the annotation
+   * editors in the frontend.
+   *
+   * @param annotations all annotations of a page
+   * @return JSONArray containing all annotations of a page
+   * @throws UnsupportedEncodingException
+   */
+  JSONArray convertDisplayableAnnotationsToJson(List<Annotation> annotations) throws UnsupportedEncodingException;
 }

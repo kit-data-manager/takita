@@ -1,15 +1,27 @@
 {
-  "extends": ["config:base"],
+  "extends": [
+    "config:recommended"
+  ],
   "platform": "gitlab",
-  "enabledManagers": ["gradle", "npm"],
+  "binarySource": "global",
+  "enabledManagers": [
+    "gradle",
+    "npm"
+  ],
   "automerge": false,
   "minimumReleaseAge": "3 days",
   "dependencyDashboard": true,
-  "labels": ["dependencies", "renovate"],
+  "labels": [
+    "dependencies",
+    "renovate"
+  ],
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
   "gitlabci": {
-    "fileMatch": ["\\.gitlab-ci\\.ya?ml$", "(^|/)\\.gitlab/ci/.+\\.ya?ml$"]
+    "managerFilePatterns": [
+      "/\\.gitlab-ci\\.ya?ml$/",
+      "/(^|/)\\.gitlab/ci/.+\\.ya?ml$/"
+    ]
   },
   "branchPrefix": "renovate-mr/"
 }

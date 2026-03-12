@@ -20,8 +20,8 @@ import { assignColor } from '../highlight';
 // for adding new: include name here and add dataModel in
 // getFormModel(chosenTemplate)
 const annotationTemplate = {
-  EXAMPLE: 'example',
-  NOTEMPLATE: 'notemplate',
+  EXAMPLE: 'Example',
+  NOTEMPLATE: 'No template',
 };
 
 // enum for different body templates to create simple dropdown to choose body template
@@ -30,187 +30,9 @@ const annotationTemplate = {
 // for adding new: include name here and add dataModel in
 // getFormModel(chosenTemplate)
 const bodyTemplate = {
-  TAG: 'tag',
-  TEXTBODY: 'textbody',
+  TAG: 'Tag',
+  TEXTBODY: 'Textbody',
 };
-
-/**
- * returns the ui form for the jsonForm object to create new annotation.
- * Upon choosing the corresponding MetadataEditor CREATE form is built
- * create button sends the information to the REST controller
- *
- * @param {[Object]} selectors array holding all the selectors
- * @returns {JSON} the ui form
- */
-function getFormObjectCreateAnnotation(selectors) {
-  return {
-    // adding blank first option, to allow the functionalities on change
-    schema: {
-      template: {
-        type: 'string',
-        enum: [''].concat(Object.keys(annotationTemplate)),
-      },
-    },
-    form: [
-      {
-        key: 'template',
-        title: 'Choose your template',
-        onChange: function (e) {
-          let value = $(e.target).val();
-
-          // clearing the modal
-          let createFormElement = document.getElementById('createAnnotationForm');
-          while (createFormElement.firstChild) {
-            createFormElement.firstChild.remove();
-          }
-
-          if (!value) {
-            return;
-          }
-          let formModel = getFormModel(value);
-
-          let options = { operation: 'CREATE', dataModel: formModel[0], uiForm: formModel[1] };
-
-          // preventing form submission to allow customized handling
-          createFormElement.addEventListener('submit', function (e) {
-            e.preventDefault();
-          });
-
-          // if no template is chosen, this will create a 'blank' annotation
-          // otherwise create annotation with bodies according to template values
-          $('#createAnnotationForm').metadataeditorForm(options, async function onSubmitValid(formvalue) {
-            // formvalue contains all the information from the jsonForm as a string
-            const annotationData = makeAnnotationData(formvalue, selectors);
-            // eslint-disable-next-line no-unused-vars
-            const annotation = await createAnnotation(annotationData, hooks);
-
-            if (annotation) {
-              // check wether the annotation has a selector or if it targets the whole page and
-              // therefore does not have a shape to be highlighted
-              if (annotation.targets.some((target) => target?.selector != null)) {
-                assignColor(annotation);
-                updateNewAnnotationShape(window.paper, annotation.id, annotation.color);
-              } else {
-                // Note: raphael doesn't offer a filter()-function
-                window.paper.forEach((shape) => {
-                  // unselecting the previously selected shape
-                  if (shape.selected) {
-                    toggleShapeSelect(shape);
-                  }
-                });
-              }
-            }
-          });
-        },
-        titleMap: {},
-      },
-    ],
-  };
-}
-
-function updateNewAnnotationShape(paper, annotationId, annotationColor) {
-  let shape;
-  paper.forEach(function (element) {
-    if (element.type === 'rect' || element.type === 'path') {
-      shape = element;
-    }
-  });
-  shape.annoId = annotationId;
-  shape.annoIdEncoded = encodeAnnoId(annotationId);
-  shape.attr({ stroke: annotationColor, fill: annotationColor });
-  toggleShapeSelect(shape);
-}
-
-/**
- * returns ui form for the jsonForm  object to create new body
- * upon choosing the corresponding MetadataEditor CREATE form is built
- * create button sends the information to the REST controller (bodies/tags)
- * depending on the chosen template
- *
- * @param {String} encodedAnnoId encoded id of the annotation
- * @returns {JSON} the ui form
- */
-function getFormObjectCreateBody(encodedAnnoId) {
-  return {
-    // adding blank first option, to allow the functionalities on change
-    schema: {
-      template: {
-        type: 'string',
-        enum: [''].concat(Object.keys(bodyTemplate)),
-      },
-    },
-    form: [
-      {
-        key: 'template',
-        title: 'Choose your template',
-        onChange: function (e) {
-          let value = $(e.target).val();
-
-          // clearing the modal
-          let createFormElement = document.getElementById('createForm');
-          while (createFormElement.firstChild) {
-            createFormElement.firstChild.remove();
-          }
-
-          if (!value) {
-            return;
-          }
-          let formModel = getFormModel(value);
-          //console.log(formModel);
-          // if no uiForm is given in getFormModel() for a body template, a wildcard is used.
-          // previously a wildcard was always used, but the change in this commit changed the
-          // following options variable
-          if (formModel[1] === undefined) {
-            formModel[1] = '*';
-          }
-
-          let options = { operation: 'CREATE', dataModel: formModel[0], uiForm: formModel[1] };
-
-          // preventing form submission to allow customized handling
-          createFormElement.addEventListener('submit', function (e) {
-            e.preventDefault();
-          });
-
-          $('#createForm').metadataeditorForm(options, async function onSubmitValid(value) {
-            let jsonObject = JSON.parse(value);
-            //console.log(value);
-            //console.log(jsonObject);
-
-            console.log(jsonObject);
-            if (jsonObject !== undefined && !isEmpty(jsonObject)) {
-              try {
-                if (jsonObject.purpose) {
-                  // preventing creation of a body without a value
-                  if (jsonObject.value) {
-                    await createBodyData(encodedAnnoId, jsonObject);
-                  } else {
-                    throw new Error('No value given in: ', jsonObject);
-                  }
-                } else {
-                  const bodies = makeBodiesData(jsonObject);
-                  // trigger the body creation according to the template for each body
-                  for (let body of bodies) {
-                    // eslint-disable-next-line no-unused-vars
-                    const newBody = await createBodyData(encodedAnnoId, body);
-                  }
-                }
-
-                // hiding the modal.
-                const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('createBody'));
-                $modal.toggle();
-
-                window.SELECTED_ANNOTATION = await selectAnnotation(null, encodedAnnoId, hooks);
-              } catch (exception) {
-                console.error('Adding another body failed with: ', exception);
-              }
-            }
-          });
-        },
-        titleMap: {},
-      },
-    ],
-  };
-}
 
 // assigns data model needed for MetadataEditor to specific template
 // the actual thing where templating is done
@@ -330,6 +152,184 @@ function getFormModel(chosenTemplate) {
 }
 
 /**
+ * returns the ui form for the jsonForm object to create new annotation.
+ * Upon choosing the corresponding MetadataEditor CREATE form is built
+ * create button sends the information to the REST controller
+ *
+ * @param {[Object]} selectors array holding all the selectors
+ * @returns {JSON} the ui form
+ */
+function getFormObjectCreateAnnotation(selectors) {
+  return {
+    // adding blank first option, to allow the functionalities on change
+    schema: {
+      template: {
+        type: 'string',
+        enum: [''].concat(Object.keys(annotationTemplate)),
+      },
+    },
+    form: [
+      {
+        key: 'template',
+        title: 'Choose your template',
+        onChange: function (e) {
+          let value = $(e.target).val();
+
+          // clearing the modal
+          let createFormElement = document.getElementById('createAnnotationForm');
+          while (createFormElement.firstChild) {
+            createFormElement.firstChild.remove();
+          }
+
+          if (!value) {
+            return;
+          }
+          let formModel = getFormModel(value);
+
+          let options = { operation: 'CREATE', dataModel: formModel[0], uiForm: formModel[1] };
+
+          // preventing form submission to allow customized handling
+          createFormElement.addEventListener('submit', function (e) {
+            e.preventDefault();
+          });
+
+          // if no template is chosen, this will create a 'blank' annotation
+          // otherwise create annotation with bodies according to template values
+          $('#createAnnotationForm').metadataeditorForm(options, async function onSubmitValid(formvalue) {
+            // formvalue contains all the information from the jsonForm as a string
+            const annotationData = makeAnnotationData(formvalue, selectors);
+            // eslint-disable-next-line no-unused-vars
+            const annotation = await createAnnotation(annotationData, hooks);
+
+            if (annotation) {
+              // check wether the annotation has a selector or if it targets the whole page and
+              // therefore does not have a shape to be highlighted
+              if (annotation.targets.some((target) => target?.selector != null)) {
+                assignColor(annotation);
+                updateNewAnnotationShape(window.paper, annotation.id, annotation.color);
+              } else {
+                // Note: raphael doesn't offer a filter()-function
+                window.paper.forEach((shape) => {
+                  // unselecting the previously selected shape
+                  if (shape.selected) {
+                    toggleShapeSelect(shape);
+                  }
+                });
+              }
+            }
+          });
+        },
+        titleMap: annotationTemplate,
+      },
+    ],
+  };
+}
+
+function updateNewAnnotationShape(paper, annotationId, annotationColor) {
+  let shape;
+  paper.forEach(function (element) {
+    if (element.type === 'rect' || element.type === 'path') {
+      shape = element;
+    }
+  });
+  shape.annoId = annotationId;
+  shape.annoIdEncoded = encodeAnnoId(annotationId);
+  shape.attr({ stroke: annotationColor, fill: annotationColor });
+  toggleShapeSelect(shape);
+}
+
+/**
+ * returns ui form for the jsonForm  object to create new body
+ * upon choosing the corresponding MetadataEditor CREATE form is built
+ * create button sends the information to the REST controller (bodies/tags)
+ * depending on the chosen template
+ *
+ * @param {String} encodedAnnoId encoded id of the annotation
+ * @returns {JSON} the ui form
+ */
+function getFormObjectCreateBody(encodedAnnoId) {
+  return {
+    // adding blank first option, to allow the functionalities on change
+    schema: {
+      template: {
+        type: 'string',
+        enum: [''].concat(Object.keys(bodyTemplate)),
+      },
+    },
+    form: [
+      {
+        key: 'template',
+        title: 'Choose your template',
+        onChange: function (e) {
+          let value = $(e.target).val();
+
+          // clearing the modal
+          let createFormElement = document.getElementById('createForm');
+          while (createFormElement.firstChild) {
+            createFormElement.firstChild.remove();
+          }
+
+          if (!value) {
+            return;
+          }
+          let formModel = getFormModel(value);
+          //console.log(formModel);
+          // if no uiForm is given in getFormModel() for a body template, a wildcard is used.
+          // previously a wildcard was always used, but the change in this commit changed the
+          // following options variable
+          if (formModel[1] === undefined) {
+            formModel[1] = '*';
+          }
+
+          let options = { operation: 'CREATE', dataModel: formModel[0], uiForm: formModel[1] };
+
+          // preventing form submission to allow customized handling
+          createFormElement.addEventListener('submit', function (e) {
+            e.preventDefault();
+          });
+
+          $('#createForm').metadataeditorForm(options, async function onSubmitValid(value) {
+            let jsonObject = JSON.parse(value);
+            //console.log(value);
+            //console.log(jsonObject);
+
+            console.log(jsonObject);
+            if (jsonObject !== undefined && !isEmpty(jsonObject)) {
+              try {
+                if (jsonObject.purpose) {
+                  // preventing creation of a body without a value
+                  if (jsonObject.value) {
+                    await createBodyData(encodedAnnoId, jsonObject);
+                  } else {
+                    throw new Error('No value given in: ', jsonObject);
+                  }
+                } else {
+                  const bodies = makeBodiesData(jsonObject);
+                  // trigger the body creation according to the template for each body
+                  for (let body of bodies) {
+                    // eslint-disable-next-line no-unused-vars
+                    const newBody = await createBodyData(encodedAnnoId, body);
+                  }
+                }
+
+                // hiding the modal.
+                const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('createBody'));
+                $modal.toggle();
+
+                window.SELECTED_ANNOTATION = await selectAnnotation(null, encodedAnnoId, hooks);
+              } catch (exception) {
+                console.error('Adding another body failed with: ', exception);
+              }
+            }
+          });
+        },
+        titleMap: bodyTemplate,
+      },
+    ],
+  };
+}
+
+/**
  * test to see if $ and metadataeditor are imported correctly
  *
  * @param {Element} node to be wrapped in a jQuery selection
@@ -359,19 +359,6 @@ export function pickTemplate(selectors, encodedAnnoId, createFormId, pickFormId,
   while (formContent.firstChild) {
     formContent.firstChild.remove();
   }
-
-  // Philipp doesn't understand why this is necessary. Everything works without it.
-  // The titleMap only contains the words (annotationTemplate or bodyTemplate)
-  // split into a titleMap (index: letter -> 0:a, 1:n ...). The actual values used in
-  // the dropdown selection are taken from getFormObjectCreateAnnotation().schema.template.enum.
-  // creates title map needed for the dropdown selection
-  // for (const tName in Object.keys(template)) {
-  //   if (template === 'bodyTemplate') {
-  //     getFormObjectCreateBody().form[0].titleMap[Object.keys(template)[tName]] = Object.values(template)[tName];
-  //   } else {
-  //     getFormObjectCreateAnnotation().form[0].titleMap[Object.keys(template)[tName]] = Object.values(template)[tName];
-  //   }
-  // }
 
   // creates dropdown from enum objects defined at the top
   if (template === 'bodyTemplate') {
