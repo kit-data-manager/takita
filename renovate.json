@@ -3,6 +3,7 @@
     "config:recommended"
   ],
   "platform": "gitlab",
+  "binarySource": "global",
   "enabledManagers": [
     "gradle",
     "npm"

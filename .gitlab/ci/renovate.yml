@@ -2,7 +2,7 @@ renovate:
   stage: deploy
   tags:
     - kgr1-instance-mini
-  image: renovate/renovate:latest
+  image: renovate/renovate:full
   variables:
     GIT_STRATEGY: none 
     RENOVATE_PLATFORM: gitlab 
