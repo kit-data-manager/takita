@@ -1,0 +1,41 @@
+title: tAKITA Documentation
+description: Documentation and Guides for tAKITA
+theme: just-the-docs
+
+url: https://kit-data-manager.github.io/takita
+
+aux_links:
+  Repository: https://github.com/kit-data-manager/takita
+
+#color_scheme: dark
+
+collections:
+  # Define a collection named "tests", its documents reside in the "_tests" directory
+  setup:
+    permalink: "/:collection/:path/"
+    output: true
+
+just_the_docs:
+  # Define which collections are used in just-the-docs
+  collections:
+    # Reference the "tests" collection
+    setup:
+      # Give the collection a name
+      name: setup
+      # Exclude the collection from the navigation
+      # Supports true or false (default)
+      nav_exclude: false
+      # Fold the collection in the navigation
+      # Supports true or false (default)
+      # nav_fold: true  # note: this option is new in v0.4
+      nav_fold: false
+      # Exclude the collection from the search
+      # Supports true or false (default)
+      # search_exclude: true
+
+
+nav_external_links:
+  - title: javadoc v1.0.0
+    url: /javadoc/v1.0.0/
+  - title: Changelog
+    url: https://github.com/kit-data-manager/takita/blob/master/CHANGELOG.md

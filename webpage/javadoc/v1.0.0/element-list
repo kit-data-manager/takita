@@ -1,0 +1,12 @@
+edu.kit.datamanager.takita
+edu.kit.datamanager.takita.assistance
+edu.kit.datamanager.takita.dataaccess
+edu.kit.datamanager.takita.editor
+edu.kit.datamanager.takita.mainpage
+edu.kit.datamanager.takita.mainpage.dashboard
+edu.kit.datamanager.takita.mainpage.dashboard.contentview
+edu.kit.datamanager.takita.mainpage.search
+edu.kit.datamanager.takita.model
+edu.kit.datamanager.takita.model.body
+edu.kit.datamanager.takita.model.filter
+edu.kit.datamanager.takita.model.page
