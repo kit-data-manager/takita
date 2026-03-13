@@ -18,7 +18,7 @@ If the expected container isn't found, tAKITA will try to write to `/takitadefau
 
 ## Data Creation Samples
 
-### Create containers for <my_project>
+### Create containers for `<my_project>`
 
 ```
 POST {{annoserver}}/wap/
