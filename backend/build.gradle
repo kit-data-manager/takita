@@ -12,7 +12,7 @@ plugins {
 	id 'com.github.node-gradle.node' version '7.1.0'
 }
 
-group = 'de.pse'
+group = 'edu.kit.datamanager'
 version = '2.0.0-SNAPSHOT'
 
 repositories {
