@@ -38,7 +38,7 @@ tasks.register('npmTest', NpmTask) {
 }
 
 tasks.named('processResources') {
-	dependsOn('npmTest')
+	dependsOn('npmBuild')
 }
 
 java {
@@ -165,7 +165,10 @@ tasks.register('integrationTest', Test) {
 	}
 }
 
-check.dependsOn integrationTest
+tasks.named('check') {
+	dependsOn('integrationTest')
+	dependsOn('npmTest')
+}
 
 //create Dockerfile on release to update jar version
 tasks.register('createDockerfile', Dockerfile) {
