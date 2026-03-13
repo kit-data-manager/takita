@@ -84,21 +84,21 @@ async function getAnnotationStreak(url, annotator, $dashboard) {
     const $icon = $dashboard.querySelector('#annoStreakIcon');
     const $contentTrue = $dashboard.querySelector('#annoStreakTrue');
     const $contentFalse = $dashboard.querySelector('#annoStreakFalse');
-    $icon.classList.add('bx');
-    $icon.classList.add('bx-md');
+    $icon.classList.add('fa');
+    $icon.classList.add('fa-2x');
 
     // if the result date is today, indicate a streak
     if (responseData.results.bindings[0]?.date) {
       if (responseData.results.bindings[0].date.value === date.toISOString().split('T')[0]) {
         $contentFalse.style.display = "none"
-        $icon.classList.add('bx-happy');
+        $icon.classList.add('fa-smile-o');
       } else {
         $contentTrue.style.display = "none"
-        $icon.classList.add('bx-sad');
+        $icon.classList.add('fa-frown-o');
       }
     } else {
       $contentTrue.style.display = "none"
-      $icon.classList.add('bx-sad');
+      $icon.classList.add('fa-frown-o');
     }
   } catch (e) {
     console.error('Could not display the annotation streak, because: ', e);
