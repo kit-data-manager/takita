@@ -5,7 +5,7 @@ layout: home
 
 ## Installation
 
-For general information about installation and deployment, please refer to https://kit-data-manager.github.io/webpage/base-repo/index.html
+For general information about installation and deployment, please refer to [https://kit-data-manager.github.io/webpage/base-repo/](https://kit-data-manager.github.io/webpage/base-repo/index.html)
 
 ## Data Structure
 

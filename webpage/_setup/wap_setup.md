@@ -5,7 +5,7 @@ layout: home
 
 ## Installation
 
-For general information about installation and deployment, please refer to https://kit-data-manager.github.io/webpage/wap-server/index.html
+For general information about installation and deployment, please refer to [https://kit-data-manager.github.io/webpage/wap-server/](https://kit-data-manager.github.io/webpage/wap-server/index.html)
 
 ## Data Structure
 
