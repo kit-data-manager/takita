@@ -39,7 +39,7 @@ tasks.register('npmTest', NpmTask) {
 }
 
 tasks.named('processResources') {
-	dependsOn('npmTest') // ensure frontend build runs first
+	dependsOn('npmBuild') // ensure frontend build runs first
 
 	// Copy frontend templates and static files into the resources output
 	from('../frontend/templates') {
@@ -180,7 +180,10 @@ tasks.register('integrationTest', Test) {
 	}
 }
 
-check.dependsOn integrationTest
+tasks.named('check') {
+	dependsOn('integrationTest')
+	dependsOn('npmTest')
+}
 
 //create Dockerfile on release to update jar version
 tasks.register('createDockerfile', Dockerfile) {

@@ -35,7 +35,6 @@
 				"argsIgnorePattern": "^_"
 			}
 		],
-		"react/prop-types": "off",
-		"prettier/prettier": "off"
+		"react/prop-types": "off"
 	}
 }
