@@ -27,7 +27,7 @@ services:
     depends_on:
       - reverseProxy
     volumes:
-      - ./tuhl/src/intTest/resources/hurl:/hurl
+      - ./backend/src/intTest/resources/hurl:/hurl
     entrypoint: >
       sh -c "
       hurl --variable host=http://baserepo/repo --file-root /hurl --test /hurl/repo_setup.hurl -v &&

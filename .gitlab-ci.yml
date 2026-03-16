@@ -22,11 +22,11 @@ build:
   - if: '$CI_PIPELINE_SOURCE == "push"'
   - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   script:
-    - cd tuhl
+    - cd backend
     - ./gradlew clean build  --exclude-task integrationTest
   artifacts:
     paths:
-      - ./tuhl/build/libs/*.jar
+      - ./backend/build/libs/*.jar
 
 coverage:
   image: eclipse-temurin:21.0.10_7-jdk
@@ -37,13 +37,13 @@ coverage:
     - if: '$CI_PIPELINE_SOURCE == "push"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   script:
-    - cd tuhl
+    - cd backend
     - ./gradlew check jacocoTestReport --exclude-task integrationTest
     - ls -l
     - cat ./build/reports/jacoco/test/html/index.html
   artifacts:
     paths:
-      - ./tuhl/build/reports/jacoco/test/*
+      - ./backend/build/reports/jacoco/test/*
   coverage: "/Total.*?([0-9]{1,3})%/"
 
 #already included in build task
@@ -51,7 +51,7 @@ coverage:
 #  image: node:latest
 #  stage: test
 #  variables:
-#    APP_DIR: tuhl
+#    APP_DIR: frontend
 #  tags:
 #    - kgr1-instance-mini
 #  script:
