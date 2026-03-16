@@ -202,13 +202,12 @@ function getFormObjectCreateAnnotation(selectors) {
             const annotation = await createAnnotation(annotationData, hooks);
 
             if (annotation) {
+              unselectAllShapes(window.paper);
               // check wether the annotation has a selector or if it targets the whole page and
               // therefore does not have a shape to be highlighted
               if (annotation.targets.some((target) => target?.selector != null)) {
                 assignColor(annotation);
                 updateNewAnnotationShape(window.paper, annotation.id, annotation.color);
-              } else {
-                unselectAllShapes(window.paper);
               }
             }
           });
