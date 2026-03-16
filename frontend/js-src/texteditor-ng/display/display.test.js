@@ -16,7 +16,11 @@ describe('updating the display by rendering the current annotations', () => {
     window.ANNOJSON = undefined;
     jest.clearAllMocks();
   });
-  it('successfully updates the display and store the current annotations in a variable', async () => {
+  it(`successfully updates the display and store the current annotations in a variable.
+    This test might fail when a projectspecific custom hihglighting function is used. You then have to
+    - either adapt this test (by adjusting it entirely or by adjusting the mockAnnoJson
+    to match your data)
+    - or skip this test by adding a ".skip" to "it.("successfully ..." -> "it.skip("successfully ...)`, async () => {
     // TODO: remove the annotation table related requirement (the two divs and the creator from the
     // mockAnnoKson) after the display update is decoupled from the update of the annotation table
     document.body.innerHTML = `<div id="table"></div><div id="TEI"><div id="w.1"></div><div id="w.2"></div><div id="w.3"></div>
