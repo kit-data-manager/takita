@@ -145,6 +145,8 @@ This can be used for development purposes.
     default value is 5.
     
 ### CLI parameters / application properties
+
+For more detailed description of current custom parameters/properties, please refer to [../backend/src/main/resources/application-default.properties]
     
 #### General
 * `--server.port=<myPort>`  
@@ -180,11 +182,19 @@ Set a custom source url for user repository. The default source url is `jdbc:h2:
 
 ###  Updating the index
 
-tAKITA at the moment cannot auto-detect new data in the repository without additional setup (messaging). If the scheduled index updates described above are not sufficient, index updates (`operation=update`) and rebuilds (`operation=rebuild`) can also be triggered via HTTP request. This function at the moment is very limited (no info on success or failure) and should be handled with care
+tAKITA at the moment cannot auto-detect new data in the repository without additional setup (messaging). 
+If the scheduled index updates described above are not sufficient,
+index updates (`operation=update`) and rebuilds (`operation=rebuild`) 
+can also be triggered via HTTP request. 
+
+This function at the moment is very limited (no info on success or failure) and should be handled with care.
 
 ```
 POST http://<takita host:port>/actuator/searchIndex?operation=rebuild'
 ```
+
+The actuator for index operations is currently disabled by default for native installation and disabled by default for the bundled docker stack.
+The actuator can be configured by setting/changing the application property `management.endpoint.searchindex.access` in accordance to spring actuator configuration options.
 
 ## License
 
