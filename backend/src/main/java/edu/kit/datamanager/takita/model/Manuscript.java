@@ -184,8 +184,7 @@ public class Manuscript {
 
   /**
    * Sets description of manuscript.
-   *
-   * @return description
+   * @param description description of the manuscript
    */
   public void setDescription(String description) {
 	  this.description = description;
@@ -256,7 +255,7 @@ public class Manuscript {
   /**
    * Gets series title of manuscript.
    *
-   * @return teiTitle
+   * @return List of TEI titles classified as series titles
    */
   public List<TeiTitle> getTeiTitleSeries() {
     return teiTitleSeries;
@@ -265,7 +264,7 @@ public class Manuscript {
   /**
    * Sets series title of manuscript.
    *
-   * @param teiTitle
+   * @param teiTitleSeries List of TEI titles classified as series titles
    */
   public void setTeiTitleSeries(List<TeiTitle> teiTitleSeries) {
     this.teiTitleSeries =  teiTitleSeries;
@@ -274,7 +273,7 @@ public class Manuscript {
   /**
    * Gets monographic title of manuscript.
    *
-   * @return teiTitle
+   * @return List of TEI titles classified as monographic titles
    */
   public List<TeiTitle> getTeiTitleMonographic() {
     return teiTitleMonographic;
@@ -283,7 +282,7 @@ public class Manuscript {
   /**
    * Sets monographic title of manuscript.
    *
-   * @param teiTitle
+   * @param teiTitleMonographic List of TEI titles classified as monographic
    */
   public void setTeiTitleMonographic(List<TeiTitle> teiTitleMonographic) {
     this.teiTitleMonographic =  teiTitleMonographic;
@@ -292,7 +291,7 @@ public class Manuscript {
   /**
    * Gets analytic title of manuscript.
    *
-   * @return teiTitle
+   * @return List of TEI titles classified as analytical
    */
   public List<TeiTitle> getTeiTitleAnalytic() {
     return teiTitleAnalytic;
@@ -301,7 +300,7 @@ public class Manuscript {
   /**
    * Sets analytic title of manuscript.
    *
-   * @param teiTitle
+   * @param teiTitleAnalytic List of TEI titles classified as analytical
    */
   public void setTeiTitleAnalytic(List<TeiTitle> teiTitleAnalytic) {
     this.teiTitleAnalytic =  teiTitleAnalytic;
@@ -310,7 +309,7 @@ public class Manuscript {
   /**
    * Gets default title of manuscript.
    *
-   * @return teiTitle
+   * @return List of TEI titles not classified
    */
   public List<TeiTitle> getTeiTitle() {
 	return teiTitle;
@@ -319,7 +318,7 @@ public class Manuscript {
   /**
    * Sets default title of manuscript.
    *
-   * @param teiTitle
+   * @param teiTitle List of TEI titles not classified
    */
   public void setTeiTitle(List<TeiTitle> teiTitle) {
 	this.teiTitle = teiTitle;
@@ -328,7 +327,7 @@ public class Manuscript {
 /**
    * Gets author of manuscript.
    *
-   * @return teiTitle
+   * @return List of authors as String
    */
   public List<String> getTeiAuthor() {
     return teiAuthor;
@@ -337,7 +336,7 @@ public class Manuscript {
   /**
    * Sets author of manuscript.
    *
-   * @param teiTitle
+   * @param teiAuthor List of TEI authors
    */
   public void setTeiAuthor(List<String> teiAuthor) {
     this.teiAuthor =  teiAuthor;
@@ -346,7 +345,7 @@ public class Manuscript {
   /**
    * Gets creation date of manuscript.
    *
-   * @return teiTitle
+   * @return List of TEI dates
    */
   public List<TeiDate> getTeiManuscriptCreationDate() {
     return teiManuscriptCreationDate;
@@ -355,29 +354,45 @@ public class Manuscript {
   /**
    * Sets creation date of manuscript.
    *
-   * @param teiTitle
+   * @param teiManuscriptCreationDate List of TEI dates
    */
   public void setTeiManuscriptCreationDate(List<TeiDate> teiManuscriptCreationDate) {
     this.teiManuscriptCreationDate =  teiManuscriptCreationDate;
   }
 
+  /**
+   * Gets the list of default TEI titles in String format
+   * @return Main title + additional titles in brackets
+   */
   public String getDefaultTitlesAsString() {
     return titleListToString(teiTitle);
   }
 
+  // the following AsString()-functions are called by the editor thymeleaf templates
+  /**
+   * Gets the list of monographic TEI titles in String format
+   * @return Main title + additional titles in brackets
+   */
   public String getMonographicTitlesAsString() {
     return titleListToString(teiTitleMonographic);
   }
 
+  /**
+   * Gets the list of analytical TEI titles in String format
+   * @return Main title + additional titles in brackets
+   */
   public String getAnalyticTitlesAsString() {
     return titleListToString(teiTitleAnalytic);
   }
 
+  /**
+   * Gets the list of series TEI titles in String format
+   * @return Main title + additional titles in brackets
+   */
   public String getSeriesTitlesAsString() {
     return titleListToString(teiTitleSeries);
   }
 
-  // the following toString()-functions are called by the editor thymeleaf templates
   /**
    * Concatenate a list of TEI MD titles into a string, where all entries apart from
    * the first one are surrounded by brackets.

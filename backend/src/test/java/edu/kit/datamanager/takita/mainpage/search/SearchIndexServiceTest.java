@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.data.elasticsearch.core.ElasticsearchOperations;
 import org.springframework.data.elasticsearch.core.SearchHit;
 import org.springframework.data.elasticsearch.core.SearchHits;
@@ -43,13 +43,13 @@ class SearchIndexServiceTest {
   @Autowired
   private ISearchIndexService searchIndexService;
 
-  @MockBean
+  @MockitoBean
   private IAccessService mockedAccessService;
 
-  @MockBean
+  @MockitoBean
   private ManuscriptRepository mockedManuscriptRepository;
 
-  @MockBean
+  @MockitoBean
   private ElasticsearchOperations mockedElasticsearchOperations;
 
   private List<Manuscript> manuscriptList;
@@ -130,23 +130,6 @@ class SearchIndexServiceTest {
     mockSearchHits(manuscriptList.get(0));
 
     assertEqualsAnnotations(annotation, searchIndexService.updateAnnotation(annotation));
-  }
-
-  @Test
-  void validateAnnotation() throws InterruptedException, IOException, JSONException, NoSuchIndexEntryException {
-    Annotation annotation = manuscriptList.get(0).getPages().get(0).getAnnotations().get(0);
-
-    Mockito.when(mockedAccessService.validateAnnotation(annotation, manuscriptList.get(0).getPages().get(0).getPageNumber(), "a04/"))
-        .thenReturn(annotation);
-    Mockito.when(mockedManuscriptRepository.findById(Mockito.anyString()))
-        .thenAnswer(invocation -> {
-          String thisManuscriptId = invocation.getArgument(0);
-          assertEquals(manuscriptList.get(0).getId(), thisManuscriptId);
-          return java.util.Optional.ofNullable(manuscriptList.get(0));
-        });
-    mockSearchHits(manuscriptList.get(0));
-
-    assertEqualsAnnotations(annotation, searchIndexService.validateAnnotation(annotation));
   }
 
   @Test

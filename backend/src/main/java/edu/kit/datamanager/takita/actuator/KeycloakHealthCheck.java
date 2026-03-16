@@ -12,6 +12,9 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
+/**
+ * Health check for availability of keycloak realm
+ */
 @Component
 @ConditionalOnProperty(
         value = "takita.security.enabled",

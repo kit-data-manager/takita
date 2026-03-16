@@ -82,22 +82,23 @@ async function getAnnotationStreak(url, annotator, $dashboard) {
     const responseData = await postSPARQLQuery(query, url);
     const date = new Date();
     const $icon = $dashboard.querySelector('#annoStreakIcon');
-    const $content = $dashboard.querySelector('#annoStreak');
-    $icon.classList.add('bx');
-    $icon.classList.add('bx-md');
+    const $contentTrue = $dashboard.querySelector('#annoStreakTrue');
+    const $contentFalse = $dashboard.querySelector('#annoStreakFalse');
+    $icon.classList.add('fa');
+    $icon.classList.add('fa-2x');
 
     // if the result date is today, indicate a streak
     if (responseData.results.bindings[0]?.date) {
       if (responseData.results.bindings[0].date.value === date.toISOString().split('T')[0]) {
-        $content.textContent = " You're on a streak! Good job annotating today!";
-        $icon.classList.add('bx-happy');
+        $contentFalse.style.display = "none"
+        $icon.classList.add('fa-smile-o');
       } else {
-        $content.textContent = " Oh no! I didn't find any annotations from you today. Why not start annotating now?";
-        $icon.classList.add('bx-sad');
+        $contentTrue.style.display = "none"
+        $icon.classList.add('fa-frown-o');
       }
     } else {
-      $content.textContent = " Oh no! I didn't find any annotations from you today. Why not start annotating now?";
-      $icon.classList.add('bx-sad');
+      $contentTrue.style.display = "none"
+      $icon.classList.add('fa-frown-o');
     }
   } catch (e) {
     console.error('Could not display the annotation streak, because: ', e);

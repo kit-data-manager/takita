@@ -12,19 +12,15 @@ stages:
 #    command: ["--tls=false"]
 
 build:
-  image: eclipse-temurin:17.0.9_9-jdk
+  image: eclipse-temurin:21.0.10_7-jdk
   stage: build
   tags:
-    - kgr1-instance-mini 
+    - kgr1-instance-standard
 ## only needed for integration test - disabled for now  
 #    - compose #run on gitlab runner suitable for docker
   rules:
-    - if: '$CI_COMMIT_BRANCH == "development" && $CI_PIPELINE_SOURCE == "push"'
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"'
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "development" && $CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master" && $CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "github-mirror" && $CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "merge_request_event"'
+  - if: '$CI_PIPELINE_SOURCE == "push"'
+  - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   script:
     - cd backend
     - ./gradlew clean build  --exclude-task integrationTest
@@ -33,15 +29,13 @@ build:
       - ./backend/build/libs/*.jar
 
 coverage:
-  image: eclipse-temurin:17.0.9_9-jdk
+  image: eclipse-temurin:21.0.10_7-jdk
   stage: test
   tags:
-    - kgr1-instance-mini 
+    - kgr1-instance-standard
   rules:
-    - if: '$CI_COMMIT_BRANCH == "development" && $CI_PIPELINE_SOURCE == "push"'
-    - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "push"'
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "development" && $CI_PIPELINE_SOURCE == "merge_request_event"'
-    - if: '$CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH && $CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   script:
     - cd backend
     - ./gradlew check jacocoTestReport --exclude-task integrationTest
@@ -52,17 +46,18 @@ coverage:
       - ./backend/build/reports/jacoco/test/*
   coverage: "/Total.*?([0-9]{1,3})%/"
 
-npm-test:
-  image: node:latest
-  stage: test
-  variables:
-    APP_DIR: frontend
-  tags:
-    - kgr1-instance-mini
-  script:
-    - cd "$APP_DIR"
-    - npm ci
-    - npm run test-all
+#already included in build task
+#npm-test:
+#  image: node:latest
+#  stage: test
+#  variables:
+#    APP_DIR: frontend
+#  tags:
+#    - kgr1-instance-mini
+#  script:
+#    - cd "$APP_DIR"
+#    - npm ci
+#    - npm run test-all
 
 sast:
   stage: test
@@ -100,7 +95,7 @@ docker_playground:
     - |
       echo "Waiting for sampleData to finish..."
       while true; do
-        STATUS=$(docker inspect -f '{{.State.Status}}' takita-sampleData-1 2>/dev/null || echo "notfound")
+        STATUS=$(docker inspect -f '{{.State.Status}}' takita-github-sampleData-1 2>/dev/null || echo "notfound")
       
         if [ "$STATUS" = "notfound" ]; then
           echo "sampleData container not found"
@@ -128,7 +123,7 @@ docker_playground:
       done
 
     # --- Check exit code ---
-    - EXIT_CODE=$(docker inspect -f '{{.State.ExitCode}}' takita-sampleData-1)
+    - EXIT_CODE=$(docker inspect -f '{{.State.ExitCode}}' takita-github-sampleData-1)
     - echo "sampleData exit code $EXIT_CODE"
     - if [ "$EXIT_CODE" -ne 0 ]; then echo "Playground setup has failed"; exit 1; fi
 

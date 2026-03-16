@@ -9,7 +9,6 @@ import java.net.URLEncoder;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import edu.kit.datamanager.takita.dataaccess.HttpRequestHelper;
@@ -45,11 +44,14 @@ import jakarta.annotation.PostConstruct;
 
 import static edu.kit.datamanager.takita.dataaccess.utils.XmlUtilities.getNamespaceContext;
 
+/**
+ * Service implementation to retrieve XML content from an eXist database
+ */
 @Service
 @ConditionalOnProperty(
         value = "exist.baseUrl",
         matchIfMissing = false)
-public class ExistDbAccessService implements IExistDbAccessService {
+public class ExistDbAccessService implements IXMLDbAccessService {
 
 	private static final Logger logger = LoggerFactory.getLogger(ExistDbAccessService.class);
 
@@ -84,6 +86,10 @@ public class ExistDbAccessService implements IExistDbAccessService {
         httpRequestHelper = credentialsGiven ? new HttpRequestHelper(username, password) : new HttpRequestHelper();
 	}
 
+	/**
+	 * Fail fast for application start on property that cannot be defaulted:
+	 * exist.baseUrl
+	 */
 	@PostConstruct
 	public void checkProperty() {
 		if (baseUrl == null || baseUrl.isEmpty()) {

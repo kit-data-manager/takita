@@ -18,7 +18,7 @@ import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
@@ -52,11 +52,11 @@ class RestControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
-  @MockBean
+  @MockitoBean
   private IEditorService mockedEditorService;
-  @MockBean
+  @MockitoBean
   private IAssistanceService mockedAssistanceService;
-  @MockBean
+  @MockitoBean
   private ISearchIndexService mockedSearchIndexService;
 
 
@@ -82,6 +82,7 @@ class RestControllerTest {
     mockAnno.setMotivation("editing");
     mockAnno.setCreated(Instant.now().truncatedTo(ChronoUnit.DAYS));
     mockAnno.setModified(Instant.now().truncatedTo(ChronoUnit.DAYS));
+    mockAnno.setVia("http://example.com");
 
     //TODO: think about moving this to the specific methods
     mockCard = new TextCard(bodyId);
@@ -136,12 +137,12 @@ class RestControllerTest {
   
   @Test
   void testCreateAnnotation() throws Exception {
-
 	JSONArray targets = new JSONArray();
-    Mockito.when(mockedEditorService.addAnnotation(pageId, targets, "editing")).thenReturn(mockAnno);
-    Mockito.when(mockedEditorService.addAnnotation(pageId + "nf", targets, "editing")).thenThrow(NoSuchIndexEntryException.class);
-    Mockito.when(mockedEditorService.addAnnotation(pageId + "io", targets, "editing")).thenThrow(IOException.class);
-    Mockito.when(mockedEditorService.addAnnotation(pageId + "int", targets, "editing")).thenThrow(InterruptedException.class);
+    Mockito.when(mockedEditorService.addAnnotation(pageId, targets, "editing", "http://example.com")).thenReturn(mockAnno);
+    Mockito.when(mockedEditorService.addAnnotation(pageId, targets, "editing", null)).thenReturn(mockAnno); //at the point of the test mockAnno is edited to fit
+    Mockito.when(mockedEditorService.addAnnotation(pageId + "nf", targets, "editing", "http://example.com")).thenThrow(NoSuchIndexEntryException.class);
+    Mockito.when(mockedEditorService.addAnnotation(pageId + "io", targets, "editing", "http://example.com")).thenThrow(IOException.class);
+    Mockito.when(mockedEditorService.addAnnotation(pageId + "int", targets, "editing", "http://example.com")).thenThrow(InterruptedException.class);
 
     ObjectMapper mapper = new ObjectMapper(); 
     mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
@@ -153,26 +154,36 @@ class RestControllerTest {
         .andExpect(status().isInternalServerError())
         .andDo(MockMvcResultHandlers.print());
     
-    String notfound = "{\"pageId\":\"" + pageId + "nf\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"editing\"}";
+    String notfound = "{\"pageId\":\"" + pageId + "nf\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"editing\",\"via\":\"http://example.com\"}";
     this.mockMvc.perform(post("/editor_rest/annotations").contentType(MediaType.APPLICATION_JSON).content(notfound))
         .andExpect(status().isNotFound())
         .andDo(MockMvcResultHandlers.print());
 
-    String io = "{\"pageId\":\"" + pageId + "io\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"editing\"}";
+    String io = "{\"pageId\":\"" + pageId + "io\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"editing\",\"via\":\"http://example.com\"}";
     this.mockMvc.perform(post("/editor_rest/annotations").contentType(MediaType.APPLICATION_JSON).content(io))
         .andExpect(status().isInternalServerError())
         .andDo(MockMvcResultHandlers.print());
 
-    String inter = "{\"pageId\":\"" + pageId + "int\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"editing\"}";
+    String inter = "{\"pageId\":\"" + pageId + "int\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"editing\",\"via\":\"http://example.com\"}";
     this.mockMvc.perform(post("/editor_rest/annotations").contentType(MediaType.APPLICATION_JSON).content(inter))
         .andExpect(status().isInternalServerError())
         .andDo(MockMvcResultHandlers.print());
 
-    String valid = "{\"pageId\":\"" + pageId + "\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"editing\"}";
+    String valid = "{\"pageId\":\"" + pageId + "\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"editing\",\"via\":\"http://example.com\"}";
     this.mockMvc.perform(post("/editor_rest/annotations").contentType(MediaType.APPLICATION_JSON).content(valid).accept(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(content().json(mockAnnoSerialized))
+        .andDo(MockMvcResultHandlers.print());
+
+    //Testing if Controller still works if no via field is provided in the payload
+    String validWOvia = "{\"pageId\":\"" + pageId + "\",\"color\":\"TEXT_REGION\",\"selectors\":[],\"motivation\":\"editing\"}";
+    mockAnno.setVia(null);
+    String mockAnnoSerialized2 = mapper.writeValueAsString(mockAnno);
+    this.mockMvc.perform(post("/editor_rest/annotations").contentType(MediaType.APPLICATION_JSON).content(validWOvia).accept(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(content().json(mockAnnoSerialized2))
         .andDo(MockMvcResultHandlers.print());
   }
 

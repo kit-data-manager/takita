@@ -75,6 +75,7 @@ public class EditorController {
    * Changes the currently displayed page.
    *
    * @param pageId Identifier in the editor of the page that should be displayed
+   * @param model ui model to communicate with thymeleaf templates
    * @return name of html file to display editor
    */
   @GetMapping("/{pageId}")
@@ -92,7 +93,7 @@ public class EditorController {
       //	when the manuscript class has an attribute "project"
       model.addAttribute("currentProject", editorService.getCurrentManuscript().getPublisher().replaceAll("\\s",""));
       model.addAttribute("currentAnnotationsJson", 
-        getDisplayableAnnotations(editorService.getCurrentPage().getAnnotations()));
+        editorService.convertDisplayableAnnotationsToJson(editorService.getCurrentPage().getAnnotations()));
       assistanceService.updateModel(model);
     } catch (UnsupportedEncodingException | NoSuchIndexEntryException e) {
       return REDIRECT_ERROR + e.getMessage();
@@ -126,91 +127,10 @@ public class EditorController {
 	  
 	  try {
 		  editorService.selectPage(pageId);
-		  annoJson =  getDisplayableAnnotations(editorService.getCurrentPage().getAnnotations());
-	  } catch (Exception e) {
+		  annoJson =  editorService.convertDisplayableAnnotationsToJson(editorService.getCurrentPage().getAnnotations());
+	  } catch (UnsupportedEncodingException | NoSuchIndexEntryException e) {
 	      return ResponseEntity.status(500).body(e.getMessage());
 	  }
 	  return ResponseEntity.ok().body(annoJson.toString());
-  }
-
-  private JSONArray getDisplayableAnnotations(List<Annotation> annotations)
-    throws UnsupportedEncodingException {
-    JSONArray displayable = new JSONArray();
-    try {
-      
-      for (int i = 0; i < annotations.size(); i++) {
-        JSONObject thisAnno = new JSONObject();
-
-        thisAnno.put("id", annotations.get(i).getId());
-        String encodedId = URLEncoder.encode(annotations.get(i).getId(), StandardCharsets.UTF_8.toString());
-        String encodedIdDouble = URLEncoder.encode(encodedId, StandardCharsets.UTF_8.toString());
-        thisAnno.put("idEncoded", encodedIdDouble);
-        
-        // adding the targets
-        JSONArray targets = new JSONArray();
-        for (Target target : annotations.get(i).getTargets()) {
-        	// this check is necessary for "page"-annotations, which don't have a selector, i.e. which
-        	// target the whole document/image
-        	if (target.getSelector() != null) {
-                // only send the selector (and not the source and type as well) of a target to
-                // the front-end to save bandwidth.
-                // One could also send the full target using targets.put(target.getWADMSerialization());
-                JSONObject targetSelector = new JSONObject();
-                targetSelector.put("selector", target.getSelector().getWADMSerialization());
-        		targets.put(targetSelector);
-        	}
-        }
-        thisAnno.put("targets", targets);
-
-        thisAnno.put("visible", true);
-        thisAnno.put("created", annotations.get(i).getCreated());
-        thisAnno.put("creator", annotations.get(i).getCreators());
-        thisAnno.put("modified", annotations.get(i).getModified());
-        thisAnno.put("motivation", annotations.get(i).getMotivation());
-        thisAnno.put("via", annotations.get(i).getVia());
-        
-        // adding tags to the model
-        try {
-        	JSONArray tagsJson = new JSONArray();
-        	List<Tag> tags = annotations.get(i).getTags();
-        	
-        	for (Tag tag : tags) {
-        		JSONObject value = new JSONObject();
-        		value.put("value", tag.getValue());
-        		tagsJson.put(value);
-        	}
-        	
-        	thisAnno.put("tags", tagsJson);
-        } catch (Exception e) {
-        	System.out.println(e);
-        	System.out.println("No tags available");
-        }
-        
-        // adding textCards to the model
-        try {
-        	JSONArray textCardJson = new JSONArray();
-        	List<TextCard> textCards = annotations.get(i).getTextCards();
-        	
-        	for (TextCard textCard : textCards) {
-        		JSONObject value = new JSONObject();
-        		value.put("value", textCard.getValue());
-        		value.put("purpose", textCard.getPurpose());
-        		textCardJson.put(value);
-        	}
-        	
-        	thisAnno.put("textCards", textCardJson);
-        } catch (Exception e) {
-        	System.out.println(e);
-        	System.out.println("No textCards available");
-        }
-        
-
-        displayable.put(i, thisAnno);
-      }
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-
-    return displayable;
   }
 }

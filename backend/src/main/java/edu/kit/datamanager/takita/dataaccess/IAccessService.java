@@ -67,20 +67,6 @@ public interface IAccessService {
       throws JSONException, IOException, InterruptedException;
 
   /**
-   * Converts annotation to JSONObject so it can be added to database more easily,
-   * then tells AnnotationStoreAccess to add it to validated container.
-   *
-   * @param annotation validated annotation
-   * @param pageNumber number of the page on which the annotation is
-   * @return validated Annotation
-   * @throws JSONException if an error occurs while parsing json
-   * @throws IOException if an error occurs while sending or receiving http request
-   * @throws InterruptedException if the http request is interrupted
-   */
-  Annotation validateAnnotation(Annotation annotation, String pageNumber, String projectId)
-      throws JSONException, IOException, InterruptedException;
-
-  /**
    * Converts annotation to JSONObject so it can be updated in database more easily,
    * then tells AnnotationStoreAccess to update it.
    *

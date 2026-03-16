@@ -27,7 +27,7 @@ public interface ISearchService {
    *
    * @return number of search results in list of annotations
    */
-  List<Annotation> searchAnno();
+  List<Annotation> queryAllAnnotations();
   
   /**
    * Gets list of search results.

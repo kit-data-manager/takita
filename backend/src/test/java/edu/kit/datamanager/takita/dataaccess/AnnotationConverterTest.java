@@ -369,6 +369,89 @@ public class AnnotationConverterTest {
         JSONAssert.assertEquals(testAnnoJson.toString(), jsonOutput.toString(), JSONCompareMode.STRICT);
     }
 
+    @Test
+    void buildMultiTargetAnnotationFromJSON() throws JSONException, IOException, InterruptedException, org.json.JSONException {
+        // the source has to contain "/dataresources/(.*?)/data/" otherwise the matcher will not find the pageId
+        String jsonString = """
+                {
+                    "@context": "http://www.w3.org/ns/anno.jsonld",
+                    "id": "http://example.org/anno221",
+                    "type": "Annotation",
+                    "body": {
+                        "type": "TextualBody",
+                        "purpose": "classifying",
+                        "source": "http://example.org/city1"
+                    },
+                    "target": [
+                        {
+                            "source": "http://example.org/dataresources/page1/data/page1.html",
+                            "selector": {
+                                "type": "XPathSelector",
+                                "value": "/html/body/p[2]/table/tr[2]/td[3]/span"
+                            }
+                        },
+                        {
+                            "source": "http://example.org/dataresources/page1/data/page1",
+                            "selector": {
+                                "type": "TextQuoteSelector",
+                                "exact": "annotation",
+                                "prefix": "this is an ",
+                                "suffix": " that has some"
+                            }
+                        }
+                    ]
+                }
+                """;
+        JSONObject jsonAnno = new JSONObject(jsonString);
+        Annotation testAnno = annoConverter.buildAnnotationFromJson(jsonAnno);
+        assertEquals(2, testAnno.getTargets().size());
+        assertEquals("page1", testAnno.getPageId());
+        assertEquals("http://example.org/dataresources/page1/data/page1.html", testAnno.getTargets().get(0).getLinkToResource());
+        assertEquals("http://example.org/dataresources/page1/data/page1", testAnno.getTargets().get(1).getLinkToResource());
+    }
+
+    @Test
+    void buildMultiTargetAnnotationFromJSON2() throws JSONException, IOException, InterruptedException, org.json.JSONException {
+        // same test as above, but it uses the "id"-key instead of the "source"-key of the target
+        // the id has to contain "/dataresources/(.*?)/data/" otherwise the matcher will not find the pageId
+        String jsonString = """
+                {
+                    "@context": "http://www.w3.org/ns/anno.jsonld",
+                    "id": "http://example.org/anno221",
+                    "type": "Annotation",
+                    "body": {
+                        "type": "TextualBody",
+                        "purpose": "classifying",
+                        "source": "http://example.org/city1"
+                    },
+                    "target": [
+                        {
+                            "id": "http://example.org/dataresources/page1/data/page1.html",
+                            "selector": {
+                                "type": "XPathSelector",
+                                "value": "/html/body/p[2]/table/tr[2]/td[3]/span"
+                            }
+                        },
+                        {
+                            "id": "http://example.org/dataresources/page1/data/page1",
+                            "selector": {
+                                "type": "TextQuoteSelector",
+                                "exact": "annotation",
+                                "prefix": "this is an ",
+                                "suffix": " that has some"
+                            }
+                        }
+                    ]
+                }
+                """;
+        JSONObject jsonAnno = new JSONObject(jsonString);
+        Annotation testAnno = annoConverter.buildAnnotationFromJson(jsonAnno);
+        assertEquals(2, testAnno.getTargets().size());
+        assertEquals("page1", testAnno.getPageId());
+        assertEquals("http://example.org/dataresources/page1/data/page1.html", testAnno.getTargets().get(0).getLinkToResource());
+        assertEquals("http://example.org/dataresources/page1/data/page1", testAnno.getTargets().get(1).getLinkToResource());
+    }
+
     /**
      * This test is informative only at the moment and does not count towards coverage nor does it provide indepth checking of content
      * It iterates over all WAMD examples and checks if the application is able to read them in via annotation converter.

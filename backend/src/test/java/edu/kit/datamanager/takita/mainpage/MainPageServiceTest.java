@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.ui.Model;
 
@@ -21,22 +21,22 @@ class MainPageServiceTest {
   @Autowired
   IMainPageService mockedMainPageService;
 
-  @MockBean
+  @MockitoBean
   private IAssistanceService mockedAssistanceService;
 
-  @MockBean
+  @MockitoBean
   private IFilterService mockedFilterService;
 
-  @MockBean
+  @MockitoBean
   private IDashboardService mockedDashboardService;
 
-  @MockBean
+  @MockitoBean
   private TableViewService mockedTableViewService;
   
-  @MockBean
+  @MockitoBean
   private AnnoViewService mockedAnnoViewService;
 
-  @MockBean
+  @MockitoBean
   private ISearchService mockedSearchService;
 
   @Test

@@ -1,6 +1,5 @@
 package edu.kit.datamanager.takita.model.page;
 
-import java.util.ArrayList;
 import java.time.Instant;
 
 /**
@@ -48,15 +47,5 @@ public class TextPage extends Page {
   @Override
   public String getResourceUrl() {
     return resourceUrl;
-  }
-
-  /**
-   * Gets the URL of the thumbnail resource.
-   *
-   * @return URL as String
-   */
-  @Override
-  public String getThumbResourceUrl() {
-    return thumbResourceUrl;
   }
 }

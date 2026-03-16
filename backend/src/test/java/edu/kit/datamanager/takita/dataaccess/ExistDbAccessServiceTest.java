@@ -1,7 +1,7 @@
 package edu.kit.datamanager.takita.dataaccess;
 
 import edu.kit.datamanager.takita.dataaccess.existDb.ExistDbAccessService;
-import edu.kit.datamanager.takita.dataaccess.existDb.IExistDbAccessService;
+import edu.kit.datamanager.takita.dataaccess.existDb.IXMLDbAccessService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -18,11 +18,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.xpath.XPathExpressionException;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.http.HttpResponse;
-import java.util.Arrays;
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest(classes = ExistDbAccessService.class)
@@ -45,7 +41,7 @@ public class ExistDbAccessServiceTest {
     public HttpRequestHelper mockedRequestHelper;
 
     @Autowired
-    private IExistDbAccessService existDbAccessService;
+    private IXMLDbAccessService existDbAccessService;
 
     @BeforeEach
     void init() throws NoSuchFieldException {
@@ -148,7 +144,6 @@ public class ExistDbAccessServiceTest {
                 + " fragment of the xml-document.");
     }
 
-    @Disabled("Test failing on windows, needs fixing")
     @Test
     public void testGetXMLDocumentFragment3() throws IOException, InterruptedException, XPathExpressionException, ParserConfigurationException, TransformerException, SAXException {
         String documentId = "1";
@@ -175,12 +170,12 @@ public class ExistDbAccessServiceTest {
                     </l>
                 </exist:result>""";
         String actual = existDbAccessService.getXMLDocumentFragment(documentId, xPath, trimmed, indented);
-        assertEquals(expected, actual, "Resolving xPath targeting only complete elements to get the "
+        //Java text blocks have unix line endings, we ensure in the comparison that the actual string also has unix line endings
+        assertEquals(expected, actual.replace("\r\n", "\n"), "Resolving xPath targeting only complete elements to get the "
                 + (trimmed ? "trimmed" : "untrimmed") + " and " + (indented ? "indented" : "unindented")
                 + " fragment of the xml-document.");
     }
 
-    @Disabled("Test failing on windows, needs fixing")
     @Test
     public void testGetXMLDocumentFragment4() throws IOException, InterruptedException, XPathExpressionException, ParserConfigurationException, TransformerException, SAXException {
         String documentId = "1";
@@ -221,12 +216,12 @@ public class ExistDbAccessServiceTest {
                             <l rend="indent"><w xml:id="w.58">ἁρμοδίαν</w> <supplied><w xml:id="w.59">νύμφην</w><pc xml:id="pc.8">,</pc></supplied> <w xml:id="w.60">ὡς</w> <w xml:id="w.61">διέταξε</w> <w xml:id="w.62">νόμος</w><pc xml:id="pc.9">.</pc></l>
                         </lg></exist:result>""";
         String actual = existDbAccessService.getXMLDocumentFragment(documentId, xPath, trimmed, indented);
-        assertEquals(expected, actual, "Resolving xPath targeting only complete elements to get the "
+        //Java text blocks have unix line endings, we ensure in the comparison that the actual string also has unix line endings
+        assertEquals(expected, actual.replace("\r\n", "\n"), "Resolving xPath targeting only complete elements to get the "
                 + (trimmed ? "trimmed" : "untrimmed") + " and " + (indented ? "indented" : "unindented")
                 + " fragment of the xml-document.");
     }
 
-    @Disabled("Test failing on windows, needs fixing")
     @Test
     public void testGetXMLDocumentFragment5() throws IOException, InterruptedException, XPathExpressionException, ParserConfigurationException, TransformerException, SAXException {
         String documentId = "1";
@@ -270,12 +265,12 @@ public class ExistDbAccessServiceTest {
                 \s\s\s\s\s\s\s\s\s\s\s\s
                         </lg></exist:result>""";
         String actual = existDbAccessService.getXMLDocumentFragment(documentId, xPath, trimmed, indented);
-        assertEquals(expected, actual, "Resolving xPath targeting only complete elements to get the "
+        //Java text blocks have unix line endings, we ensure in the comparison that the actual string also has unix line endings
+        assertEquals(expected, actual.replace("\r\n","\n"), "Resolving xPath targeting only complete elements to get the "
                 + (trimmed ? "trimmed" : "untrimmed") + " and " + (indented ? "indented" : "unindented")
                 + " fragment of the xml-document.");
     }
 
-    @Disabled("Test failing on windows, needs fixing")
     @Test
     public void testGetXMLDocumentFragment6() throws IOException, InterruptedException, XPathExpressionException, ParserConfigurationException, TransformerException, SAXException {
         String documentId = "1";
@@ -371,12 +366,12 @@ public class ExistDbAccessServiceTest {
                         </lg>
                 </exist:result>""";
         String actual = existDbAccessService.getXMLDocumentFragment(documentId, xPath, trimmed, indented);
-        assertEquals(expected, actual, "Resolving xPath targeting only complete elements to get the "
+        //Java text blocks have unix line endings, we ensure in the comparison that the actual string also has unix line endings
+        assertEquals(expected, actual.replace("\r\n","\n"), "Resolving xPath targeting only complete elements to get the "
                 + (trimmed ? "trimmed" : "untrimmed") + " and " + (indented ? "indented" : "unindented")
                 + " fragment of the xml-document.");
     }
 
-    @Disabled("Test failing on windows, needs fixing")
     @Test
     public void testGetXMLDocumentFragment6a() throws IOException, InterruptedException, XPathExpressionException, ParserConfigurationException, TransformerException, SAXException {
         String documentId = "1";
@@ -507,12 +502,12 @@ public class ExistDbAccessServiceTest {
                         </lg>
                 </exist:result>""";
         String actual = existDbAccessService.getXMLDocumentFragment(documentId, xPath, trimmed, indented);
-        assertEquals(expected, actual, "Resolving xPath targeting only complete elements to get the "
+        //Java text blocks have unix line endings, we ensure in the comparison that the actual string also has unix line endings
+        assertEquals(expected, actual.replace("\r\n","\n"), "Resolving xPath targeting only complete elements to get the "
                 + (trimmed ? "trimmed" : "untrimmed") + " and " + (indented ? "indented" : "unindented")
                 + " fragment of the xml-document.");
     }
 
-    @Disabled("Test failing on windows, needs fixing")
     @Test
     public void testGetXMLDocumentFragment7() throws IOException, InterruptedException, XPathExpressionException, ParserConfigurationException, TransformerException, SAXException {
         String documentId = "1";
@@ -539,7 +534,8 @@ public class ExistDbAccessServiceTest {
                     </l>
                 </exist:result>""";
         String actual = existDbAccessService.getXMLDocumentFragment(documentId, xPath, trimmed, indented);
-        assertEquals(expected, actual, "Resolving xPath targeting one complete element and one element, which was only partly selected"
+        //Java text blocks have unix line endings, we ensure in the comparison that the actual string also has unix line endings
+        assertEquals(expected, actual.replace("\r\n","\n"), "Resolving xPath targeting one complete element and one element, which was only partly selected"
                 +  "(the xPath uses the substring()-function), to get the "
                 + (trimmed ? "trimmed" : "untrimmed") + " and " + (indented ? "indented" : "unindented")
                 + " fragment of the xml-document.");
@@ -587,7 +583,6 @@ public class ExistDbAccessServiceTest {
                 + " fragment of the xml-document.");
     }
 
-    @Disabled("Test failing on windows, needs fixing")
     @Test
     public void testGetXMLDocumentFragment10() throws IOException, InterruptedException, XPathExpressionException, ParserConfigurationException, TransformerException, SAXException {
         String documentId = "1";
@@ -610,7 +605,8 @@ public class ExistDbAccessServiceTest {
                     <w xmlns="http://www.tei-c.org/ns/1.0" xml:id="w.1">Νυμφίου</w>
                 </exist:result>""";
         String actual = existDbAccessService.getXMLDocumentFragment(documentId, xPath, trimmed, indented);
-        assertEquals(expected, actual, "Resolving xPath targeting a single complete element to get the "
+        //Java text blocks have unix line endings, we ensure in the comparison that the actual string also has unix line endings
+        assertEquals(expected, actual.replace("\r\n","\n"), "Resolving xPath targeting a single complete element to get the "
                 + (trimmed ? "trimmed" : "untrimmed") + " and " + (indented ? "indented" : "unindented")
                 + " fragment of the xml-document.");
     }

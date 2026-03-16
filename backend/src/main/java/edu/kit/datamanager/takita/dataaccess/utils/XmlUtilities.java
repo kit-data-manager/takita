@@ -4,24 +4,29 @@ import edu.kit.datamanager.takita.model.Manuscript;
 import edu.kit.datamanager.takita.model.PartialDate;
 import edu.kit.datamanager.takita.model.TeiDate;
 import edu.kit.datamanager.takita.model.TeiTitle;
+import jakarta.validation.constraints.Null;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
+import java.io.IOException;
 import java.io.StringReader;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class XmlUtilities {
 
@@ -44,7 +49,7 @@ public class XmlUtilities {
             }
 
             // Dummy implementation - not used!
-            public Iterator getPrefixes(String val) {
+            public Iterator<String> getPrefixes(String val) {
                 return null;
             }
 
@@ -102,7 +107,8 @@ public class XmlUtilities {
                 addTeiDate(manuscript, dates);
             }
 
-        } catch (Exception e) {
+        } catch (IllegalArgumentException | XPathExpressionException | SAXException | IOException |
+                 ParserConfigurationException | NullPointerException e) {
             logger.info("Could not convert manuscript metadata for"
                     + " elastic index for manuscript: " + manuscript.getId());
             e.printStackTrace();
@@ -114,13 +120,16 @@ public class XmlUtilities {
      */
     private static void addTeiTitles(Manuscript manuscript, NodeList titles) {
 
-        List<TeiTitle> titlesSeries = new ArrayList<TeiTitle>();
-        List<TeiTitle> titlesMonographic = new ArrayList<TeiTitle>();
-        List<TeiTitle> titlesAnalytic = new ArrayList<TeiTitle>();
-        List<TeiTitle> titlesDefault = new ArrayList<TeiTitle>();
+        List<TeiTitle> titlesSeries = new ArrayList<>();
+        List<TeiTitle> titlesMonographic = new ArrayList<>();
+        List<TeiTitle> titlesAnalytic = new ArrayList<>();
+        List<TeiTitle> titlesDefault = new ArrayList<>();
 
         for (int i = 0; i < titles.getLength(); i++) {
             try {
+                if (titles.item(i).getTextContent().isEmpty()) {
+                    throw new IllegalArgumentException("tei:title element is empty.");
+                }
                 String titleType = titles.item(i).getAttributes().getNamedItem("type") != null ? titles.item(i).getAttributes().getNamedItem("type").getNodeValue() : null;
                 String titleLevel = titles.item(i).getAttributes().getNamedItem("level") != null ? titles.item(i).getAttributes().getNamedItem("level").getNodeValue() : null;
                 String titleLang = titles.item(i).getAttributes().getNamedItem("xml:lang") != null ? titles.item(i).getAttributes().getNamedItem("xml:lang").getNodeValue() : null;
@@ -146,7 +155,7 @@ public class XmlUtilities {
                     default:
                         titlesDefault.add(title);
                 }
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 logger.info("Could not parse titles for manuscript: " + manuscript.getId());
                 e.printStackTrace();
             }
@@ -171,33 +180,46 @@ public class XmlUtilities {
      */
     private static void addTeiAuthor(Manuscript manuscript, NodeList authors) {
 
-        List<String> authorList = new ArrayList<String>();
+        List<String> authorList = new ArrayList<>();
 
         for (int i = 0; i < authors.getLength(); i++) {
             try {
                 NodeList persNames = authors.item(i).getChildNodes();
 
                 // removing all the text nodes
-                List<Node> cleanedPersNames = new ArrayList<Node>();
+                List<Node> cleanedPersNames = new ArrayList<>();
                 for (int l = 0; l < persNames.getLength(); l++) {
                     if (persNames.item(l).getNodeType() != 3) {
                         cleanedPersNames.add(persNames.item(l));
                     }
                 }
 
-                // getting the persNames text content and adding them to the
-                // list of authors
-                List<String> persNamesList = new ArrayList<String>();
-                for (int l = 0; l < cleanedPersNames.size(); l++) {
-                    persNamesList.add(cleanedPersNames.get(l).getTextContent());
+                // getting the persNames text content, if available and adding them to the
+                // list of authors. Otherwise, add the content of the author element, if
+                // available
+                List<String> persNamesList = new ArrayList<>();
+                if (!cleanedPersNames.isEmpty()) {
+                    for (Node cleanedPersName : cleanedPersNames) {
+                        String persNameTextContent = cleanedPersName.getTextContent();
+                        if (!persNameTextContent.isEmpty()){
+                            persNamesList.add(persNameTextContent);
+                        }
+                    }
+                } else {
+                    String authorTextContent = authors.item(i).getTextContent();
+                    if (authorTextContent.isEmpty()) {
+                        throw new IllegalArgumentException("tei:author element is empty.");
+                    }
+                    persNamesList.add(authors.item(i).getTextContent());
                 }
+
                 if (persNamesList.size() > 1) {
-                    String concatedPersNames = concatList(persNamesList);
-                    authorList.add(concatedPersNames);
+                    String concatenatedPersNames = concatList(persNamesList);
+                    authorList.add(concatenatedPersNames);
                 } else {
                     authorList.add(persNamesList.get(0));
                 }
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 logger.info("Could not parse authors for manuscript: " + manuscript.getId());
                 e.printStackTrace();
             }
@@ -210,9 +232,10 @@ public class XmlUtilities {
 
     /*
      * Adds the date obtained from the metadata tei-xml-file to a manuscript.
+     * In exotic cases in date attributes such as "--09-11" or time without date,
      */
     private static void addTeiDate(Manuscript manuscript, NodeList dates) {
-        List<TeiDate> datesList = new ArrayList<TeiDate>();
+        List<TeiDate> datesList = new ArrayList<>();
 
         for (int i = 0; i < dates.getLength(); i++) {
             try {
@@ -228,31 +251,31 @@ public class XmlUtilities {
                 // set the various dates after the string a valid string, that can be parsed
                 if (dates.item(i).getAttributes().getNamedItem("when") != null) {
                     String whenValue = dates.item(i).getAttributes().getNamedItem("when").getNodeValue();
-                    PartialDate when = PartialDate.parse(whenValue);
+                    PartialDate when = parsePartialDateIfPossible(whenValue);
                     date.setWhen(when);
                 }
                 if (dates.item(i).getAttributes().getNamedItem("notBefore") != null) {
                     String notBeforeValue = dates.item(i).getAttributes().getNamedItem("notBefore").getNodeValue();
-                    PartialDate notBefore = PartialDate.parse(notBeforeValue);
+                    PartialDate notBefore = parsePartialDateIfPossible(notBeforeValue);
                     date.setNotBefore(notBefore);
                 }
                 if (dates.item(i).getAttributes().getNamedItem("notAfter") != null) {
                     String notAfterValue = dates.item(i).getAttributes().getNamedItem("notAfter").getNodeValue();
-                    PartialDate notAfter = PartialDate.parse(notAfterValue);
+                    PartialDate notAfter = parsePartialDateIfPossible(notAfterValue);
                     date.setNotAfter(notAfter);
                 }
                 if (dates.item(i).getAttributes().getNamedItem("from") != null) {
                     String fromValue = dates.item(i).getAttributes().getNamedItem("from").getNodeValue();
-                    PartialDate from = PartialDate.parse(fromValue);
+                    PartialDate from = parsePartialDateIfPossible(fromValue);
                     date.setFrom(from);
                 }
                 if (dates.item(i).getAttributes().getNamedItem("to") != null) {
                     String toValue = dates.item(i).getAttributes().getNamedItem("to").getNodeValue();
-                    PartialDate to = PartialDate.parse(toValue);
+                    PartialDate to = parsePartialDateIfPossible(toValue);
                     date.setTo(to);
                 }
                 datesList.add(date);
-            } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
                 logger.info("Could not parse dates for manuscript: " + manuscript.getId());
                 e.printStackTrace();
             }
@@ -263,16 +286,31 @@ public class XmlUtilities {
         }
     }
 
+    private static PartialDate parsePartialDateIfPossible(String datetimestring) {
+        try {
+            PartialDate pdate = PartialDate.parse(datetimestring.split("T")[0]);
+            return pdate;
+        } catch (IllegalArgumentException e) {
+            logger.info("Could not parse partial date: " + datetimestring);
+            return null;
+        }
+    }
+
     /**
      * Helper function to concatenate a list into a string, where all entries apart from
      * the first are surrounded by brackets.
      */
-    private static String concatList(List list) {
-        String result = list.get(0).toString();
-        list.remove(0);
-        if (list.size() >= 1) {
-            result = result + " (" + String.join("; ", list) + ")";
+    private static String concatList(List<String> stringList) {
+        if (stringList.isEmpty()) return "";
+
+        String firstString = stringList.getFirst();
+
+        if (stringList.size() > 1) {
+            String remainingStrings = stringList.stream()
+                    .skip(1)
+                    .collect(Collectors.joining("; "));
+            return firstString + " (" + remainingStrings + ")";
         }
-        return result;
+        return firstString;
     }
 }

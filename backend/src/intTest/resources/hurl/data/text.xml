@@ -1,29 +1,736 @@
-<text xmlns="http://www.tei-c.org/ns/1.0" xml:lang="la-Latn" type="edition">
-    <body>
-        <div n="1" type="section">
-            <p>
-                <w xml:id="w.1">Lorem</w>
-                <w xml:id="w.2">ipsum</w>
-                <w xml:id="w.3">dolor</w>
-                <w xml:id="w.4">sit</w>
-                <w xml:id="w.5">amet</w>
-                <pc xml:id="pc.1">,</pc>
-                <w xml:id="w.6">consectetur</w>
-                <w xml:id="w.7">adipiscing</w>
-                <w xml:id="w.8">elit</w>
-                <pc xml:id="pc.2">,</pc>
-                <lb/>
-                <w xml:id="w.9">Lorem</w>
-                <w xml:id="w.10">ipsum</w>
-                <w xml:id="w.11">dolor</w>
-                <w xml:id="w.12">sit</w>
-                <w xml:id="w.13">amet</w>
-                <pc xml:id="pc.3">,</pc>
-                <w xml:id="w.14">consectetur</w>
-                <w xml:id="w.15">adipiscing</w>
-                <w xml:id="w.16">elit</w>
-                <pc xml:id="pc.4">,</pc>
-            </p>
+<text xml:lang="en" xmlns="http://www.tei-c.org/ns/1.0">
+    <body n="Psalms" xml:id="b.426591">
+        <div type="chapter" n="1" xml:id="c.426630">
+            <lg>
+                <l><w xml:id="w.121">Blessed</w>
+                    <w xml:id="w.122">[is]</w>
+                    <w xml:id="w.123">the</w>
+                    <w xml:id="w.124">man</w>
+                    <w xml:id="w.125">that</w>
+                    <w xml:id="w.126">walketh</w>
+                    <w xml:id="w.127">not</w>
+                    <w xml:id="w.128">in</w>
+                    <w xml:id="w.129">the</w>
+                    <w xml:id="w.130">counsel</w>
+                    <w xml:id="w.131">of</w>
+                    <w xml:id="w.132">the</w>
+                    <w xml:id="w.99990">ungodly</w><pc xml:id="pc.1">,</pc></l>
+                <l><w xml:id="w.133">nor</w>
+                    <w xml:id="w.134">standeth</w>
+                    <w xml:id="w.135">in</w>
+                    <w xml:id="w.136">the</w>
+                    <w xml:id="w.137">way</w>
+                    <w xml:id="w.138">of</w>
+                    <w xml:id="w.139">sinners,</w>
+                    <w xml:id="w.140">nor</w>
+                    <w xml:id="w.141">sitteth</w>
+                    <w xml:id="w.142">in</w>
+                    <w xml:id="w.143">the</w>
+                    <w xml:id="w.99991">seat</w>
+                    <w xml:id="w.144">of</w>
+                    <w xml:id="w.145">the</w>
+                    <w xml:id="w.146">scornful</w><pc xml:id="pc.2">.</pc></l>
+            </lg>
+            <lg>
+                <l>
+                    <w xml:id="w.147">But</w>
+                    <w xml:id="w.148">his</w>
+                    <w xml:id="w.149">delight</w>
+                    <w xml:id="w.150">[is]</w>
+                    <w xml:id="w.151">in</w>
+                    <w xml:id="w.152">the</w>
+                    <w xml:id="w.153">law</w>
+                    <w xml:id="w.154">of</w>
+                    <w xml:id="w.155">the</w>
+                    <w xml:id="w.156">LORD</w><pc xml:id="pc.3">;</pc></l>
+                <l><w xml:id="w.157">and</w>
+                    <w xml:id="w.158">in</w>
+                    <w xml:id="w.159">his</w>
+                    <w xml:id="w.160">law</w>
+                    <w xml:id="w.161">doth</w>
+                    <w xml:id="w.99992">he</w>
+                    <w xml:id="w.162">meditate</w>
+                    <w xml:id="w.163">day</w>
+                    <w xml:id="w.164">and</w>
+                    <w xml:id="w.165">night</w><pc xml:id="pc.4">.</pc></l>
+            </lg>
+            <lg>
+                <l><w xml:id="w.166">And</w>
+                    <w xml:id="w.167">he</w>
+                    <w xml:id="w.168">shall</w>
+                    <w xml:id="w.169">be</w>
+                    <w xml:id="w.170">like</w>
+                    <w xml:id="w.171">a</w>
+                    <w xml:id="w.172">tree</w>
+                    <w xml:id="w.173">planted</w>
+                    <w xml:id="w.174">by</w>
+                    <w xml:id="w.175">the</w>
+                    <w xml:id="w.176">rivers</w>
+                    <w xml:id="w.177">of</w>
+                    <w xml:id="w.178">water</w><pc xml:id="pc.5">,</pc></l>
+                <l><w xml:id="w.179">that</w>
+                    <w xml:id="w.99993">bringeth</w>
+                    <w xml:id="w.180">forth</w>
+                    <w xml:id="w.181">his</w>
+                    <w xml:id="w.182">fruit</w>
+                    <w xml:id="w.183">in</w>
+                    <w xml:id="w.184">his</w>
+                    <w xml:id="w.185">season</w><pc xml:id="pc.6">;</pc></l>
+                <l>
+                    <w xml:id="w.186">his</w>
+                    <w xml:id="w.187">leaf</w>
+                    <w xml:id="w.188">also</w>
+                    <w xml:id="w.189">shall</w>
+                    <w xml:id="w.190">notwither</w><pc xml:id="pc.7">;</pc></l>
+                <l><w xml:id="w.191">and</w>
+                    <w xml:id="w.192">whatsoever</w>
+                    <w xml:id="w.193">he</w>
+                    <w xml:id="w.194">doeth</w>
+                    <w xml:id="w.195">shall</w>
+                    <w xml:id="w.196">prosper</w><pc xml:id="pc.8">.</pc></l>
+            </lg>
+            <lg>
+                <l><w xml:id="w.197">The</w>
+                    <w xml:id="w.198">ungodly</w>
+                    <w xml:id="w.199">[are]</w>
+                    <w xml:id="w.200">not</w>
+                    <w xml:id="w.201">so</w><pc xml:id="pc.9">:</pc></l>
+                <l><w xml:id="w.202">but</w>
+                    <w xml:id="w.203">[are]</w>
+                    <w xml:id="w.204">like</w>
+                    <w xml:id="w.205">the</w>
+                    <w xml:id="w.206">chaff</w>
+                    <w xml:id="w.207">which</w>
+                    <w xml:id="w.208">the</w>
+                    <w xml:id="w.209">wind</w>
+                    <w xml:id="w.99994">driveth</w>
+                    <w xml:id="w.210">away</w><pc xml:id="pc.10">.</pc></l>
+            </lg>
+            <lg>
+                <l><w xml:id="w.211">Therefore</w>
+                    <w xml:id="w.212">the</w>
+                    <w xml:id="w.213">ungodly</w>
+                    <w xml:id="w.214">shall</w>
+                    <w xml:id="w.215">not</w>
+                    <w xml:id="w.216">stand</w>
+                    <w xml:id="w.217">in</w>
+                    <w xml:id="w.218">the</w>
+                    <w xml:id="w.219">judgment</w><pc xml:id="pc.11">,</pc></l>
+                <l><w xml:id="w.220">nor</w>
+                    <w xml:id="w.99995">sinners</w>
+                    <w xml:id="w.221">in</w>
+                    <w xml:id="w.222">the</w>
+                    <w xml:id="w.223">congregation</w>
+                    <w xml:id="w.224">of</w>
+                    <w xml:id="w.225">the</w>
+                    <w xml:id="w.226">righteous</w><pc xml:id="pc.12">.</pc></l>
+            </lg>
+            <lg>
+                <l><w xml:id="w.227">For</w>
+                    <w xml:id="w.228">the</w>
+                    <w xml:id="w.229">LORD</w>
+                    <w xml:id="w.230">knoweth</w>
+                    <w xml:id="w.231">the</w>
+                    <w xml:id="w.232">way</w>
+                    <w xml:id="w.233">of</w>
+                    <w xml:id="w.234">the</w>
+                    <w xml:id="w.235">righteous</w><pc xml:id="pc.13">:</pc></l>
+                <l><w xml:id="w.236">but</w>
+                    <w xml:id="w.237">the</w>
+                    <w xml:id="w.238">way</w>
+                    <w xml:id="w.239">of</w>
+                    <w xml:id="w.240">the</w>
+                    <w xml:id="w.99996">ungodly</w>
+                    <w xml:id="w.241">shall</w>
+                    <w xml:id="w.242">perish</w><pc xml:id="pc.14">.</pc></l>
+            </lg>
+
+        </div>
+        <div type="chapter" n="2" xml:id="c.426631">
+            <ab><w xml:id="w.244">Why</w>
+                <w xml:id="w.245">do</w>
+                <w xml:id="w.246">the</w>
+                <w xml:id="w.247">heathen</w>
+                <w xml:id="w.248">rage</w><pc xml:id="pc.15">,</pc>
+                <w xml:id="w.249">and</w>
+                <w xml:id="w.250">the</w>
+                <w xml:id="w.251">people</w>
+                <w xml:id="w.252">imagine</w>
+                <w xml:id="w.253">a</w>
+                <w xml:id="w.254">vain</w>
+                <w xml:id="w.255">thing</w><pc xml:id="pc.16">?</pc>
+                <w xml:id="w.256">The</w>
+                <w xml:id="w.257">kings</w>
+                <w xml:id="w.258">of</w>
+                <w xml:id="w.259">the</w>
+                <w xml:id="w.260">earth</w>
+                <w xml:id="w.261">set</w>
+                <w xml:id="w.262">themselves</w><pc xml:id="pc.17">,</pc>
+                <w xml:id="w.263">and</w>
+                <w xml:id="w.264">the</w>
+                <w xml:id="w.265">rulers</w>
+                <w xml:id="w.266">take</w>
+                <w xml:id="w.999981">counsel</w>
+                <w xml:id="w.267">together</w><pc xml:id="pc.18">,</pc>
+                <w xml:id="w.268">against</w>
+                <w xml:id="w.269">the</w>
+                <w xml:id="w.270">LORD</w><pc xml:id="pc.19">,</pc>
+                <w xml:id="w.271">and</w>
+                <w xml:id="w.272">against</w>
+                <w xml:id="w.273">his</w>
+                <w xml:id="w.274">anointed</w><pc xml:id="pc.20"/>
+                <w xml:id="w.999980">[saying]</w><pc xml:id="pc.21">,</pc>
+                <w xml:id="w.275">Let</w>
+                <w xml:id="w.276">us</w>
+                <w xml:id="w.277">break</w>
+                <w xml:id="w.278">their</w>
+                <w xml:id="w.279">bands</w>
+                <w xml:id="w.280">asunder</w><pc xml:id="pc.22">,</pc>
+                <w xml:id="w.281">and</w>
+                <w xml:id="w.282">cast</w>
+                <w xml:id="w.283">away</w>
+                <w xml:id="w.284">their</w>
+                <w xml:id="w.285">cords</w>
+                <w xml:id="w.286">from</w>
+                <w xml:id="w.99981">us</w><pc xml:id="pc.23"/>
+                <w xml:id="w.287">He</w>
+                <w xml:id="w.288">that</w>
+                <w xml:id="w.289">sitteth</w>
+                <w xml:id="w.290">in</w>
+                <w xml:id="w.291">the</w>
+                <w xml:id="w.292">heavens</w>
+                <w xml:id="w.293">shall</w>
+                <w xml:id="w.294">laugh</w><pc xml:id="pc.24">:</pc>
+                <w xml:id="w.295">the</w>
+                <w xml:id="w.296">Lord</w>
+                <w xml:id="w.297">shall</w>
+                <w xml:id="w.298">have</w>
+                <w xml:id="w.99970">them</w>
+                <w xml:id="w.299">in</w>
+                <w xml:id="w.300">derision</w><pc xml:id="pc.25">.</pc>
+                <w xml:id="w.301">Then</w>
+                <w xml:id="w.302">shall</w>
+                <w xml:id="w.303">he</w>
+                <w xml:id="w.304">speak</w>
+                <w xml:id="w.305">unto</w>
+                <w xml:id="w.306">them</w>
+                <w xml:id="w.307">in</w>
+                <w xml:id="w.308">his</w>
+                <w xml:id="w.309">wrath</w><pc xml:id="pc.26">,</pc>
+                <w xml:id="w.310">and</w>
+                <w xml:id="w.311">vex</w>
+                <w xml:id="w.312">them</w>
+                <w xml:id="w.313">in</w>
+                <w xml:id="w.314">hiS</w>
+                <w xml:id="w.999883">sore</w>
+                <w xml:id="w.315">displeasure</w><pc xml:id="pc.27">.</pc>
+                <w xml:id="w.316">Yet</w>
+                <w xml:id="w.317">have</w>
+                <w xml:id="w.318">I</w>
+                <w xml:id="w.319">set</w>
+                <w xml:id="w.320">my</w>
+                <w xml:id="w.321">king</w>
+                <w xml:id="w.322">upon</w>
+                <w xml:id="w.323">my</w>
+                <w xml:id="w.324">holy</w>
+                <w xml:id="w.325">hill</w>
+                <w xml:id="w.326">of</w>
+                <w xml:id="w.327">Zion</w><pc xml:id="pc.28">.</pc>
+                <w xml:id="w.328">I</w>
+                <w xml:id="w.329">will</w>
+                <w xml:id="w.330">declare</w>
+                <w xml:id="w.331">the</w>
+                <w xml:id="w.332">decree</w><pc xml:id="pc.29">:</pc>
+                <w xml:id="w.333">the</w>
+                <w xml:id="w.334">LORD</w>
+                <w xml:id="w.335">hath</w>
+                <w xml:id="w.336">said</w>
+                <w xml:id="w.337">unto</w>
+                <w xml:id="w.338">me</w><pc xml:id="pc.30">,</pc>
+                <w xml:id="w.339">Thou</w>
+                <w xml:id="w.340">[art]</w>
+                <w xml:id="w.99961">my</w>
+                <w xml:id="w.341">Son</w><pc xml:id="pc.31">;</pc>
+                <w xml:id="w.342">this</w>
+                <w xml:id="w.343">day</w>
+                <w xml:id="w.344">have</w>
+                <w xml:id="w.345">I</w>
+                <w xml:id="w.346">begotten</w>
+                <w xml:id="w.347">thee</w><pc xml:id="pc.32">.</pc>
+                <w xml:id="w.348">Ask</w>
+                <w xml:id="w.349">of</w>
+                <w xml:id="w.350">me,</w>
+                <w xml:id="w.351">and</w>
+                <w xml:id="w.352">I</w>
+                <w xml:id="w.353">shall</w>
+                <w xml:id="w.354">give</w>
+                <w xml:id="w.355">[thee]</w>
+                <w xml:id="w.356">the</w>
+                <w xml:id="w.357">heathen</w>
+                <w xml:id="w.358">[for]</w>
+                <w xml:id="w.359">thine</w>
+                <w xml:id="w.99962">inheritance</w><pc xml:id="pc.33">,</pc>
+                <w xml:id="w.360">and</w>
+                <w xml:id="w.361">the</w>
+                <w xml:id="w.362">uttermost</w>
+                <w xml:id="w.363">parts</w>
+                <w xml:id="w.364">of</w>
+                <w xml:id="w.365">the</w>
+                <w xml:id="w.366">earth</w>
+                <w xml:id="w.367">[for]</w>
+                <w xml:id="w.368">thy</w>
+                <w xml:id="w.99963">posession</w><pc xml:id="pc.34">,</pc>
+                <w xml:id="w.369">Thou</w>
+                <w xml:id="w.370">shalt</w>
+                <w xml:id="w.371">break</w>
+                <w xml:id="w.372">them</w>
+                <w xml:id="w.373">with</w>
+                <w xml:id="w.374">a</w>
+                <w xml:id="w.375">rod</w>
+                <w xml:id="w.376">of</w>
+                <w xml:id="w.377">iron</w><pc xml:id="pc.35">;</pc>
+                <w xml:id="w.378">thou</w>
+                <w xml:id="w.379">shalt</w>
+                <w xml:id="w.380">dash</w>
+                <w xml:id="w.381">them</w>
+                <w xml:id="w.382">in</w>
+                <w xml:id="w.98883">pieces</w>
+                <w xml:id="w.383">like</w>
+                <w xml:id="w.384">a</w>
+                <w xml:id="w.385">potter’s</w>
+                <w xml:id="w.386">vessel</w><pc xml:id="pc.36">.</pc>
+                <w xml:id="w.387">Be</w>
+                <w xml:id="w.388">wise</w>
+                <w xml:id="w.389">now</w>
+                <w xml:id="w.390">therefore</w><pc xml:id="pc.37">,</pc>
+                <w xml:id="w.391">O</w>
+                <w xml:id="w.392">ye</w>
+                <w xml:id="w.393">kings</w><pc xml:id="pc.38">:</pc>
+                <w xml:id="w.394">be</w>
+                <w xml:id="w.395">instructed</w><pc xml:id="pc.39">,</pc>
+                <w xml:id="w.396">ye</w>
+                <w xml:id="w.397">judges</w>
+                <w xml:id="w.398">of</w>
+                <w xml:id="w.98884">the</w>
+                <w xml:id="w.399">earth</w><pc xml:id="pc.40">.</pc>
+                <w xml:id="w.400">Serve</w>
+                <w xml:id="w.401">the</w>
+                <w xml:id="w.402">LORD</w>
+                <w xml:id="w.403">with</w>
+                <w xml:id="w.404">fear</w><pc xml:id="pc.41">,</pc>
+                <w xml:id="w.405">and</w>
+                <w xml:id="w.406">rejoice</w>
+                <w xml:id="w.407">with</w>
+                <w xml:id="w.408">trembling</w><pc xml:id="pc.42">.</pc>
+                <w xml:id="w.409">Kiss</w>
+                <w xml:id="w.410">the</w>
+                <w xml:id="w.411">Son</w><pc xml:id="pc.43">,</pc>
+                <w xml:id="w.412">lest</w>
+                <w xml:id="w.413">he</w>
+                <w xml:id="w.414">be</w>
+                <w xml:id="w.415">angry</w><pc xml:id="pc.44">,</pc>
+                <w xml:id="w.416">and</w>
+                <w xml:id="w.417">ye</w>
+                <w xml:id="w.418">perish</w>
+                <w xml:id="w.419">[from]</w>
+                <w xml:id="w.420">the</w>
+                <w xml:id="w.421">way</w><pc xml:id="pc.45">,</pc>
+                <w xml:id="w.99964">when</w>
+                <w xml:id="w.422">his</w>
+                <w xml:id="w.423">wrath</w>
+                <w xml:id="w.424">is</w>
+                <w xml:id="w.425">kindled</w>
+                <w xml:id="w.426">but</w>
+                <w xml:id="w.427">a</w>
+                <w xml:id="w.428">little</w><pc xml:id="pc.46">.</pc>
+                <w xml:id="w.429">Blessed</w>
+                <w xml:id="w.430">[are]</w>
+                <w xml:id="w.431">all</w>
+                <w xml:id="w.432">they</w>
+                <w xml:id="w.99965">that</w>
+                <w xml:id="w.433">put</w>
+                <w xml:id="w.434">their</w>
+                <w xml:id="w.435">trust</w>
+                <w xml:id="w.436">in</w>
+                <w xml:id="w.437">him</w><pc xml:id="pc.47">.</pc>
+            </ab>
+        </div>
+        <div type="chapter" n="22" xml:id="c.426651">
+            <ab><w xml:id="w.19500">My</w>
+                <w xml:id="w.19501">God</w><pc xml:id="pc.49">,</pc>
+                <w xml:id="w.19502">my</w>
+                <w xml:id="w.19503">God</w><pc xml:id="pc.50">,</pc>
+                <w xml:id="w.19504">why</w>
+                <w xml:id="w.19505">hast</w>
+                <w xml:id="w.19506">thou</w>
+                <w xml:id="w.19507">forsaken</w>
+                <w xml:id="w.19508">me</w><pc xml:id="pc.51">?</pc>
+                <w xml:id="w.19509">[why</w>
+                <w xml:id="w.19510">art</w>
+                <w xml:id="w.19511">thou</w>
+                <w xml:id="w.19512">so]</w>
+                <w xml:id="w.19513">far</w>
+                <w xml:id="w.19515">from</w>
+                <w xml:id="w.19516">helping</w>
+                <w xml:id="w.19517">me</w><pc xml:id="pc.52">,</pc>
+                <w xml:id="w.19518">[and</w>
+                <w xml:id="w.19519">from]</w>
+                <w xml:id="w.19520">the</w>
+                <w xml:id="w.19521">words</w>
+                <w xml:id="w.19522">of</w>
+                <w xml:id="w.19523">my</w>
+                <w xml:id="w.19524">roaring</w><pc xml:id="pc.53">?</pc>
+                <w xml:id="w.19525">O</w>
+                <w xml:id="w.19526">my</w>
+                <w xml:id="w.19527">God</w><pc xml:id="pc.54">,</pc>
+                <w xml:id="w.19528">I</w>
+                <w xml:id="w.19529">cry</w>
+                <w xml:id="w.19530">in</w>
+                <w xml:id="w.19531">the</w>
+                <w xml:id="w.19532">daytime</w><pc xml:id="pc.55">,</pc>
+                <w xml:id="w.19533">but</w>
+                <w xml:id="w.19534">thou</w>
+                <w xml:id="w.19535">hearest</w>
+                <w xml:id="w.19536">not</w><pc xml:id="pc.56">;</pc>
+                <w xml:id="w.19537">and</w>
+                <w xml:id="w.19538">in</w>
+                <w xml:id="w.19539">the</w>
+                <w xml:id="w.99967">night</w>
+                <w xml:id="w.19540">season</w><pc xml:id="pc.57">,</pc>
+                <w xml:id="w.19541">and</w>
+                <w xml:id="w.19542">am</w>
+                <w xml:id="w.19543">not</w>
+                <w xml:id="w.19544">silent</w><pc xml:id="pc.58">.</pc>
+                <w xml:id="w.19545">But</w>
+                <w xml:id="w.19546">thou</w>
+                <w xml:id="w.19547">[art]</w>
+                <w xml:id="w.19548">holy</w><pc xml:id="pc.59">,</pc>
+                <w xml:id="w.19549">[O</w>
+                <w xml:id="w.19550">thou]</w>
+                <w xml:id="w.19551">that</w>
+                <w xml:id="w.19552">inhabitest</w>
+                <w xml:id="w.19553">the</w>
+                <w xml:id="w.19554">praises</w>
+                <w xml:id="w.19555">of</w>
+                <w xml:id="w.99968">Israel</w><pc xml:id="pc.60">.</pc>
+                <w xml:id="w.19556">Our</w>
+                <w xml:id="w.19557">fathers</w>
+                <w xml:id="w.19558">trusted</w>
+                <w xml:id="w.19559">in</w>
+                <w xml:id="w.19560">thee</w><pc xml:id="pc.61">:</pc>
+                <w xml:id="w.19561">they</w>
+                <w xml:id="w.19562">trusted</w><pc xml:id="pc.62">,</pc>
+                <w xml:id="w.19563">and</w>
+                <w xml:id="w.19564">thou</w>
+                <w xml:id="w.19565">didst</w>
+                <w xml:id="w.99969">deliver</w>
+                <w xml:id="w.19566">them</w><pc xml:id="pc.63">.</pc>
+                <w xml:id="w.19567">They</w>
+                <w xml:id="w.19568">cried</w>
+                <w xml:id="w.19569">unto</w>
+                <w xml:id="w.19570">thee,</w>
+                <w xml:id="w.19571">and</w>
+                <w xml:id="w.19572">were</w>
+                <w xml:id="w.19573">delivered</w><pc xml:id="pc.64">:</pc>
+                <w xml:id="w.19574">they</w>
+                <w xml:id="w.19575">trusted</w>
+                <w xml:id="w.19576">in</w>
+                <w xml:id="w.19577">thee</w><pc xml:id="pc.65">,</pc>
+                <w xml:id="w.99971">and</w>
+                <w xml:id="w.19578">were</w>
+                <w xml:id="w.19579">not</w>
+                <w xml:id="w.19580">confounded</w><pc xml:id="pc.66">.</pc>
+                <w xml:id="w.19581">But</w>
+                <w xml:id="w.19582">I</w>
+                <w xml:id="w.19583">[am]</w>
+                <w xml:id="w.19584">a</w>
+                <w xml:id="w.19585">worm</w><pc xml:id="pc.67">,</pc>
+                <w xml:id="w.19586">and</w>
+                <w xml:id="w.19587">no</w>
+                <w xml:id="w.19588">man</w><pc xml:id="pc.68">;</pc>
+                <w xml:id="w.19589">a</w>
+                <w xml:id="w.19590">reproach</w>
+                <w xml:id="w.19591">of</w>
+                <w xml:id="w.19592">men</w><pc xml:id="pc.69">,</pc>
+                <w xml:id="w.19593">and</w>
+                <w xml:id="w.19594">despised</w>
+                <w xml:id="w.99972">of</w>
+                <w xml:id="w.19595">the</w>
+                <w xml:id="w.19596">people</w><pc xml:id="pc.70">.</pc>
+                <w xml:id="w.19597">All</w>
+                <w xml:id="w.19598">they</w>
+                <w xml:id="w.19599">that</w>
+                <w xml:id="w.19600">see</w>
+                <w xml:id="w.19601">me</w>
+                <w xml:id="w.19602">laugh</w>
+                <w xml:id="w.19603">me</w>
+                <w xml:id="w.19604">to</w>
+                <w xml:id="w.19605">scorn</w><pc xml:id="pc.71">:</pc>
+                <w xml:id="w.19606">they</w>
+                <w xml:id="w.19607">shoot</w>
+                <w xml:id="w.19608">out</w>
+                <w xml:id="w.19609">the</w>
+                <w xml:id="w.19610">lip</w><pc xml:id="pc.72">,</pc>
+                <w xml:id="w.99973">they</w>
+                <w xml:id="w.19611">shake</w>
+                <w xml:id="w.19612">the</w>
+                <w xml:id="w.19613">head</w>
+                <w xml:id="w.19614">[saying]</w><pc xml:id="pc.73">,</pc>
+                <w xml:id="w.19615">He</w>
+                <w xml:id="w.19616">trusted</w>
+                <w xml:id="w.19617">on</w>
+                <w xml:id="w.19618">the</w>
+                <w xml:id="w.19619">LORD</w>
+                <w xml:id="w.19620">[that]</w>
+                <w xml:id="w.19621">he</w>
+                <w xml:id="w.19622">would</w>
+                <w xml:id="w.19623">deliver</w>
+                <w xml:id="w.19624">him</w><pc xml:id="pc.74">:</pc>
+                <w xml:id="w.19625">let</w>
+                <w xml:id="w.19626">himdeliver</w>
+                <w xml:id="w.19627">him</w><pc xml:id="pc.75">,</pc>
+                <w xml:id="w.19628">seeing</w>
+                <w xml:id="w.19629">he</w>
+                <w xml:id="w.19630">delighted</w>
+                <w xml:id="w.19631">in</w>
+                <w xml:id="w.19632">him</w><pc xml:id="pc.76">.</pc>
+                <w xml:id="w.19633">But</w>
+                <w xml:id="w.19634">thou</w>
+                <w xml:id="w.19635">[art]</w>
+                <w xml:id="w.19636">he</w>
+                <w xml:id="w.19637">that</w>
+                <w xml:id="w.19638">took</w>
+                <w xml:id="w.19639">me</w>
+                <w xml:id="w.19640">out</w>
+                <w xml:id="w.19641">of</w>
+                <w xml:id="w.19642">the</w>
+                <w xml:id="w.19643">womb</w><pc xml:id="pc.77">:</pc>
+                <w xml:id="w.19644">thou</w>
+                <w xml:id="w.19645">didst</w>
+                <w xml:id="w.19646">make</w>
+                <w xml:id="w.99975">me</w>
+                <w xml:id="w.19647">hope</w>
+                <w xml:id="w.19648">[when</w>
+                <w xml:id="w.19649">I</w>
+                <w xml:id="w.19650">was]</w>
+                <w xml:id="w.19651">upon</w>
+                <w xml:id="w.19652">my</w>
+                <w xml:id="w.19653">mother’s</w>
+                <w xml:id="w.19654">breasts</w><pc xml:id="pc.78">.</pc>
+                <w xml:id="w.19655">I</w>
+                <w xml:id="w.19656">was</w>
+                <w xml:id="w.19657">cast</w>
+                <w xml:id="w.19658">upon</w>
+                <w xml:id="w.19659">thee</w>
+                <w xml:id="w.19660">from</w>
+                <w xml:id="w.19661">the</w>
+                <w xml:id="w.19662">womb</w><pc xml:id="pc.79">:</pc>
+                <w xml:id="w.19663">thou</w>
+                <w xml:id="w.19664">[art]</w>
+                <w xml:id="w.19665">my</w>
+                <w xml:id="w.19666">God</w>
+                <w xml:id="w.19667">from</w>
+                <w xml:id="w.19668">my</w>
+                <w xml:id="w.99976">mother's</w>
+                <w xml:id="w.19669">belly</w><pc xml:id="pc.80">.</pc>
+                <w xml:id="w.19670">Be</w>
+                <w xml:id="w.19671">not</w>
+                <w xml:id="w.19672">far</w>
+                <w xml:id="w.19673">from</w>
+                <w xml:id="w.19674">me</w><pc xml:id="pc.81">;</pc>
+                <w xml:id="w.19675">for</w>
+                <w xml:id="w.19676">trouble</w>
+                <w xml:id="w.19677">[is]</w>
+                <w xml:id="w.19678">near</w><pc xml:id="pc.82">;</pc>
+                <w xml:id="w.19679">for</w>
+                <w xml:id="w.19680">[there</w>
+                <w xml:id="w.19681">is]</w>
+                <w xml:id="w.19682">none</w>
+                <w xml:id="w.99886">to</w>
+                <w xml:id="w.19683">help</w><pc xml:id="pc.83">.</pc>
+                <w xml:id="w.19684">Many</w>
+                <w xml:id="w.19685">bulls</w>
+                <w xml:id="w.19686">have</w>
+                <w xml:id="w.19687">compassed</w>
+                <w xml:id="w.19688">me</w><pc xml:id="pc.84">:</pc>
+                <w xml:id="w.19689">strong</w>
+                <w xml:id="w.19690">[bulls]</w>
+                <w xml:id="w.19691">of</w>
+                <w xml:id="w.19692">Bashan</w>
+                <w xml:id="w.19693">have</w>
+                <w xml:id="w.99978">beset</w>
+                <w xml:id="w.19694">me</w>
+                <w xml:id="w.19695">round</w><pc xml:id="pc.85">.</pc>
+                <w xml:id="w.19696">They</w>
+                <w xml:id="w.19697">gaped</w>
+                <w xml:id="w.19698">upon</w>
+                <w xml:id="w.19699">me</w>
+                <w xml:id="w.19700">[with]</w>
+                <w xml:id="w.19701">their</w>
+                <w xml:id="w.19702">mouths</w><pc xml:id="pc.86">,</pc>
+                <w xml:id="w.19703">[as]</w>
+                <w xml:id="w.19704">a</w>
+                <w xml:id="w.19705">ravening</w>
+                <w xml:id="w.19706">and</w>
+                <w xml:id="w.99988">a</w>
+                <w xml:id="w.19707">roaring</w>
+                <w xml:id="w.19708">lion</w><pc xml:id="pc.87">.</pc>
+                <w xml:id="w.19709">I</w>
+                <w xml:id="w.19710">am</w>
+                <w xml:id="w.19711">poured</w>
+                <w xml:id="w.19712">out</w>
+                <w xml:id="w.19713">like</w>
+                <w xml:id="w.19714">water</w><pc xml:id="pc.88">,</pc>
+                <w xml:id="w.19715">and</w>
+                <w xml:id="w.19716">all</w>
+                <w xml:id="w.19717">my</w>
+                <w xml:id="w.19718">bones</w>
+                <w xml:id="w.19719">are</w>
+                <w xml:id="w.19720">out</w>
+                <w xml:id="w.19721">of</w>
+                <w xml:id="w.19722">joint</w><pc xml:id="pc.89">:</pc>
+                <w xml:id="w.999581">my</w>
+                <w xml:id="w.19723">heart</w>
+                <w xml:id="w.19724">is</w>
+                <w xml:id="w.19725">like</w>
+                <w xml:id="w.19726">wax</w><pc xml:id="pc.90">;</pc>
+                <w xml:id="w.19727">it</w>
+                <w xml:id="w.19728">is</w>
+                <w xml:id="w.19729">melted</w>
+                <w xml:id="w.19730">in</w>
+                <w xml:id="w.19731">the</w>
+                <w xml:id="w.19732">midst</w>
+                <w xml:id="w.19733">of</w>
+                <w xml:id="w.19734">my</w>
+                <w xml:id="w.19735">bowels</w><pc xml:id="pc.91">.</pc>
+            </ab>
+        </div>
+        <div type="chapter" n="23" xml:id="c.426652">
+            <ab type="verse" n="1" xml:id="v.1414389"><w xml:id="w.1">The</w>
+                <w xml:id="w.2">LORD</w>
+                <w xml:id="w.3">[is]</w>
+                <w xml:id="w.4">my</w>
+                <w xml:id="w.5">shepherd</w><pc xml:id="pc.92">;</pc>
+                <w xml:id="w.6">I</w>
+                <w xml:id="w.7">shall</w>
+                <w xml:id="w.8">not</w>
+                <w xml:id="w.9">want</w><pc xml:id="pc.93">.</pc>
+            </ab>
+            <ab type="verse" n="2" xml:id="v.1414390"><w xml:id="w.10">He</w>
+                <w xml:id="w.11">maketh</w>
+                <w xml:id="w.12">me</w>
+                <w xml:id="w.13">to</w>
+                <w xml:id="w.14">lie</w>
+                <w xml:id="w.15">down</w>
+                <w xml:id="w.16">in</w>
+                <w xml:id="w.17">green</w>
+                <w xml:id="w.18">pastures</w><pc xml:id="pc.94">:</pc>
+                <w xml:id="w.19">he</w>
+                <w xml:id="w.20">leadeth</w>
+                <w xml:id="w.21">me</w>
+                <w xml:id="w.22">beside</w>
+                <w xml:id="w.23">the</w>
+                <w xml:id="w.24">still</w>
+                <w xml:id="w.25">waters</w><pc xml:id="pc.95">.</pc>
+            </ab>
+            <ab type="verse" n="3" xml:id="v.1414391"><w xml:id="w.26">He</w>
+                <w xml:id="w.27">restoreth</w>
+                <w xml:id="w.28">my</w>
+                <w xml:id="w.29">soul</w><pc xml:id="pc.96">:</pc>
+                <w xml:id="w.30">he</w>
+                <w xml:id="w.31">leadeth</w>
+                <w xml:id="w.32">me</w>
+                <w xml:id="w.33">in</w>
+                <w xml:id="w.34">the</w>
+                <w xml:id="w.35">paths</w>
+                <w xml:id="w.36">of</w>
+                <w xml:id="w.37">righteousness</w>
+                <w xml:id="w.38">for</w>
+                <w xml:id="w.39">his</w>
+                <w xml:id="w.40">name’s</w>
+                <w xml:id="w.41">sake</w><pc xml:id="pc.97">.</pc>
+            </ab>
+            <ab type="verse" n="4" xml:id="v.1414392"><w xml:id="w.42">Yea</w><pc
+                    xml:id="pc.98">,</pc>
+                <w xml:id="w.43">though</w>
+                <w xml:id="w.44">I</w>
+                <w xml:id="w.45">walk</w>
+                <w xml:id="w.46">through</w>
+                <w xml:id="w.47">the</w>
+                <w xml:id="w.48">valley</w>
+                <w xml:id="w.49">of</w>
+                <w xml:id="w.50">the</w>
+                <w xml:id="w.51">shadow</w>
+                <w xml:id="w.52">of</w>
+                <w xml:id="w.53">death</w><pc xml:id="pc.99">,</pc>
+                <w xml:id="w.54">I</w>
+                <w xml:id="w.55">will</w>
+                <w xml:id="w.56">fear</w>
+                <w xml:id="w.57">no</w>
+                <w xml:id="w.58">evil</w><pc xml:id="pc.100">:</pc>
+                <w xml:id="w.59">for</w>
+                <w xml:id="w.60">thou</w>
+                <w xml:id="w.61">[art]</w>
+                <w xml:id="w.62">with</w>
+                <w xml:id="w.63">me</w><pc xml:id="pc.101">;</pc>
+                <w xml:id="w.64">thy</w>
+                <w xml:id="w.65">rod</w>
+                <w xml:id="w.66">and</w>
+                <w xml:id="w.67">thy</w>
+                <w xml:id="w.68">staff</w>
+                <w xml:id="w.69">they</w>
+                <w xml:id="w.70">comfort</w>
+                <w xml:id="w.71">me</w><pc xml:id="pc.102">.</pc>
+            </ab>
+            <ab type="verse" n="5" xml:id="v.1414393"><w xml:id="w.72">Thou</w>
+                <w xml:id="w.73">preparest</w>
+                <w xml:id="w.74">a</w>
+                <w xml:id="w.75">table</w>
+                <w xml:id="w.76">before</w>
+                <w xml:id="w.77">me</w>
+                <w xml:id="w.78">in</w>
+                <w xml:id="w.79">the</w>
+                <w xml:id="w.80">presence</w>
+                <w xml:id="w.81">of</w>
+                <w xml:id="w.82">mine</w>
+                <w xml:id="w.83">enemies</w><pc xml:id="pc.103">:</pc>
+                <w xml:id="w.84">thou</w>
+                <w xml:id="w.85">anointest</w>
+                <w xml:id="w.86">my</w>
+                <w xml:id="w.87">head</w>
+                <w xml:id="w.88">with</w>
+                <w xml:id="w.89">oil</w><pc xml:id="pc.104">;</pc>
+                <w xml:id="w.90">my</w>
+                <w xml:id="w.91">cup</w>
+                <w xml:id="w.92">runneth</w>
+                <w xml:id="w.93">over</w><pc xml:id="pc.105">.</pc>
+            </ab>
+            <ab type="verse" n="6" xml:id="v.1414394"><w xml:id="w.94">Surely</w>
+                <w xml:id="w.95">goodness</w>
+                <w xml:id="w.96">and</w>
+                <w xml:id="w.97">mercy</w>
+                <w xml:id="w.98">shall</w>
+                <w xml:id="w.99">follow</w>
+                <w xml:id="w.100">me</w>
+                <w xml:id="w.101">all</w>
+                <w xml:id="w.102">the</w>
+                <w xml:id="w.103">days</w>
+                <w xml:id="w.104">of</w>
+                <w xml:id="w.105">my</w>
+                <w xml:id="w.106">life</w><pc xml:id="pc.106">:</pc>
+                <w xml:id="w.107">and</w>
+                <w xml:id="w.108">I</w>
+                <w xml:id="w.109">will</w>
+                <w xml:id="w.110">dwell</w>
+                <w xml:id="w.111">in</w>
+                <w xml:id="w.112">the</w>
+                <w xml:id="w.113">house</w>
+                <w xml:id="w.114">of</w>
+                <w xml:id="w.115">the</w>
+                <w xml:id="w.116">LORD</w>
+                <w xml:id="w.117">for</w>
+                <w xml:id="w.118">ever</w><pc xml:id="pc.107">.</pc>
+            </ab>
         </div>
     </body>
 </text>

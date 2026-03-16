@@ -14,16 +14,9 @@ import java.util.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.stereotype.Service;
-
-import edu.kit.datamanager.takita.NoSuchIndexEntryException;
-import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
-import edu.kit.datamanager.takita.model.Annotation;
-import edu.kit.datamanager.takita.model.Manuscript;
-import edu.kit.datamanager.takita.model.page.Page;
 
 /**
  * Handles requests to annotation store and repository from the rest of the application.
@@ -114,7 +107,6 @@ public class AccessService implements IAccessService {
    * @throws JSONException if an error occurs while parsing json
    * @throws IOException if an error occurs while sending or receiving http request
    * @throws ParseException if an error occurs while parsing the date
-   * @throws NoSuchIndexEntryException if there is a problem finding a modified manuscript in the
    * index
    */
   @Override
@@ -211,25 +203,6 @@ public class AccessService implements IAccessService {
         .addAnnotation(annotationConverter.buildJsonFromAnnotation(annotation, pageNumber), projectId);
       logger.info("Nach Speicherung: " + response.toString());
     return annotationConverter.buildAnnotationFromJson(response);
-  }
-
-  /**
-   * Converts annotation to JSONObject so it can be added to database more easily,
-   * then tells AnnotationStoreAccess to add it to validated container.
-   *
-   * @param annotation validated annotation
-   * @param pageNumber number of the page on which the annotation is
-   * @return validated Annotation for replacing the old one
-   * @throws JSONException if an error occurs while parsing json
-   * @throws IOException if an error occurs while sending or receiving http request
-   * @throws InterruptedException if the http request is interrupted
-   */
-  @Override
-  public Annotation validateAnnotation(Annotation annotation, String pageNumber, String projectId)
-      throws JSONException, IOException, InterruptedException {
-    JSONObject validatedAnnotation = annotationStoreAccessService
-        .validateAnnotation(annotationConverter.buildJsonFromAnnotation(annotation, pageNumber), projectId);
-    return annotationConverter.buildAnnotationFromJson(validatedAnnotation);
   }
 
   /**

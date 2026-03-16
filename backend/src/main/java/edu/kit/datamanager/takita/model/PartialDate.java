@@ -6,6 +6,16 @@ import java.time.YearMonth;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 
+/**
+ * Date class that acts as a stand in for LocalDate but allows incomplete dates
+ * Allowed incomplete: Year, Year+Month
+ * Disallowed incomplete: Year+day, month+day, day
+ * This is therefore not accepting the full range of date attributes provided by TEI
+ * This behaviour allows for comparing /sorting dates, while some incomplete dates are incomparable to others (month + day cannot be compared to years)
+ * @param year mandatory year as integer
+ * @param month optional month as integer
+ * @param day optional day as integer
+ */
 public record PartialDate(int year, Integer month, Integer day) implements Comparable<PartialDate> {
 
     public PartialDate {
@@ -35,6 +45,12 @@ public record PartialDate(int year, Integer month, Integer day) implements Compa
         return LocalDate.of(year(), m, d);
     }
 
+    /**
+     * Parses a string into a partial date
+     * Expected string pattern: (-)YYYY-MM-DD with optional month and/or day
+     * @param s date string
+     * @return parsed date
+     */
     public static PartialDate parse(String s) {
 
         if (s == null || s.isEmpty()) throw new IllegalArgumentException("Unable to parse empty string into date");
@@ -85,12 +101,6 @@ public record PartialDate(int year, Integer month, Integer day) implements Compa
      * @throws NullPointerException if the specified object is null
      * @throws ClassCastException   if the specified object's type prevents it
      *                              from being compared to this object.
-     * @apiNote It is strongly recommended, but <i>not</i> strictly required that
-     * {@code (x.compareTo(y)==0) == (x.equals(y))}.  Generally speaking, any
-     * class that implements the {@code Comparable} interface and violates
-     * this condition should clearly indicate this fact.  The recommended
-     * language is "Note: this class has a natural ordering that is
-     * inconsistent with equals."
      */
     @Override
     public int compareTo(PartialDate o) {

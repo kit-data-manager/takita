@@ -10,13 +10,17 @@ import org.springframework.data.annotation.PersistenceCreator;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+/**
+ * Model class for anntoation bodies
+ * See <a href="https://www.w3.org/TR/annotation-model/#bodies-and-targets">WADM: Bodies and Targets</a>
+ */
 public abstract class Body {
   private String annotationId;
   
   @Id
   private final String id;
 
-  private List<String> creators;
+  private List<String> creators = new ArrayList<>();
 
   // format = DateFormat.custom, pattern = "uuuu-MM-dd'T'HH:mm:ss.SSSZ"
   @Field(type = FieldType.Date)
@@ -44,7 +48,6 @@ public abstract class Body {
   @PersistenceCreator
   public Body(String id) {
     this.id = id;
-    creators = new ArrayList<>();
   }
 
     /**
@@ -297,7 +300,12 @@ public abstract class Body {
   public void setFullJson(JSONObject json) {
     this.fullJson = json.toString();
   }
-  
+
+  /**
+  * Compare function for bodies
+  * @param body body, to compare the current body with
+  * @return true if bodies have equivalent json representation, false otherwise
+  */
   public boolean equals(Body body) {
       return (this.fullJson.equals(body.fullJson));
   }

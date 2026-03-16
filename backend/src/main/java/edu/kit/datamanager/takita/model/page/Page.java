@@ -26,7 +26,7 @@ public abstract class Page {
   private Instant lastModified;
   
   @Field(type = FieldType.Nested, includeInParent = true)
-  protected List<Annotation> annotations;
+  protected List<Annotation> annotations = new ArrayList<>();
 
   protected String resourceUrl;
   protected String thumbResourceUrl;
@@ -47,7 +47,6 @@ public abstract class Page {
     this.pageNumber = pageNumber;
     this.created = created;
     this.resourceUrl = resourceUrl;
-    this.annotations = new ArrayList<>();
   }
 
   /**
@@ -128,15 +127,7 @@ public abstract class Page {
    * @return url as String
    */
   public abstract String getResourceUrl();
-  
-  /**
-   * Gets the url of the resource of a thumbnail.
-   *
-   * @return url as String
-   */
-  public abstract String getThumbResourceUrl();
-  
-  
+
   /**
    * Gets all annotations belonging to page.
    * @return list of annotations

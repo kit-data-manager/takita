@@ -29,7 +29,7 @@ public class AssistanceService implements IAssistanceService {
   private User currentUser;
   private final IFilterService filterService;
   private final IMainPageService mainPageService;
-  public Boolean securityEnabled;
+  private final Boolean securityEnabled;
   // link provided via application.properties, which redirects to a location, where users can provide feedback.
   @Value("${takita.feedbackLink:#{null}}")
   private String feedbackLink;

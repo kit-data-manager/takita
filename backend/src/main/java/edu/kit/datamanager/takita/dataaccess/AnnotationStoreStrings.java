@@ -36,7 +36,6 @@ public enum AnnotationStoreStrings {
   SOURCE("source"),
   MOTIVATION("motivation"),
 
-
   ANNOTATION("Annotation"),
   BINDINGS("bindings"),
   RESULTS("results"),

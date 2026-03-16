@@ -22,7 +22,7 @@ import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 import java.io.IOException;
@@ -48,19 +48,19 @@ class AccessServiceTest {
   @Autowired
   private IAccessService accessService;
   
-  @MockBean
+  @MockitoBean
   private IRepositoryAccessService mockedRepositoryAccessService;
   
-  @MockBean
+  @MockitoBean
   private IAnnotationStoreAccessService mockedAnnotationStoreAccessService;
 
-  @MockBean
+  @MockitoBean
   private ISearchIndexService mockedSearchIndexService;
 
-  @MockBean
+  @MockitoBean
   private ManuscriptConverter mockedManuscriptConverter;
 
-  @MockBean
+  @MockitoBean
   private AnnotationConverter mockedAnnotationConverter;
   
   @BeforeEach
@@ -175,23 +175,6 @@ class AccessServiceTest {
 
     Annotation actualAnnotation1 = accessService.addAnnotation(expectedAnnotation1, "082r", "a04");
     assertEqualsAnnotations(expectedAnnotation1, actualAnnotation1);
-  }
-  
-  @Test
-  void validateAnnotation() throws IOException, ParseException, JSONException, InterruptedException, NoSuchIndexEntryException {
-
-    JSONObject jsonAnnotation2 = new JSONObject(readStringFromRelativePath("addAnnotation/annotation2.json"));
-    JSONObject validatedJsonAnnotation2 = new JSONObject((readStringFromRelativePath("addAnnotation/validatedAnnotation2.json")));
-    List<Annotation> annotations = buildAnnotations();
-    Annotation expectedAnnotation = annotations.get(0);
-    Annotation actualAnnotationBefore = annotations.get(1);
-
-    Mockito.when(mockedAnnotationStoreAccessService.validateAnnotation(jsonAnnotation2, "a04/")).thenReturn(validatedJsonAnnotation2);
-    Mockito.when(mockedAnnotationConverter.buildAnnotationFromJson(validatedJsonAnnotation2)).thenReturn(expectedAnnotation);
-    Mockito.when(mockedAnnotationConverter.buildJsonFromAnnotation(actualAnnotationBefore, "082r")).thenReturn(jsonAnnotation2);
-
-    Annotation actualAnnotationAfter = accessService.validateAnnotation(actualAnnotationBefore, "082r", "a04/");
-    assertEqualsAnnotations(expectedAnnotation, actualAnnotationAfter);
   }
   
   @Test

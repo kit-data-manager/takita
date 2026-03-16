@@ -13,14 +13,12 @@ Currently, tAKITA's features are limited to image annotation, annotation of text
 - [KITDM Web Annotation Protocol Server](https://github.com/kit-data-manager/wap-server) (other APIs compliant with Web Annotation Protocol may be applicable as well)
 - Elasticsearch 
 
-### Installation requirements
-- Java Runtime Environment 17 or higher
+### Installation requirements (for native installation only)
 
-## Installation
+- Java Runtime Environment 21 or higher
+- node v24
 
-### Native
-
-native installation guide TBD
+## Setup
 
 ### Docker
 
@@ -28,19 +26,22 @@ As an alternative to native installation, we provide multiple docker compose set
 - `docker-compose.yml`: default configuration, bundled with elastic, base-repo service and wap-server service
 - `docker-compose.minimal.yml`: takita with elastic only (base-repo and wap-server have to be setup separately)
 
-To use the minimal docker setup, the following environment variables are needed (for example provided by an .env file):
+#### Bundled setup
 
-```
-TAKITA_REPOURL=http://<some-repo>/
-TAKITA_WAPURL=http://<some wadm server>/
-TAKITA_SPARQLURL=http://<some wadm server...>/sparql?query=
-```
-
-For the bundled version, all services run behind a reverse proxy. Therefore, only the proxy can be configured (default: localhost:7777)
+For the bundled version, all services run behind a reverse proxy. Therefore, only the proxy can be configured (for example by .env file).
+If left unconfigured, the bundled takita is reachable via `localhost:7777` after startup.
 
 ```
 COMPOSE_PROXYHOST=...
 COMPOSE_PROXYPORT=...
+```
+
+Starting the bundled compose stack:
+
+```
+git clone https://github.com/kit-data-manager/takita.git
+cd takita
+docker compose up
 ```
 
 The different services can be reached under the following endpoints
@@ -51,12 +52,34 @@ COMPOSE_PROXYHOST:COMPOSE_PROXYPORT/repo/ <- base-repo
 COMPOSE_PROXYHOST:COMPOSE_PROXYPORT/annoserver/ <- wap-server
 ```
 
-Starting with Docker:
+#### Setup as Demo / Playground
+
+The docker compose setup includes a `sampleData` service for ingesting a minimal dataset for annotations into the repo.
+
+To run this service, start the docker bundle with
+
+```
+docker compose --profile playground up
+```
+
+The sampleData service will only run if the repo is currently empty. The service is based on `hurl`, the hurl files used by this service can be found  in `tuhl/src/intTest/resources/hurl`.
+
+#### Minimal setup
+
+To use the minimal docker setup, the following environment variables are needed (for example provided by an .env file):
+
+```
+TAKITA_REPOURL=http://<some-repo>/
+TAKITA_WAPURL=http://<some wadm server>/
+TAKITA_SPARQLURL=http://<some wadm server...>/sparql?query=
+```
+
+Starting the minimal compose stack:
 
 ```
 git clone https://github.com/kit-data-manager/takita.git
 cd takita
-docker compose up
+docker compose -f docker-compose.minimal.yml up
 ```
 
 ### Additional setup hints
@@ -85,16 +108,10 @@ Elastic default configuration can be tweaked like this in the es service (sample
       - cluster.routing.allocation.disk.watermark.low=0.85
 ```
 
-#### Setup as Demo / Playground
+### Native Setup
 
-The docker compose setup includes a `sampleData` service for ingesting a minimal dataset for annotations into the repo. To run this service, start the docker bundle with
+native installation guide TBD
 
-```
-docker compose --profile playground up
-```
-
-The sampleData service will only run if the repo is currently empty. The service is based on `hurl`, the hurl files used by this service can be found  in `tuhl/src/intTest/resources/hurl`.
-    
 ## Usage
 ### Executing the Program
 
@@ -176,3 +193,4 @@ tAKITA is licensed under the Apache License, Version 2.0.
 ## Acknowledgement
     
 Development of this software product was funded by the German Research Foundation (DFG)—CRC 980 Episteme in Motion, Project-ID 191249397
+and by the CRC 1475 Metaphors of Religion. Religious Meaning-Making in Language Use, Project-ID 441126958.

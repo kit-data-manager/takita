@@ -23,6 +23,9 @@ import javax.xml.xpath.XPathFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Converter to transform JSON into annotation objects and to build json from annotation objects
+ */
 public class AnnotationConverter {
 
   private static final Logger logger = LoggerFactory.getLogger(AnnotationConverter.class);
@@ -444,23 +447,6 @@ public class AnnotationConverter {
     }
   }
 
-
-  
-  /* function to check if a string is a valid XPATH
-   * 
-   * 
-   */
-  private boolean validateXPATH(String target) {
-	  XPath xPath = XPathFactory.newInstance().newXPath();
-	  boolean isValid = false;
-	  try {
-		    xPath.compile(target);
-		    isValid = true;
-      } catch (Exception e) {
-		    e.printStackTrace();
-	  } 
-	  return isValid;
-  }
   /*
    * Puts target JSONObject with svg code and page image resource in JSONObject annotation.
    */
@@ -512,9 +498,12 @@ public class AnnotationConverter {
     return jsonBodies;
   }
 
-  /*
+  /**
    * Converts single body object to JSONObject.
-   */
+   * @param body body to convert to json
+   * @return json representation of body
+   * @throws JSONException
+   **/
   public JSONObject bodyToJson(Body body) throws JSONException {
     JSONObject jsonBody = new JSONObject();
     if (body.getFullJson() != null) {

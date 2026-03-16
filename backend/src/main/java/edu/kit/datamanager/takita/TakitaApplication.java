@@ -29,10 +29,6 @@ import org.springframework.web.servlet.i18n.SessionLocaleResolver;
 @Configuration
 public class TakitaApplication implements ApplicationRunner, WebMvcConfigurer {
   private static final Logger logger = LoggerFactory.getLogger(TakitaApplication.class);
-
-  @Value("${repo.auth.jwtSecret:#{null}}")
-  private String jwtSecret;
-
   @Autowired
   private ISearchIndexService searchIndexService;
 
@@ -142,24 +138,4 @@ public class TakitaApplication implements ApplicationRunner, WebMvcConfigurer {
   public void addInterceptors(InterceptorRegistry registry) {
     registry.addInterceptor(localeChangeInterceptor());
   }
-
-//  @Bean
-//  public KeycloakJwtProperties keycloakProperties() {
-//    return new KeycloakJwtProperties();
-//  }
-
-//  @Bean
-//  @ConditionalOnProperty(
-//          value = "repo.auth.enabled",
-//          havingValue = "true",
-//          matchIfMissing = false)
-//  public KeycloakTokenFilter keycloaktokenFilterBean() throws Exception {
-//    return new KeycloakTokenFilter(KeycloakTokenValidator.builder()
-//            .readTimeout(keycloakProperties().getReadTimeoutms())
-//            .connectTimeout(keycloakProperties().getConnectTimeoutms())
-//            .sizeLimit(keycloakProperties().getSizeLimit())
-//            .jwtLocalSecret(jwtSecret)
-//            .build(keycloakProperties().getJwkUrl(), keycloakProperties().getResource(), keycloakProperties().getJwtClaim()));
-//  }
-
 }

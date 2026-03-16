@@ -13,12 +13,16 @@ import edu.kit.datamanager.takita.model.body.TextCard;
 import edu.kit.datamanager.takita.model.page.Page;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
+import edu.kit.datamanager.takita.model.target.Target;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +55,8 @@ public class EditorService implements IEditorService {
    *
    * @param assistanceService instance of IAssistanceService
    * @param searchIndexService instance of ISearchIndexService
+   * @param accessService instance of IAccessService
+   * @param repositoryAccessService instance of IRepositoryService
    */
   @Autowired
   public EditorService(IAssistanceService assistanceService,
@@ -70,6 +76,7 @@ public class EditorService implements IEditorService {
    * @param pageId ID of the page on which the annotation is located
    * @param selectors 1-n selectors (part of the target) of the annotation
    * @param motivation motivation of the annotation
+   * @param via via field of annotation
    * @return the added annotation
    * @throws InterruptedException when the http request to database is interrupted
    * @throws NoSuchIndexEntryException when there is no such page in the index
@@ -77,14 +84,14 @@ public class EditorService implements IEditorService {
    * @throws JSONException when there is a problem with the JSON object holding the selector
    */
   @Override
-  public Annotation addAnnotation(String pageId, JSONArray selectors, String motivation)
+  public Annotation addAnnotation(String pageId, JSONArray selectors, String motivation, String via)
       throws InterruptedException, NoSuchIndexEntryException, IOException, JSONException {
     List<String> creators = Collections.singletonList(
               assistanceService.getCurrentUser().getName());
     Instant currentTime = Instant.now();
     Page page = searchIndexService.getPageById(pageId);
     String linkToResource = repositoryAccessService.getLinkForPage(pageId, page.getPageNumber(), page.getResourceType());
-    Annotation newAnnotation = new Annotation(pageId, creators, currentTime, currentTime, linkToResource, selectors, motivation);
+    Annotation newAnnotation = new Annotation(pageId, creators, currentTime, currentTime, linkToResource, selectors, motivation, via);
     try {
       logger.info("EditorService: " + newAnnotation.toString());
       newAnnotation = searchIndexService.addAnnotation(newAnnotation);
@@ -153,29 +160,6 @@ public class EditorService implements IEditorService {
     Annotation updatedAnnotation = this.searchIndexService.updateAnnotation(newAnnotation);
 
     return updatedAnnotation;
-  }
-
-  /**
-   * Validates an annotation in the search index and the database.
-   *
-   * @param annotationId ID of the annotation to be validated
-   * @return validated annotation
-   * @throws NoSuchIndexEntryException when there is no such annotation in the index
-   * @throws InterruptedException when the http request to database is interrupted
-   * @throws IOException when the http request to database was faulty
-   */
-  @Override
-  public Annotation validateAnnotation(String annotationId)
-      throws NoSuchIndexEntryException, InterruptedException, IOException {
-    Annotation annotation = searchIndexService.getAnnotationById(annotationId);
-    annotation.setModified(Instant.now());
-    annotation.addCreator(assistanceService.getCurrentUser().getName());
-    try {
-      annotation = searchIndexService.validateAnnotation(annotation);
-    } catch (JSONException e) {
-      e.printStackTrace();
-    }
-    return annotation;
   }
 
   /**
@@ -498,4 +482,93 @@ public class EditorService implements IEditorService {
     return currentPage.get();
   }
 
+
+  /**
+   * Converts all given annotation to JSON. The JSON is used by the annotation
+   * editors in the frontend.
+   *
+   * @param annotations all annotations of a page
+   * @return JSONArray containing all annotations of a page
+   * @throws UnsupportedEncodingException
+   */
+  public JSONArray convertDisplayableAnnotationsToJson(List<Annotation> annotations)
+          throws UnsupportedEncodingException {
+    JSONArray displayable = new JSONArray();
+    try {
+
+      for (int i = 0; i < annotations.size(); i++) {
+        JSONObject thisAnno = new JSONObject();
+
+        thisAnno.put("id", annotations.get(i).getId());
+        String encodedId = URLEncoder.encode(annotations.get(i).getId(), StandardCharsets.UTF_8);
+        String encodedIdDouble = URLEncoder.encode(encodedId, StandardCharsets.UTF_8);
+        thisAnno.put("idEncoded", encodedIdDouble);
+
+        // adding the targets
+        JSONArray targets = new JSONArray();
+        for (Target target : annotations.get(i).getTargets()) {
+          // this check is necessary for "page"-annotations, which don't have a selector, i.e. which
+          // target the whole document/image
+          if (target.getSelector() != null) {
+            // only send the selector (and not the source and type as well) of a target to
+            // the front-end to save bandwidth.
+            // One could also send the full target using targets.put(target.getWADMSerialization());
+            JSONObject targetSelector = new JSONObject();
+            targetSelector.put("selector", target.getSelector().getWADMSerialization());
+            targets.put(targetSelector);
+          }
+        }
+        thisAnno.put("targets", targets);
+
+        thisAnno.put("visible", true);
+        thisAnno.put("created", annotations.get(i).getCreated());
+        thisAnno.put("creator", annotations.get(i).getCreators());
+        thisAnno.put("modified", annotations.get(i).getModified());
+        thisAnno.put("motivation", annotations.get(i).getMotivation());
+        thisAnno.put("via", annotations.get(i).getVia());
+
+        // adding tags to the model
+        try {
+          JSONArray tagsJson = new JSONArray();
+          List<Tag> tags = annotations.get(i).getTags();
+
+          for (Tag tag : tags) {
+            JSONObject value = new JSONObject();
+            value.put("value", tag.getValue());
+            tagsJson.put(value);
+          }
+
+          thisAnno.put("tags", tagsJson);
+        } catch (Exception e) {
+          System.out.println(e);
+          System.out.println("No tags available");
+        }
+
+        // adding textCards to the model
+        try {
+          JSONArray textCardJson = new JSONArray();
+          List<TextCard> textCards = annotations.get(i).getTextCards();
+
+          for (TextCard textCard : textCards) {
+            JSONObject value = new JSONObject();
+            value.put("value", textCard.getValue());
+            value.put("purpose", textCard.getPurpose());
+            textCardJson.put(value);
+          }
+
+          thisAnno.put("textCards", textCardJson);
+        } catch (Exception e) {
+          System.out.println(e);
+          System.out.println("No textCards available");
+        }
+
+
+        displayable.put(i, thisAnno);
+      }
+    } catch (JSONException e) {
+      e.printStackTrace();
+    }
+
+    return displayable;
+  }
 }

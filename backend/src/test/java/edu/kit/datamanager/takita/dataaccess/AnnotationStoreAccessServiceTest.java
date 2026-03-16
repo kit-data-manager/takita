@@ -11,7 +11,7 @@ import org.springframework.boot.configurationprocessor.json.JSONArray;
 import org.springframework.boot.configurationprocessor.json.JSONException;
 import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.xml.sax.SAXException;
@@ -41,7 +41,7 @@ class AnnotationStoreAccessServiceTest {
   @Autowired
   public AnnotationStoreAccessService annotationStoreAccessService;
 
-  @MockBean
+  @MockitoBean
   private IRepositoryAccessService mockedRepositoryAccessService;
 
   @Mock
@@ -379,37 +379,6 @@ class AnnotationStoreAccessServiceTest {
   }
 
   @Test
-  void validateAnnotationTest() throws IOException, JSONException, InterruptedException {
-    JSONObject newAnnotation1 = new JSONObject(readStringFromRelativePath("addAnnotation/annotation1.json"));
-    JSONObject newAnnotation2 = new JSONObject(readStringFromRelativePath("addAnnotation/annotation2.json"));
-    JSONObject expectedUnvalidatedAnnotation = new JSONObject(readStringFromRelativePath("addAnnotation/annotation1.json"));
-
-    //Builds body for mock response
-    Mockito.when(mockedAnnotation1.body()).thenReturn(newAnnotation1.toString());
-    Mockito.when(mockedAnnotation2.body()).thenReturn(newAnnotation2.toString());
-
-    //Mock headers
-    List<String> etags = new ArrayList<>();
-    etags.add("ktcnefhkbtgdqobilpvs");
-    Map<String, List<String>> headersPage1 = new HashMap<>();
-    headersPage1.put("etag", etags);
-    Mockito.when(mockedAnnotation2.headers())
-        .thenReturn(HttpHeaders.of(headersPage1, (a, b) -> true));
-
-    //Define mock response to get requests
-    Mockito.when(mockedRequestHelper.postAnnotations("http://sampleannoserver.edu/wap/a04/validated/", newAnnotation1))
-        .thenReturn(mockedAnnotation2);
-
-    JSONObject actualAnnotation = annotationStoreAccessService.validateAnnotation(newAnnotation1, "a04/");
-    JSONObject expectedAnnotation = newAnnotation2;
-    expectedAnnotation.put("via", expectedUnvalidatedAnnotation.getString("id"));
-    expectedAnnotation.put("canonical", expectedUnvalidatedAnnotation.getString("id"));
-    expectedAnnotation.put("etag", etags.get(0));
-
-    assertEquals(expectedAnnotation.toString(), actualAnnotation.toString());
-  }
-
-  @Test
   void updateAnnotation() throws IOException, JSONException, InterruptedException, org.json.JSONException {
     JSONObject originalAnnotation = new JSONObject(readStringFromRelativePath("addAnnotation/annotation1.json"));
     JSONObject newAnnotation1 = new JSONObject((readStringFromRelativePath("addAnnotation/annotation1.json")));
@@ -491,6 +460,21 @@ class AnnotationStoreAccessServiceTest {
         });
 
     annotationStoreAccessService.deleteAnnotation(annotation2.getString("id"), etags2.get(0));
+  }
+
+  @Test
+  void normalizeWAPURI() {
+    String input = "http://localhost:80/wap/";
+
+    assertEquals("http://localhost/wap/", annotationStoreAccessService.normalizeAnnostoreURI(input));
+
+    input = "https://somehost:443";
+
+    assertEquals("https://somehost", annotationStoreAccessService.normalizeAnnostoreURI(input));
+
+    input = "http://somehost:8080/wap/";
+
+    assertEquals(input, annotationStoreAccessService.normalizeAnnostoreURI(input));
   }
 
   private String readStringFromRelativePath(String relativePath) throws IOException {
