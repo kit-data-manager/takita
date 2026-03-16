@@ -1,7 +1,6 @@
-package edu.kit.datamanager.takita.mainpage.dashboard.annoView;
+package edu.kit.datamanager.takita.mainpage.dashboard.annoview;
 
 import edu.kit.datamanager.takita.dataaccess.AnnotationStoreStrings;
-import edu.kit.datamanager.takita.mainpage.dashboard.annoview.AnnoViewService;
 import edu.kit.datamanager.takita.mainpage.search.ISearchService;
 import edu.kit.datamanager.takita.model.Annotation;
 import edu.kit.datamanager.takita.model.body.Tag;

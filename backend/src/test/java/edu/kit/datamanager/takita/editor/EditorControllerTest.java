@@ -4,11 +4,7 @@ package edu.kit.datamanager.takita.editor;
 import edu.kit.datamanager.takita.NoSuchIndexEntryException;
 import edu.kit.datamanager.takita.assistance.IAssistanceService;
 import edu.kit.datamanager.takita.configuration.SecurityConfiguration;
-import edu.kit.datamanager.takita.dataaccess.AnnotationStoreStrings;
 import edu.kit.datamanager.takita.mainpage.search.ISearchIndexService;
-import edu.kit.datamanager.takita.model.Annotation;
-import edu.kit.datamanager.takita.model.body.Tag;
-import edu.kit.datamanager.takita.model.body.TextCard;
 import edu.kit.datamanager.takita.model.page.ImagePage;
 import edu.kit.datamanager.takita.model.page.Page;
 import edu.kit.datamanager.takita.model.page.ResourceType;
@@ -30,8 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import java.io.UnsupportedEncodingException;
 import java.time.Instant;
-import java.util.Arrays;
-import java.util.List;
 
 @WebMvcTest(EditorController.class)
 @Import({EditorController.class, SecurityConfiguration.class})
@@ -51,7 +45,7 @@ public class EditorControllerTest {
     private static Page page;
 
     @BeforeAll
-    public static void setUp() throws JSONException {
+    public static void setUp() {
         page = new ImagePage(
                 "page1",
                 ResourceType.IMAGE,
