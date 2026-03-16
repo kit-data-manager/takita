@@ -19,7 +19,7 @@ import { assignColor } from '../highlight';
 // starting the process of creating a new annotation)
 // for adding new: include name here and add dataModel in
 // getFormModel(chosenTemplate)
-const annotationTemplate = {
+export const annotationTemplate = {
   EXAMPLE: 'Example',
   NOTEMPLATE: 'No template',
 };
@@ -29,7 +29,7 @@ const annotationTemplate = {
 // by clicking on the "+" icon in the top right corner of the annotation card)
 // for adding new: include name here and add dataModel in
 // getFormModel(chosenTemplate)
-const bodyTemplate = {
+export const bodyTemplate = {
   TAG: 'Tag',
   TEXTBODY: 'Textbody',
 };
