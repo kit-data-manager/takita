@@ -10,7 +10,7 @@ import { selectAnnotation } from '../../../common/annotationCard';
 import '../../../common/utils/metadataeditor';
 import { createBodyData } from '../../../common/data';
 import { encodeAnnoId } from '../../../common/utils';
-import { toggleShapeSelect } from '../../highlighting';
+import { toggleShapeSelect, unselectAllShapes } from '../../highlighting';
 import { assignColor } from '../highlight';
 
 // TODO: CUSTOMISE the four objects in here, which are necessary for annotation/body creation
@@ -208,13 +208,7 @@ function getFormObjectCreateAnnotation(selectors) {
                 assignColor(annotation);
                 updateNewAnnotationShape(window.paper, annotation.id, annotation.color);
               } else {
-                // Note: raphael doesn't offer a filter()-function
-                window.paper.forEach((shape) => {
-                  // unselecting the previously selected shape
-                  if (shape.selected) {
-                    toggleShapeSelect(shape);
-                  }
-                });
+                unselectAllShapes(window.paper);
               }
             }
           });
