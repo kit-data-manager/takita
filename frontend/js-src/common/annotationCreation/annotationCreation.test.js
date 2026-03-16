@@ -1,4 +1,5 @@
-import * as templates from '../../texteditor-ng/projectspecific/annotationCreation/templates';
+import * as templatesText from '../../texteditor-ng/projectspecific/annotationCreation/templates';
+import * as templatesImage from '../../imageeditor-ng/projectspecific/annotationCreation/templates';
 import * as display from '../../texteditor-ng/display/display';
 import * as annotationCard from '../annotationCard/annotationCard';
 import * as metadataEditorWrapper from '../utils/metadataEditorWrapper';
@@ -35,63 +36,96 @@ const innerHTML = `
         </div>
     </div>`;
 
-// function to manipulate the return of getFormObjectCreateAnnotation(). It replaces the
-// projectspecifc annotation creation templates with dummy ones
-function getFormObjectCreateAnnotationMock() {
-  const object = templates.getFormObjectCreateAnnotation();
-  return object;
-}
-// function to manipulate the return of getFormObjectCreateBody(). It replaces the
-// projectspecifc body creation templates with dummy ones
-function getFormObjectCreateBodyMock() {
-  const object = templates.getFormObjectCreateBody();
-  return object;
-}
-
 describe('creating various forms based on chosen template', () => {
-  it('creates a form used for the creation of an annotation', () => {
-    document.body.innerHTML = innerHTML;
-    // mocking the projectspecific getFormObjectCreateAnnotation() so the test works independetly
-    // from project setups
-    jest.spyOn(templates, 'getFormObjectCreateAnnotation').mockReturnValue(getFormObjectCreateAnnotationMock());
-    jest.replaceProperty(templates, 'annotationTemplate', {
-      EXAMPLE: 'example',
-      NOTEMPLATE: 'notemplate',
+  describe('for the text editor', () => {
+    it('creates a form used for the creation of an annotation', () => {
+      document.body.innerHTML = innerHTML;
+      templatesText.pickTemplate(
+        [{ type: 'XPathSelector', value: 'targetXPath' }],
+        '',
+        'createAnnotationForm',
+        'pickAnnotationTemplateForm',
+        'annotationTemplate',
+      );
+
+      const $form = document.getElementById('createAnnotationForm');
+      const $pickForm = document.getElementById('pickAnnotationTemplateForm');
+
+      expect($form.children.length).toBe(0);
+      // adding 1 to the actual value as the code creating the form is appending an entry
+      expect($pickForm.querySelectorAll('option').length).toBe(
+        Object.keys(templatesText.annotationTemplate).length + 1,
+      );
+      // checking the options. The first option should be empty as the entry, appended by the code creating the form,
+      // is empty. The second option should hold the key of the first entry in the template (the ui displays the value
+      // of the key as a titleMap is used).
+      expect($pickForm.querySelectorAll('option')[0].value).toStrictEqual('');
+      expect($pickForm.querySelectorAll('option')[1].value).toStrictEqual(
+        Object.keys(templatesText.annotationTemplate)[0],
+      );
     });
+    it('creates a form used for the creation of another body', () => {
+      document.body.innerHTML = innerHTML;
+      templatesText.pickTemplate('', 'encodedId', 'createForm', 'pickBodyTemplateForm', 'bodyTemplate');
 
-    templates.pickTemplate(
-      [{ type: 'XPathSelector', value: 'targetXPath' }],
-      '',
-      'createAnnotationForm',
-      'pickAnnotationTemplateForm',
-      'annotationTemplate',
-    );
+      const $form = document.getElementById('createForm');
+      const $pickForm = document.getElementById('pickBodyTemplateForm');
 
-    const $form = document.getElementById('createAnnotationForm');
-    const $pickForm = document.getElementById('pickAnnotationTemplateForm');
-
-    expect($form.children.length).toBe(0);
-    expect($pickForm.querySelectorAll('option').length).toBe(3);
-    expect($pickForm.querySelectorAll('option')[1].value).toStrictEqual('EXAMPLE');
-  });
-  it('creates a form used for the creation of another body', () => {
-    document.body.innerHTML = innerHTML;
-    // mocking the projectspecific getFormObjectCreateAnnotation() so the test works independetly
-    // from project setups
-    jest.spyOn(templates, 'getFormObjectCreateBody').mockReturnValue(getFormObjectCreateBodyMock());
-    jest.replaceProperty(templates, 'bodyTemplate', {
-      TAG: 'tag',
-      TEXTBODY: 'textbody',
+      expect($form.children.length).toBe(0);
+      // adding 1 to the actual value as the code creating the form is appending an entry
+      expect($pickForm.querySelectorAll('option').length).toBe(Object.keys(templatesText.bodyTemplate).length + 1);
+      // checking the options. The first option should be empty as the entry, appended by the code creating the form,
+      // is empty. The second option should hold the key of the first entry in the template (the ui displays the value
+      // of the key as a titleMap is used).
+      expect($pickForm.querySelectorAll('option')[0].value).toStrictEqual('');
+      expect($pickForm.querySelectorAll('option')[1].value).toStrictEqual(Object.keys(templatesText.bodyTemplate)[0]);
     });
+    describe('for the image editor', () => {
+      it('creates a form used for the creation of an annotation', () => {
+        document.body.innerHTML = innerHTML;
+        templatesImage.pickTemplate(
+          [{ type: 'XPathSelector', value: 'targetXPath' }],
+          '',
+          'createAnnotationForm',
+          'pickAnnotationTemplateForm',
+          'annotationTemplate',
+        );
 
-    templates.pickTemplate('', 'encodedId', 'createForm', 'pickBodyTemplateForm', 'bodyTemplate');
+        const $form = document.getElementById('createAnnotationForm');
+        const $pickForm = document.getElementById('pickAnnotationTemplateForm');
 
-    const $form = document.getElementById('createForm');
-    const $pickForm = document.getElementById('pickBodyTemplateForm');
+        expect($form.children.length).toBe(0);
+        // adding 1 to the actual value as the code creating the form is appending an entry
+        expect($pickForm.querySelectorAll('option').length).toBe(
+          Object.keys(templatesImage.annotationTemplate).length + 1,
+        );
+        // checking the options. The first option should be empty as the entry, appended by the code creating the form,
+        // is empty. The second option should hold the key of the first entry in the template (the ui displays the value
+        // of the key as a titleMap is used).
+        expect($pickForm.querySelectorAll('option')[0].value).toStrictEqual('');
+        expect($pickForm.querySelectorAll('option')[1].value).toStrictEqual(
+          Object.keys(templatesImage.annotationTemplate)[0],
+        );
+      });
+      it('creates a form used for the creation of another body', () => {
+        document.body.innerHTML = innerHTML;
+        templatesImage.pickTemplate('', 'encodedId', 'createForm', 'pickBodyTemplateForm', 'bodyTemplate');
 
-    expect($form.children.length).toBe(0);
-    expect($pickForm.querySelectorAll('option').length).toBe(3);
-    expect($pickForm.querySelectorAll('option')[1].value).toStrictEqual('TAG');
+        const $form = document.getElementById('createForm');
+        const $pickForm = document.getElementById('pickBodyTemplateForm');
+
+        expect($form.children.length).toBe(0);
+        // adding 1 to the actual value as the code creating the form is appending an entry
+        expect($pickForm.querySelectorAll('option').length).toBe(Object.keys(templatesImage.bodyTemplate).length + 1);
+        // checking the options. The first option should be empty as the entry, appended by the code creating the form,
+        // is empty. The second option should hold the key of the first entry in the template (the ui displays the value
+        // of the key as a titleMap is used).
+        expect($pickForm.querySelectorAll('option')[0].value).toStrictEqual('');
+        expect($pickForm.querySelectorAll('option')[1].value).toStrictEqual(
+          Object.keys(templatesImage.bodyTemplate)[0],
+        );
+      });
+    });
   });
 });
 
