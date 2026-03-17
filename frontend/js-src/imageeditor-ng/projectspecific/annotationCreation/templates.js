@@ -10,7 +10,7 @@ import { selectAnnotation } from '../../../common/annotationCard';
 import '../../../common/utils/metadataeditor';
 import { createBodyData } from '../../../common/data';
 import { encodeAnnoId } from '../../../common/utils';
-import { toggleShapeSelect } from '../../highlighting';
+import { toggleShapeSelect, unselectAllShapes } from '../../highlighting';
 import { assignColor } from '../highlight';
 
 // TODO: CUSTOMISE the four objects in here, which are necessary for annotation/body creation
@@ -202,19 +202,12 @@ function getFormObjectCreateAnnotation(selectors) {
             const annotation = await createAnnotation(annotationData, hooks);
 
             if (annotation) {
+              unselectAllShapes(window.paper);
               // check wether the annotation has a selector or if it targets the whole page and
               // therefore does not have a shape to be highlighted
               if (annotation.targets.some((target) => target?.selector != null)) {
                 assignColor(annotation);
                 updateNewAnnotationShape(window.paper, annotation.id, annotation.color);
-              } else {
-                // Note: raphael doesn't offer a filter()-function
-                window.paper.forEach((shape) => {
-                  // unselecting the previously selected shape
-                  if (shape.selected) {
-                    toggleShapeSelect(shape);
-                  }
-                });
               }
             }
           });

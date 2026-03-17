@@ -2,7 +2,7 @@ import Tabulator from 'tabulator-tables';
 import { selectAnnotation } from '../annotationCard';
 import { enableTooltips, encodeAnnoId, toggleVisibility } from '../utils';
 import { initializeNavigation } from '../../texteditor-ng/navigation';
-import { toggleShapeSelect } from '../../imageeditor-ng/highlighting';
+import { toggleShapeSelect, unselectAllShapes } from '../../imageeditor-ng/highlighting';
 
 /**
  * innitialize the table displaying all annotation of the current editor window.
@@ -175,20 +175,14 @@ export function defaultDisplayAnnotationFunction(_event, cell, hooks) {
     toggleVisibility($annotationCard);
   }
 
-  // Note: raphael doesn't offer a filter()-function
-  window.paper.forEach((shape) => {
-    // unselecting all previously selected shapes
-    if (shape.selected) {
-      toggleShapeSelect(shape);
-    }
-  });
+  // unselecting all previously selected shapes
+  unselectAllShapes(window.paper);
 
   // if there is a shape, highlight it. For page-annotations, no shape will be highlighted
   // as there is none
   if (cell.getRow().getData().targets.length > 0) {
     let targetShape = undefined;
-    // getting the shape corresponding to the annotation and unselecting
-    // all previously selected shapes
+    // getting the shape corresponding to the annotation and selecting it
     // Note: raphael doesn't offer a filter()-function
     window.paper.forEach((shape) => {
       // finding the correct shape
