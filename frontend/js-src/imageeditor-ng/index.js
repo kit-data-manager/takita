@@ -286,7 +286,6 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
       const selectors = [{ type: 'SvgSelector', value: svgString }];
       pickTemplate(selectors, '', 'createAnnotationForm', 'pickAnnotationTemplateForm', 'annotationTemplate');
 
-      console.log('after pick template');
       // reset variables needed for rectangle creation
       //addingRectangle = false;
       // TODO: find a new place for that!
