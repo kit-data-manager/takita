@@ -17,22 +17,12 @@ const dstPath = path.resolve(__dirname, './static');
 // bundle into our regular static files folder.
 module.exports = {
   entry: {
-    'js/analysis.js': path.resolve(srcPath, './analysis/index.js'),
-    //'css/analysis.css': path.resolve(srcPath, './analysis/index.css'),
-    //'js/texteditor.js': path.resolve(srcPath, './texteditor/index.js'),
-    // jquery/jsonForm test module:'js/jQueryPluginTest.js': path.resolve(srcPath, './jQueryPluginTest/index.js'),
     'js/texteditor-ng.js': path.resolve(srcPath, './texteditor-ng/index.js'),
     'js/imageeditor-ng.js': path.resolve(srcPath, './imageeditor-ng/index.js'),
   },
   output: {
     path: path.resolve(dstPath),
     filename: './[name]',
-  },
-  externals: {
-    //react: 'React',
-    //'react-dom': 'ReactDOM',
-    lodash: '_',
-    quill: 'Quill',
   },
   devtool: 'source-map',
   module: {
@@ -50,13 +40,9 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-env', '@babel/preset-react'],
+            presets: ['@babel/preset-env'],
           },
         },
-      },
-      {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
       },
     ],
   },

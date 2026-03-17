@@ -42,13 +42,6 @@
     // "replacing" the search/filter bars
     showBars(false, true, false);
 
-    function checkIsMetaphorAnnotation(cell){
-        const textCards = JSON.parse(cell.getRow().getData().textCards);
-        // check if a textCard has the value "metaphor", if it does the resulting array
-        // will be longer than "0" and the comparison will return true
-        return textCards.filter(textCard => textCard.value ==="metaphor").length > 0;
-    }
-
     // create the annotation overview table
     // TODO: CUSTOMIZE to adjust the available filters add the field name of the
     // column to be filtered on to "./possibleAnnotationFilters.json"
@@ -186,37 +179,6 @@
     ]
     /*]]>*/
 
-
-    // TODO: CUSTOMIZE edit the message.properties in all language to either show
-    // or not show the button to the analysisTool
-    /*<![CDATA[*/
-    window.SHOW_BUTTON_TO_ANALYSIS_TOOL = [[#{show.ButtonToAnalysisTool}]];
-    /*]]>*/
-    /*<![CDATA[*/
-    if (window.SHOW_BUTTON_TO_ANALYSIS_TOOL === "true"){
-    /*]]>*/
-        window.annocolumns.splice(1, 0, 
-            {
-                formatter:function(cell, formatterParams, onRendered){
-                    if(checkIsMetaphorAnnotation(cell)){
-                        return "<i class='fa fa-pencil'></i>";    
-                    }
-                    return "<i class='fa fa-pencil' style='cursor: not-allowed; opacity: .4;'></i>";
-                },
-                hozAlign:"center",
-                resizable: false,
-                frozen: true,
-                headerSort: false,
-                cellClick:function(e, cell){
-                    if(checkIsMetaphorAnnotation(cell)){
-                        const annotationId = cell.getRow().getData().annoId;
-                        // similar behaviour as encodieAnnoId() from editor.js
-                        location.href = "analysis/" + encodeURIComponent(encodeURIComponent(annotationId));
-                    }
-                },
-            }
-        );
-    }
     window.annotable = new Tabulator("#searchresults", {
         layout: "fitDataTable",
         pagination: "local",

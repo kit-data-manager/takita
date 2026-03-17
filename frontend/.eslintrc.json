@@ -1,9 +1,4 @@
 {
-	"settings": {
-		"react": {
-			"version": "detect"
-		}
-	},
 	"env": {
 		"browser": true,
 		"commonjs": true,
@@ -13,7 +8,6 @@
 	},
 	"extends": [
 		"eslint:recommended",
-		"plugin:react/recommended",
 		"plugin:prettier/recommended"
 	],
 	"parser": "@babel/eslint-parser",
@@ -21,8 +15,7 @@
 		"ecmaVersion": "latest"
 	},
 	"plugins": [
-		"@stylistic/js",
-		"react"
+		"@stylistic/js"
 	],
 	"rules": {
 		"@stylistic/js/max-len": [
@@ -34,7 +27,6 @@
 			"warn", {
 				"argsIgnorePattern": "^_"
 			}
-		],
-		"react/prop-types": "off"
+		]
 	}
 }
