@@ -193,7 +193,7 @@ This function at the moment is very limited (no info on success or failure) and 
 POST http://<takita host:port>/actuator/searchIndex?operation=rebuild'
 ```
 
-The actuator for index operations is currently disabled by default for native installation and disabled by default for the bundled docker stack.
+The actuator for index operations is currently disabled by default for native installation and enabled by default for the bundled docker stack.
 The actuator can be configured by setting/changing the application property `management.endpoint.searchindex.access` in accordance to spring actuator configuration options.
 
 ## License
