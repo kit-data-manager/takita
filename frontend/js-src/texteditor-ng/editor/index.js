@@ -1,1 +1,1 @@
-export { initializeTextEditor } from './editor';
+export { initializeTextEditor, onclickSelectText } from './editor';

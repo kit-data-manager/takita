@@ -3,6 +3,7 @@ import { toggleSidebar, collapseSidebar } from '../../common/sidebar';
 import { getTextLanguage } from '../textloader/textloader';
 import { decreaseFontSize, increaseFontSize, resetFontSize } from '../utils/fontsize';
 import { determineVariant } from '../projectspecific';
+import { onclickSelectText } from '../editor';
 /**
  * Set Takita's sidebar up to make it suitable for the texteditor.
  * @module sidebar
@@ -51,6 +52,12 @@ export function initializeSidebar($sidebar, $text, $pagesDialog, $tableContainer
     collapseSidebar($sidebar);
     resetFontSize($text);
   });
+
+  // create annotation, if a user selects text first and then presses the button
+  $sidebar.querySelector('#selectTextListItem').addEventListener('mousedown', (event) => {
+    onclickSelectText(event, window.getSelection(), window.ANNOJSON, hooks);
+  });
+
   // show parts navigation
   $sidebar.querySelector('#pagesButton').addEventListener('click', function () {
     collapseSidebar($sidebar);

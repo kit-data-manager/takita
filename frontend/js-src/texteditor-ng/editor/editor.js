@@ -61,12 +61,6 @@ export function initializeTextEditor(_annotations, hooks = {}) {
     }
   });
 
-  // adding eventhandler for text selection, if a user selects text first and then
-  // presses the button
-  document.getElementById('selectTextListItem').addEventListener('mousedown', (event) => {
-    onclickSelectText(event, window.getSelection(), window.ANNOJSON, hooks);
-  });
-
   // adding the closing functionality to annotation creation modal
   document.getElementById('dismissAnnotation').addEventListener('click', function (_e) {
     const $modal = bootstrap.Modal.getOrCreateInstance(document.getElementById('createAnnotation'));
@@ -131,7 +125,7 @@ export function annotateSelectedText(selection, annoJson, hooks = {}) {
  * @param {JSONArray} annoJson contains all the annotation of the pages as JSONObjects
  * @param {Object} [hooks] containing an array for the hooks to be passed to "annotateSelectedText()"
  */
-function onclickSelectText(_event, selection, annoJson, hooks = {}) {
+export function onclickSelectText(_event, selection, annoJson, hooks = {}) {
   const $sidebar = document.querySelector('.anno-side-bar');
   collapseSidebar($sidebar);
   window.SELECTING_TEXT = true;
