@@ -146,7 +146,7 @@ This can be used for development purposes.
     
 ### CLI parameters / application properties
 
-For more detailed description of current custom parameters/properties, please refer to [../backend/src/main/resources/application-default.properties]
+For more detailed description of current custom parameters/properties, please refer to the [default application properties](../backend/src/main/resources/application-default.properties).
     
 #### General
 * `--server.port=<myPort>`  
