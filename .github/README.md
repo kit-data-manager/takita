@@ -4,7 +4,7 @@
 
 tAKITA is an annotation tool to display, create and edit annotations compliant to the W3C recommendation [Web Annotation Data Model](https://www.w3.org/TR/annotation-model/).
     
-Currently, tAKITA's features are limited to image annotation, annotation of text data is in development. tAKITA is designed to run in stack with other components from the KIT Data Manager Ecosystem.
+tAKITA's supports image annotation and annotation of text data in the format of TEI xml. tAKITA is designed to run in stack with other components from the KIT Data Manager ecosystem.
     
 ## Prerequesites
 
