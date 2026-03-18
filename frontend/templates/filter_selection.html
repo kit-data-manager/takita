@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Filter selection</title>
+</head>
+<body>
+<div th:fragment="filterSelection" id="filterSelection" class="container-fluid">
+    <div id="manuscriptFilterbar">
+        <form th:object="${filterSelection}" th:fragment="filterDropdown" id="filterDropdown"
+            class="row justify-content-center mb-2">
+            <select th:title="#{buttons.select_filters}"
+                    data-actions-box="true"
+                    data-style="btn-primary"
+                    th:data-select-all-text="#{buttons.select_all}"
+                    th:data-deselect-all-text="#{buttons.deselect_all}"
+                    multiple
+                    class="col-8 me-2 p-0 selectpicker"
+                    th:field="*{fields}" id="addFilterSelect">
+                <option th:each="filter : ${possibleFilters.values()}"
+                        th:if="${currentFilters.contains(filter)}"
+                        th:value="${filter.field}"
+                        th:text="#{col_name.__${filter.field}__}"
+                        th:data-subtext="${filter.TYPE.toString().toLowerCase()}"
+                        disabled>
+                </option>
+                <option th:each="filter : ${possibleFilters.values()}"
+                        th:unless="${currentFilters.contains(filter)}"
+                        th:value="${filter.field}"
+                        th:text="#{col_name.__${filter.field}__}"
+                        th:data-subtext="${filter.TYPE.toString().toLowerCase()}">
+                </option>
+            </select>
+            <button class="btn btn-primary col-auto"
+                    type="button"
+                    onclick="add()"
+                    th:text="#{buttons.add_filters}">
+            </button>
+        </form>
+
+        <form th:action="@{/filter/apply}"
+            method="post"
+            th:object="${filterConfigurationHolder}"
+            id="filterInput">
+            <div class="container-fluid mb-2"
+                th:each="filter,i : ${currentFilters}"
+                th:id="${filter.field}">
+                <div class="row">
+                    <label class="col ps-0" th:text="#{col_name.__${filter.field}__}"> </label>
+                    <input type="hidden"
+                        th:field="*{filterConfigs[__${i.index}__].field}"
+                        th:value="${filter.field}">
+                    <span class="badge text-bg-secondary col-auto m-auto"
+                        type="button"
+                        th:data-field="${filter.field}"
+                        onclick="remove(this.getAttribute('data-field'), csrfTokenFS)"
+                        th:text="#{buttons.remove}">
+                    </span>
+                </div>
+                <div class="row" th:id="matchInput"
+                    th:if="${filter.TYPE == T(edu.kit.datamanager.takita.model.filter.FilterType).MATCH}">
+                    <input type="text"
+                        class="form-control"
+                        th:if="*{filterConfigs[__${i.index}__].values.size() > 0}"
+                        th:field="*{filterConfigs[__${i.index}__].values[0]}"
+                        th:value="*{filterConfigs[__${i.index}__].values[0].toString()}"
+                        th:placeholder="#{input_label.match_term}">
+                    <input type="text"
+                        class="form-control"
+                        th:unless="*{filterConfigs[__${i.index}__].values.size() > 0}"
+                        th:field="*{filterConfigs[__${i.index}__].values[0]}"
+                        th:placeholder="#{input_label.match_term}">
+                </div>
+                <div class="row" th:id="rangeInput"
+                    th:if="${filter.TYPE == T(edu.kit.datamanager.takita.model.filter.FilterType).RANGE}">
+                    <input type="number"
+                        class="form-control"
+                        th:if="*{filterConfigs[__${i.index}__].values.size() > 0}"
+                        th:field="*{filterConfigs[__${i.index}__].values[0]}"
+                        th:value="*{filterConfigs[__${i.index}__].values[0]}"
+                        th:placeholder="#{input_label.range_from}">
+                    <input type="number"
+                        class="form-control"
+                        th:unless="*{filterConfigs[__${i.index}__].values.size() > 0}"
+                        th:field="*{filterConfigs[__${i.index}__].values[0]}"
+                        th:placeholder="#{input_label.range_from}">
+
+                        <input type="number"
+                            class="form-control mt-1"
+                            th:if="*{filterConfigs[__${i.index}__].values.size() > 1}"
+                            th:field="*{filterConfigs[__${i.index}__].values[1]}"
+                            th:value="*{filterConfigs[__${i.index}__].values[1].toString()}"
+                            th:placeholder="#{input_label.range_to}">
+                        <input type="number"
+                            class="form-control mt-1"
+                            th:unless="*{filterConfigs[__${i.index}__].values.size() > 1}"
+                            th:field="*{filterConfigs[__${i.index}__].values[1]}"
+                            th:placeholder="#{input_label.range_to}">
+                </div>
+            </div>
+            <div class="row mt-3 justify-content-center">
+                <button type="submit"
+                        class="col-auto mb-1 mx-2 btn btn-success"
+                        th:text="#{buttons.apply_filters}">
+                </button>
+                <button type="button"
+                        class="col-auto mb-1 mx-2 btn btn-secondary"
+                        onclick="clearFilters()"
+                        th:text="#{buttons.clear_filters}"></button>
+            </div>
+        </form>
+    </div>
+
+    <div id="annotationFilterbar" class="d-none">
+        <form th:object="${filterSelection}" th:fragment="filterDropdown" id="filterAnnotationDropdown"
+            class="row justify-content-center mb-2">
+            <select th:title="#{buttons.select_filters}"
+                    data-actions-box="true"
+                    data-style="btn-primary"
+                    th:data-select-all-text="#{buttons.select_all}"
+                    th:data-deselect-all-text="#{buttons.deselect_all}"
+                    multiple
+                    class="col-8 me-2 p-0 selectpicker"
+                    th:field="*{fields}" id="addAnnotationFilterSelect">
+                <!--<option th:each="filter : ${possibleAnnotationFilters.values()}"
+                        th:value="${filter.field}"
+                        th:text="#{col_name.__${filter.field}__}"
+                        th:data-subtext="${filter.TYPE.toString().toLowerCase()}"
+                        disabled>
+                </option>-->
+                <option th:each="filter : ${possibleAnnotationFilters.values()}"
+                        th:value="${filter.field}"
+                        th:text="#{col_name.__${filter.field}__}"
+                        th:data-subtext="${filter.TYPE.toString().toLowerCase()}">
+                </option>
+            </select>
+            <button class="btn btn-primary col-auto"
+                    type="button"
+                    onclick="addAnnotationFilter()"
+                    th:text="#{buttons.add_filters}">
+            </button>
+        </form>
+
+        <form
+            th:object="${filterConfigurationHolder}"
+            id="annotationFilterInput">
+            <div class="row mt-3 justify-content-center">
+                <button type="button"
+                        class="col-auto mb-1 mx-2 btn btn-success"
+                        onclick="applyAnnotationFilters()"
+                        th:text="#{buttons.apply_filters}">
+                </button>
+                <button type="button"
+                        class="col-auto mb-1 mx-2 btn btn-secondary"
+                        onclick="clearAnnotationFilters()"
+                        th:text="#{buttons.clear_filters}"></button>
+            </div>
+        </form>
+    </div>
+
+    <script th:inline="javascript">
+ 
+        /*<![CDATA[*/
+        const csrfTokenFS = document.querySelector("meta[name='_csrf']").getAttribute('content');
+        /*]]>*/
+
+        function add() {
+            //Check if there is something to add
+            if ($('#addFilterSelect option:selected').length <= 0) {
+                return
+            }
+
+            //Save the not applied user input
+            /*<![CDATA[*/
+            let possibleFields = [[${possibleFilters.keySet()}]]
+            /*]]>*/
+            let savedElements = {}
+            for (let i = 0; i < possibleFields.length; i++) {
+                let element = document.getElementById(possibleFields[i])
+                let firstValue
+                let secondValue
+                if (element != null) {
+                    let matchInput = element.children.namedItem('matchInput')
+                    let rangeInput = element.children.namedItem('rangeInput')
+                    if (matchInput != null) {
+                        firstValue = $(matchInput.firstElementChild).val()
+                    } else if (rangeInput != null) {
+                        firstValue = $(rangeInput.firstElementChild).val()
+                        secondValue = $(rangeInput.lastElementChild).val()
+                    }
+                    savedElements[possibleFields[i]] = {0: firstValue, 1: secondValue}
+                }
+            }
+
+            console.log(savedElements)
+
+            //Execute the post request to the /filter/add controller endpoint
+            $.ajax({
+                type: 'POST',
+                url: window.CONTEXTPATH + 'filter/add',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfTokenFS
+                },
+                dataType: 'text',
+                data: JSON.stringify({'fields': $('#addFilterSelect').val()}),
+
+                success: function (responseData) {
+                    //Insert the responded fragment
+                    $('#filterSelection').replaceWith(responseData);
+                    //Refresh the dropdown selectpicker
+                    $('.selectpicker').selectpicker();
+
+                    //Insert the previous saved user input
+                    for (let i = 0; i < possibleFields.length; i++) {
+                        let element = document.getElementById(possibleFields[i])
+                        let savedValues = savedElements[possibleFields[i]]
+                        if (element != null && savedValues != null) {
+                            let firstValue = savedValues[0]
+                            let secondValue = savedValues[1]
+                            let matchInput = element.children.namedItem('matchInput')
+                            let rangeInput = element.children.namedItem('rangeInput')
+                            if (matchInput != null) {
+                                $(matchInput.firstElementChild).val(firstValue)
+                            } else if (rangeInput != null) {
+                                $(rangeInput.firstElementChild).val(firstValue)
+                                $(rangeInput.lastElementChild).val(secondValue)
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+
+
+    <script th:src="@{js/filter_selection.js}"></script>
+</div>
+</body>
+</html>

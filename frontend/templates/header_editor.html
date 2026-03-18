@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Header Editor</title>
+</head>
+<body>
+<div th:fragment="header_editor">
+
+    <table id="header_editor" class="table table-borderless">
+        <thead class="table-secondary align-middle">
+            <th width="10%"></th>
+            <th width="20%"><i class="bx bx-home" onclick="goHome();"
+                data-bs-toggle="tooltip" data-bs-placement="bottom"
+                th:data-bs-title="#{tooltips.goHome}"></i>
+            </th>
+            <th width="20%" th:text="${currentManuscript.title}"></th>
+            <th width="10%"></th>
+            <th width="20%"></th>
+            <th class="text-end" width="20%" style="position: relative;">
+                <div class="row" style="gap: 5px; width:100%;">
+                    <div class="pseudonym-wrapper" th:insert="~{pseudonym.html :: pseudonym}" style="flex: 1 1 30px; padding: 0;"></div>
+                    <button class="btn btn-info" th:text="#{buttons.help}" onclick="getHelp()" style="width:36px"
+                        data-bs-toggle="tooltip" data-bs-placement="bottom"
+                        th:data-bs-title="#{tooltips.help}"> </button>
+                    <div class="col-auto" th:if="${feedbackLink} != null" th:insert="~{feedback.html :: feedback}" style="padding: 0;"></div>
+                </div>
+            </th>
+        </thead>
+        <tbody class="table-light">
+            <tr>
+                <td width="10%"></td>
+                <td width="20%" th:text="#{col_name.noPages}"></td>
+                <td width="20%" th:text="${currentManuscript.noPages}"></td>
+                <td width="10%"></td>
+                <td width="20%" th:text="#{col_name.created}"></td>
+                <td width="20%" th:text="${currentManuscript.created}"></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td th:text="#{col_name.pageNumber}"></td>
+                <td th:text="${currentPage.pageNumber}"></td>
+                <td></td>
+                <td th:text="#{col_name.lastModified}"></td>
+                <td th:text="${currentManuscript.lastModified}"></td>
+            </tr>
+        </tbody>
+      </table>
+
+    <script th:inline="javascript">
+        // setting contextpath
+        window.CONTEXTPATH = /*[[@{/}]]*/ "/";
+        
+        function getHelp(){
+            location.href = window.CONTEXTPATH + 'assistance/help';
+        }
+        // returning to table view of repository data
+        function goHome() {
+            location.href = window.CONTEXTPATH;
+        };        
+    </script>
+</div>
+</body>
+</html>

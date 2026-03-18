@@ -1,50 +1,41 @@
-version: '2.7'
+include:
+  - docker-compose.minimal.yml
+  - docker/compose-include-annoserver.yml
+  - docker/compose-include-baserepo.yml
 services:
-  es:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
-    container_name: takita_es
+  reverseProxy:
+    image: nginx
     environment:
-      - discovery.type=single-node
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms8g -Xmx8g" # this sets min and max memory usage by elasticsearch (8g=8GB), try e.g 2GB if starting the service fails
-      - xpack.security.enabled=false #disables ssl to work with http connections
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
+      - NGINXPROXY=${COMPOSE_PROXYHOST:-localhost}:${COMPOSE_PROXYPORT:-7777}
+    command: ["/bin/bash", "-c", "export NGINXPROXY && envsubst '$$NGINXPROXY' < /etc/nginx/default.conf.template > /etc/nginx/conf.d/default.conf && nginx -g 'daemon off;'"]
+    ports:
+      - "${COMPOSE_PROXYPORT:-7777}:80"
     volumes:
-      - ./esdata:/var/lib/elasticsearch/data #should also work for windows systems, if not see comment below
-      # for windows systems absolute path might be needed: "E:/work/takita/esdata:/var/lib/elasticsearch/data"
-      # make sure the folder esdata does not exist before very first start
-    ports:
-      - ${TAKITADB_PORT}:9200
-    healthcheck:
-      test: curl -u elastic:elastic -s -f es:9200/_cat/health >/dev/null || exit 1
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    networks:
-    - compose-network 
-  takita:
-    build:
-        context: .
-        dockerfile: Dockerfile
-    ports:
-      - "${TAKITA_PORT:-9100}:8080"
+      - ./docker/reverseproxy/nginx.conf:/etc/nginx/default.conf.template
     depends_on:
-      es:
+      takita:
         condition: service_healthy
-    restart: unless-stopped
-    environment:
-      SPRING_APPLICATION_JSON: '{
-        "elasticsearch.ip": "es",
-        "repository.baseUrl": "${TAKITA_REPOURL}",
-        "annotationStore.url": "${TAKITA_WAPURL}",
-        "sparqlQuery.urlPrefix": "${TAKITA_SPARQLURL}"
-      }'
-      # default ports are for crc980 playground 
+      baserepo:
+        condition: service_healthy
+      wapserver:
+        condition: service_healthy
     networks:
-    - compose-network
-networks:
-  compose-network:
-    name: takitanet
+      - compose-network
+  sampleData:
+    profiles: ["playground"]
+    image: ghcr.io/orange-opensource/hurl:latest
+    depends_on:
+      - reverseProxy
+    volumes:
+      - ./backend/src/intTest/resources/hurl:/hurl
+    entrypoint: >
+      sh -c "
+      hurl --variable host=http://baserepo/repo --file-root /hurl --test /hurl/repo_setup.hurl -v &&
+      hurl --variable host=http://annoserver/annoserver --file-root /hurl --test /hurl/wap_setup.hurl -v &&
+      sleep 10 &&
+      hurl --variable host=http://takita:8080 --file-root /hurl --test /hurl/rebuild_index.hurl -v
+      "
+    networks:
+      - compose-network
+  
+

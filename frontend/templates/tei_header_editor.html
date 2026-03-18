@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>TEI Header Editor</title>
+</head>
+<body>
+<div th:fragment="tei_header_editor">
+
+    <table class="table table-borderless">
+        <tbody class="table-light">
+            <tr>
+                <td width="10%"></td>
+                <td width="20%" th:text="#{col_name.author}"></td>
+                <td width="20%" th:text="${currentManuscript.teiAuthor} ? ${currentManuscript.getAuthorsAsString()} : 'UNKNOWN'"></td>
+                <td width="10%"></td>
+                <td width="20%" th:text="#{col_name.manuscriptCreationDate}"></td>
+                <td width="20%" th:text="${currentManuscript.teiManuscriptCreationDate} ? ${currentManuscript.getCreationDatesAsString()} : 'UNKNOWN'"></td>
+            </tr>
+            <tr th:if="${currentManuscript.teiTitle}">
+                <td></td>
+                <td th:text="#{col_name.title}"></td>
+                <td th:text="${currentManuscript.getDefaultTitlesAsString()}"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr th:if="${currentManuscript.teiTitleSeries}">
+                <td></td>
+                <td th:text="#{col_name.title}"></td>
+                <td th:text="${currentManuscript.getSeriesTitlesAsString()}"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr  th:if="${currentManuscript.teiTitleMonographic}">
+                <td></td>
+                <td th:text="#{col_name.title}"></td>
+                <td th:text="${currentManuscript.getMonographicTitlesAsString()}"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr th:if="${currentManuscript.teiTitleAnalytic}">
+                <td></td>
+                <td th:text="#{col_name.title}"></td>
+                <td th:text="${currentManuscript.getAnalyticTitlesAsString()}"></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+        </tbody>
+      </table>
+</div>
+</body>
+</html>

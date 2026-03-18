@@ -1,0 +1,541 @@
+::highlight(user-1-highlight) {
+  background-color: yellow;
+  color: black;
+}
+
+/* ------------------------------------*/
+/* NAVIGATION BARS */
+/* ------------------------------------*/
+
+/* adding space below each navigation bar */
+.textNavBar {
+	padding-bottom: .5em;
+}
+
+/* end of navigation bars */
+/* ------------------------------------*/
+
+/* ------------------------------------*/
+/* ANNOTATION SPECIFICS */
+/* ------------------------------------*/
+
+/* CUSTOMISE how annotations should be highlighted.
+	This involves multiple steps:
+	1. customize the colors
+	2. create you highlighting rules
+	3. duplicate your rules and add "not:(.selected)" to
+		all your rules. */
+
+/* STEP 1: customize the colors
+	only use variables to set colors for the highlighting.
+	Just add more colors here; you should always add
+	the color twice; once as is and once as a lighter version,
+	you can just copy and paste things. Make sure
+	to replace the values in "var()" for the lighter colors.
+	The way to achive a lighter version of a color was taken from:
+	https://stackoverflow.com/questions/55329996/how-to-create-color-shades-using-css-variables-similar-to-darken-of-sass/55330103#55330103
+*/
+:root {
+	--tak-hlg-color-i: lightgreen;
+	--tak-hlg-color-i-lighter: hsl(from var(--tak-hlg-color-i) h s calc(l + 15));
+	--tak-hlg-color-ii: #daa3ff;
+	--tak-hlg-color-ii-lighter: hsl(from var(--tak-hlg-color-ii) h s calc(l + 15));
+	--tak-hlg-color-iii: yellow;
+	--tak-hlg-color-iii-lighter: hsl(from var(--tak-hlg-color-iii) h s calc(l + 40));
+	--tak-hlg-color-iv: #2196F3;
+	--tak-hlg-color-iv-lighter: hsl(from var(--tak-hlg-color-iv) h s calc(l + 35));
+	--tak-hlg-color-v: purple;
+	--tak-hlg-color-v-lighter: hsl(from var(--tak-hlg-color-v) h s calc(l + 60));
+}
+
+/* STEP 2: define your rules */
+/* default: highlight words annotated as anything not specified using first color */
+.defaulthighlight {
+	background: var(--tak-hlg-color-i);
+}
+
+/* highlight words annotated using second color */
+.backgroundOne {
+	background: var(--tak-hlg-color-ii);
+}
+
+/* highlight words annotated using third color */
+.backgroundTwo {
+	background: var(--tak-hlg-color-iii);
+}
+
+/* possible combinations of the rules from above to assign multiple background colors as a gradient */
+.backgroundOne.backgroundTwo {
+	background: linear-gradient( to bottom, var(--tak-hlg-color-iii) 50%, var(--tak-hlg-color-ii) 50% 100% )
+}
+
+.defaulthighlight.backgroundOne {
+	background: linear-gradient( to bottom, var(--tak-hlg-color-i) 50%, var(--tak-hlg-color-ii) 50% 100% )
+}
+
+.defaulthighlight.backgroundTwo {
+	background: linear-gradient( to bottom, var(--tak-hlg-color-i) 50%, var(--tak-hlg-color-iii) 50% 100% )
+}
+
+.defaulthighlight.backgroundOne.backgroundTwo {
+	background: linear-gradient( to bottom, var(--tak-hlg-color-i) 33%, var(--tak-hlg-color-iii) 33% 66%, var(--tak-hlg-color-ii) 66% 100% )
+}
+
+/* underline words annotated as metaphors.
+	The box-shadows overlap to the right/left
+	of an element, if the element is trailed
+	by whitespace. As the box-shadows might
+	overlap the white box-shadow is necessary to
+	keep te background white.
+	Every rule is needed for ltr texts (default)
+	and for rtl texts as the box-shadows 
+	always get created on the right/left side
+	regardless of text direction. */
+.underline {
+	box-shadow: 
+		0em 0em white, 
+		0em 0.2em var(--tak-hlg-color-iv);
+}
+
+.underline.whitespaceAfter {
+	box-shadow: 
+		0.29em 0em white, 
+		0em 0em white, 
+		0.29em 0.2em var(--tak-hlg-color-iv),
+		0em 0.2em var(--tak-hlg-color-iv);
+}
+
+tei-text[dir="rtl"] .underline.whitespaceAfter {
+	box-shadow: 
+		-0.29em 0em white, 
+		0em 0em white, 
+		-0.29em 0.2em var(--tak-hlg-color-iv),
+		0em 0.2em var(--tak-hlg-color-iv);
+}
+
+/* TODO: improve the comment phrasing */
+/* underline words annotated as metaphors, if 
+	another word is part of another metaphor
+	annotation and therefore, already highlighted 
+	-> only one underline */
+.underlineSecond {
+	box-shadow: 
+		0em 0.2em white, 
+		0em 0.4em var(--tak-hlg-color-v);
+	line-height: 1.75em;
+}
+
+.underlineSecond.whitespaceAfter {
+	box-shadow: 
+		0.29em 0.2em white, 
+		0em 0.2em white, 
+		0.29em 0.4em var(--tak-hlg-color-v),
+		0em 0.4em var(--tak-hlg-color-v);
+	line-height: 1.75em;
+}
+
+tei-text[dir="rtl"] .underlineSecond.whitespaceAfter {
+	box-shadow: 
+		-0.29em 0.2em white, 
+		0em 0.2em white, 
+		-0.29em 0.4em var(--tak-hlg-color-v),
+		0em 0.4em var(--tak-hlg-color-v);
+	line-height: 1.75em;
+}
+
+/* underline words annotated as metaphors, if 
+	another word is part of another metaphor
+	annotation and therefore, already highlighted 
+	-> two underlines */
+.underline.underlineSecond {
+	box-shadow: 
+		0em 0em white, 
+		0em 0em white,
+		0em 0.2em var(--tak-hlg-color-iv),
+		0em 0.2em var(--tak-hlg-color-iv), 
+		0em 0.4em var(--tak-hlg-color-v),
+		0em 0.4em var(--tak-hlg-color-v);
+	line-height: 1.75em;
+}
+
+.underline.underlineSecond.whitespaceAfter {
+	box-shadow: 
+		0.29em 0em white, 
+		0em 0em white,
+		0.29em 0.2em var(--tak-hlg-color-iv),
+		0em 0.2em var(--tak-hlg-color-iv), 
+		0.29em 0.4em var(--tak-hlg-color-v),
+		0em 0.4em var(--tak-hlg-color-v);
+	line-height: 1.75em;
+}
+
+tei-text[dir="rtl"] .underline.underlineSecond.whitespaceAfter {
+	box-shadow: 
+		-0.29em 0em white, 
+		0em 0em white, 
+		-0.29em 0.2em var(--tak-hlg-color-iv),
+		0em 0.2em var(--tak-hlg-color-iv),
+		-0.29em 0.4em var(--tak-hlg-color-v),
+		0em 0.4em var(--tak-hlg-color-v);
+	line-height: 1.75em;
+}
+
+/* lighter section */
+/* STEP 3: duplicate your rules and add "not:(.selected)" */
+/* default: highlight words annotated as anything not specified using first color */
+.defaulthighlight:not(.selected) {
+	background: var(--tak-hlg-color-i-lighter);
+}
+
+/* highlight words annotated using second color */
+.backgroundOne:not(.selected) {
+	background: var(--tak-hlg-color-ii-lighter);
+}
+
+/* highlight words annotated using third color */
+.backgroundTwo:not(.selected) {
+	background: var(--tak-hlg-color-iii-lighter);
+}
+
+/* possible combinations of the rules from above to assign multiple background colors as a gradient */
+.backgroundOne.backgroundTwo:not(.selected) {
+	background: linear-gradient( to bottom, var(--tak-hlg-color-iii-lighter) 50%, var(--tak-hlg-color-ii-lighter) 50% 100% )
+}
+
+.defaulthighlight.backgroundOne:not(.selected) {
+	background: linear-gradient( to bottom, var(--tak-hlg-color-i-lighter) 50%, var(--tak-hlg-color-ii-lighter) 50% 100% )
+}
+
+.defaulthighlight.backgroundTwo:not(.selected) {
+	background: linear-gradient( to bottom, var(--tak-hlg-color-i-lighter) 50%, var(--tak-hlg-color-iii-lighter) 50% 100% )
+}
+
+.defaulthighlight.backgroundOne.backgroundTwo:not(.selected) {
+	background: linear-gradient( to bottom, var(--tak-hlg-color-i-lighter) 33%, var(--tak-hlg-color-iii-lighter) 33% 66%, var(--tak-hlg-color-ii-lighter) 66% 100% )
+}
+
+/* underline words annotated as metaphors.
+	The box-shadows overlap to the right/left
+	of an element, if the element is trailed
+	by whitespace. As the box-shadows might
+	overlap the white box-shadow is necessary to
+	keep te background white.
+	Every rule is needed for ltr texts (default)
+	and for rtl texts as the box-shadows 
+	always get created on the right/left side
+	regardless of text direction. */
+.underline:not(.selected) {
+	box-shadow: 
+		0em 0em white, 
+		0em 0.2em var(--tak-hlg-color-iv-lighter);
+}
+
+.underline.whitespaceAfter:not(.selected) {
+	box-shadow: 
+		0.29em 0em white, 
+		0em 0em white, 
+		0.29em 0.2em var(--tak-hlg-color-iv-lighter),
+		0em 0.2em var(--tak-hlg-color-iv-lighter);
+}
+
+tei-text[dir="rtl"] .underline.whitespaceAfter:not(.selected) {
+	box-shadow: 
+		-0.29em 0em white, 
+		0em 0em white, 
+		-0.29em 0.2em var(--tak-hlg-color-iv-lighter),
+		0em 0.2em var(--tak-hlg-color-iv-lighter);
+}
+
+/* TODO: improve the comment phrasing */
+/* underline words annotated as metaphors, if 
+	another word is part of another metaphor
+	annotation and therefore, already highlighted 
+	-> only one underline */
+.underlineSecond:not(.selected) {
+	box-shadow: 
+		0em 0.2em white, 
+		0em 0.4em var(--tak-hlg-color-v-lighter);
+	line-height: 1.75em;
+}
+
+.underlineSecond.whitespaceAfter:not(.selected) {
+	box-shadow: 
+		0.29em 0.2em white, 
+		0em 0.2em white, 
+		0.29em 0.4em var(--tak-hlg-color-v-lighter),
+		0em 0.4em var(--tak-hlg-color-v-lighter);
+	line-height: 1.75em;
+}
+
+tei-text[dir="rtl"] .underlineSecond.whitespaceAfter:not(.selected) {
+	box-shadow: 
+		-0.29em 0.2em white, 
+		0em 0.2em white, 
+		-0.29em 0.4em var(--tak-hlg-color-v-lighter),
+		0em 0.4em var(--tak-hlg-color-v-lighter);
+	line-height: 1.75em;
+}
+
+/* underline words annotated as metaphors, if 
+	another word is part of another metaphor
+	annotation and therefore, already highlighted 
+	-> two underlines */
+.underline.underlineSecond:not(.selected) {
+	box-shadow: 
+		0em 0em white, 
+		0em 0em white,
+		0em 0.2em var(--tak-hlg-color-iv-lighter),
+		0em 0.2em var(--tak-hlg-color-iv-lighter), 
+		0em 0.4em var(--tak-hlg-color-v-lighter),
+		0em 0.4em var(--tak-hlg-color-v-lighter);
+	line-height: 1.75em;
+}
+
+.underline.underlineSecond.whitespaceAfter:not(.selected) {
+	box-shadow: 
+		0.29em 0em white, 
+		0em 0em white,
+		0.29em 0.2em var(--tak-hlg-color-iv-lighter),
+		0em 0.2em var(--tak-hlg-color-iv-lighter), 
+		0.29em 0.4em var(--tak-hlg-color-v-lighter),
+		0em 0.4em var(--tak-hlg-color-v-lighter);
+	line-height: 1.75em;
+}
+
+tei-text[dir="rtl"] .underline.underlineSecond.whitespaceAfter:not(.selected) {
+	box-shadow: 
+		-0.29em 0em white, 
+		0em 0em white, 
+		-0.29em 0.2em var(--tak-hlg-color-iv-lighter),
+		0em 0.2em var(--tak-hlg-color-iv-lighter),
+		-0.29em 0.4em var(--tak-hlg-color-v-lighter),
+		0em 0.4em var(--tak-hlg-color-v-lighter);
+	line-height: 1.75em;
+}
+
+/* end of annotation specifics */
+/* ------------------------------------*/
+
+/* ------------------------------------*/
+/* TEXT STRUCTURE SPECIFICS*/
+/* ------------------------------------*/
+
+/* display titles in bold */
+tei-head {
+	font-weight: bold;
+}
+
+/* linebreak after a title, a paragraph
+	chapter/part */
+tei-head, 
+tei-p,
+tei-div,
+tei-ab {
+	display: block;
+}
+
+tei-ab {
+	margin-bottom: .5em;
+}
+
+/* setting the backgrund color and box-shadow
+	of line- and pagebeginnings
+	so they always stay white */
+tei-pb {
+	background-color: white;
+}
+tei-cb {
+	background-color: white;
+}
+tei-lb {
+	background-color: white;
+}
+.underline tei-pb {
+	box-shadow: 0em 0.2em white;
+}
+.underlineSecond tei-pb {
+	box-shadow: 0em 0.4em white;
+}
+.underline tei-cb {
+	box-shadow: 0em 0.2em white;
+}
+.underlineSecond tei-cb {
+	box-shadow: 0em 0.4em white;
+}
+.underline tei-lb {
+	box-shadow: 0em 0.2em white;
+}
+.underlineSecond tei-lb {
+	box-shadow: 0em 0.4em white;
+}
+
+/* linebreak before the start of a new line */
+tei-lb::before {
+    content: "\00000a";
+    white-space: pre-wrap;
+}
+
+/* display the pagenumbers in front of the pagebeginnings */
+tei-pb[n]::before {
+	color: grey;
+    content: "\00000a"attr(n)"\00a0";
+    white-space: pre-wrap;
+}
+
+/* display the columnnumbers in front of the columnbeginnings */
+tei-cb[n]::before {
+	color: grey;
+    content: "\00000aCol.\00a0"attr(n)"\00a0";
+    white-space: pre-wrap;
+}
+
+/* display the linenumbers in front of the linebeginnings */
+tei-lb[n]::before {
+	color: grey;
+    content: "\00000a"attr(n)"\00a0";
+    white-space: pre-wrap;
+}
+
+/* quotation marks around direct speech */
+tei-said::before, 
+tei-said::after {
+    color: grey;
+	content: "\"";
+}
+
+/* french quotation marks around quotes */
+tei-quote::before {
+	color: grey;
+    content: "»";
+}
+
+tei-quote::after {
+    color: grey;
+	content: "«";
+}
+
+/* text highlights */
+tei-text *[rend~="italic"] {
+	font-style: italic;
+}
+
+tei-text *[rend~="bold"] {
+	font-weight: bold;
+}
+
+tei-text *[rend~="sup"] {
+	font-size: 70%;
+	vertical-align: super;
+}
+
+tei-text *[rend~="superscript"] {
+	font-size: 70%;
+	vertical-align: super;
+}
+
+tei-text *[rend~="sub"] {
+	font-size: 70%;
+	vertical-align: sub;
+}
+
+tei-text *[rend~="subscript"] {
+	font-size: 70%;
+	vertical-align: sub;
+}
+
+/* indentation */
+tei-text *[rend~="indent"]{
+	margin-left: 1em;
+}
+  
+tei-text *[rend~="indentTwo"]{
+	margin-left: 2em;
+}
+
+/* editorial additions (Leiden-style)
+	see https://git.noc.ruhr-uni-bochum.de/sfb1475-inf/subproject-data/-/issues/14#note_116732 */
+tei-supplied::before {
+	color: grey;
+    content: "(";
+}
+
+tei-supplied::after {
+	color: grey;
+    content: ")";
+}
+
+tei-supplied[reason="augment"]::before {
+	color: grey;
+    content: "(";
+}
+
+tei-supplied[reason="augment"]::after {
+    color: grey;
+	content: ")";
+}
+
+tei-supplied[reason="lost"]::before {
+	color: grey;
+    content: "[";
+}
+
+tei-supplied[reason="lost"]::after {
+	color: grey;
+    content: "]";
+}
+
+/* gaps should not be selectable */
+tei-gap {
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+tei-gap::after {
+	color: grey;
+    content: "[…]";
+}
+
+tei-gap[reason="lost"]::after {
+	color: grey;
+    content: "[…]";
+}
+
+tei-gap[reason="illegible"]::after {
+	color: grey;
+    content: "…";
+}
+
+tei-supplied > tei-gap::after {
+	color: grey;
+    content: "…";
+}
+
+/* titles added by an agent, who is not the author*/
+tei-head[resp] {
+	color: grey;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	  
+}
+
+/* poem specifics*/
+/* ------------------------------------*/
+
+/* display each line in one line
+	and add some sapce after each linegroup */
+tei-l, 
+tei-lg {
+	display: block;
+}
+
+tei-lg {
+	margin-bottom: 1rem;
+}
+
+/* end of text structure specifics */
+/* ------------------------------------ */

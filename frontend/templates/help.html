@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Help</title>
+    
+    <!-- define common scripts in head fragment to include here -->
+    <th:block th:replace="~{head :: baseContent}"></th:block>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/css/bootstrap.min.css" 
+    integrity="sha512-jnSuA4Ss2PkkikSOLtYs8BlYIeeIK1h99ty4YfvRPAlzr377vr3CXDb7sb7eEEBYjDtcYj+AjBH3FLv5uSJuXg==" 
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+<div class="row p-3 bg-light justify-content-between">
+    <div class="col-auto">
+        <button class="btn btn-primary" onclick="backToMain()" th:text="#{buttons.home}">
+        </button>
+    </div>
+    <div class="dropdown col-auto">
+        <button class="btn btn-info dropdown-toggle" type="button"  data-bs-toggle="dropdown"
+                aria-haspopup="true" aria-expanded="false" th:text="#{buttons.language}">
+        </button>
+        <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="?lang=de" th:text="#{language.de}"> </a>
+            <a class="dropdown-item" href="?lang=en" th:text="#{language.gb}"> </a>
+        </div>
+    </div>
+    <div class="col-auto" th:if="${feedbackLink} != null" th:insert="~{feedback.html :: feedback}" style="padding: 0;"></div>
+</div>
+
+<div class="row justify-content-center mt-3">
+    <div class="col-auto">
+        <h3 class="text-center display-3" th:text="#{heading.help}"> </h3>
+
+        <div class="card m-4">
+            <div class="card-body">
+                <h5 class="card-title display-6" th:text="#{text.headingPseudonym}"> </h5>
+                <p class="card-text font-weight-light" size="3"
+                   th:text="#{text.helpPseudonym}">
+                </p>
+            </div>
+        </div>
+
+        <div class="card m-4">
+            <div class="card-body">
+                <h5 class="card-title display-6" th:text="#{text.headingLanguage}"> </h5>
+                <p class="card-text font-weight-light" size="3"
+                   th:text="#{text.helpLanguage}">
+                </p>
+            </div>
+        </div>
+
+        <div class="card m-4">
+            <div class="card-body">
+                <h5 class="card-title display-6" th:text="#{text.headingColumns}"> </h5>
+                <p class="card-text font-weight-light" size="3"
+                   th:text="#{text.helpColumns}">
+                </p>
+            </div>
+        </div>
+
+        <div class="card m-4">
+            <div class="card-body">
+                <h5 class="card-title display-6" th:text="#{text.headingSorting}"> </h5>
+                <p class="card-text font-weight-light" size="3"
+                   th:text="#{text.helpSorting}">
+                </p>
+            </div>
+        </div>
+
+        <div class="card m-4">
+            <div class="card-body">
+                <h5 class="card-title display-6" th:text="#{text.headingRows}"> </h5>
+                <p class="card-text font-weight-light" size="3"
+                   th:text="#{text.helpRows}">
+                </p>
+            </div>
+        </div>
+
+        <div class="card m-4">
+            <div class="card-body">
+                <h5 class="card-text display-6" th:text="#{text.headingPages}"> </h5>
+                <p class="card-text font-weight-light" size="3"
+                   th:text="#{text.helpPages}">
+                </p>
+            </div>
+        </div>
+
+        <div class="card m-4">
+            <div class="card-body">
+                <h5 class="card-title display-6" th:text="#{text.headingSearch}"> </h5>
+                <p class="card-text font-weight-light" size="3"
+                   th:text="#{text.helpSearch}">
+                </p>
+            </div>
+        </div>
+
+        <div class="card m-4">
+            <div class="card-body">
+                <h5 class="card-title display-6" th:text="#{text.headingFilters}"> </h5>
+                <p class="card-text font-weight-light" size="3"
+                   th:text="#{text.helpFilters}">
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <script th:inline="javascript">
+        // setting contextpath
+        window.CONTEXTPATH = /*[[@{/}]]*/ "/";
+    </script>
+    <script th:inline="javascript">
+        function backToMain() {
+            location.href = window.CONTEXTPATH;
+        }
+    </script>
+</body>
+</html>

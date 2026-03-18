@@ -1,0 +1,76 @@
+# Change these settings according to your project
+[project]
+name = "tAKITA"
+version = "v2.0.0"
+description = "Annotation tool for WADM"
+
+license = "Apache-2.0"
+keywords = [
+    "annotation",
+    "WADM"
+]
+repository = "https://github.com/kit-data-manager/takita"
+# documentation = <enter documentation URL here>
+
+[config]
+verbose = true
+
+# List of people you'd normally reference in a somesy file. Pick the people associated with your software (and add others if necessary)
+# In case of putting 'true' for maintainer, it may be a good idea to also include the mail address.
+
+[[project.people]]
+given-names = "Danah"
+family-names = "Tonne"
+orcid = "https://orcid.org/0000-0001-6296-7282"
+affiliation = "Karlsruhe Institute of Technology (KIT)"
+author = true
+maintainer = true
+publication_author = true
+
+[[project.people]]
+given-names = "Germaine"
+family-names = "Götzelmann"
+orcid = "https://orcid.org/0000-0003-3974-3728"
+affiliation = "Karlsruhe Institute of Technology (KIT)"
+author = true
+maintainer = true
+publication_author = true
+
+[[project.people]]
+given-names = "Philipp"
+family-names = "Tögel"
+orcid = "https://orcid.org/0000-0002-1791-0268"
+affiliation = "Karlsruhe Institute of Technology (KIT)"
+author = true
+maintainer = true
+publication_author = true
+
+[[project.people]]
+given-names = "Henning"
+family-names = "Gebhard"
+author = true
+maintainer = false
+publication_author = true
+
+[[project.people]]
+given-names = "Nicoletta"
+family-names = "Pütz"
+author = true
+maintainer = false
+publication_author = true
+
+[[project.people]]
+given-names = "Maximilian"
+family-names = "Walz"
+orcid = "https://orcid.org/0009-0009-4590-519X"
+author = true
+maintainer = false
+publication_author = true
+
+[[project.people]]
+given-names = "Kathrin Leonie"
+family-names = "Schmidt"
+orcid = "https://orcid.org/0009-0000-7670-7094"
+author = true
+maintainer = false
+publication_author = true

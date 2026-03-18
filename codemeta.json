@@ -1,0 +1,97 @@
+{
+  "@context": [
+    "https://doi.org/10.5063/schema/codemeta-2.0",
+    "https://w3id.org/software-iodata",
+    "https://raw.githubusercontent.com/jantman/repostatus.org/master/badges/latest/ontology.jsonld",
+    "https://schema.org",
+    "https://w3id.org/software-types"
+  ],
+  "@type": "SoftwareSourceCode",
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": "Danah",
+      "familyName": "Tonne",
+      "@id": "https://orcid.org/0000-0001-6296-7282",
+      "identifier": "https://orcid.org/0000-0001-6296-7282",
+      "affiliation": "Karlsruhe Institute of Technology (KIT)"
+    },
+    {
+      "@type": "Person",
+      "givenName": "Germaine",
+      "familyName": "Götzelmann",
+      "@id": "https://orcid.org/0000-0003-3974-3728",
+      "identifier": "https://orcid.org/0000-0003-3974-3728",
+      "affiliation": "Karlsruhe Institute of Technology (KIT)"
+    },
+    {
+      "@type": "Person",
+      "givenName": "Philipp",
+      "familyName": "Tögel",
+      "@id": "https://orcid.org/0000-0002-1791-0268",
+      "identifier": "https://orcid.org/0000-0002-1791-0268",
+      "affiliation": "Karlsruhe Institute of Technology (KIT)"
+    },
+    {
+      "@type": "Person",
+      "givenName": "Henning",
+      "familyName": "Gebhard"
+    },
+    {
+      "@type": "Person",
+      "givenName": "Nicoletta",
+      "familyName": "Pütz"
+    },
+    {
+      "@type": "Person",
+      "givenName": "Maximilian",
+      "familyName": "Walz",
+      "@id": "https://orcid.org/0009-0009-4590-519X",
+      "identifier": "https://orcid.org/0009-0009-4590-519X"
+    },
+    {
+      "@type": "Person",
+      "givenName": "Kathrin Leonie",
+      "familyName": "Schmidt",
+      "@id": "https://orcid.org/0009-0000-7670-7094",
+      "identifier": "https://orcid.org/0009-0000-7670-7094"
+    }
+  ],
+  "name": "tAKITA",
+  "description": "Annotation tool for WADM",
+  "version": "v2.0.0",
+  "keywords": [
+    "annotation",
+    "WADM"
+  ],
+  "maintainer": [
+    {
+      "@type": "Person",
+      "givenName": "Danah",
+      "familyName": "Tonne",
+      "@id": "https://orcid.org/0000-0001-6296-7282",
+      "identifier": "https://orcid.org/0000-0001-6296-7282",
+      "affiliation": "Karlsruhe Institute of Technology (KIT)"
+    },
+    {
+      "@type": "Person",
+      "givenName": "Germaine",
+      "familyName": "Götzelmann",
+      "@id": "https://orcid.org/0000-0003-3974-3728",
+      "identifier": "https://orcid.org/0000-0003-3974-3728",
+      "affiliation": "Karlsruhe Institute of Technology (KIT)"
+    },
+    {
+      "@type": "Person",
+      "givenName": "Philipp",
+      "familyName": "Tögel",
+      "@id": "https://orcid.org/0000-0002-1791-0268",
+      "identifier": "https://orcid.org/0000-0002-1791-0268",
+      "affiliation": "Karlsruhe Institute of Technology (KIT)"
+    }
+  ],
+  "license": [
+    "https://spdx.org/licenses/Apache-2.0"
+  ],
+  "codeRepository": "https://github.com/kit-data-manager/takita"
+}

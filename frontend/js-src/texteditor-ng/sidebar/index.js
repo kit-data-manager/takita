@@ -1,0 +1,1 @@
+export { initializeSidebar } from './sidebar';

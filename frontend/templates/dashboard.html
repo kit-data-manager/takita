@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <title>dashboard</title>
+</head>
+<body>
+<div id="dashboard-container" th:fragment="dashboard" class="container-fluid text-center">
+  <div class="row justify-content-center mt-3">
+    <h3 th:text="#{prompt.choose_view}"> </h3>
+  </div>
+  <div class="row justify-content-center row-cols-1 row-cols-md-auto g-4">
+    <div class="col" th:each="key : ${availableViews.keySet()}">
+      <!-- using expression preprocessing ("__${key}__") to resolve "${key}" first; thanks
+        to this the corresponding image can be loaded.
+        See: https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html#preprocessing -->
+      <div class="card"
+        th:data-view="${key}"
+        onclick="choose(this.getAttribute('data-view'))">
+        <img th:src="@{/images/__${key}__.jpg}" class="card-img-top" alt="Image of the view">
+        <div class="card-body">
+          <!-- using expression preprocessing ("__${key}__") to resolve "${key}" first; thanks
+            to this the corresponding text can be loaded from the message files w/o having to
+            put them into the model.
+            See: https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html#preprocessing -->
+          <h5 class="card-title" th:text="${availableViews.get(key)}"> </h5>
+          <p class="card-text" th:text="#{views.__${key}__.text}"> </p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script th:inline="javascript">
+      // setting contextpath
+      window.CONTEXTPATH = /*[[@{/}]]*/ "/";
+  </script>
+  <script>
+      function choose(contentView) {
+          $('#dashboard').load(window.CONTEXTPATH + 'dashboard/contentview/' + contentView)
+      }
+      window.onload = function() {
+          $('#dashboard').load(window.CONTEXTPATH + 'dashboard/contentview')
+      }
+  </script>
+  <style>
+    /* sizing the images and containers, so everything ahs the same size */
+    #dashboard-container .card {
+      width:290px;
+    }
+    #dashboard-container .card-img-top {
+      object-fit: cover;
+      height: 200px;
+    }
+
+    /* making all cards fill the container and thereby being the same height,
+      despite the cards having different content */
+    #dashboard-container .card {
+      height: 100%;
+    }
+
+    /* hihglighting hovered card */
+    #dashboard-container .card:hover {
+        border-color: #0d6efd
+    }
+    </style>
+</div>
+</body>
+</html>
