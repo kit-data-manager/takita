@@ -37,5 +37,7 @@ just_the_docs:
 nav_external_links:
   - title: javadoc v1.0.0
     url: https://kit-data-manager.github.io/takita/javadoc/v1.0.0/
+  - title: javadoc v2.0.0
+    url: https://kit-data-manager.github.io/takita/javadoc/v2.0.0/
   - title: Changelog
     url: https://github.com/kit-data-manager/takita/blob/master/CHANGELOG.md
