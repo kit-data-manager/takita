@@ -59,7 +59,7 @@
   ],
   "name": "tAKITA",
   "description": "Annotation tool for WADM",
-  "version": "v2.0.0-SNAPSHOT",
+  "version": "v2.0.0",
   "keywords": [
     "annotation",
     "WADM"

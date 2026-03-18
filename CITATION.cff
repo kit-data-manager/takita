@@ -31,7 +31,7 @@ keywords:
   - WADM
 license: Apache-2.0
 abstract: Annotation tool for WADM
-version: v2.0.0-SNAPSHOT
+version: v2.0.0
 contact:
   - family-names: Tonne
     given-names: Danah

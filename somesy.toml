@@ -1,7 +1,7 @@
 # Change these settings according to your project
 [project]
 name = "tAKITA"
-version = "v2.0.0-SNAPSHOT"
+version = "v2.0.0"
 description = "Annotation tool for WADM"
 
 license = "Apache-2.0"
