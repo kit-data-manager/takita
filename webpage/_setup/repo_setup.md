@@ -9,7 +9,7 @@ For general information about installation and deployment, please refer to [http
 
 ## Data Structure
 
-tAKITA expects data in the repository to follow a particular data structure. The general concept contains the following building blocks
+tAKITA expects data in the repository to follow a particular data structure. The general concept contains the following building blocks as digital objects (DOs)
 
 - manuscript DO: contains metadata about a cultural heritage object
     - `manuscript_metadata.xml`: TEI XML file describing the object in a teiHeader element
@@ -20,7 +20,7 @@ manuscript and page objects are linked to each other by the relation type `IS_ME
 
 ## Data Creation Samples
 
-This section describes sample requests to a base repo to create the data structure needed for tAKITA.
+This section describes sample requests to a base-repo to create the data structure needed for tAKITA.
 The description utilizes hurl syntax (similar to curl) to show which variables need to be reused from previous steps.
 The sample adds one manuscript with name "Sample Manuscript" that contains one digitized page ("page1.jpg") and some text content ("text.xml")
 
@@ -131,13 +131,15 @@ manuscriptID: jsonpath "$.id"
 
 ### Upload manuscript metadata
 
-````
+```
 POST {{repo}}/api/v1/dataresources/{{manuscriptID}}/data/manuscript_metadata.xml
 [Multipart]
 file: file,manuscript_metadata.xml; application/xml
+```
 
 ### Add page / part sequence info
 
+````
 POST {{repo}}/api/v1/dataresources/{{manuscriptID}}/data/pages.json
 Content-Type: multipart/form-data; boundary=pagesBoundary
 ```
