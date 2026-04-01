@@ -13,7 +13,7 @@
     "raphael": "^2.3.0"
   },
   "peerDependencies": {
-    "bootstrap": "^5.3.3",
+    "bootstrap": "^5.3.8",
     "CETEIcean": "1.9.4",
     "jquery": "^3.7.1",
     "jsonform": "^2.2.5",
