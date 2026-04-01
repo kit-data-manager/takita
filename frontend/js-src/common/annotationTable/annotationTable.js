@@ -1,4 +1,4 @@
-import Tabulator from 'tabulator-tables';
+import { TabulatorFull as Tabulator } from 'tabulator-tables';
 import { selectAnnotation } from '../annotationCard';
 import { enableTooltips, encodeAnnoId, toggleVisibility } from '../utils';
 import { initializeNavigation } from '../../texteditor-ng/navigation';
@@ -80,38 +80,6 @@ export function initializeAnnotationTable(annoJson, $annotationTable, onCellClic
     movableColumns: true, //enable user movable columns
     paginationSize: 10,
     paginationSizeSelector: [10, 20, 30, 40],
-    rowDblClick: function (_e, row) {
-      //shows and hides the bodies for each row/annotation
-      let id = row.getData().id;
-      if (document.getElementById('holder' + id) == null) {
-        // create container/holder for all body rows
-        let holder = document.createElement('div');
-        holder.style.display = 'block';
-        holder.setAttribute('id', 'holder' + id);
-        let cardBody = document.createElement('div');
-        cardBody.setAttribute('class', 'card card-body no-wrap');
-
-        // create rows for all bodies
-        const textCards = row.getData().textCards;
-        textCards.forEach((textCard) => {
-          let row = document.createElement('div');
-          row.setAttribute('class', 'row');
-          row.innerText = textCard.purpose + ': ' + textCard.value;
-          cardBody.appendChild(row);
-        });
-        const tags = row.getData().tags;
-        tags.forEach((tag) => {
-          let row = document.createElement('div');
-          row.setAttribute('class', 'row');
-          row.innerText = 'tagging: ' + tag.value;
-          cardBody.appendChild(row);
-        });
-        holder.appendChild(cardBody);
-        row.getElement().appendChild(holder);
-      } else {
-        document.getElementById('holder' + id).remove();
-      }
-    },
     rowFormatter: function (row) {
       // enabling tooltips for the annotation table using bootstrap
       // inspiration from: https://stackoverflow.com/questions/71755490/bootstrap-tooltips-with-tabulator
@@ -123,10 +91,45 @@ export function initializeAnnotationTable(annoJson, $annotationTable, onCellClic
     columns: columns,
   });
 
+  annotable.on('rowDblClick', function (_e, row) {
+    //shows and hides the bodies for each row/annotation
+    let id = row.getData().id;
+    if (document.getElementById('holder' + id) == null) {
+      // create container/holder for all body rows
+      let holder = document.createElement('div');
+      holder.style.display = 'block';
+      holder.setAttribute('id', 'holder' + id);
+      let cardBody = document.createElement('div');
+      cardBody.setAttribute('class', 'card card-body no-wrap');
+
+      // create rows for all bodies
+      const textCards = row.getData().textCards;
+      textCards.forEach((textCard) => {
+        let row = document.createElement('div');
+        row.setAttribute('class', 'row');
+        row.innerText = textCard.purpose + ': ' + textCard.value;
+        cardBody.appendChild(row);
+      });
+      const tags = row.getData().tags;
+      tags.forEach((tag) => {
+        let row = document.createElement('div');
+        row.setAttribute('class', 'row');
+        row.innerText = 'tagging: ' + tag.value;
+        cardBody.appendChild(row);
+      });
+      holder.appendChild(cardBody);
+      row.getElement().appendChild(holder);
+    } else {
+      document.getElementById('holder' + id).remove();
+    }
+  });
   // the fixTableStyling()-function is no longer neccessary as different css is used
   // since the merge related to the css/bootstrap/modal update
   //fixTableStyling($annotationTable);
-  $annotationTable.querySelector('.tabulator-footer').style.backgroundColor = 'white';
+  // After the update to tabulator5 "$annotationTable.querySelector('.tabulator-footer')"
+  // returns null, so this is skipped. The styling of the table should be fixed when
+  // tabulator is updated till v6.4.
+  // $annotationTable.querySelector('.tabulator-footer').style.backgroundColor = 'white';
 
   return $annotationTable;
 }

@@ -75,8 +75,8 @@ class TableViewControllerTest {
     this.mockMvc.perform(get("/tableview/sort")
         .param("page", "1")
         .param("size", "10")
-        .param("sorters[0][field]", "id")
-        .param("sorters[0][dir]", "asc"))
+        .param("sort[0][field]", "id")
+        .param("sort[0][dir]", "asc"))
         .andExpect(status().isOk())
         .andDo(MockMvcResultHandlers.print());
 

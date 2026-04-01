@@ -41,7 +41,8 @@
     </div>
 </div>
 
-<div id="searchresults"></div>
+<!-- setting width to 100% as tabulator5 does not do it (tabulator4 did it) -->
+<div id="searchresults" style="width: 100%;"></div>
 
 <script th:inline="javascript">
     /*<![CDATA[*/
@@ -194,9 +195,12 @@
         },
         layout:"fitDataTable",
         initialSort: [{column:"id", dir:"asc"}],
-        paginationSizeSelector:[10, 20, 30, 40],
         height: 800,
-        pagination:"remote",
+        pagination: true,
+        paginationMode: "remote",
+        paginationSize:10,
+        paginationInitialPage:1,
+        paginationSizeSelector:[10, 20, 30, 40],
         movableColumns: true, //enable user movable columns
         ajaxURL: window.CONTEXTPATH + "tableview/sort", //set url for ajax request
         ajaxResponse:function(url, params, response){
@@ -208,44 +212,15 @@
             return response; //return the response data to tabulator
         },
 
-        ajaxSorting:true,
+        sortMode:"remote",
         columnHeaderSortMulti:false,
         /*<![CDATA[*/
         placeholder:[[#{table.noResults}]],
-        paginationSize:10,
-        paginationInitialPage:1,
         /*]]>*/
-        rowDblClick: function (e, row) {
-            //shows and hides thumbnails for each row
-            let id = row.getData().id;
-            if (document.getElementById('holder' + id) == null) {
-                showThumbnails(row);
-            } else {
-                hideThumbnails(row);
-            }
-
-        },
         columns: window.cols,
-        renderComplete:function() {
-            showThumbs();
-            if (window.flag) {
-                $.ajax({
-                    type: 'POST',
-                    url: 'assistance/saveTablecolumns',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfTokenTV
-                    },
-                    dataType: 'text',
-                    data: JSON.stringify(window.table.getColumnLayout()),
-                });
-                window.flag = false;
-            }
-        },
         langs:{
             "def":{
-                "ajax":{
+                "data":{
                     "loading":[[#{table.loading}]], //ajax loader text
                     "error":[[#{table.error}]], //ajax error text
                 },
@@ -279,11 +254,47 @@
         locale:"def",
 
     });
-    window.table.setMaxPage(getCurrentPage());
-    window.table.setPage(getCurrentPage());
+    window.table.on("tableBuilt", function(){
+        createDropdown();
+    });
+    window.table.on('renderComplete', function() {
+        showThumbs();
+        if (window.flag) {
+            $.ajax({
+                type: 'POST',
+                url: 'assistance/saveTablecolumns',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfTokenTV
+                },
+                dataType: 'text',
+                data: JSON.stringify(window.table.getColumnLayout()),
+                // this is not ideal as it delays the setting of the current page until the
+                // user config is saved. It is just a bandaid for now.
+                complete: function() {
+                    window.table.setMaxPage(getCurrentPage());
+                    window.table.setPage(getCurrentPage());
+                }
+            });
+            window.flag = false;
+        }
+    });
+    window.table.on('rowDblClick', function (e, row) {
+        //shows and hides thumbnails for each row
+        let id = row.getData().id;
+        if (document.getElementById('holder' + id) == null) {
+            showThumbnails(row);
+        } else {
+            hideThumbnails(row);
+        }
+
+    });
     setThumbCheckbox();
+    // the setHeaderMenues() call seems not necessery as the headerMenus are
+    // already defined in the column definition above. From boottrap5 onwards
+    // this function should be in the tableBuilt callback, if it is necessary
     setHeaderMenues();
-    createDropdown();
 
 
 
@@ -419,7 +430,6 @@ function callEditor(manId){
         let checkbox;
         let label;
         let tbl = window.table.getColumns();
-
         tbl.forEach(function (col, index) {
             if(col.getField() !== "id" && index > 0) {
                 cont = document.createElement("div");
