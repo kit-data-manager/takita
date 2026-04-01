@@ -50,7 +50,7 @@
     window.annocolumns = [
         {
             formatter:function(cell, formatterParams, onRendered){
-                return "<i class='fa fa-eye'></i>";},
+                return "<i class='fa-solid fa-eye'></i>";},
             hozAlign:"center",
             resizable: false,
             frozen: true,
@@ -281,7 +281,7 @@
         /*<![CDATA[*/
         return [
             {
-                label: "<i class='fa fa-eye-slash me-1'> </i>" + [[#{menu.hideCol}]],
+                label: "<i class='fa-solid fa-eye-slash me-1'> </i>" + [[#{menu.hideCol}]],
                 action: function (e, column) {
                     column.hide();
                     document.getElementById('check_' + column.getField()).checked = false;

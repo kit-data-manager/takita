@@ -61,7 +61,7 @@
         window.cols = [
             {
                 formatter:function(cell, formatterParams, onRendered){
-                return "<i class='fa fa-pencil'></i>";},
+                return "<i class='fa-solid fa-pencil'></i>";},
                 hozAlign:"center",
                 resizable: false,
                 frozen: true,
@@ -128,7 +128,7 @@
         /*<![CDATA[*/
         return [
             {
-                label: "<i class='fa fa-eye-slash me-1'> </i>" + [[#{menu.hideCol}]],
+                label: "<i class='fa-solid fa-eye-slash me-1'> </i>" + [[#{menu.hideCol}]],
                 action: function (e, column) {
                     column.hide();
                     document.getElementById('check_' + column.getField()).checked = false;
@@ -350,7 +350,7 @@
                 link.setAttribute('class', 'btn-sm btn-secondary col-auto')
                 link.setAttribute('href', window.CONTEXTPATH + 'editor/' + item.id);
                 let icon = document.createElement('i');
-                icon.setAttribute('class', 'fa fa-pencil');
+                icon.setAttribute('class', 'fa-solid fa-pencil');
                 link.appendChild(icon);
                 let label = document.createElement('label');
                 label.setAttribute('class', 'col-auto m-0');

@@ -35,7 +35,7 @@ export function initializeAnnotationTable(annoJson, $annotationTable, onCellClic
   let columns = [
     {
       formatter: function (_cell, _formatterParams, _onRendered) {
-        return `<i class='fa fa-eye' 
+        return `<i class='fa-solid fa-eye' 
                   data-bs-toggle="tooltip" data-bs-placement="top"
                   data-bs-title="${tooltipDisplayAnnotation}"></i>`;
       },

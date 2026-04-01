@@ -59,11 +59,11 @@
                                    th:attr="onclick=|window.open('${page.id}')|"
                                    data-bs-toggle="tooltip" data-bs-placement="top"
                                    th:data-bs-title="#{tooltips.pages_list.open}">
-                                    <i class="fa fa-pencil"></i>
+                                    <i class="fa-solid fa-pencil"></i>
                                 </a>
                                 <a class="btn btn-sm btn-secondary col-auto disabled"
                                    th:if="${page.id == currentPage.id}">
-                                    <i class="fa fa-pencil"></i>
+                                    <i class="fa-solid fa-pencil"></i>
                                 </a>
                                 <label class="col-auto" th:text="${page.pageNumber}"
                                        th:if="${page.id != currentPage.id}"
