@@ -53,7 +53,6 @@
 </script>
 <script th:src="@{js/table_view.js}"></script>
 <script th:inline="javascript">
-
     // "replacing" the search/filter bars
     showBars(false, false, true);
 
@@ -258,7 +257,12 @@
         createDropdown();
     });
     window.table.on('renderComplete', function() {
-        showThumbs();
+        try {
+            showThumbs();
+        } catch (TypeError) {
+            console.warn(`Caught an error thrown by showThumbs, which is a TypeError most likely, because the table was rerendered after clicking on the "To dashboard"-button and now the dashboard is shown and therefore, an element can't be found. This happens since the update of tabulator to v.6 as the table gets rendered again for some reason. `,
+                TypeError);
+        }
         if (window.flag) {
             $.ajax({
                 type: 'POST',

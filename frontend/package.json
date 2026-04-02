@@ -17,7 +17,7 @@
     "CETEIcean": "1.9.4",
     "jquery": "^3.7.1",
     "jsonform": "^2.2.5",
-    "tabulator-tables": "5.0.0",
+    "tabulator-tables": "^6.4.0",
     "underscore": "^1.13.6"
   },
   "devDependencies": {

@@ -123,41 +123,6 @@ export function initializeAnnotationTable(annoJson, $annotationTable, onCellClic
       document.getElementById('holder' + id).remove();
     }
   });
-  // the fixTableStyling()-function is no longer neccessary as different css is used
-  // since the merge related to the css/bootstrap/modal update
-  //fixTableStyling($annotationTable);
-  // After the update to tabulator5 "$annotationTable.querySelector('.tabulator-footer')"
-  // returns null, so this is skipped. The styling of the table should be fixed when
-  // tabulator is updated till v6.4.
-  // $annotationTable.querySelector('.tabulator-footer').style.backgroundColor = 'white';
-
-  return $annotationTable;
-}
-
-// TODO: this is no longer used since the merge related to the css/bootstrap/modal update
-/**
- * various changes to the styling of the table to make it look "better" via inline css.
- * Hopefully are not neessary in the future as the root causes might be fixed
- * by an update of the Tabulator version.
- *
- * @param {Element} $annotationTable the element holding the table
- * @returns {Element} $annotationTable the element holding the table
- */
-export function fixTableStyling($annotationTable) {
-  // the css from chota influences tabbulator. So the size of the
-  // select element to select the pagination size has to be set, to stop
-  // the element from getting to big and overflowing the container
-  $annotationTable.querySelector('.tabulator-page-size').style.width = '6rem';
-  // removing dark grey background color
-  $annotationTable.style.backgroundColor = 'white';
-  $annotationTable.querySelector('.tabulator-header').style.backgroundColor = 'white';
-  $annotationTable.querySelectorAll('.tabulator-col.tabulator-sortable').forEach((element) => {
-    element.style.backgroundColor = 'white';
-    // for some reason the column headers are missing as their height is set to "0px"
-    // so it has to be reset
-    element.style.height = 'initial';
-  });
-  $annotationTable.querySelector('.tabulator-footer').style.backgroundColor = 'white';
 
   return $annotationTable;
 }
