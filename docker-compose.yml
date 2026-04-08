@@ -4,6 +4,7 @@ include:
   - docker/compose-include-baserepo.yml
 services:
   reverseProxy:
+    hostname: reverseproxy
     image: nginx
     environment:
       - NGINXPROXY=${COMPOSE_PROXYHOST:-localhost}:${COMPOSE_PROXYPORT:-7777}
@@ -22,7 +23,7 @@ services:
     networks:
       - compose-network
   sampleData:
-    profiles: ["playground"]
+    profiles: ["playground", "e2e"]
     image: ghcr.io/orange-opensource/hurl:latest
     depends_on:
       - reverseProxy
@@ -37,5 +38,14 @@ services:
       "
     networks:
       - compose-network
+  playwright:
+    profiles: ["e2e"]
+    build: ./playwright
+    depends_on:
+      sampleData:
+        condition: service_completed_successfully
+    networks:
+      - compose-network
+
   
 

@@ -89,32 +89,32 @@ docker_playground:
       alias: dockerdind
   script:
     - echo "Starting playground stack..."
-    - docker compose --profile playground up -d
+    - docker compose --profile e2e up -d
 
     # --- Wait for sampleData to finish ---
     - |
-      echo "Waiting for sampleData to finish..."
+      echo "Waiting for playwright to finish..."
       while true; do
-        STATUS=$(docker inspect -f '{{.State.Status}}' takita-github-sampleData-1 2>/dev/null || echo "notfound")
+        STATUS=$(docker inspect -f '{{.State.Status}}' takita-github-playwright-1 2>/dev/null || echo "notfound")
       
         if [ "$STATUS" = "notfound" ]; then
-          echo "sampleData container not found"
+          echo "playwright container not found"
           exit 1
         fi
       
         case "$STATUS" in
           created)
-            echo "sampleData is in 'created' state, waiting for it to start..."
+            echo "playwright is in 'created' state, waiting for it to start..."
             ;;
           running)
-            echo "sampleData is running..."
+            echo "playwright is running..."
             ;;
           exited)
             echo "sampleData has exited."
             break
             ;;
           *)
-            echo "sampleData is in unexpected state: $STATUS"
+            echo "playwright is in unexpected state: $STATUS"
             break
             ;;
         esac
@@ -123,14 +123,14 @@ docker_playground:
       done
 
     # --- Check exit code ---
-    - EXIT_CODE=$(docker inspect -f '{{.State.ExitCode}}' takita-github-sampleData-1)
-    - echo "sampleData exit code $EXIT_CODE"
-    - if [ "$EXIT_CODE" -ne 0 ]; then echo "Playground setup has failed"; exit 1; fi
+    - EXIT_CODE=$(docker inspect -f '{{.State.ExitCode}}' takita-github-playwright-1)
+    - echo "playwright exit code $EXIT_CODE"
+    - if [ "$EXIT_CODE" -ne 0 ]; then echo "E2E setup has failed"; exit 1; fi
 
     # --- Check that all other services are not exited unexpectedly ---
     - echo "Checking other containers..."
     - |
-      NON_RUNNING=$(docker compose ps --services --filter "status=exited" | grep -v sampleData || true)
+      NON_RUNNING=$(docker compose ps --services --filter "status=exited" | grep -v playwright || true)
       if [ -n "$NON_RUNNING" ]; then
         echo "Some containers exited unexpectedly:"
         echo "$NON_RUNNING"
@@ -138,4 +138,4 @@ docker_playground:
         exit 1
       fi
 
-    - echo "Playground test passed successfully."
+    - echo "E2E test passed successfully."
