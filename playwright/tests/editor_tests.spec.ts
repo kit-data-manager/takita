@@ -20,8 +20,14 @@ test('Create page annotation', async ({ page }) => {
     await page.getByRole('link').first().click(); //navigate to image page
     await page.locator('#createPageAnnoButton').click();
 
-    const templateSelect = page.getByLabel('Choose your template');
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+
+    const templateSelect = dialog.getByRole('combobox', {
+        name: /choose your template/i
+    });
     await expect(templateSelect).toBeEnabled();
+
     await templateSelect.selectOption('EXAMPLE');
 
     await page.getByRole('textbox', { name: 'free text input' }).click();
@@ -69,7 +75,12 @@ test('Create image annotation (rect)', async ({ page }) => {
     expect(attrs.width).toBeGreaterThan(0);
     expect(attrs.height).toBeGreaterThan(0);
 
-    const templateSelect = page.getByLabel('Choose your template');
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+
+    const templateSelect = dialog.getByRole('combobox', {
+        name: /choose your template/i
+    });
     await expect(templateSelect).toBeEnabled();
     await templateSelect.selectOption('NOTEMPLATE');
 
@@ -90,7 +101,12 @@ test('Create text annotation', async ({ page }) => {
     await page.getByText('standeth').dblclick();
     await page.locator('#selectTextButton').click();
 
-    const templateSelect = page.getByLabel('Choose your template');
+    const dialog = page.getByRole('dialog');
+    await expect(dialog).toBeVisible();
+
+    const templateSelect = dialog.getByRole('combobox', {
+        name: /choose your template/i
+    });
     await expect(templateSelect).toBeEnabled();
     await templateSelect.selectOption('NOTEMPLATE');
 
