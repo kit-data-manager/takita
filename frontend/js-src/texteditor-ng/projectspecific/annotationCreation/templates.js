@@ -10,25 +10,24 @@ import { selectAnnotation } from '../../../common/annotationCard';
 import '../../../common/utils/metadataeditor';
 import { createBodyData } from '../../../common/data';
 
-// TODO: CUSTOMISE the four objects in here, which are necessary for annotation/body creation.
-// Leave the exported objects/functions (annotationTemplate, bodyTemplate, getFormObjectCreateAnnotation,
+// TODO: CUSTOMISE the two objects (annotationTemplate, bodyTemplate) and one function (getFormModel),
+// which are necessary for annotation/body creation.
+// Leave the export statements for objects/functions (annotationTemplate, bodyTemplate, getFormObjectCreateAnnotation,
 // getFormObjectCreateBody, useJQueryPlugin, pickTemplate) untouched. They have to be exported to be
 // mocked during the tests
 
-// enum for different annotation templates (the values are shown in the dropdown after
-// starting the process of creating a new annotation)
-// for adding new: include name here and add dataModel in
-// getFormModel(chosenTemplate)
+// TODO: CUSTOMISE enum for different annotation templates (the values are shown in the dropdown after
+// starting the process of creating a new annotation).
+// For adding new: include name here and add dataModel in getFormModel(chosenTemplate)
 export const annotationTemplate = {
   EXAMPLE: 'Example',
   NOTEMPLATE: 'No template',
 };
 
-// enum for different body templates to create simple dropdown to choose body template
+// TODO: CUSTOMISE enum for different body templates to create simple dropdown to choose body template
 // (the values are shown in the dropdown after starting the process of creating a new body
-// by clicking on the "+" icon in the top right corner of the annotation card)
-// for adding new: include name here and add dataModel in
-// getFormModel(chosenTemplate)
+// by clicking on the "+" icon in the top right corner of the annotation card).
+// For adding new: include name here and add dataModel in getFormModel(chosenTemplate)
 export const bodyTemplate = {
   TAG: 'Tag',
   TEXTBODY: 'Textbody',
