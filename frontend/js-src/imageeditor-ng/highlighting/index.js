@@ -1,2 +1,2 @@
-export { toggleShapeSelect, drawRectangle, drawPolygon, drawAnnos, extractInformationFromSvg } from './target';
-export { unselectAllShapes } from './utils';
+export { toggleShapeSelect, drawRectangle, drawPolygon, drawAnnos } from './target';
+export { extractInformationFromSvg, unselectAllShapes } from './utils';
