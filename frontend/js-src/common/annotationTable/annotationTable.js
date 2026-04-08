@@ -1,4 +1,4 @@
-import Tabulator from 'tabulator-tables';
+import { TabulatorFull as Tabulator } from 'tabulator-tables';
 import { selectAnnotation } from '../annotationCard';
 import { enableTooltips, encodeAnnoId, toggleVisibility } from '../utils';
 import { initializeNavigation } from '../../texteditor-ng/navigation';
@@ -35,7 +35,7 @@ export function initializeAnnotationTable(annoJson, $annotationTable, onCellClic
   let columns = [
     {
       formatter: function (_cell, _formatterParams, _onRendered) {
-        return `<i class='fa fa-eye' 
+        return `<i class='fa-solid fa-eye' 
                   data-bs-toggle="tooltip" data-bs-placement="top"
                   data-bs-title="${tooltipDisplayAnnotation}"></i>`;
       },
@@ -80,38 +80,6 @@ export function initializeAnnotationTable(annoJson, $annotationTable, onCellClic
     movableColumns: true, //enable user movable columns
     paginationSize: 10,
     paginationSizeSelector: [10, 20, 30, 40],
-    rowDblClick: function (_e, row) {
-      //shows and hides the bodies for each row/annotation
-      let id = row.getData().id;
-      if (document.getElementById('holder' + id) == null) {
-        // create container/holder for all body rows
-        let holder = document.createElement('div');
-        holder.style.display = 'block';
-        holder.setAttribute('id', 'holder' + id);
-        let cardBody = document.createElement('div');
-        cardBody.setAttribute('class', 'card card-body no-wrap');
-
-        // create rows for all bodies
-        const textCards = row.getData().textCards;
-        textCards.forEach((textCard) => {
-          let row = document.createElement('div');
-          row.setAttribute('class', 'row');
-          row.innerText = textCard.purpose + ': ' + textCard.value;
-          cardBody.appendChild(row);
-        });
-        const tags = row.getData().tags;
-        tags.forEach((tag) => {
-          let row = document.createElement('div');
-          row.setAttribute('class', 'row');
-          row.innerText = 'tagging: ' + tag.value;
-          cardBody.appendChild(row);
-        });
-        holder.appendChild(cardBody);
-        row.getElement().appendChild(holder);
-      } else {
-        document.getElementById('holder' + id).remove();
-      }
-    },
     rowFormatter: function (row) {
       // enabling tooltips for the annotation table using bootstrap
       // inspiration from: https://stackoverflow.com/questions/71755490/bootstrap-tooltips-with-tabulator
@@ -123,38 +91,38 @@ export function initializeAnnotationTable(annoJson, $annotationTable, onCellClic
     columns: columns,
   });
 
-  // the fixTableStyling()-function is no longer neccessary as different css is used
-  // since the merge related to the css/bootstrap/modal update
-  //fixTableStyling($annotationTable);
-  $annotationTable.querySelector('.tabulator-footer').style.backgroundColor = 'white';
+  annotable.on('rowDblClick', function (_e, row) {
+    //shows and hides the bodies for each row/annotation
+    let id = row.getData().id;
+    if (document.getElementById('holder' + id) == null) {
+      // create container/holder for all body rows
+      let holder = document.createElement('div');
+      holder.style.display = 'block';
+      holder.setAttribute('id', 'holder' + id);
+      let cardBody = document.createElement('div');
+      cardBody.setAttribute('class', 'card card-body no-wrap');
 
-  return $annotationTable;
-}
-
-// TODO: this is no longer used since the merge related to the css/bootstrap/modal update
-/**
- * various changes to the styling of the table to make it look "better" via inline css.
- * Hopefully are not neessary in the future as the root causes might be fixed
- * by an update of the Tabulator version.
- *
- * @param {Element} $annotationTable the element holding the table
- * @returns {Element} $annotationTable the element holding the table
- */
-export function fixTableStyling($annotationTable) {
-  // the css from chota influences tabbulator. So the size of the
-  // select element to select the pagination size has to be set, to stop
-  // the element from getting to big and overflowing the container
-  $annotationTable.querySelector('.tabulator-page-size').style.width = '6rem';
-  // removing dark grey background color
-  $annotationTable.style.backgroundColor = 'white';
-  $annotationTable.querySelector('.tabulator-header').style.backgroundColor = 'white';
-  $annotationTable.querySelectorAll('.tabulator-col.tabulator-sortable').forEach((element) => {
-    element.style.backgroundColor = 'white';
-    // for some reason the column headers are missing as their height is set to "0px"
-    // so it has to be reset
-    element.style.height = 'initial';
+      // create rows for all bodies
+      const textCards = row.getData().textCards;
+      textCards.forEach((textCard) => {
+        let row = document.createElement('div');
+        row.setAttribute('class', 'row');
+        row.innerText = textCard.purpose + ': ' + textCard.value;
+        cardBody.appendChild(row);
+      });
+      const tags = row.getData().tags;
+      tags.forEach((tag) => {
+        let row = document.createElement('div');
+        row.setAttribute('class', 'row');
+        row.innerText = 'tagging: ' + tag.value;
+        cardBody.appendChild(row);
+      });
+      holder.appendChild(cardBody);
+      row.getElement().appendChild(holder);
+    } else {
+      document.getElementById('holder' + id).remove();
+    }
   });
-  $annotationTable.querySelector('.tabulator-footer').style.backgroundColor = 'white';
 
   return $annotationTable;
 }

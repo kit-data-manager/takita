@@ -1,5 +1,6 @@
 import { updateDisplay } from './index';
 import * as data from '../../common/data/annotations';
+import * as annotationTable from '../../common/annotationTable/annotationTable';
 
 // Silence console.xxx() for the duration of these tests, so it does
 // not spam our console
@@ -22,7 +23,7 @@ describe('updating the display by rendering the current annotations', () => {
     to match your data)
     - or skip this test by adding a ".skip" to "it.("successfully ..." -> "it.skip("successfully ...)`, async () => {
     // TODO: remove the annotation table related requirement (the two divs and the creator from the
-    // mockAnnoKson) after the display update is decoupled from the update of the annotation table
+    // mockAnnoJson) after the display update is decoupled from the update of the annotation table
     document.body.innerHTML = `<div id="table"></div><div id="TEI"><div id="w.1"></div><div id="w.2"></div><div id="w.3"></div>
         <div id="w.4"></div><div id="w.5" class="defaulthighlight"></div></div>
         <div id="annotationTableBottom"></div>
@@ -39,9 +40,12 @@ describe('updating the display by rendering the current annotations', () => {
         creator: 'test',
       },
     ];
-    // mocking an inner funciton call, which does a network request, to be called successfully
+    // mocking an inner function call, which does a network request, to be called successfully
     // and return the data
     jest.spyOn(data, 'getAllAnnotationsData').mockReturnValue(mockAnnoJson);
+    // mocking Tabulator since the update to tabulator5 as you have to mock tabulator since then
+    // see https://stackoverflow.com/questions/73057036/typeerror-tabulatortables-tabulator-is-not-a-constructor
+    jest.spyOn(annotationTable, 'initializeAnnotationTable').mockReturnValue(null);
 
     await updateDisplay({});
     expect(window.ANNOJSON).toStrictEqual(mockAnnoJson);

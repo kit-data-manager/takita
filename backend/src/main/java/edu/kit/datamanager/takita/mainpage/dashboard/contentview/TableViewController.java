@@ -83,11 +83,11 @@ public class TableViewController {
    * @param model  the holder for model attributes, used to pass attributes back to the view
    * @return the sorted data in json format
    */
-  @RequestMapping(value = "/sort", params = {"sorters[0][field]",
-      "sorters[0][dir]", "page", "size"})
+  @RequestMapping(value = "/sort", params = {"sort[0][field]",
+      "sort[0][dir]", "page", "size"})
   @ResponseBody
-  public String getSorted(@RequestParam("sorters[0][field]") String column,
-                          @RequestParam("sorters[0][dir]") String order,
+  public String getSorted(@RequestParam("sort[0][field]") String column,
+                          @RequestParam("sort[0][dir]") String order,
                           @RequestParam("page") int pageNo, @RequestParam("size") int size,
                           Model model) {
     tableViewService.setCurrentPage(pageNo);

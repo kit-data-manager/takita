@@ -13,11 +13,11 @@
     "raphael": "^2.3.0"
   },
   "peerDependencies": {
-    "bootstrap": "^5.3.3",
+    "bootstrap": "^5.3.8",
     "CETEIcean": "1.9.4",
     "jquery": "^3.7.1",
     "jsonform": "^2.2.5",
-    "tabulator-tables": "^4.8.1",
+    "tabulator-tables": "^6.4.0",
     "underscore": "^1.13.6"
   },
   "devDependencies": {

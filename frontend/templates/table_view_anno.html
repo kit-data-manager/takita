@@ -30,7 +30,8 @@
     </div>
 </div>
 
-<div id="searchresults"></div>
+<!-- setting width to 100% as tabulator5 does not do it (tabulator4 did it) -->
+<div id="searchresults" style="width: 100%;"></div>
 <div id="annotationTable"></div>
 
 <script th:inline="javascript">
@@ -50,7 +51,7 @@
     window.annocolumns = [
         {
             formatter:function(cell, formatterParams, onRendered){
-                return "<i class='fa fa-eye'></i>";},
+                return "<i class='fa-solid fa-eye'></i>";},
             hozAlign:"center",
             resizable: false,
             frozen: true,
@@ -182,6 +183,8 @@
     window.annotable = new Tabulator("#searchresults", {
         layout: "fitDataTable",
         pagination: "local",
+        paginationSize: 10,
+        paginationSizeSelector: [10, 20, 30, 40],
         ajaxURL: window.CONTEXTPATH + "annoview/data", //set url for ajax request
             ajaxResponse:function(url, params, response){
             if(response === "error"){
@@ -228,45 +231,49 @@
         /*<![CDATA[*/
         placeholder:[[#{table.noResults}]],
         /*]]>*/
-        paginationSize: 10,
-        paginationSizeSelector: [10, 20, 30, 40],
-        rowDblClick: function (e, row) {
-            //shows and hides thumbnails for each row
-            let id = row.getData().id;
-            if (document.getElementById('holder' + id) == null) {
-                // create container/holder for all body rows
-                let holder = document.createElement('div');
-                holder.style.display = 'block';
-                holder.setAttribute('id', 'holder' + id)
-                let cardBody = document.createElement('div');
-                cardBody.setAttribute('class', 'card card-body no-wrap');
-
-                // create rows for all bodies
-                const textCards = JSON.parse(row.getData().textCards);
-                textCards.forEach(textCard => {
-                    let row = document.createElement('div');
-                    row.setAttribute('class', 'row');
-                    row.innerText = textCard.purpose + ": " + textCard.value;
-                    cardBody.appendChild(row);
-                });
-                const tags = JSON.parse(row.getData().tags);
-                tags.forEach(tag => {
-                    let row = document.createElement('div');
-                    row.setAttribute('class', 'row');
-                    row.innerText = "tagging: " + tag.value;
-                    cardBody.appendChild(row);
-                });
-                holder.appendChild(cardBody);
-                row.getElement().appendChild(holder);
-            } else {
-                document.getElementById('holder' + id).remove();
-            }
-        },
         columns: window.annocolumns
     });
 
+
+    window.annotable.on("tableBuilt", function(){
+        createDropdown();
+    });
+    window.annotable.on('rowDblClick', function (e, row) {
+        //shows and hides thumbnails for each row
+        let id = row.getData().id;
+        if (document.getElementById('holder' + id) == null) {
+            // create container/holder for all body rows
+            let holder = document.createElement('div');
+            holder.style.display = 'block';
+            holder.setAttribute('id', 'holder' + id)
+            let cardBody = document.createElement('div');
+            cardBody.setAttribute('class', 'card card-body no-wrap');
+
+            // create rows for all bodies
+            const textCards = JSON.parse(row.getData().textCards);
+            textCards.forEach(textCard => {
+                let row = document.createElement('div');
+                row.setAttribute('class', 'row');
+                row.innerText = textCard.purpose + ": " + textCard.value;
+                cardBody.appendChild(row);
+            });
+            const tags = JSON.parse(row.getData().tags);
+            tags.forEach(tag => {
+                let row = document.createElement('div');
+                row.setAttribute('class', 'row');
+                row.innerText = "tagging: " + tag.value;
+                cardBody.appendChild(row);
+            });
+            holder.appendChild(cardBody);
+            row.getElement().appendChild(holder);
+        } else {
+            document.getElementById('holder' + id).remove();
+        }
+    });
+    // the setHeaderMenues() call seems not necessery as the headerMenus are
+    // already defined in the column definition above. From boottrap5 onwards
+    // this function should be in the tableBuilt callback, if it is necessary
     setHeaderMenues();
-    createDropdown();
 
     function setHeaderMenues(){
         window.annotable.getColumns().forEach(function(item, index) {
@@ -281,7 +288,7 @@
         /*<![CDATA[*/
         return [
             {
-                label: "<i class='fa fa-eye-slash me-1'> </i>" + [[#{menu.hideCol}]],
+                label: "<i class='fa-solid fa-eye-slash me-1'> </i>" + [[#{menu.hideCol}]],
                 action: function (e, column) {
                     column.hide();
                     document.getElementById('check_' + column.getField()).checked = false;

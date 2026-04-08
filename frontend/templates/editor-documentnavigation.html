@@ -4,9 +4,7 @@
     <title>Document Navigation</title>
 </head>
 <body>
-<div th:fragment="doc_navigation">
-    <div class="container-fluid">
-        <div class="row d-none" id="pages">
+        <div th:fragment="doc_navigation" class="row d-none" id="pages">
             <div class="card">
                 <div style="padding: .2em 1em .2em 1em">
                     <div class="row gap-2">
@@ -59,11 +57,11 @@
                                    th:attr="onclick=|window.open('${page.id}')|"
                                    data-bs-toggle="tooltip" data-bs-placement="top"
                                    th:data-bs-title="#{tooltips.pages_list.open}">
-                                    <i class="fa fa-pencil"></i>
+                                    <i class="fa-solid fa-pencil"></i>
                                 </a>
                                 <a class="btn btn-sm btn-secondary col-auto disabled"
                                    th:if="${page.id == currentPage.id}">
-                                    <i class="fa fa-pencil"></i>
+                                    <i class="fa-solid fa-pencil"></i>
                                 </a>
                                 <label class="col-auto" th:text="${page.pageNumber}"
                                        th:if="${page.id != currentPage.id}"
@@ -78,7 +76,5 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
 </body>
 </html>

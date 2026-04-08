@@ -210,3 +210,23 @@ body.modal-open {
 
 /* end of part overview */
 /* ------------------------------------*/
+
+/* ------------------------------------*/
+/* ANNOTATION TABLE */
+/* ------------------------------------*/
+
+/* removing border around the table (overrides the
+	styling done by tabulator/bootstrap)
+	*/
+.tabulator .tabulator-header {
+	border-top: none;
+}
+/* changing the background color of the table-footer
+	(overrides the styling done by tabulator/bootstrap)
+	*/
+#annotationTableBottom .tabulator-footer {
+	background-color: #fff;
+}
+
+/* end of annotation table */
+/* ------------------------------------*/
