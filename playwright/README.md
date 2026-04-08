@@ -37,6 +37,9 @@ To run playwright against the docker compose stack, make sure the stack is runni
 npx playwright test tests/
 ```
 
+To run tests interactively, add the `--ui` parameter to the command. This way you can see all test steps
+in a GUI while running and check screenshots of all steps afterward.
+
 To use it with any other local tAKITA, you may need to change the baseURL in `playwright.config.ts`
 (or provide your own config).
 
