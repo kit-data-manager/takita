@@ -18,7 +18,14 @@ test.beforeEach(async ({ page }) => {
 
 test('Create page annotation', async ({ page }) => {
     await page.getByRole('link').first().click(); //navigate to image page
-    await page.locator('#createPageAnnoButton').click();
+
+    const button = page.locator('#createPageAnnoButton');
+
+    await expect(button).toBeVisible();
+    await expect(button).toBeEnabled();
+    await expect(button).toHaveCSS('pointer-events', 'auto');
+
+    await button.click();
 
     const dialog = page.getByRole('dialog');
     await expect(dialog).toBeVisible();
@@ -47,7 +54,14 @@ test('Create page annotation', async ({ page }) => {
 
 test('Create image annotation (rect)', async ({ page }) => {
     await page.getByRole('link').first().click(); //navigate to image page
-    await page.locator('#createRectangleButton').click();
+
+    const button = page.locator('#createRectangleButton');
+
+    await expect(button).toBeVisible();
+    await expect(button).toBeEnabled();
+    await expect(button).toHaveCSS('pointer-events', 'auto');
+
+    await button.click();
 
     const svg = page.locator('#canvas svg');
     await expect(svg).toBeVisible();
@@ -99,7 +113,14 @@ test('Create image annotation (rect)', async ({ page }) => {
 test('Create text annotation', async ({ page }) => {
     await page.getByRole('link').nth(1).click(); //navigate to text page
     await page.getByText('standeth').dblclick();
-    await page.locator('#selectTextButton').click();
+
+    const button = page.locator('#selectTextButton');
+
+    await expect(button).toBeVisible();
+    await expect(button).toBeEnabled();
+    await expect(button).toHaveCSS('pointer-events', 'auto');
+
+    await button.click();
 
     const dialog = page.getByRole('dialog');
     await expect(dialog).toBeVisible();
