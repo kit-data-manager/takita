@@ -1,6 +1,6 @@
 import $ from 'jquery';
 import 'jsonform';
-import '../common/utils/metadataeditor';
+import '../../js-src/common/utils/metadataeditor';
 
 /**
  * test to see if $ and metadataeditor are imported correctly
