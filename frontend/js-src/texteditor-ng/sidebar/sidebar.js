@@ -1,7 +1,7 @@
 import { toggleDisplay } from '../../common/utils';
 import { toggleSidebar, collapseSidebar } from '../../common/sidebar';
 import { getTextLanguage } from '../textloader/textloader';
-import { decreaseFontSize, increaseFontSize, resetFontSize } from '../utils/fontsize';
+import { decreaseFontSize, increaseFontSize, resetFontSize } from './fontsize';
 import { determineVariant } from '../projectspecific';
 import { onclickSelectText } from '../editor';
 /**
