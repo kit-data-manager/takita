@@ -1,1 +1,0 @@
-export { createPageAnnotation } from './editor';
