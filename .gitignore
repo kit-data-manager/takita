@@ -13,3 +13,4 @@
 esdata
 **/.idea
 frontend/static/js/
+playwright-docker

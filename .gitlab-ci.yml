@@ -120,5 +120,4 @@ docker_playground:
   artifacts:
     when: always
     paths:
-      - test-results/
-      - reports/
+      - playwright-docker/

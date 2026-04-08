@@ -41,6 +41,9 @@ services:
   playwright:
     profiles: ["e2e"]
     build: ./playwright
+    volumes:
+      - ./playwright-docker/test-results:/test-results
+      - ./playwright-docker/reports:/reports
     depends_on:
       sampleData:
         condition: service_completed_successfully
