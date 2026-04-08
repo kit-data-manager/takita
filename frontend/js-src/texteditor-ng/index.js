@@ -1,6 +1,6 @@
 // internal modules
 import { Mode } from '../common/mode';
-import { enableTooltips } from '../common/utils';
+import { enableTooltips, getTargetAnnotationId, getTargetFragment } from '../common/utils';
 import { hooks } from './projectspecific';
 import { initializeTextEditor } from './editor';
 import { initializeSidebar } from './sidebar';
@@ -9,7 +9,7 @@ import { initializeNavigation } from './navigation';
 import { appendTEIDocument } from './textloader/textloader';
 import { fetchText } from '../common/network';
 import { drawAnnos } from './highlighting';
-import { checkIsTargetCompatible, getTargetAnnotationId, getTargetFragment, makeTargetsCompatible } from './utils';
+import { checkIsTargetCompatible, makeTargetsCompatible } from './utils';
 
 window.textEditor = {
   initializeTextEditorComponent,
