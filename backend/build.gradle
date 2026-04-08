@@ -185,28 +185,6 @@ tasks.named('check') {
 	dependsOn('npmTest')
 }
 
-//create Dockerfile on release to update jar version
-tasks.register('createDockerfile', Dockerfile) {
-	def basename = tasks.named('bootJar').get().archiveFileName.get()
-	destFile = project.file('../Dockerfile')
-	from 'eclipse-temurin:21.0.10_7-jdk'
-	exposePort 8080
-	entryPoint '/takita/start.sh'
-	/* Install dependency for Node (Debian-based images) */
-	runCommand 'apt-get update && apt-get install -y --no-install-recommends libatomic1 && rm -rf /var/lib/apt/lists/*'
-	runCommand 'mkdir -p /takita'
-	workingDir '/takita'
-	copyFile './build.sh', '/takita/build.sh'
-	copyFile './dockerstart.sh', '/takita/start.sh'
-	copyFile 'frontend/', '/takita/frontend/'
-	copyFile 'backend/', '/takita/backend/'
-	runCommand 'chmod +x /takita/build.sh'
-	runCommand 'chmod +x /takita/start.sh'
-	runCommand '/takita/build.sh'
-	runCommand 'chmod -R +x /takita/backend/build'
-	runCommand "cp /takita/backend/build/libs/${basename} /takita/takita.jar"
-}
-
 jar {
 	manifest {
 		attributes(
