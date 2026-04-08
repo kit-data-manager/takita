@@ -1,1 +1,0 @@
-export { initializeTopbar } from './topbar';

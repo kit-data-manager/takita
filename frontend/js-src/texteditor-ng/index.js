@@ -1,7 +1,6 @@
 // internal modules
 import { Mode } from '../common/mode';
 import { enableTooltips } from '../common/utils';
-import { initializeTopbar } from '../common/topbar';
 import { hooks } from './projectspecific';
 import { initializeTextEditor } from './editor';
 import { initializeSidebar } from './sidebar';
@@ -23,13 +22,6 @@ async function initializeTextEditorComponent(linkToResource, annotationsString, 
 
   // initializing the state
   const annoJson = initializeState(annotationsString);
-
-  // initializing the topbar; is not used currently as the topbar
-  // was moved to a thymeleaf fragment
-  // const $topbar = document.querySelector('.topbar-row');
-  // const $pseudonymModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('pseudonymInputModal'));
-  // const userName = thymeleafVariables.user.name;
-  //initializeTopbar($topbar, $pseudonymModal, userName);
 
   // TODO: maybe the textEditor can be initilized after the text has loaded
   // as there is no need for the textEditor, if there is no text. Furthermore
