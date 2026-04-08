@@ -1,6 +1,9 @@
 # ---------- BUILD STAGE ----------
 FROM eclipse-temurin:21-jdk AS build
 
+ARG SKIP_TESTS=true
+ENV SKIP_TESTS=${SKIP_TESTS}
+
 WORKDIR /build
 
 # System dependency (only for build)
