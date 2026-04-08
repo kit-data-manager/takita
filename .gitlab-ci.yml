@@ -117,3 +117,8 @@ docker_playground:
       fi
 
     - echo "E2E test passed successfully."
+  artifacts:
+    when: always
+    paths:
+      - test-results/
+      - reports/
