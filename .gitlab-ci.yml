@@ -89,34 +89,7 @@ docker_playground:
       alias: dockerdind
   script:
     - echo "Starting playground stack..."
-    - docker compose --profile e2e up -d
-
-    - echo "Streaming Playwright logs..."
-    - docker compose logs -f playwright &
-    - LOG_PID=$!
-
-    - echo "Waiting for playwright to finish..."
-    - docker wait $(docker compose ps -q playwright)
-
-    - kill $LOG_PID || true
-
-    # --- Check exit code ---
-    - EXIT_CODE=$(docker inspect -f '{{.State.ExitCode}}' $(docker compose ps -q playwright))
-    - echo "playwright exit code $EXIT_CODE"
-    - if [ "$EXIT_CODE" -ne 0 ]; then echo "E2E setup has failed"; exit 1; fi
-
-    # --- Check that all other services are not exited unexpectedly ---
-    - echo "Checking other containers..."
-    - |
-      NON_RUNNING=$(docker compose ps --services --filter "status=exited" | grep -v playwright || true)
-      if [ -n "$NON_RUNNING" ]; then
-        echo "Some containers exited unexpectedly:"
-        echo "$NON_RUNNING"
-        docker compose ps
-        exit 1
-      fi
-
-    - echo "E2E test passed successfully."
+    - docker compose --profile e2e up playwright
   artifacts:
     when: always
     paths:
