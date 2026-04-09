@@ -116,19 +116,6 @@
   width: 5rem;
 }
 
-/* styling for the tooltips
-   created by deprecatedEnableTooltips() */
-/* .hoverTooltip {
-  background: rgba(0,0,0,.8);
-  color: #fff;
-  display: none;
-  position: fixed;
-  left: 4em;
-  border-radius: 0.4rem;
-  padding: 0.5rem 0.9rem;
-  font-size: 1.4rem;
-} */
-
 .anno-side-bar.annocollapse .logo-name,
 .anno-side-bar.annocollapse .category-header,
 .anno-side-bar.annocollapse .features-item-text {
