@@ -5,7 +5,7 @@
 ### Formatting/Linting
 
 We use prettier and ESLint for formatting and linting respectively. You will not be able to build the JavaScript code without linting. You can install prettier and ESLint like all other dependencies by running `npm install` in `frontend`. Afterwards you can use `npx prettier ${PATH} --write` and `npx eslint --fix ${PATH}` to fix all issues (the `${PATH}` should either be the whole folder `js-src` or a single file in that folder). Many IDEs also offer plugins for both.
-For VSCode we use the settings `"prettier.useTabs": true,` and `"editor.codeActionsOnSave": {"source.fixAll.eslint": "explicit"},`, which can be added to the `settings.json` of VSCode (use `cmd+ shift + p` or the search bar to search for "Preference: Open User Settings JSON" and edit the file). If you open the `takita` of `takita/frontend` folder and edit files, the code should get formatted and linted when you save a file.
+For VSCode we use the settings `"prettier.useTabs": true,` and `"editor.codeActionsOnSave": {"source.fixAll.eslint": "explicit"},`, which can be added to the `settings.json` of VSCode (use `cmd+ shift + p` or the search bar to search for "Preference: Open User Settings JSON" and edit the file). If you open the `takita` or `takita/frontend` folder and edit files, the code should get formatted and linted when you save a file.
 
 ### Generic Code
 
