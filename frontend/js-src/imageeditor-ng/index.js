@@ -41,7 +41,7 @@ window.imageEditor = {
   initializeImageEditorComponent,
 };
 
-function initializeImageEditorComponent(annotations, thymeleafVariables) {
+function initializeImageEditorComponent(annotations, _thymeleafVariables) {
   // enable tooltips using bootstrap
   const $tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
   enableTooltips($tooltipTriggerList);
@@ -245,6 +245,7 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
       image.style.left = Math.round(-window.paper.currentX * scalingRatios[0]) + 'px';
       image.style.top = Math.round(-window.paper.currentY * scalingRatios[1]) + 'px';
 
+      // eslint-disable-next-line @stylistic/js/max-len
       //window.paper.setViewBox(window.paper.currentX, window.paper.currentY, window.paper.currentWidth, window.paper.currentHeight);
       let canvas = document.getElementById('canvas');
       canvas.style.left = Math.round(-window.paper.currentX * scalingRatios[0]) + 'px';
@@ -351,14 +352,14 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
     },
   );
 
-  window.addEventListener('mouseup', function (e) {
+  window.addEventListener('mouseup', function (_e) {
     // prevent unintended movement after ctrl moving
     // if the user gets out of the canvas while ctrl moving the variable is not resetted
     // if the ctrl button is pushed again, the image moves with every mouse move otherwise
     initiated = false;
   });
 
-  document.getElementById('dismissAnnotation').addEventListener('click', (event) => {
+  document.getElementById('dismissAnnotation').addEventListener('click', (_event) => {
     // if modal was shown during creation of new rectangle, remove rectangle
     if (window.newRectangle) {
       window.newRectangle.remove();
@@ -377,11 +378,11 @@ function initializeImageEditorComponent(annotations, thymeleafVariables) {
 
   // brings the image in front of the modal backdrop while annotating
   // for now only for creating annotations not bodies
-  createAnnotation.addEventListener('shown.bs.modal', (event) => {
+  createAnnotation.addEventListener('shown.bs.modal', (_event) => {
     document.getElementById('imageWorkspace').style.zIndex = '1100';
   });
 
-  createAnnotation.addEventListener('hidden.bs.modal', (event) => {
+  createAnnotation.addEventListener('hidden.bs.modal', (_event) => {
     document.getElementById('imageWorkspace').style.zIndex = '1';
   });
 

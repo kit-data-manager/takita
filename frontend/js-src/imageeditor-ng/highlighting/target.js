@@ -1,4 +1,3 @@
-import { fillMetaDataEditorTable } from '../../common/utils';
 import { toggleVisibility } from '../../common/utils';
 import { selectAnnotation } from '../../common/annotationCard';
 import { dragCircleMove, dragCircleStart, dragCircleEnd } from '../targetBuilding/utils';

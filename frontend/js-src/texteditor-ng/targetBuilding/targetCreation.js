@@ -383,10 +383,10 @@ function createTextQuoteSelector(selection, selectionRangeContents, $text) {
   );
   const leadingString = getLeadingString($text.textContent, leadingDelimiter, leadingThreshold);
   const trailingString = getTrailingString($text.textContent, trailingDelimiter, trailingThreshold);
-  console.log(selection, ' ;bf remove: ', selection.getRangeAt(0).cloneContents().textContent);
+  console.log(selection, ' ; before removal: ', selection.getRangeAt(0).cloneContents().textContent);
   // removing the inserted elements/reinstating the original DOM fragment
   removeDelimiterElements($leading, $trailing, $text, originalText);
-  console.log(selection, ' ;af remove: ', selection.getRangeAt(0).cloneContents().textContent);
+  console.log(selection, ' ; after removal: ', selection.getRangeAt(0).cloneContents().textContent);
   return {
     type: 'TextQuoteSelector',
     exact: selectionRangeContents.textContent,

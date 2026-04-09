@@ -15,7 +15,7 @@ window.textEditor = {
   initializeTextEditorComponent,
 };
 
-async function initializeTextEditorComponent(linkToResource, annotationsString, thymeleafVariables) {
+async function initializeTextEditorComponent(linkToResource, annotationsString, _thymeleafVariables) {
   // enable tooltips using bootstrap
   const $tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
   enableTooltips($tooltipTriggerList);

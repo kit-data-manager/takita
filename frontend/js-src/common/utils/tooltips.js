@@ -6,7 +6,7 @@ import * as bootstrap from 'bootstrap';
  * @param {NodeList} $tooltipTriggerList  Elements for which a tooltip should get created
  */
 export function enableTooltips($tooltipTriggerList) {
-  const tooltipList = [...$tooltipTriggerList].map(
+  [...$tooltipTriggerList].map(
     (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl, { delay: { show: 500, hide: 100 } }),
   );
 }

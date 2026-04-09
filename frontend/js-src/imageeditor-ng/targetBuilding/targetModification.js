@@ -1,4 +1,3 @@
-import $ from 'jquery';
 import { toggleVisibility } from '../../common/utils';
 import { Mode } from '../../common/mode';
 import { toggleShapeSelect } from '../highlighting';

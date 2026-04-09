@@ -348,7 +348,7 @@ export function insertDelimiterElements($text, selection, selectionRangeContents
  * @param {Element} $text to have the elements removed from
  * @param {String} originalText content of the $text-element to be set as innerHTML
  */
-export function removeDelimiterElements($leading, $trailing, $text, originalText) {
+export function removeDelimiterElements($leading, $trailing, _$text, _originalText) {
   // TODO: this corretly resets the text, but this causes unwanted side-effects
   // (at least the navigation breaks)
   // idea taken from: https://jsfiddle.net/Abeeee/9zjcgbku/ and
