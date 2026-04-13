@@ -1,15 +1,36 @@
-FROM eclipse-temurin:21.0.10_7-jdk
-EXPOSE 8080
-ENTRYPOINT ["/takita/start.sh"]
-RUN apt-get update && apt-get install -y --no-install-recommends libatomic1 && rm -rf /var/lib/apt/lists/*
-RUN mkdir -p /takita
+# ---------- BUILD STAGE ----------
+FROM eclipse-temurin:21-jdk AS build
+
+ARG SKIP_TESTS=true
+ENV SKIP_TESTS=${SKIP_TESTS}
+
+WORKDIR /build
+
+# System dependency (only for build)
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends libatomic1 && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy project
+COPY frontend/ frontend/
+COPY backend/ backend/
+COPY build.sh build.sh
+
+RUN chmod +x build.sh && ./build.sh
+
+# ---------- RUNTIME STAGE ----------
+FROM eclipse-temurin:21-jre-alpine
+
+RUN apk add --no-cache curl
+
 WORKDIR /takita
-COPY ./build.sh /takita/build.sh
-COPY ./dockerstart.sh /takita/start.sh
-COPY frontend/ /takita/frontend/
-COPY backend/ /takita/backend/
-RUN chmod +x /takita/build.sh
+
+EXPOSE 8080
+
+COPY dockerstart.sh /takita/start.sh
 RUN chmod +x /takita/start.sh
-RUN /takita/build.sh
-RUN chmod -R +x /takita/backend/build
-RUN cp /takita/backend/build/libs/takita-2.1.0-SNAPSHOT.jar /takita/takita.jar
+
+# Copy ONLY the built artifact
+COPY --from=build /build/backend/build/libs/*.jar /takita/takita.jar
+
+ENTRYPOINT ["/takita/start.sh"]

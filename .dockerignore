@@ -1,6 +1,9 @@
 backend/build/
-.gradle
+**/.gradle
 **/node_modules/
 **/dist
+**/build
+**/.cache
+**/*.log
 .git
 npm-debug.log

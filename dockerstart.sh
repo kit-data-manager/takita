@@ -1,16 +1,18 @@
-#!/bin/bash
+#!/bin/sh
+set -e
 
-#check existance of ES search index
-curl --silent --show-error --fail es:9200/search_index/_stats
-
-#check exit status - curl returns with status 22 on http code 404 (or any other error code)
-if [ $? -eq 22 ]
-then
-  echo "No success finding search index"
-  echo "Building new search index"
-  java -jar takita.jar buildIndex #scheduleIndex
-else
+if curl --silent --show-error --fail es:9200/search_index/_stats > /dev/null; then
   echo "Found existing search index"
   echo "Starting application"
-  java -jar takita.jar #updateIndex scheduleIndex
+  exec java -jar takita.jar
+else
+  status=$?
+  if [ "$status" -eq 22 ]; then
+    echo "Search index not found (404)"
+    echo "Building new search index"
+    exec java -jar takita.jar buildIndex
+  else
+    echo "Elasticsearch not reachable (curl exit code $status)"
+    exit 1
+  fi
 fi
