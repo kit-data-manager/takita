@@ -10,6 +10,7 @@ plugins {
 	id 'jacoco'
 	id 'com.bmuschko.docker-spring-boot-application' version '9.4.0'
 	id 'com.github.node-gradle.node' version '7.1.0'
+	id 'com.gorylenko.gradle-git-properties' version '2.5.7'
 }
 
 group = 'edu.kit.datamanager'
@@ -20,6 +21,11 @@ springBoot {
 	buildInfo {
 		excludes = ['time']
 	}
+}
+
+//Disable git properties in info actuator if project happens to not be a git repo (for example zenodo download)
+gitProperties {
+	failOnNoGitDirectory = false
 }
 
 repositories {
