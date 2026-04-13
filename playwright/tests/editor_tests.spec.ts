@@ -37,7 +37,6 @@ test('Create page annotation', async ({ page }) => {
 
     await templateSelect.selectOption('EXAMPLE');
 
-    await page.getByRole('textbox', { name: 'free text input' }).click();
     await page.getByRole('textbox', { name: 'free text input' }).fill('Das ist ein Testwert');
     await page.getByRole('button', { name: 'Create + Save' }).click();
     await page.getByLabel('Expand').click();
@@ -140,7 +139,6 @@ test('Create text annotation', async ({ page }) => {
         .locator('.form-group.jsonform-error-template:visible')
         .getByLabel('Choose your template')
         .selectOption('TAG');
-    await page.getByRole('textbox', { name: 'value' }).click();
     await page.getByRole('textbox', { name: 'value' }).fill('Testtag');
     await page.getByRole('button', { name: 'Create + Save' }).click();
     await expect(page.getByRole('textbox', { name: 'Tag:' })).toBeVisible();
