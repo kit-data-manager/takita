@@ -23,18 +23,9 @@
   position: relative;
   display: flex;
   font-size: 1.2rem;
-  margin-top: 0.5rem;
+  margin-top: 1.5rem;
 }
 
-.logo-name {
-  display: flex;
-  align-items: center;
-}
-
-.logo-name__name {
-  margin-left: 0.9rem;
-  white-space: nowrap;
-}
 .logo-name__button {
   position: absolute;
   top: 50%;
