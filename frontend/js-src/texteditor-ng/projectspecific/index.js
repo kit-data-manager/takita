@@ -17,6 +17,7 @@ import { defaultHighlighting } from '../highlighting/target';
 // END of imports form outside the module
 
 // imports from inside the module. Change these accordingly
+// eslint-disable-next-line no-unused-vars
 import { getSpecificClasses, customHighlighting } from './highlight';
 
 // EXPORTS

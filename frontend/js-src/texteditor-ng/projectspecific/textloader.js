@@ -18,6 +18,7 @@ export class Variant {
  * @param {String} language the document language
  * @returns {Variant}
  */
+// eslint-disable-next-line no-unused-vars
 export function determineVariant($text, language) {
   let variant = Variant.Default;
 

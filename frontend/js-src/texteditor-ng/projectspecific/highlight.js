@@ -15,7 +15,7 @@ export function getSpecificClasses() {
 
 /**
  * assigns css-classes to an element.
- * TODO: Customize the cases to achieve custom highlighting of different annotations.
+ * TODO: Customise the cases to achieve custom highlighting of different annotations.
  * This is linked to classes to be removed in removeStyles() function.
  *
  * @param {Element} $element to be highlihgted/assigned a css class
@@ -65,7 +65,7 @@ export function assignStyle($element, annotation, index, alreadyHighlighted) {
 }
 
 /**
- * gets the type of an annotation based on custom logic.
+ * TODO: CUSTOMISE gets the type of an annotation based on custom logic.
  * Implement your logic here. You can access the complete annotation
  * and decide about the type based on that. For example you can use
  * the value of a body or the presence of a body with a specific purpose.
@@ -130,7 +130,7 @@ export function checkIsATargetAlreadyHighlighted(targets) {
 }
 
 /**
- * custom highlighting function. It is used as the highlightAnnotationFunction() in
+ * TODO: CUSTOMISE custom highlighting function. It is used as the highlightAnnotationFunction() in
  * highlight/target.js
  *
  * @param {Object} annotation to have its target highlighted

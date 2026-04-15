@@ -1,6 +1,4 @@
 //external modules
-import $ from 'jquery';
-import 'jsonform';
 import * as bootstrap from 'bootstrap';
 //internal modules
 import { toggleVisibility, encodeAnnoId } from '../utils';

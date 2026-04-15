@@ -9,7 +9,7 @@ services:
         "repository.baseUrl": "http://baserepo/repo/",
         "annotationStore.url": "http://annoserver/annoserver/wap/",
         "sparqlQuery.urlPrefix": "http://annoserver:4330/wap/sparql?query=",
-        "management.endpoints.web.exposure.include": "searchindex,health",
+        "management.endpoints.web.exposure.include": "searchindex,health,info",
         "management.endpoint.searchindex.access": "unrestricted"
       }'
     healthcheck:

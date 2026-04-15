@@ -1,7 +1,6 @@
 // internal modules
 import { Mode } from '../common/mode';
-import { enableTooltips } from '../common/utils';
-import { initializeTopbar } from '../common/topbar';
+import { enableTooltips, getTargetAnnotationId, getTargetFragment } from '../common/utils';
 import { hooks } from './projectspecific';
 import { initializeTextEditor } from './editor';
 import { initializeSidebar } from './sidebar';
@@ -10,26 +9,19 @@ import { initializeNavigation } from './navigation';
 import { appendTEIDocument } from './textloader/textloader';
 import { fetchText } from '../common/network';
 import { drawAnnos } from './highlighting';
-import { checkIsTargetCompatible, getTargetAnnotationId, getTargetFragment, makeTargetsCompatible } from './utils';
+import { checkIsTargetCompatible, makeTargetsCompatible } from './utils';
 
 window.textEditor = {
   initializeTextEditorComponent,
 };
 
-async function initializeTextEditorComponent(linkToResource, annotationsString, thymeleafVariables) {
+async function initializeTextEditorComponent(linkToResource, annotationsString, _thymeleafVariables) {
   // enable tooltips using bootstrap
   const $tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
   enableTooltips($tooltipTriggerList);
 
   // initializing the state
   const annoJson = initializeState(annotationsString);
-
-  // initializing the topbar; is not used currently as the topbar
-  // was moved to a thymeleaf fragment
-  // const $topbar = document.querySelector('.topbar-row');
-  // const $pseudonymModal = bootstrap.Modal.getOrCreateInstance(document.getElementById('pseudonymInputModal'));
-  // const userName = thymeleafVariables.user.name;
-  //initializeTopbar($topbar, $pseudonymModal, userName);
 
   // TODO: maybe the textEditor can be initilized after the text has loaded
   // as there is no need for the textEditor, if there is no text. Furthermore

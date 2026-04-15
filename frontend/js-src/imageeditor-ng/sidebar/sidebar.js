@@ -1,9 +1,10 @@
+import * as bootstrap from 'bootstrap';
 import { Mode } from '../../common/mode';
 import { toggleDisplay } from '../../common/utils';
 import { collapseSidebar, toggleSidebar } from '../../common/sidebar';
 import { toggleShapeVisibility } from '../utils';
 import { confirmDiscardChanges, modifyShape, saveShape, undo } from '../targetBuilding';
-import { createPageAnnotation } from '../editor';
+import { pickTemplate } from '../projectspecific/annotationCreation/templates';
 
 export function initializeSidebar($sidebar, $pagesDialog, $tableContainer, hooks = {}) {
   const $pagesButton = $sidebar.querySelector('#pagesButton');
@@ -244,27 +245,9 @@ function addPolygon() {
   }
 }
 
-// toggling the side bar
-// all text elements should not be hoverable when side bar is collapsed
-function toggleAnnoSideBar() {
-  let sideBar = document.querySelector('.anno-side-bar');
-  let arrowCollapse = document.querySelector('#logo-name__icon');
-  let textElements = document.querySelectorAll('.features-item-text');
-  sideBar.classList.toggle('annocollapse');
-  arrowCollapse.classList.toggle('annocollapse');
-  if (arrowCollapse.classList.contains('annocollapse')) {
-    arrowCollapse.classList = 'bx bx-arrow-from-left logo-name__icon annocollapse';
-    for (let element in textElements) {
-      if (textElements[element].classList) {
-        textElements[element].classList.add('annocollapse');
-      }
-    }
-  } else {
-    arrowCollapse.classList = 'bx bx-arrow-from-right logo-name__icon';
-    for (let element in textElements) {
-      if (textElements[element].classList) {
-        textElements[element].classList.remove('annocollapse');
-      }
-    }
-  }
+function createPageAnnotation() {
+  let createAnnotation = document.getElementById('createAnnotation');
+  let createAnnotationModal = bootstrap.Modal.getOrCreateInstance(createAnnotation);
+  createAnnotationModal.toggle();
+  pickTemplate('', '', 'createAnnotationForm', 'pickAnnotationTemplateForm', 'annotationTemplate');
 }
