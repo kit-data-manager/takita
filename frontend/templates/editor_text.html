@@ -7,30 +7,15 @@
     <meta name="_csrf" th:if="${securityEnabled}" th:content="${_csrf.token}"/>
     <meta name="_csrf" th:if="!${securityEnabled} " th:content="notAvailableCSRFProtectionMightBeDisabled"/>
     <title th:text="#{label.editor}"> </title>
-    <!-- define common scripts in head fragment to include here; the text editor can not use the head:baseContent fragment
-        as the jQuery instance imported there will override the jQuery instance used in the modularised code
-        and will break functionality. Hence thecontents of the head:baseContent fragment need to be copied in
-        manually for the textEditor -->
-    <!-- <th:block th:replace="~{head :: baseContent}"></th:block> -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/js/bootstrap.min.js"
-    integrity="sha512-nKXmKvJyiGQy343jatQlzDprflyB5c+tKCzGP3Uq67v+lmzfnZUi/ZT+fc6ITZfSC5HhaBKUIvr/nTLCV+7F+Q=="
-    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <!-- external/framework css-->
-    <!-- Font Awesome icons-->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/solid.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/fontawesome.min.css">
-    <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap.min.css" 
-    integrity="sha512-2bBQCjcnw658Lho4nlXJcc6WkV/UxpE/sAokbXPxQNGqmNdQrWqtw26Ns9kFF/yG792pKR1Sx8/Y1Lf1XN4GKA==" 
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tabulator-tables@6.4.0/dist/css/tabulator.min.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tabulator-tables@6.4.0/dist/css/tabulator_bootstrap5.min.css" />
-    <!-- internal css-->
-    <link rel="stylesheet" th:href="@{/css/editor_sidebar.css}">
-    <link rel="stylesheet" th:href="@{/css/editor_shared.css}">
+
+    <th:block th:replace="~{head :: baseContent}"></th:block>
+    <th:block th:replace="~{head_editor :: baseContentEditor}"></th:block>
+
     <link rel="stylesheet" th:href="@{/css/editor_text.css}">
+
     <!-- loading the stylesheet associated with the project -->
     <link rel="stylesheet" th:href="@{'/css/projectSpecific/'+${currentProject}+'.css'}">
+
 </head>
 <body class="container-fluid p-0" th:data-field="${currentAnnotationsJson}">
 

@@ -4,15 +4,10 @@
     <meta charset="UTF-8">
     <meta name="_csrf" th:if="${securityEnabled}" th:content="${_csrf.token}"/>
     <meta name="_csrf" th:if="!${securityEnabled} " th:content="notAvailableCSRFProtectionMightBeDisabled"/>
-    <!-- generic script loading in fragment -->
-    <th:block th:replace="~{head :: baseContent}"></th:block>
-
     <title th:text="#{label.main}"> </title>
-
-    <!-- do not move this to the script loading fragment because it will break the modals in the editor -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap.min.css"
-          integrity="sha512-2bBQCjcnw658Lho4nlXJcc6WkV/UxpE/sAokbXPxQNGqmNdQrWqtw26Ns9kFF/yG792pKR1Sx8/Y1Lf1XN4GKA=="
-          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <!-- generic script loading in fragment -->
+    <th:block th:replace="~{head_main :: baseContentMain}"></th:block>
+    <th:block th:replace="~{head :: baseContent}"></th:block>
 
     <script th:src="@{/js/main_page.js}"></script>
 

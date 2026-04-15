@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html lang="en">
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
     <meta charset="UTF-8">
@@ -7,10 +6,8 @@
     
     <!-- define common scripts in head fragment to include here -->
     <th:block th:replace="~{head :: baseContent}"></th:block>
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.8/css/bootstrap.min.css" 
-    integrity="sha512-2bBQCjcnw658Lho4nlXJcc6WkV/UxpE/sAokbXPxQNGqmNdQrWqtw26Ns9kFF/yG792pKR1Sx8/Y1Lf1XN4GKA==" 
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <th:block th:replace="~{head_main :: baseContentMain}"></th:block>
+    
 </head>
 <body>
 <div class="row p-3 bg-light justify-content-between">
