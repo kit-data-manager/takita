@@ -1,0 +1,63 @@
+# This workflow will build a Java project with Gradle
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-gradle
+
+name: build with gradle
+
+env:
+    # JDK version used for building jar file
+    currentBuildVersion: 21
+
+on:
+  push:
+  pull_request:
+    branches: [ main, development ]
+jobs:
+  build:
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest, macOS-latest, windows-latest]
+        # Use both LTS releases and latest one for tests
+        jdk: [ 21 ]
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v4
+    - name: Set up OpenJDK version ...
+      uses: actions/setup-java@v4
+      with:
+        distribution: 'temurin'
+        java-version: ${{ matrix.jdk }}
+    - name: Grant execute permission for gradlew
+      working-directory: ./backend
+      run: chmod +x gradlew
+    - name: Build with Gradle
+      working-directory: ./backend
+      run:   |
+        if [ "$RUNNER_OS" == "Linux" ]; then
+              ./gradlew clean build test --fail-fast
+        elif [ "$RUNNER_OS" == "macOS" ]; then
+              ./gradlew clean build test --fail-fast
+        elif [ "$RUNNER_OS" == "Windows" ]; then
+              ./gradlew.bat clean build test --fail-fast
+        else
+              echo "$RUNNER_OS not supported"
+              exit 1
+        fi
+      shell: bash      
+  coverage:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+    - name: Set up OpenJDK version ...
+      uses: actions/setup-java@v2
+      with:
+        distribution: 'temurin' 
+        java-version: ${{ env.currentBuildVersion }}
+    - name: Grant execute permission for gradlew
+      working-directory: ./backend    
+      run: chmod +x gradlew
+    - name: Build with Gradle (JDK ${{ env.currentBuildVersion }})
+      working-directory: ./backend    
+      run: ./gradlew clean check jacocoTestReport coveralls --fail-fast
