@@ -12,7 +12,9 @@
 // external modules
 import $ from 'jquery';
 import 'jsonform';
-import { TabulatorFull as Tabulator } from 'tabulator-tables';
+// it should be sufficient to only import Tabulator w/o any additional modules.
+// The code using Tabulator is not being called anyways
+import { Tabulator } from 'tabulator-tables';
 // following imports are needed for the jsonform library (node_modules/jsonform/lib/jsonform.js), which code
 // was completely and unchanged copied into this file
 // underscore is used by the metadataeditor as well, but for some reason it doesn't need to be imported

@@ -1,8 +1,29 @@
-import { TabulatorFull as Tabulator } from 'tabulator-tables';
+import {
+  Tabulator,
+  FormatModule,
+  FrozenColumnsModule,
+  InteractionModule,
+  MoveColumnsModule,
+  PageModule,
+  ResizeColumnsModule,
+  ResizeTableModule,
+  SortModule,
+} from 'tabulator-tables';
 import { selectAnnotation } from '../annotationCard';
 import { enableTooltips, encodeAnnoId, toggleVisibility } from '../utils';
 import { initializeNavigation } from '../../texteditor-ng/navigation';
 import { toggleShapeSelect, unselectAllShapes } from '../../imageeditor-ng/highlighting';
+
+Tabulator.registerModule([
+  FormatModule,
+  FrozenColumnsModule,
+  InteractionModule,
+  MoveColumnsModule,
+  PageModule,
+  ResizeColumnsModule,
+  ResizeTableModule,
+  SortModule,
+]);
 
 /**
  * innitialize the table displaying all annotation of the current editor window.
@@ -72,7 +93,6 @@ export function initializeAnnotationTable(annoJson, $annotationTable, onCellClic
     });
   }
 
-  // eslint-disable-next-line no-unused-vars
   const annotable = new Tabulator($annotationTable, {
     layout: 'fitColumns',
     pagination: 'local',
