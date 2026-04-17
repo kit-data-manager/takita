@@ -12,11 +12,7 @@
 // external modules
 import $ from 'jquery';
 import 'jsonform';
-
-// the import needs to be in this format as we are using tabulator-tables@4.8.1
-// see: https://github.com/olifolkerd/tabulator/issues/2977,
-// https://tabulator.info/docs/4.8/upgrade
-import Tabulator from 'tabulator-tables';
+import { TabulatorFull as Tabulator } from 'tabulator-tables';
 // following imports are needed for the jsonform library (node_modules/jsonform/lib/jsonform.js), which code
 // was completely and unchanged copied into this file
 // underscore is used by the metadataeditor as well, but for some reason it doesn't need to be imported
