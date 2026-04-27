@@ -14,7 +14,7 @@
   },
   "peerDependencies": {
     "bootstrap": "^5.3.8",
-    "CETEIcean": "1.9.4",
+    "CETEIcean": "1.9.5",
     "jquery": "^3.7.1",
     "jsonform": "^2.2.5",
     "tabulator-tables": "^6.4.0",
