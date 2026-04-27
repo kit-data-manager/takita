@@ -34,8 +34,8 @@ describe('appending custom html to an element', () => {
     appendTEIDocument(xmlString, $TEI, {});
     const result = `
         <tei-text xml:lang="hbo" lang="hbo" data-xmlns="http://www.tei-c.org/ns/1.0" data-origname="text" data-origatts="xml:lang xmlns" dir="rtl">
-                    <tei-body n="Psalms" xml:id="b.426591" id="b.426591" data-origname="body" data-origatts="n xml:id">
-                    <tei-div type="chapter" n="1" xml:id="c.426630" id="c.426630" data-origname="div" data-origatts="type n xml:id">
+                    <tei-body n="Psalms" xml:id="b.426591" id="b.426591" data-origname="body" data-origatts="n xml:id" role="region" aria-label="b.426591">
+                    <tei-div type="chapter" n="1" xml:id="c.426630" id="c.426630" data-origname="div" data-origatts="type n xml:id" role="region" aria-label="c.426630">
                         <tei-lg data-origname="lg"><tei-l data-origname="l"><tei-w xml:id="w.121" id="w.121" data-origname="w" data-origatts="xml:id">Blessed</tei-w> <tei-w xml:id="w.122" id="w.122" data-origname="w" data-origatts="xml:id">[is]</tei-w> <tei-w xml:id="w.123" id="w.123" data-origname="w" data-origatts="xml:id">the</tei-w> <tei-w xml:id="w.124" id="w.124" data-origname="w" data-origatts="xml:id">man</tei-w> <tei-w xml:id="w.125" id="w.125" data-origname="w" data-origatts="xml:id">that</tei-w> <tei-w xml:id="w.126" id="w.126" data-origname="w" data-origatts="xml:id">walketh</tei-w><tei-pc xml:id="pc.1" id="pc.1" data-origname="pc" data-origatts="xml:id">,</tei-pc></tei-l>
                             <tei-l data-origname="l"><tei-w xml:id="w.133" id="w.133" data-origname="w" data-origatts="xml:id">nor</tei-w> <tei-w xml:id="w.134" id="w.134" data-origname="w" data-origatts="xml:id">standeth</tei-w><tei-pc xml:id="pc.2" id="pc.2" data-origname="pc" data-origatts="xml:id">.</tei-pc></tei-l></tei-lg>
                     </tei-div>
