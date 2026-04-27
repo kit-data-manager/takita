@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import '../utils/metadataeditor';
-import { changeLabel } from '../../texteditor-ng/projectspecific/annotationCard';
+import { changeLabel as changeLabelText } from '../../texteditor-ng/projectspecific/annotationCard';
+import { changeLabel as changeLabelImage } from '../../imageeditor-ng/projectspecific/annotationCard';
 import { updateBody } from './utils';
 
 // JSONForm creation
@@ -313,6 +314,8 @@ export function getBodyFormDataModelAndUiForm(body, omitFields, formDataModel) {
  * an Array containing the operation type of the form, the dataModel and uiForm used by JSONForm
  */
 export function getBodyFormDataModelAndUiFormHorizontal(body, editableFields) {
+  // decide which imported function is used based on the type of the editor (IMAGE or TEXT)
+  const changeLabel = window.EDITORTYPE == 'TEXT' ? changeLabelText : changeLabelImage;
   // only include the value and the id of a body in the horizotnal form. The value should be displayed and
   // the id is needed for updates.
   let dataModel = {

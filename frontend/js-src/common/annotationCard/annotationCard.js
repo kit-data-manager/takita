@@ -4,8 +4,16 @@ import { createAnnotationDiv } from './elements';
 import { appendForms } from './formManipulation';
 import { getData } from './utils';
 // projectspecific
-import { headerFieldsArray, omitFieldsArray, editableFieldsArray } from '../../texteditor-ng/projectspecific';
-
+import {
+  headerFieldsArray as headerFieldsArrayText,
+  omitFieldsArray as omitFieldsArrayText,
+  editableFieldsArray as editableFieldsArrayText,
+} from '../../texteditor-ng/projectspecific';
+import {
+  headerFieldsArray as headerFieldsArrayImage,
+  omitFieldsArray as omitFieldsArrayImage,
+  editableFieldsArray as editableFieldsArrayImage,
+} from '../../imageeditor-ng/projectspecific';
 /**
  * Main entry point to handle a user interaction to select an annotation
  * by clicking on it. It will get the annotations data, create the annotationCard
@@ -70,8 +78,11 @@ export async function selectAnnotation(_event, annoId, hooks = {}) {
  * @returns {Element} filled div
  */
 async function fillAnnotationDiv($annotationDiv, annotationData, hooks) {
-  // storing the imported arrays
-  const [headerFields, omitFields, editableFields] = [headerFieldsArray, omitFieldsArray, editableFieldsArray];
+  // decide which of the imported arrays are used based on the type of the editor (IMAGE or TEXT)
+  const [headerFields, omitFields, editableFields] =
+    window.EDITORTYPE == 'TEXT'
+      ? [headerFieldsArrayText, omitFieldsArrayText, editableFieldsArrayText]
+      : [headerFieldsArrayImage, omitFieldsArrayImage, editableFieldsArrayImage];
 
   // removing old annotationCard
   while ($annotationDiv.lastElementChild) {
