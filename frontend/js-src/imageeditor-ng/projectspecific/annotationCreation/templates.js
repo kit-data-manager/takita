@@ -9,8 +9,7 @@ import { createAnnotation } from '../../../common/annotationCreation';
 import { selectAnnotation } from '../../../common/annotationCard';
 import '../../../common/utils/metadataeditor';
 import { createBodyData } from '../../../common/data';
-import { encodeAnnoId } from '../../../common/utils';
-import { toggleShapeSelect, unselectAllShapes } from '../../highlighting';
+import { unselectAllShapes, updateNewAnnotationShape } from '../../highlighting';
 import { assignColor } from '../highlight';
 
 // TODO: CUSTOMISE the four objects in here, which are necessary for annotation/body creation
@@ -216,19 +215,6 @@ function getFormObjectCreateAnnotation(selectors) {
       },
     ],
   };
-}
-
-function updateNewAnnotationShape(paper, annotationId, annotationColor) {
-  let shape;
-  paper.forEach(function (element) {
-    if (element.type === 'rect' || element.type === 'path') {
-      shape = element;
-    }
-  });
-  shape.annoId = annotationId;
-  shape.annoIdEncoded = encodeAnnoId(annotationId);
-  shape.attr({ stroke: annotationColor, fill: annotationColor });
-  toggleShapeSelect(shape);
 }
 
 /**

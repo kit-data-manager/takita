@@ -1,4 +1,4 @@
-import { toggleVisibility } from '../../common/utils';
+import { encodeAnnoId, toggleVisibility } from '../../common/utils';
 import { selectAnnotation } from '../../common/annotationCard';
 import { dragCircleMove, dragCircleStart, dragCircleEnd } from '../targetBuilding/utils';
 import { disablePolygonModification, disableRectangleModification } from '../targetBuilding/targetModification';
@@ -191,4 +191,17 @@ export function drawAnnos(annoJson, hooks = {}) {
       }
     }
   }
+}
+
+export function updateNewAnnotationShape(paper, annotationId, annotationColor) {
+  let shape;
+  paper.forEach(function (element) {
+    if (element.type === 'rect' || element.type === 'path') {
+      shape = element;
+    }
+  });
+  shape.annoId = annotationId;
+  shape.annoIdEncoded = encodeAnnoId(annotationId);
+  shape.attr({ stroke: annotationColor, fill: annotationColor });
+  toggleShapeSelect(shape);
 }
