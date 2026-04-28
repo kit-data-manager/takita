@@ -6,6 +6,7 @@
   "binarySource": "global",
   "enabledManagers": [
     "gradle",
+    "gradle-wrapper",
     "npm",
     "dockerfile",
     "docker-compose"
