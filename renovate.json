@@ -6,7 +6,9 @@
   "binarySource": "global",
   "enabledManagers": [
     "gradle",
-    "npm"
+    "npm",
+    "dockerfile",
+    "docker-compose"
   ],
   "automerge": false,
   "minimumReleaseAge": "3 days",
