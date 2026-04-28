@@ -1,5 +1,5 @@
 # ---------- BUILD STAGE ----------
-FROM eclipse-temurin:21-jdk AS build
+FROM eclipse-temurin:21.0.10_7-jdk AS build
 
 ARG SKIP_TESTS=true
 ENV SKIP_TESTS=${SKIP_TESTS}
@@ -19,7 +19,7 @@ COPY build.sh build.sh
 RUN chmod +x build.sh && ./build.sh
 
 # ---------- RUNTIME STAGE ----------
-FROM eclipse-temurin:21-jre-alpine
+FROM eclipse-temurin:21.0.10_7-jre-alpine
 
 RUN apk add --no-cache curl
 
