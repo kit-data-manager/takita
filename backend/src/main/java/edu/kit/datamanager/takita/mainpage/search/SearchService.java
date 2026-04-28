@@ -103,7 +103,7 @@ public class SearchService implements ISearchService {
                             .or("pages.annotations.textCards.purpose").contains(singleSearchTerm)
                             .or("pages.annotations.textCards.value").contains(singleSearchTerm);
       
-      if (singleSearchTerm.matches("^[0-9]*$")) {
+      if (singleSearchTerm.matches("^[0-9]+$")) {
         subCriteria = subCriteria.or("publicationYear").contains(singleSearchTerm);
       }
 
