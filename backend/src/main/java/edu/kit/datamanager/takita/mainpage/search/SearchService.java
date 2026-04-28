@@ -88,6 +88,8 @@ public class SearchService implements ISearchService {
 
       //Check if search term consists of multiple terms and create one criteria for earch
       for (String singleSearchTerm : escapedTerm.split(" ")) {
+        if (singleSearchTerm.isBlank()) continue;
+
         logger.info("Searching for " + singleSearchTerm);
         subCriteria = new Criteria("title").contains(singleSearchTerm)
                             .or("publisher").contains(singleSearchTerm)
@@ -103,8 +105,17 @@ public class SearchService implements ISearchService {
                             .or("pages.annotations.textCards.purpose").contains(singleSearchTerm)
                             .or("pages.annotations.textCards.value").contains(singleSearchTerm);
       
-      if (singleSearchTerm.matches("^[0-9]*$")) {
-        subCriteria = subCriteria.or("publicationYear").contains(singleSearchTerm);
+      if (singleSearchTerm.matches("^[0-9]+$")) {
+        try {
+          //we convert to integer because it will fit a year for sure
+          // and it will not lead to an overflow of the publicationYear field if its mapping is either int or long
+          int numericTerm = Integer.parseInt(singleSearchTerm);
+          subCriteria = subCriteria.or(
+                  new Criteria("publicationYear").is(numericTerm)
+          );
+        } catch (NumberFormatException ex) {
+            logger.warn("Could not parse numeric term: {}", singleSearchTerm);
+        }
       }
 
       criteria = criteria.subCriteria(subCriteria);
