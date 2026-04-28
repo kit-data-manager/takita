@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fix: searching for numerical or empty terms in document dashboard throws error instead of returning matching results
+
 ### Security
 
 ### Dependencies
