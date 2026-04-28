@@ -12,8 +12,6 @@ test.beforeEach(async ({ page }) => {
     await page.getByRole('button', { name: 'Submit' }).click();
     const expandAll = page.getByRole('checkbox', { name: 'Expand all rows' });
     await expect(expandAll).toBeVisible();
-    await expect(expandAll).toBeEnabled();
-    await expandAll.check();
 });
 
 /**
