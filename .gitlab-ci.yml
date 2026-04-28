@@ -43,13 +43,13 @@ coverage:
     - job: build
       artifacts: true
   tags:
-    - kgr1-instance-mini
+    - kgr1-instance-standard
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   script:
     - cd backend
-    - ./gradlew jacocoTestReport --exclude-task integrationTest
+    - ./gradlew jacocoTestReport --exclude-task integrationTest --no-daemon
     - ls -l
     - cat ./build/reports/jacoco/test/html/index.html
   artifacts:
