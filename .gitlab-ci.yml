@@ -26,19 +26,30 @@ build:
     - ./gradlew clean build  --exclude-task integrationTest
   artifacts:
     paths:
-      - ./backend/build/libs/*.jar
+
+  artifacts:
+    when: always
+    paths:
+      - backend/build/classes/
+      - backend/build/resources/
+      - backend/build/test-results/
+      - backend/build/jacoco/
+      - backend/build/libs/*.jar
 
 coverage:
   image: eclipse-temurin:21.0.10_7-jdk
   stage: test
+  needs:
+    - job: build
+      artifacts: true
   tags:
-    - kgr1-instance-standard
+    - kgr1-instance-mini
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push"'
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   script:
     - cd backend
-    - ./gradlew check jacocoTestReport --exclude-task integrationTest
+    - ./gradlew jacocoTestReport --exclude-task integrationTest
     - ls -l
     - cat ./build/reports/jacoco/test/html/index.html
   artifacts:
