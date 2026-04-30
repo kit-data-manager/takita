@@ -2,6 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head th:fragment="headEditor">
 	<th:block th:fragment="baseContentEditor">
+        <th:block th:replace="~{head_bootstrap :: baseContentBootstrap}"></th:block>
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
         <link rel="stylesheet" th:href="@{/css/editor_sidebar.css}">
         <link rel="stylesheet" th:href="@{/css/editor_shared.css}">
