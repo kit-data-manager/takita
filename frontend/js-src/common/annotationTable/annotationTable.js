@@ -25,6 +25,8 @@ Tabulator.registerModule([
   SortModule,
 ]);
 
+let annotable;
+
 /**
  * innitialize the table displaying all annotation of the current editor window.
  * Similar code to what is used for the annotation overview on the main page.
@@ -42,7 +44,7 @@ Tabulator.registerModule([
  * @returns {Element} $annotationTable the element holding the table
  */
 export function initializeAnnotationTable(annoJson, $annotationTable, onCellClick, hooks = {}) {
-  let tableData = annoJson;
+  let tableData = JSON.parse(JSON.stringify(annoJson));
 
   tableData.forEach((entry) => {
     // unwrapping the creator array
@@ -93,56 +95,61 @@ export function initializeAnnotationTable(annoJson, $annotationTable, onCellClic
     });
   }
 
-  const annotable = new Tabulator($annotationTable, {
-    layout: 'fitColumns',
-    pagination: 'local',
-    data: tableData,
-    movableColumns: true, //enable user movable columns
-    paginationSize: 10,
-    paginationSizeSelector: [10, 20, 30, 40],
-    rowFormatter: function (row) {
-      // enabling tooltips for the annotation table using bootstrap
-      // inspiration from: https://stackoverflow.com/questions/71755490/bootstrap-tooltips-with-tabulator
-      // this might be replaced/improved in the future, but for now bootstrap is creating
-      // all tooltips
-      const $tooltipTriggerList = row.getElement().querySelectorAll('[data-bs-toggle="tooltip"]');
-      enableTooltips($tooltipTriggerList);
-    },
-    columns: columns,
-  });
+  // if the annotationtable was not created yet, create it; otherwise simply update the data
+  if (!annotable) {
+    annotable = new Tabulator($annotationTable, {
+      layout: 'fitColumns',
+      pagination: 'local',
+      data: tableData,
+      movableColumns: true, //enable user movable columns
+      paginationSize: 10,
+      paginationSizeSelector: [10, 20, 30, 40],
+      rowFormatter: function (row) {
+        // enabling tooltips for the annotation table using bootstrap
+        // inspiration from: https://stackoverflow.com/questions/71755490/bootstrap-tooltips-with-tabulator
+        // this might be replaced/improved in the future, but for now bootstrap is creating
+        // all tooltips
+        const $tooltipTriggerList = row.getElement().querySelectorAll('[data-bs-toggle="tooltip"]');
+        enableTooltips($tooltipTriggerList);
+      },
+      columns: columns,
+    });
 
-  annotable.on('rowDblClick', function (_e, row) {
-    //shows and hides the bodies for each row/annotation
-    let id = row.getData().id;
-    if (document.getElementById('holder' + id) == null) {
-      // create container/holder for all body rows
-      let holder = document.createElement('div');
-      holder.style.display = 'block';
-      holder.setAttribute('id', 'holder' + id);
-      let cardBody = document.createElement('div');
-      cardBody.setAttribute('class', 'card card-body no-wrap');
+    annotable.on('rowDblClick', function (_e, row) {
+      //shows and hides the bodies for each row/annotation
+      let id = row.getData().id;
+      if (document.getElementById('holder' + id) == null) {
+        // create container/holder for all body rows
+        let holder = document.createElement('div');
+        holder.style.display = 'block';
+        holder.setAttribute('id', 'holder' + id);
+        let cardBody = document.createElement('div');
+        cardBody.setAttribute('class', 'card card-body no-wrap');
 
-      // create rows for all bodies
-      const textCards = row.getData().textCards;
-      textCards.forEach((textCard) => {
-        let row = document.createElement('div');
-        row.setAttribute('class', 'row');
-        row.innerText = textCard.purpose + ': ' + textCard.value;
-        cardBody.appendChild(row);
-      });
-      const tags = row.getData().tags;
-      tags.forEach((tag) => {
-        let row = document.createElement('div');
-        row.setAttribute('class', 'row');
-        row.innerText = 'tagging: ' + tag.value;
-        cardBody.appendChild(row);
-      });
-      holder.appendChild(cardBody);
-      row.getElement().appendChild(holder);
-    } else {
-      document.getElementById('holder' + id).remove();
-    }
-  });
+        // create rows for all bodies
+        const textCards = row.getData().textCards;
+        textCards.forEach((textCard) => {
+          let row = document.createElement('div');
+          row.setAttribute('class', 'row');
+          row.innerText = textCard.purpose + ': ' + textCard.value;
+          cardBody.appendChild(row);
+        });
+        const tags = row.getData().tags;
+        tags.forEach((tag) => {
+          let row = document.createElement('div');
+          row.setAttribute('class', 'row');
+          row.innerText = 'tagging: ' + tag.value;
+          cardBody.appendChild(row);
+        });
+        holder.appendChild(cardBody);
+        row.getElement().appendChild(holder);
+      } else {
+        document.getElementById('holder' + id).remove();
+      }
+    });
+  } else {
+    annotable.replaceData(tableData);
+  }
 
   return $annotationTable;
 }
