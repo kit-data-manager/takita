@@ -96,8 +96,9 @@ docker_playground:
     DOCKER_HOST: tcp://dockerdind:2375
     DOCKER_TLS_CERTDIR: ""
   services:
-    - name: docker:dind
+    - name: docker:29.5.3-dind
       alias: dockerdind
+      command: ["--tls=false"]    
   script:
     - echo "Starting playground stack..."
     - docker compose --profile e2e up playwright
