@@ -251,7 +251,9 @@
             }
         },
         locale:"def",
-
+        // prevent the viewport of the table to jump back to the start of the row, if the row was showing
+        // too many thumbnails
+        renderVertical:"basic"
     });
     window.table.on("tableBuilt", function(){
         createDropdown();
