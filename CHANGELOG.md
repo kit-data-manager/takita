@@ -56,6 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fix: annotation container name may miss first character in comparison to repo publisher field content
 - Fix: after creating a page annotation for an image other annotations cannot be selected or edited (mode not reset to view)
 - Fix: opening the document navigation in editor screen shifts content slightly to the left due to horizontal scroll bar
+- Fix: scrolling does not work properly on some books in the document overview table
+- Fix: duplication of thumbnails in document overview table
 
 ### Security
 - Authentication / AAI (Keycloak) support
