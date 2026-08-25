@@ -101,7 +101,7 @@ docker_playground:
       command: ["--tls=false"]    
   script:
     - echo "Starting playground stack..."
-    - docker compose --profile e2e up playwright
+    - docker compose --profile e2e up playwright --exit-code-from playwright
   artifacts:
     when: always
     paths:
