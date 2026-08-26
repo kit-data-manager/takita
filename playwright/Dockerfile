@@ -1,5 +1,6 @@
-FROM mcr.microsoft.com/playwright:v1.59.1-jammy
+FROM mcr.microsoft.com/playwright:v1.62.1-jammy
 
+WORKDIR /playwright
 # Copy only Playwright dependencies first (better caching)
 COPY package.json package-lock.json ./
 

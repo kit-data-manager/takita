@@ -33,7 +33,7 @@ test('manuscript search returns results or shows empty state', async ({ page }) 
     const table = page.locator('.tabulator');
     const rows = table.locator('.tabulator-row');
     const emptyPlaceholder = table.locator(
-        '.tabulator-placeholder-contents',
+        '.tabulator-placeholder',
         { hasText: 'No search results' }
     );
 
