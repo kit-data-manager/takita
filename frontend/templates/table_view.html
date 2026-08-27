@@ -251,7 +251,9 @@
             }
         },
         locale:"def",
-
+        // prevent the viewport of the table to jump back to the start of the row, if the row was showing
+        // too many thumbnails
+        renderVertical:"basic"
     });
     window.table.on("tableBuilt", function(){
         createDropdown();
@@ -260,7 +262,10 @@
         try {
             showThumbs();
         } catch (TypeError) {
-            console.warn(`Caught an error thrown by showThumbs, which is a TypeError most likely, because the table was rerendered after clicking on the "To dashboard"-button and now the dashboard is shown and therefore, an element can't be found. This happens since the update of tabulator to v.6 as the table gets rendered again for some reason. `,
+            console.warn(`Caught an error thrown by showThumbs, which is a TypeError most likely,
+                because the table was rerendered after clicking on the "To dashboard"-button and
+                now the dashboard is shown and therefore, an element can't be found. This happens
+                since the update of tabulator to v.6 as the table gets rendered again for some reason. `,
                 TypeError);
         }
         if (window.flag) {
@@ -326,59 +331,62 @@
     /*]]>*/
 
     function showThumbnails(row){
-        $.get( "./assistance/addRow/" + row.getData().id, function( data ) {
-            let thumbnails = row.getData().thumbnails;
-            let id = row.getData().id;
-            let holder = document.createElement('div');
-            holder.style.display = 'block';
-            holder.setAttribute('id', 'holder' + id)
-            let cardBody = document.createElement('div');
-            cardBody.setAttribute('class', 'card card-body no-wrap');
-            let outerRow = document.createElement('div');
-            outerRow.setAttribute('class', 'row');
-            // TODO: CUSTOMISE set displayThumbnailsOrIcons to true to have images/icons displayed, false otherwise
-            // in the DO-overview table
-            const displayThumbnailsOrIcons = true;
-            thumbnails.forEach(function (item, index) {
-                let col = document.createElement('div');
-                col.setAttribute('class', 'mx-1 col-auto');
-                if (displayThumbnailsOrIcons) {
-                    let imgRow = document.createElement('div');
-                    imgRow.setAttribute('class', 'row');
-                    let imgCol = document.createElement('div');
-                    imgCol.setAttribute('class', 'col');
-                    let img = document.createElement('img');
-                    img.setAttribute('class', 'img-thumbnail');
-                    if (item.thumbNail === undefined){
-                        if (item.type === "IMAGE") img.src = window.CONTEXTPATH + "images/img_thumb.svg";
-                        else img.src = window.CONTEXTPATH + "images/text_thumb.svg";
-                    } else {
-                        img.setAttribute('src', item.thumbNail);
+        // prevent the creation of a new container holding the thumbnails, if the container already exists
+        if (document.getElementById('holder' + row.getData().id) == null) {
+            $.get( "./assistance/addRow/" + row.getData().id, function( data ) {
+                let thumbnails = row.getData().thumbnails;
+                let id = row.getData().id;
+                let holder = document.createElement('div');
+                holder.style.display = 'block';
+                holder.setAttribute('id', 'holder' + id)
+                let cardBody = document.createElement('div');
+                cardBody.setAttribute('class', 'card card-body no-wrap');
+                let outerRow = document.createElement('div');
+                outerRow.setAttribute('class', 'row');
+                // TODO: CUSTOMISE set displayThumbnailsOrIcons to true to have images/icons displayed, false otherwise
+                // in the DO-overview table
+                const displayThumbnailsOrIcons = true;
+                thumbnails.forEach(function (item, index) {
+                    let col = document.createElement('div');
+                    col.setAttribute('class', 'mx-1 col-auto');
+                    if (displayThumbnailsOrIcons) {
+                        let imgRow = document.createElement('div');
+                        imgRow.setAttribute('class', 'row');
+                        let imgCol = document.createElement('div');
+                        imgCol.setAttribute('class', 'col');
+                        let img = document.createElement('img');
+                        img.setAttribute('class', 'img-thumbnail');
+                        if (item.thumbNail === undefined){
+                            if (item.type === "IMAGE") img.src = window.CONTEXTPATH + "images/img_thumb.svg";
+                            else img.src = window.CONTEXTPATH + "images/text_thumb.svg";
+                        } else {
+                            img.setAttribute('src', item.thumbNail);
+                        }
+                        imgCol.appendChild(img);
+                        imgRow.appendChild(imgCol);
+                        col.appendChild(imgRow);
                     }
-                    imgCol.appendChild(img);
-                    imgRow.appendChild(imgCol);
-                    col.appendChild(imgRow);
-                }
-                let subtitleRow = document.createElement('div');
-                subtitleRow.setAttribute('class', 'row mb-2 mt-1 justify-content-center');
-                let link = document.createElement('a');
-                link.setAttribute('class', 'btn-sm btn-secondary col-auto')
-                link.setAttribute('href', window.CONTEXTPATH + 'editor/' + item.id);
-                let icon = document.createElement('i');
-                icon.setAttribute('class', 'fa-solid fa-pencil');
-                link.appendChild(icon);
-                let label = document.createElement('label');
-                label.setAttribute('class', 'col-auto m-0');
-                label.innerText = item.pageNumber;
-                subtitleRow.appendChild(link);
-                subtitleRow.appendChild(label);
-                col.appendChild(subtitleRow);
-                outerRow.appendChild(col);
-            })
-            cardBody.appendChild(outerRow);
-            holder.appendChild(cardBody);
-            row.getElement().appendChild(holder);
-        });
+                    let subtitleRow = document.createElement('div');
+                    subtitleRow.setAttribute('class', 'row mb-2 mt-1 justify-content-center');
+                    let link = document.createElement('a');
+                    link.setAttribute('class', 'btn-sm btn-secondary col-auto')
+                    link.setAttribute('href', window.CONTEXTPATH + 'editor/' + item.id);
+                    let icon = document.createElement('i');
+                    icon.setAttribute('class', 'fa-solid fa-pencil');
+                    link.appendChild(icon);
+                    let label = document.createElement('label');
+                    label.setAttribute('class', 'col-auto m-0');
+                    label.innerText = item.pageNumber;
+                    subtitleRow.appendChild(link);
+                    subtitleRow.appendChild(label);
+                    col.appendChild(subtitleRow);
+                    outerRow.appendChild(col);
+                })
+                cardBody.appendChild(outerRow);
+                holder.appendChild(cardBody);
+                row.getElement().appendChild(holder);
+            });
+        }
     }
 
     function hideThumbnails(row) {
